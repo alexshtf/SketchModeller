@@ -75,7 +75,7 @@ namespace Controls
             TryUpdateGeometry();
         }
 
-        private void TryUpdateGeometry()
+        public void TryUpdateGeometry()
         {
             var shouldStart = geometryUpdateOperation == null || geometryUpdateOperation.Status != DispatcherOperationStatus.Pending;
             if (shouldStart)
@@ -95,10 +95,14 @@ namespace Controls
             if (camera == null)
                 return;
 
+            var parentModel = VisualTreeHelper.GetParent(this) as ModelVisual3D;
+            if (parentModel == null)
+                return;
+
             var transformTo2D = TransformToAncestor(viewport);
             var points = new Point3DCollection();
             var indices = new Int32Collection();
-            foreach (var pair in Positions.SeqPairs())
+            foreach (var pair in Positions.Transform(parentModel.Transform).SeqPairs())
             {
                 var prev = pair.Item1;
                 var curr = pair.Item2;
@@ -116,6 +120,11 @@ namespace Controls
                 var p2 = prev + prevScale.Item1 * perp;
                 var p3 = curr - currScale.Item2 * perp;
                 var p4 = curr + currScale.Item1 * perp;
+
+                p1 = parentModel.Transform.Inverse.Transform(p1);
+                p2 = parentModel.Transform.Inverse.Transform(p2);
+                p3 = parentModel.Transform.Inverse.Transform(p3);
+                p4 = parentModel.Transform.Inverse.Transform(p4);
 
                 var idx = points.Count;
                 points.Add(p1); points.Add(p2); points.Add(p3); points.Add(p4);

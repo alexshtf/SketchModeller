@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
-using Controls;
+using Petzold.Media3D;
 
 namespace SimpleCurveEdit
 {
@@ -52,8 +52,10 @@ namespace SimpleCurveEdit
                                    let pnt = new Point3D(point2d.X - width / 2, -point2d.Y + height / 2, 0)
                                    select curves.Transform.Inverse.Transform(pnt);
 
-                    var curve3d = new Curve3D();
-                    curve3d.Positions = new Point3DCollection(points3d);
+                    var curve3d = new WirePolyline();
+                    curve3d.Points = new Point3DCollection(points3d);
+                    curve3d.Thickness = 2;
+                    curve3d.Color = Colors.Blue;
                     curves.Children.Add(curve3d);
 
                     strokePolyline.Points = null;

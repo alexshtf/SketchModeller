@@ -13,8 +13,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Utils;
 using System.Windows.Media.Media3D;
-using Controls;
-
 namespace SimpleCurveEdit
 {
     /// <summary>
@@ -22,52 +20,37 @@ namespace SimpleCurveEdit
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool isStroking;
+        private MainViewModel viewModel;
+
 
         public MainWindow()
         {
             InitializeComponent();
+
+            viewModel = new MainViewModel();
+            viewModel.Tools.Add(new StrokeTool(stroke, viewport3d, curves));
+            viewModel.Tools.Add(new RotateTool(curvesTransform, curves));
+
+            viewModel.CurrentTool = viewModel.Tools[0];
+
+            DataContext = viewModel;
         }
 
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void OnGridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            isStroking = true;
+            viewModel.CurrentTool.MouseDown(e.GetPosition(viewport3d));
             rootVisual.CaptureMouse();
-            stroke.Points = new PointCollection();
         }
 
-        private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
+        private void OnGridMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (isStroking)
-            {
-                isStroking = false;
-                rootVisual.ReleaseMouseCapture();
-
-                if (stroke.Points != null && stroke.Points.Count > 1)
-                {
-                    var width = viewport3d.ActualWidth;
-                    var height = viewport3d.ActualHeight;
-                    var points3d = new Point3DCollection(
-                        from point2d in stroke.Points
-                        select new Point3D(point2d.X - width / 2, -point2d.Y + height / 2, 0));
-
-                    var curve3d = new Curve3D();
-                    curve3d.Positions = points3d;
-
-                    curves.Children.Add(curve3d);
-
-                    stroke.Points = null;
-                }
-            }
+            viewModel.CurrentTool.MouseUp(e.GetPosition(viewport3d));
+            rootVisual.ReleaseMouseCapture();
         }
 
-        private void rootVisual_MouseMove(object sender, MouseEventArgs e)
+        private void OnGridMouseMove(object sender, MouseEventArgs e)
         {
-            if (isStroking)
-            {
-                var position = e.GetPosition(rootVisual);
-                stroke.Points.Add(position);
-            }
+            viewModel.CurrentTool.MouseMove(e.GetPosition(viewport3d));
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using Utils;
-using Controls;
 
 namespace SimpleCurveEdit
 {
@@ -40,8 +39,8 @@ namespace SimpleCurveEdit
 
                 curvesTransform.Matrix = curvesTransform.Matrix * transform.Value;
 
-                foreach (var curve3d in curves.VisualTree().OfType<Curve3D>())
-                    curve3d.TryUpdateGeometry();
+                //foreach (var curve3d in curves.VisualTree().OfType<Curve3D>())
+                //    curve3d.TryUpdateGeometry();
 
                 prevPosition = position;
             }
