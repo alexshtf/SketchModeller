@@ -14,13 +14,12 @@
         
         <Viewport3D x:Name="viewport3d">
             <Viewport3D.Camera>
-                <OrthographicCamera x:Name="camera" 
-                                    Position="0,0,5" 
-                                    LookDirection="0,0,-1" 
-                                    NearPlaneDistance="0.1" 
-                                    FarPlaneDistance="{Binding ElementName=viewport3d, Path=ActualWidth}" 
-                                    Width="{Binding ElementName=viewport3d, Path=ActualWidth}"
-                                    UpDirection="0,1,0"/>
+                <PerspectiveCamera x:Name="camera"
+                                   Position="0,0,5"
+                                   LookDirection="0,0,-1"
+                                   NearPlaneDistance="0.1"
+                                   FarPlaneDistance="100"
+                                   UpDirection="0,1,0" />
             </Viewport3D.Camera>
 
             <!-- The ModelVisual3D children contain the 3D models -->
@@ -33,6 +32,7 @@
             </Viewport3D.Children>
         </Viewport3D>
         <Polyline x:Name="stroke" Stroke="Red" StrokeThickness="2" />
+        <Polyline x:Name="snapStroke" Stroke="Green" StrokeThickness="2" />
         
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding Tools}"

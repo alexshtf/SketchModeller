@@ -38,6 +38,15 @@ namespace SimpleCurveEdit
                 strokePolyline.Points.Add(position);
         }
 
+        private Point3D Get3DPoint(Point point)
+        {
+            LineRange lineRange;
+            if (ViewportInfo.Point2DtoPoint3D(viewport3d, point, out lineRange))
+                return lineRange.PointFromZ(0); // the intersection of the ray with the plane Z=0
+            else
+                throw new InvalidOperationException("Cannot un-project the specified point. The point is invalid.");
+        }
+
         public void MouseUp(Point position)
         {
             if (isActive)
@@ -49,10 +58,10 @@ namespace SimpleCurveEdit
                     var height = viewport3d.ActualHeight;
 
                     var points3d = from point2d in strokePolyline.Points
-                                   let pnt = new Point3D(point2d.X - width / 2, -point2d.Y + height / 2, 0)
+                                   let pnt = Get3DPoint(point2d) // new Point3D(point2d.X - width / 2, -point2d.Y + height / 2, 0)
                                    select curves.Transform.Inverse.Transform(pnt);
 
-                    var curve3d = new WirePolyline();
+                    var curve3d = new WirePolylineCurve();
                     curve3d.Points = new Point3DCollection(points3d);
                     curve3d.Thickness = 2;
                     curve3d.Color = Colors.Blue;

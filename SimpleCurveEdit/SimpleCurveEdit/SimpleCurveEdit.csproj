@@ -62,9 +62,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ICurve.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="RotateTool.cs" />
+    <Compile Include="SnapTool.cs" />
     <Compile Include="StrokeTool.cs" />
+    <Compile Include="WirePolylineCurve.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -97,6 +100,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -107,6 +111,10 @@
     <ProjectReference Include="..\Controls\Controls.csproj">
       <Project>{FCF6EA26-7212-4DEF-9F28-8B2EA9541646}</Project>
       <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LineOptimizer\LineOptimizer.vcxproj">
+      <Project>{9AD0FE97-6630-4545-AAF4-C16425100746}</Project>
+      <Name>LineOptimizer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utils\Utils.csproj">
       <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>

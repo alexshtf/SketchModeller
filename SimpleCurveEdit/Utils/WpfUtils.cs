@@ -11,6 +11,56 @@ namespace Utils
 {
     public static class WpfUtils
     {
+
+        /// <summary>
+        /// Projects a 2D point on a 2D curve
+        /// </summary>
+        /// <param name="point">The point to be projected</param>
+        /// <param name="curve">The curve to project on</param>
+        /// <returns>A tripple containing the projection result, the minimal distance from <paramref name="point"/> to the curve,
+        /// and the index of the segment in <paramref name="curve"/> that minimizes this distance</returns>
+        /// <remarks>
+        /// In case <paramref name="curve"/> is a zero-length array the method returns a triple with distance of <c>Double.NaN</c>
+        /// and segment index <c>-1</c>. When <paramref name="curve"/> is an array with a single point, the method returns this point
+        /// as the projection result, the distance between <c>curve[0]</c> and <c>point</c> as the minimizing distance and <c>-1</c>
+        /// as the segment index (we have no segments, so we cannot return a valid segment index). Otherwise, the method performs
+        /// as expected.
+        /// </remarks>
+        public static Tuple<Point, double, int> ProjectionOnCurve(this Point point, IEnumerable<Point> curve)
+        {
+            var count = curve.Count();
+
+            var projectedPoints =
+                from indexedSegment in curve.SeqPairs().ZipIndex()
+                let index = indexedSegment.Index
+                let segment = indexedSegment.Value
+                let segStart = segment.Item1
+                let segEnd = segment.Item2
+                let projectedPoint = point.ProjectOnSegment(segStart, segEnd)
+                let distance = (point - projectedPoint).Length
+                select Tuple.Create(projectedPoint, distance, index);
+
+            return projectedPoints.Minimizer(pair => pair.Item2); // Item2 is the distance
+        }
+
+        public static Point ProjectOnSegment(this Point pnt, Point segStart, Point segEnd)
+        {
+            var u = pnt - segStart;
+            var v = segEnd - segStart;
+            var t = (u * v) / (v * v);
+            if (t < 0)           // to the "left" of segStart
+                return segStart;
+            else if (t > 1)      // to the "right" of segEnd
+                return segEnd;
+            else                 // between segStart and segEnd
+                return segStart + t * v;
+        }
+
+        public static double DistanceFromSegment(this Point pnt, Point segStart, Point segEnd)
+        {
+            return (pnt - pnt.ProjectOnSegment(segStart, segEnd)).Length;
+        }
+
         public static Viewport3D GetViewport(this Visual3D visual3d)
         {
             var path = VisualPathUp(visual3d);

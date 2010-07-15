@@ -30,6 +30,7 @@ namespace SimpleCurveEdit
             viewModel = new MainViewModel();
             viewModel.Tools.Add(new StrokeTool(stroke, viewport3d, curves));
             viewModel.Tools.Add(new RotateTool(curvesTransform, curves));
+            viewModel.Tools.Add(new SnapTool(snapStroke, viewport3d, curves));
 
             viewModel.CurrentTool = viewModel.Tools[0];
 
