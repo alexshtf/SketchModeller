@@ -10,7 +10,6 @@ using System.Windows;
 using Petzold.Media3D;
 using Utils;
 using System.Diagnostics.Contracts;
-using LineOptimizer;
 
 namespace SimpleCurveEdit
 {
@@ -158,6 +157,9 @@ namespace SimpleCurveEdit
             // get the total projection transform from 3D to 2D
             var projTransform = new VisualInfo { ModelVisual3D = curvesRoot }.TotalTransform;
 
+            var lineOptimizer = new SnapOptimizer(before, after, middle, projTransform);
+            lineOptimizer.Solve();
+
             #region fake "optimization"
 
             var nonMiddle = before.Concat(after);
@@ -181,5 +183,12 @@ namespace SimpleCurveEdit
             else
                 throw new InvalidOperationException("Cannot un-project the specified point. The point is invalid.");
         }
+    }
+
+    class OptimizationPoint
+    {
+        public Point3D Original { get; set; }
+        public Point3D New { get; set; }
+        public Point ProjConstraint { get; set; }
     }
 }
