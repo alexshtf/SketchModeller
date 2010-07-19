@@ -1,4 +1,3 @@
-/SimpleCurveEdit/*/Debug/*
-/SimpleCurveEdit/*/Release/*
-/SimpleCurveEdit/libs/*
+/*/Debug/*
+/*/Release/*
 *.sdf
