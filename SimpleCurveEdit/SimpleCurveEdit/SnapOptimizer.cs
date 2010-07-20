@@ -8,7 +8,7 @@ using CenterSpace.NMath.Matrix;
 
 namespace SimpleCurveEdit
 {
-    class SnapOptimizer
+    public class SnapOptimizer
     {
         private readonly OptimizationPoint[] before;
         private readonly OptimizationPoint[] middle;
@@ -25,6 +25,7 @@ namespace SimpleCurveEdit
 
         public void Solve()
         {
+            const double CLOSENESS_WEIGHT = 1;
             int k = before.Length;
             int l = middle.Length;
             int m = after.Length;
@@ -53,7 +54,7 @@ namespace SimpleCurveEdit
             var P = new DoubleMatrix(2 * l, 3 * totalCount);
 
             var p11 = proj.M11; var p12 = proj.M12; var p13 = proj.M13; var p14 = proj.M14;
-            var p21 = proj.M11; var p22 = proj.M22; var p23 = proj.M23; var p24 = proj.M24;
+            var p21 = proj.M21; var p22 = proj.M22; var p23 = proj.M23; var p24 = proj.M24;
             var p31 = proj.M31; var p32 = proj.M32; var p33 = proj.M33; var p34 = proj.M34;
             var p44 = proj.M44;
             var p41 = proj.OffsetX;
@@ -78,24 +79,12 @@ namespace SimpleCurveEdit
                 P[row + 1, col + 2] = p32 - v * p34;
             }
 
-            // we will describe gradient of sum of lengths of edges as the matrix L
-            var L = new DoubleMatrix(k + m - 2, 3 * totalCount);
-            for (int i = 0; i < k - 1; ++i) // before weights
+            // we will describe transformation to sum of length edges as the matrix L
+            var L = new DoubleMatrix(totalCount - 1, 3 * totalCount);
+            for (int i = 0; i < totalCount - 1; ++i)
             {
                 int row = i;
                 int col = 3 * i;
-                L[row, col + 0] = -1;
-                L[row, col + 1] = -1;
-                L[row, col + 2] = -1;
-                L[row, col + 3] = 1;
-                L[row, col + 4] = 1;
-                L[row, col + 5] = 1;
-            }
-            for (int i = 0; i < m - 1; ++i) // after weights
-            {
-                int row = k + i - 1;
-                int col = 3 * k + 3 * l + 3 * i;
-
                 L[row, col + 0] = -1;
                 L[row, col + 1] = -1;
                 L[row, col + 2] = -1;
@@ -119,13 +108,13 @@ namespace SimpleCurveEdit
                 c[3 * k + 3 * l + 3 * i + 1] = after[i].Original.Y;
                 c[3 * k + 3 * l + 3 * i + 2] = after[i].Original.Z;
 		    }
+            c = c.Scale(CLOSENESS_WEIGHT);
 
             // now we build the big matrix
             int totalMatrixSize = 3 * totalCount + 2 * l;
             var M = new DoubleMatrix(totalMatrixSize, totalMatrixSize);
             var mpt = -P.Transpose();
-            var ltl = NMathFunctions.Product(L.Transpose(), L)+ I;
-            //var ltl = L.Transpose() * L + I;
+            var ltl = NMathFunctions.Product(L.Transpose(), L) + (CLOSENESS_WEIGHT * I);
 
             var topLeft = M[new Slice(0, 3 * totalCount), new Slice(0, 3 * totalCount)];
             var topRight = M[new Slice(0, 3 * totalCount), new Slice(3 * totalCount, 2 * l)];
@@ -136,11 +125,8 @@ namespace SimpleCurveEdit
             CopyTo(source: P, target: botLeft);
 
             // and the big known vector
-            var b = new DoubleVector(c.Length + y.Length);
-            for (int i = 0; i < c.Length; ++i)
-                b[i] = c[i];
-            for (int i = 0; i < y.Length; ++i)
-                b[c.Length + i] = y[i];
+            var bItems = c.ToArray().Concat(y.ToArray()).ToArray();
+            var b = new DoubleVector(bItems);
 
             var luSolver = new DoubleLUFact(M);
             var results = luSolver.Solve(b);

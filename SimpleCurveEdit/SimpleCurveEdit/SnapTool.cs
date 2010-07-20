@@ -142,13 +142,13 @@ namespace SimpleCurveEdit
             var middle =
                 (from point in snapPoints
                  select new OptimizationPoint { ProjConstraint = point }).ToArray();
-            var optimizationPoints = before.Concat(middle).Concat(after).ToArray();
 
+            var projTransform = new VisualInfo { ModelVisual3D = curvesRoot }.TotalTransform;
             Optimize(before, after, middle, avgDistance);
 
             // replace with the new curve
             chosenCurve.Points = new Point3DCollection(
-                from optimizationPoint in optimizationPoints
+                from optimizationPoint in before.Concat(middle).Concat(after)
                 select optimizationPoint.New);
         }
 
@@ -157,22 +157,8 @@ namespace SimpleCurveEdit
             // get the total projection transform from 3D to 2D
             var projTransform = new VisualInfo { ModelVisual3D = curvesRoot }.TotalTransform;
 
-            var lineOptimizer = new SnapOptimizer(before, after, middle, projTransform);
+            var lineOptimizer = new SnapOptimizer(before, middle, after, projTransform);
             lineOptimizer.Solve();
-
-            #region fake "optimization"
-
-            var nonMiddle = before.Concat(after);
-            var avgZ = nonMiddle.Average(item => item.Original.Z);
-
-            // For now - fake stuff instead of optimizing
-            foreach (var pnt in nonMiddle)
-                pnt.New = pnt.Original;
-
-            foreach (var pnt in middle)
-                pnt.New = Get3DPoint(pnt.ProjConstraint);
-
-            #endregion
         }
 
         private Point3D Get3DPoint(Point point)
@@ -185,7 +171,7 @@ namespace SimpleCurveEdit
         }
     }
 
-    class OptimizationPoint
+    public class OptimizationPoint
     {
         public Point3D Original { get; set; }
         public Point3D New { get; set; }
