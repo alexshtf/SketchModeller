@@ -110,12 +110,13 @@ namespace SimpleCurveEdit
             return point.ProjectionOnCurve(transformedCurve).Item2;
         }
 
-        private void ModifyCurve(ICurve chosenCurve, Point[] transformedCurve, PointCollection snapPoints)
+        private void ModifyCurve(ICurve chosenCurve, Point[] transformedCurve, IEnumerable<Point> snapPoints)
         {
             Contract.Requires(chosenCurve.Points.Count == transformedCurve.Length);
             Contract.Requires(chosenCurve != null);
             Contract.Requires(transformedCurve != null);
             Contract.Requires(snapPoints != null);
+            Contract.Requires(snapPoints.FirstOrDefault() != null);
 
             var oldPnts = chosenCurve.Points.ToArray();
 
@@ -123,11 +124,17 @@ namespace SimpleCurveEdit
             var projectionData =
                 from point in snapPoints
                 let proj = point.ProjectionOnCurve(transformedCurve)
-                select new { Distance = proj.Item2, Index = proj.Item3 };
+                select new { Distance = proj.Item2, SegmentIndex = proj.Item3 };
 
             // find minimum and maximum segment index from the projections
-            var minIndex = projectionData.Min(x => x.Index);
-            var maxIndex = projectionData.Max(x => x.Index);
+            var minIndexItem = projectionData.ZipIndex().Minimizer(x => x.Value.SegmentIndex);
+            var maxIndexItem = projectionData.ZipIndex().Minimizer(x => -x.Value.SegmentIndex);
+            var minIndex = minIndexItem.Value.SegmentIndex;
+            var maxIndex = maxIndexItem.Value.SegmentIndex;
+
+            // reverse the order of snap points if the user drew the points in opposite order
+            if (minIndexItem.Index >= maxIndexItem.Index)
+                snapPoints = snapPoints.Reverse();
 
             // find average distance of snapPoints from the curve
             var avgDistance = projectionData.Average(x => x.Distance);
@@ -143,7 +150,6 @@ namespace SimpleCurveEdit
                 (from point in snapPoints
                  select new OptimizationPoint { ProjConstraint = point }).ToArray();
 
-            var projTransform = new VisualInfo { ModelVisual3D = curvesRoot }.TotalTransform;
             Optimize(before, after, middle, avgDistance);
 
             // replace with the new curve

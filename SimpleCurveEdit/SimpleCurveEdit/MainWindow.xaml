@@ -20,6 +20,13 @@
                                    NearPlaneDistance="0.1"
                                    FarPlaneDistance="100"
                                    UpDirection="0,1,0" />
+                <!--<OrthographicCamera x:Name="camera"
+                                    Position="0,0,5"
+                                    LookDirection="0,0,-1"
+                                    NearPlaneDistance="0.1"
+                                    FarPlaneDistance="100"
+                                    UpDirection="0,1,0"
+                                    Width="2" />-->
             </Viewport3D.Camera>
 
             <!-- The ModelVisual3D children contain the 3D models -->
