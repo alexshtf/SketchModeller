@@ -80,17 +80,20 @@ namespace SimpleCurveEdit
             }
 
             // we will describe transformation to sum of length edges as the matrix L
-            var L = new DoubleMatrix(totalCount - 1, 3 * totalCount);
-            for (int i = 0; i < totalCount - 1; ++i)
+            var L = new DoubleMatrix(totalCount - 2, 3 * totalCount);
+            for (int i = 0; i < totalCount - 2; ++i)
             {
                 int row = i;
                 int col = 3 * i;
-                L[row, col + 0] = -1;
-                L[row, col + 1] = -1;
-                L[row, col + 2] = -1;
+                L[row, col + 0] = -0.5;
+                L[row, col + 1] = -0.5;
+                L[row, col + 2] = -0.5;
                 L[row, col + 3] = 1;
                 L[row, col + 4] = 1;
                 L[row, col + 5] = 1;
+                L[row, col + 6] = -0.5;
+                L[row, col + 7] = -0.5;
+                L[row, col + 8] = -0.5;
             }
 
             var I = DoubleMatrix.Identity(3 * totalCount);
