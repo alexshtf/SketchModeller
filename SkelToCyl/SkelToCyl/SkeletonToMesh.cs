@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
+using Utils;
 
 namespace SkelToCyl
 {
@@ -17,11 +18,19 @@ namespace SkelToCyl
         public static Tuple<Point3D[], Vector3D[], int[]> SkeletonToCylinder(IEnumerable<SkeletonPoint> skeleton, int slices)
         {
             List<Point3D> positions = new List<Point3D>();
+            List<Vector3D> normals = new List<Vector3D>();
             List<int> indices = new List<int>();
 
             Vector3D u = GetVectorInFirstPlane(skeleton);
-            foreach (var pair in skeleton.ZipIndex())
+            var skelSize = skeleton.Count();
+            foreach (var indexedSkelPoint in skeleton.ZipIndex())
             {
+                var skelPoint = indexedSkelPoint.Value;
+                var skelPointIdx = indexedSkelPoint.Index;
+
+                var top = skelPointIdx * slices;
+                var bot = (skelPointIdx + 1) * slices;
+
                 // find orthonormal basis for the plane at skelPoint
                 u = ProjectOnPlane(u, Normalized(skelPoint.Normal), skelPoint.Position);
                 Vector3D v = Vector3D.CrossProduct(u, skelPoint.Normal);
@@ -29,20 +38,37 @@ namespace SkelToCyl
                 v.Normalize();
 
                 // create a circle around the skeleton point
-                for (int i = 0; i < slices; ++i)
+                for (int sliceIdx = 0; sliceIdx < slices; ++sliceIdx)
                 {
-                    var angle = 2 * i * Math.PI / slices;
+                    // calculate coordinates of a circle point using the orthonormal basis.
+                    var angle = 2 * sliceIdx * Math.PI / slices;
                     var x = skelPoint.Radius * Math.Cos(angle);
                     var y = skelPoint.Radius * Math.Sin(angle);
 
-                    var pnt = skelPoint.Position + x * u + y * v; // create a point in the plane, using its orthonormal basis
+                    // create a point in the plane, using its orthonormal basis
+                    var pnt = skelPoint.Position + x * u + y * v; 
                     positions.Add(pnt);
+
+                    // calculate normal at the point
+                    var pointNormal = pnt - skelPoint.Position;
+                    pointNormal.Normalize();
+                    normals.Add(pointNormal);
+
+                    // add mesh triangle indices
+                    if (skelPointIdx < skelSize - 1)
+                    {
+                        indices.Add(top + sliceIdx);
+                        indices.Add(bot + sliceIdx);
+                        indices.Add(top + ((sliceIdx + 1) % slices));
+
+                        indices.Add(top + ((sliceIdx + 1) % slices));
+                        indices.Add(bot + sliceIdx);
+                        indices.Add(bot + ((sliceIdx + 1) % slices));
+                    }
                 }
             }
 
-            Vector3D[] normals = null;
-            int[] indices = null;
-            return Tuple.Create(positions.ToArray(), normals, indices);
+            return Tuple.Create(positions.ToArray(), normals.ToArray(), indices.ToArray());
         }
 
         private static Vector3D Normalized(Vector3D input)

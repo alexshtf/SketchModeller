@@ -27,21 +27,28 @@ namespace SkelToCyl
             var skeleton = GenerateSkeleton();
             var mesh = SkeletonToMesh.SkeletonToCylinder(skeleton, 30);
 
-            model.Points = new Point3DCollection(mesh.Item1);
-            //model.Points = new Point3DCollection(
-            //    from item in skeleton
-            //    select item.Position);
+            skeletonModel.Points = new Point3DCollection(
+                from item in skeleton
+                    select item.Position);
+
+            modelMesh.Positions = new Point3DCollection(mesh.Item1);
+            modelMesh.Normals = new Vector3DCollection(mesh.Item2);
+            modelMesh.TriangleIndices = new Int32Collection(mesh.Item3);
+
+            wireframe.Positions = modelMesh.Positions.Clone();
+            wireframe.Normals = modelMesh.Normals.Clone();
+            wireframe.TriangleIndices = modelMesh.TriangleIndices.Clone();
         }
 
         private IEnumerable<SkeletonPoint> GenerateSkeleton()
         {
-            foreach (var t in LinSpace(0, 2 * Math.PI, 30))
+            foreach (var t in LinSpace(0, 2 * Math.PI, 100))
             {
                 yield return new SkeletonPoint
                 {
                     Position = new Point3D(5 * Math.Cos(t), 0.5 * t, 5 * Math.Sin(t)),
                     Normal = new Vector3D(-5 * Math.Sin(t), 2, 5 * Math.Cos(t)),
-                    Radius = 0.5 + 0.1 * Math.Cos(2 * t),
+                    Radius = 0.5 + 0.3 * Math.Cos(6 * t),
                 };
             }
         }
@@ -62,8 +69,15 @@ namespace SkelToCyl
         {
             for (int i = 0; i < nSteps; ++i)
             {
-                var current = min + i * (max - min) / (nSteps - 1);
-                yield return current;
+                if (i == 0)
+                    yield return min;
+                else if (i == nSteps - 1)
+                    yield return max;
+                else
+                {
+                    var current = min + i * (max - min) / (nSteps - 1);
+                    yield return current;
+                }
             }
         }
     }
