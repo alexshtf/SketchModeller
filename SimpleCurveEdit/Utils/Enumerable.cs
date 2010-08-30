@@ -4,11 +4,111 @@ using System.Linq;
 using System.Text;
 
 using SysEnumerable = System.Linq.Enumerable;
+using System.Diagnostics.Contracts;
 
 namespace Utils
 {
     public static class Enumerable
     {
+        /// <summary>
+        /// Generates a possibly infinite sequence of value types using induction.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the enumeration.</typeparam>
+        /// <param name="init">The initial value</param>
+        /// <param name="generator">The induction step that produces the next item using the current item.</param>
+        /// <returns>The generated sequence of items.</returns>
+        /// <remarks>
+        /// If the generator returns <c>null</c> the generation stops and the sequence is finite. If the generator never returns <c>null</c>
+        /// the generated sequence is infinite.
+        /// </remarks>
+        public static IEnumerable<T> Generate<T>(T init, Func<T, T?> generator)
+            where T : struct
+        {
+            T? current = init;
+            while (current.HasValue)
+            {
+                yield return current.Value;
+                current = generator(current.Value);
+            }
+        }
+        
+        /// <summary>
+        /// Creates an enumeration with a single item.
+        /// </summary>
+        /// <typeparam name="T">The type of the item</typeparam>
+        /// <param name="item">The item to wrap in an enumeration.</param>
+        /// <returns>The enumeration containing only <paramref name="item"/>.</returns>
+        public static IEnumerable<T> Singleton<T>(T item)
+        {
+            return System.Linq.Enumerable.Repeat(item, 1);
+        }
+
+        /// <summary>
+        /// Splits an enumeration to multiple enumerations along elements for which a seperator function is <c>false</c>.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the source enumeration</typeparam>
+        /// <param name="items">The source enumeration</param>
+        /// <param name="seperator">The seperator function.</param>
+        /// <returns>An enumeration of the resulting splitted enumeration.</returns>
+        public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> items, Func<T, bool> seperator)
+        {
+            while (!items.IsEmpty())
+            {
+                var head = items.TakeWhile(seperator);
+                yield return head;
+
+                var tail = items.SkipWhile(seperator);
+                if (!tail.IsEmpty())
+                    tail = tail.Skip(1);
+
+                items = tail;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the given enumeration is empty
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the enumeration</typeparam>
+        /// <param name="toCheck">The enumeration to check</param>
+        /// <returns><c>true</c> if and only if the enumeration <paramref name="toCheck"/> is empty.</returns>
+        public static bool IsEmpty<T>(this IEnumerable<T> toCheck)
+        {
+            bool isEmpty = true;
+            foreach (var item in toCheck)
+            {
+                isEmpty = false;
+                break;
+            }
+
+            return isEmpty;
+        }
+
+        /// <summary>
+        /// Concats a collection of enumerables with a seperator between them.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in each enumeration / the type of the seperator</typeparam>
+        /// <typeparam name="S">The type of the enumerations</typeparam>
+        /// <param name="toConcat">The enumeration of enumerations to concat</param>
+        /// <param name="seperator">The seperator to insert</param>
+        /// <returns>An enumeration containing all the enumerations in <paramref name="toConcat"/>, with the value <paramref name="seperator"/> as a seperator between them.</returns>
+        public static IEnumerable<T> ConcatWithSeperator<T, S>(this IEnumerable<S> toConcat, T seperator)
+            where S : IEnumerable<T>
+        {
+            Contract.Requires(toConcat != null);
+
+            bool first = true;
+            foreach (var enumeration in toConcat)
+            {
+                if (!first)
+                    yield return seperator;
+                else
+                    first = false;
+
+                foreach (var item in enumeration)
+                    yield return item;
+            }
+        }
+
         /// <summary>
         /// Creates an enumeration with all but the first element in a source enumeration.
         /// </summary>
@@ -71,6 +171,19 @@ namespace Utils
         public static IEnumerable<Tuple<T, T>> SeqPairs<T>(this IEnumerable<T> source)
         {
             return source.Zip(source.Tail());
+        }
+
+        /// <summary>
+        /// Creates an enumeration of tripples from subsequent elements of a given enumeration.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the source enumeration.</typeparam>
+        /// <param name="source">The source enumeration.</param>
+        /// <returns>The resulting sequential tripples.</returns>
+        public static IEnumerable<Tuple<T, T, T>> SeqTripples<T>(this IEnumerable<T> source)
+        {
+            var pairs = source.SeqPairs();
+            var tripples = SysEnumerable.Zip(pairs, source.Skip(2), (pair, item) => Tuple.Create(pair.Item1, pair.Item2, item));
+            return tripples;
         }
 
         /// <summary>

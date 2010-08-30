@@ -1,0 +1,61 @@
+﻿<Window x:Class="SketchToCyl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:alex="http://alex/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <alex:EnumerableToPointsCollection x:Key="EnumerableToPointsCollection" />
+        <Style x:Key="CanvasItems" TargetType="ItemsControl" BasedOn="{StaticResource {x:Type ItemsControl}}">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <DockPanel LastChildFill="True">
+        <ToolBar DockPanel.Dock="Top" ItemsSource="{Binding ToolbarCommands}">
+            <ToolBar.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Title}" Command="{Binding}" />
+                </DataTemplate>
+            </ToolBar.ItemTemplate>
+        </ToolBar>
+        <Grid Background="Black" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp">
+            <Line Stroke="Gray" x:Name="pointSelection" />
+            <!-- Strokes -->
+            <ItemsControl ItemsSource="{Binding Strokes}" Style="{StaticResource CanvasItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Polyline Points="{Binding Converter={StaticResource EnumerableToPointsCollection}}" Stroke="MediumBlue" StrokeThickness="2" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ItemsControl ItemsSource="{Binding MatchingPoints}"  Style="{StaticResource CanvasItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding}" Style="{StaticResource CanvasItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Line X1="{Binding Item1.X}" Y1="{Binding Item1.Y}"
+                                          X2="{Binding Item2.X}" Y2="{Binding Item2.Y}"
+                                          Stroke="Yellow"
+                                          StrokeThickness="2"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <!-- Active strokes -->
+            <Polyline Points="{Binding Path=ActiveStroke, Converter={StaticResource EnumerableToPointsCollection}}" Stroke="OrangeRed"  StrokeThickness="2"/>
+            
+            <Viewport3D />
+        </Grid>
+    </DockPanel>
+</Window>

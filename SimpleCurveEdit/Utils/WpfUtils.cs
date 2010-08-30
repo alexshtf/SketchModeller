@@ -6,11 +6,20 @@ using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using System.Windows.Media;
 using System.Windows;
+using System.Diagnostics.Contracts;
 
 namespace Utils
 {
     public static class WpfUtils
     {
+        public static Point ToPoint(this string[] values)
+        {
+            Contract.Requires(values.Length >= 2);
+            var x = double.Parse(values[0]);
+            var y = double.Parse(values[1]);
+
+            return new Point(x, y);
+        }
 
         /// <summary>
         /// Projects a 2D point on a 2D curve
@@ -92,6 +101,27 @@ namespace Utils
                 foreach(var item in child.VisualTree())
                     yield return item;
             }
+        }
+
+        public static double SquareDiff(IEnumerable<Point> first, IEnumerable<Point> second)
+        {
+            Contract.Requires(first != null);
+            Contract.Requires(second != null);
+            Contract.Requires(first.Count() == second.Count());
+            Contract.Ensures(Contract.Result<double>() >= 0.0);
+
+            return first.Zip(second).Sum(pair => (pair.Item1 - pair.Item2).LengthSquared);
+        }
+
+        public static Vector Perp(this Vector v)
+        {
+            return new Vector(v.Y, -v.Y);
+        }
+
+        public static Vector Normalized(this Vector v)
+        {
+            v.Normalize();
+            return v;
         }
     }
 }
