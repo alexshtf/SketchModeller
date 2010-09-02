@@ -44,6 +44,18 @@ namespace Utils
         }
 
         /// <summary>
+        /// Appends a single item to the end of an enumeration.
+        /// </summary>
+        /// <typeparam name="T">The type of the items</typeparam>
+        /// <param name="items">The existing enumeration.</param>
+        /// <param name="newItem">The new item to append.</param>
+        /// <returns>The enumeration resulting from appending <paramref name="newItem"/> to the end of <paramref name="items"/>.</returns>
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> items, T newItem)
+        {
+            return items.Concat(Singleton(newItem));
+        }
+
+        /// <summary>
         /// Splits an enumeration to multiple enumerations along elements for which a seperator function is <c>false</c>.
         /// </summary>
         /// <typeparam name="T">The type of elements in the source enumeration</typeparam>

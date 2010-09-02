@@ -12,6 +12,19 @@ namespace Utils
 {
     public static class WpfUtils
     {
+        /// <summary>
+        /// Calculates linear interpolation between two points (1 - t) * p1 + t * p2
+        /// </summary>
+        /// <param name="p1">First point</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="t">Interpolation factor</param>
+        /// <returns>The resulting interpolated point</returns>
+        public static Point Lerp(Point p1, Point p2, double t)
+        {
+            var vec = t * (p2 - p1);
+            return p1 + vec;
+        }
+
         public static Point ToPoint(this string[] values)
         {
             Contract.Requires(values.Length >= 2);

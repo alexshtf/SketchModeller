@@ -19,6 +19,7 @@ namespace SketchToCyl
         private readonly List<ToolbarCommand> toolbarCommands;
         private readonly ObservableCollection<List<Point>> strokes;
         private readonly ObservableCollection<List<Tuple<Point, Point>>> matchingPoints;
+        private readonly ObservableCollection<Tuple<Point3D[], Vector3D[], int[]>> meshes;
         private List<Point> activeStroke;
 
         [ContractInvariantMethod]
@@ -29,16 +30,8 @@ namespace SketchToCyl
 
         public MainWindowViewModel()
         {
-            Point p1 = new Point(-3, 4);
-            Point p2 = new Point(4, -2);
-            Point p3 = new Point(5, 4);
-
-            var fit = MathUtils.QuadraticFit(p1, p2, p3);
-            System.Diagnostics.Debug.WriteLine("x(t) = {0}t²+{1}t+{2}", fit.Item1.X, fit.Item1.Y, fit.Item1.Z);
-            System.Diagnostics.Debug.WriteLine("y(t) = {0}t²+{1}t+{2}", fit.Item2.X, fit.Item2.Y, fit.Item2.Z);
-
-
             strokes = new ObservableCollection<List<Point>>();
+            meshes = new ObservableCollection<Tuple<Point3D[], Vector3D[], int[]>>();
             matchingPoints = new ObservableCollection<List<Tuple<Point, Point>>>();
 
             toolbarCommands = new List<ToolbarCommand>
@@ -48,6 +41,7 @@ namespace SketchToCyl
                 new ToolbarCommand("Load curves", o => LoadFromCSV()),
                 new ToolbarCommand("Curves average filter", o => AvgFilter()),
                 new ToolbarCommand("Scatter matching points", o => FindMatchingPoints()),
+                new ToolbarCommand("Create cylinder", o => CreateCylinder()),
             };
 
             activeStroke = new List<Point>();
@@ -66,6 +60,11 @@ namespace SketchToCyl
         public ObservableCollection<List<Tuple<Point, Point>>> MatchingPoints
         {
             get { return matchingPoints; }
+        }
+
+        public ObservableCollection<Tuple<Point3D[], Vector3D[], int[]>> Meshes
+        {
+            get { return meshes; }
         }
 
         public ReadOnlyCollection<Point> ActiveStroke
@@ -109,6 +108,40 @@ namespace SketchToCyl
 
         #region Commands
 
+        [ContractVerification(true)]
+        private void CreateCylinder()
+        {
+            if (matchingPoints.Count > 0)
+            {
+                var matches = matchingPoints[0];
+                var skeletonWithoutLast =
+                    (from match in matches.SeqPairs()
+                     let curr = match.Item1
+                     let next = match.Item2
+                     let currMid = WpfUtils.Lerp(curr.Item1, curr.Item2, 0.5)
+                     let nextMid = WpfUtils.Lerp(next.Item1, next.Item2, 0.5)
+                     let normal = (nextMid - currMid).Normalized()
+                     let radius = 0.5 * (curr.Item1 - curr.Item2).Length
+                     select new SkeletonPoint
+                     {
+                         Position = new Point3D(currMid.X, currMid.Y, 0),
+                         Radius = radius,
+                         Normal = new Vector3D(normal.X, normal.Y, 0),
+                     }).ToArray();
+
+                var lastMatch = matches.Last();
+                var lastMid = WpfUtils.Lerp(lastMatch.Item1, lastMatch.Item2, 0.5);
+                var skeleton = skeletonWithoutLast.Append(new SkeletonPoint
+                    {
+                        Position = new Point3D(lastMid.X, lastMid.Y, 0),
+                        Radius = (lastMatch.Item1 - lastMatch.Item2).Length * 0.5,
+                        Normal = skeletonWithoutLast.Last().Normal,
+                    });
+
+                var mesh = SkeletonToMesh.SkeletonToCylinder(skeleton, 50);
+                meshes.Add(mesh);
+            }
+        }
 
         [ContractVerification(true)]
         private void FindMatchingPoints()

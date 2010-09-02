@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatchPoints.Wrapper", "Matc
 		{AF1FBA1B-4987-4C4C-A783-62E4BDB008C6} = {AF1FBA1B-4987-4C4C-A783-62E4BDB008C6}
 	EndProjectSection
 EndProject
+Project("{B5F14C34-DB22-470F-A887-3841FBC27640}") = "Artifacts", "Artifacts\Artifacts.artproj", "{89BFA257-F115-470D-B9F4-B927F34B966D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

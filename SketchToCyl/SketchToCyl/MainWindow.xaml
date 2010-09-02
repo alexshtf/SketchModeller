@@ -14,6 +14,14 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <GeometryModel3D x:Key="BaseGeometryModel">
+            <GeometryModel3D.Material>
+                <DiffuseMaterial Color="#80FFFFFF" Brush="White" />
+            </GeometryModel3D.Material>
+            <GeometryModel3D.BackMaterial>
+                <DiffuseMaterial Color="#80FFFFFF" Brush="MediumBlue" />
+            </GeometryModel3D.BackMaterial>
+        </GeometryModel3D>
     </Window.Resources>
     
     <DockPanel LastChildFill="True">
@@ -24,7 +32,7 @@
                 </DataTemplate>
             </ToolBar.ItemTemplate>
         </ToolBar>
-        <Grid Background="Black" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp">
+        <Grid Background="Black" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" x:Name="canvas">
             <Line Stroke="Gray" x:Name="pointSelection" />
             <!-- Strokes -->
             <ItemsControl ItemsSource="{Binding Strokes}" Style="{StaticResource CanvasItems}">
@@ -54,8 +62,32 @@
             
             <!-- Active strokes -->
             <Polyline Points="{Binding Path=ActiveStroke, Converter={StaticResource EnumerableToPointsCollection}}" Stroke="OrangeRed"  StrokeThickness="2"/>
-            
-            <Viewport3D />
+
+            <Viewport3D x:Name="viewport3d">
+                <Viewport3D.Camera>
+                    <OrthographicCamera Width="{Binding ElementName=canvas, Path=ActualWidth}"
+                                        Position="0,0,-1"
+                                        LookDirection="0,0,1"
+                                        NearPlaneDistance="0.1"
+                                        FarPlaneDistance="100"
+                                        UpDirection="0,1,0" />
+                </Viewport3D.Camera>
+                <Viewport3D.Children>
+                    <!-- Lights -->
+                    <ModelVisual3D x:Name="lights">
+                        <ModelVisual3D.Content>
+                            <Model3DGroup>
+                                <SpotLight Position="{Binding ElementName=camera, Path=Position}"
+                                   Direction="{Binding ElementName=camera, Path=LookDirection}"
+                                   Color="White"
+                                   InnerConeAngle="90"
+                                   OuterConeAngle="120"/>
+                                <AmbientLight Color="Gray"/>
+                            </Model3DGroup>
+                        </ModelVisual3D.Content>
+                    </ModelVisual3D> 
+                </Viewport3D.Children>
+            </Viewport3D>
         </Grid>
     </DockPanel>
 </Window>

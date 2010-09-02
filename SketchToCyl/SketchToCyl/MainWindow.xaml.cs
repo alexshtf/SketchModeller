@@ -13,6 +13,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using Utils;
+using System.Collections.Specialized;
+using System.Windows.Media.Media3D;
 
 namespace SketchToCyl
 {
@@ -25,14 +27,44 @@ namespace SketchToCyl
 
         private MainWindowViewModel viewModel;
         private bool isStroking;
- 
+
         public MainWindow()
         {
             InitializeComponent();
             viewModel = new MainWindowViewModel();
             viewModel.PromptSaveCurves += new EventHandler<PromptFileEventArgs>(PromptSaveToCSV);
             viewModel.PromptLoadCurves += new EventHandler<PromptFileEventArgs>(PromptLoadCurves);
+            viewModel.Meshes.CollectionChanged += new NotifyCollectionChangedEventHandler(OnMeshesCollectionChanged);
             DataContext = viewModel;
+        }
+
+        void OnMeshesCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                var modelPrototype = TryFindResource("BaseGeometryModel") as GeometryModel3D;
+                if (modelPrototype != null)
+                {
+                    var newItems = e.NewItems.OfType<Tuple<Point3D[], Vector3D[], int[]>>();
+                    foreach (var meshData in newItems)
+                    {
+                        var positions = meshData.Item1;
+                        var normals = meshData.Item2;
+                        var indices = meshData.Item3;
+
+                        var model = modelPrototype.Clone();
+                        model.Geometry = new MeshGeometry3D
+                        {
+                            Positions = new Point3DCollection(positions),
+                            Normals = new Vector3DCollection(normals),
+                            TriangleIndices = new Int32Collection(indices),
+                        };
+                        viewport3d.Children.Add(new ModelVisual3D { Content = model });
+                    }
+                }
+            }
+            else
+                throw new NotSupportedException();
         }
 
         void PromptLoadCurves(object sender, PromptFileEventArgs e)
