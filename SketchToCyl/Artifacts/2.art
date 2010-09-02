@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<artifact>
+<title>Use local PCA to construct the skeleton</title>
+<labels>
+<label>skeleton</label>
+</labels>
+<description>
+Start from one side between the curves. Connect the two first points of both
+curves as the first skeleton part. Then add more points from both curves until:<br />
+- The local principal component of the added points of one of the curves creates
+an angle larger than some value <br />
+or<br />
+- The distance from the previous skeleton part is larger than some value<br />
+or<br />
+- The angle between the skeleton parts is larger than some value.<br /><br />
+
+Then add points from the lower local-pca curve until the normal of the skeleton
+part aligns with the average of both local PCAs
+</description>
+</artifact>
