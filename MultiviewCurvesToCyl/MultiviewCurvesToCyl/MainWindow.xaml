@@ -1,0 +1,48 @@
+﻿<Window x:Class="MultiviewCurvesToCyl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:MultiviewCurvesToCyl"
+        Title="MainWindow" WindowState="Maximized">
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left part.. the 2D interface -->
+            <Grid Grid.Column="0" 
+                  MouseDown="OnSketchGridMouseDown"
+                  MouseUp="OnSketchGridMouseUp"
+                  MouseMove="OnSketchGridMouseMove"
+                  Background="White"
+                  ClipToBounds="True">
+                <Polyline Points="{Binding UnderConstructionCurve, Converter={StaticResource EnumerableToPointsCollection}}"
+                          Stroke="Red"
+                          StrokeThickness="2"/>
+                <ItemsControl ItemsSource="{Binding SketchCurvesViewModels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:SketchCurveView />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            
+            <GridSplitter ResizeDirection="Columns"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Right"
+                          Width="5"/>
+
+            <!-- Right part. The 3D interface-->
+            <Grid Grid.Column="1">
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>

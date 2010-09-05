@@ -36,3 +36,5 @@ using System.Windows.Markup;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: XmlnsDefinition("http://alex/xaml", "Utils.Converters")]
+[assembly: InternalsVisibleTo("Utils.Tests")]
+[assembly: InternalsVisibleTo("Utils.Explorables")]

@@ -83,6 +83,7 @@ namespace Utils
         /// <typeparam name="T">Type of elements in the enumeration</typeparam>
         /// <param name="toCheck">The enumeration to check</param>
         /// <returns><c>true</c> if and only if the enumeration <paramref name="toCheck"/> is empty.</returns>
+        [Pure]
         public static bool IsEmpty<T>(this IEnumerable<T> toCheck)
         {
             bool isEmpty = true;
@@ -165,6 +166,9 @@ namespace Utils
         /// <returns>An enumeration of structueres containing items from source with their index + <paramref name="offset"/></returns>
         public static IEnumerable<IndexedItem<T>> ZipIndex<T>(this IEnumerable<T> source, int offset)
         {
+            Contract.Requires(source != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IndexedItem<T>>>().Count() == source.Count());
+
             var count = source.Count();
             return 
                 from pair in source.Zip(SysEnumerable.Range(offset, count))
@@ -182,6 +186,11 @@ namespace Utils
         /// <returns>The resulting sequential pairs.</returns>
         public static IEnumerable<Tuple<T, T>> SeqPairs<T>(this IEnumerable<T> source)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(source.Count() > 1);
+
+            Contract.Ensures(Contract.Result<IEnumerable<Tuple<T, T>>>().Count() == source.Count() - 1);
+
             return source.Zip(source.Tail());
         }
 
@@ -193,6 +202,11 @@ namespace Utils
         /// <returns>The resulting sequential tripples.</returns>
         public static IEnumerable<Tuple<T, T, T>> SeqTripples<T>(this IEnumerable<T> source)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(source.Count() > 2);
+
+            Contract.Ensures(Contract.Result<IEnumerable<Tuple<T, T, T>>>().Count() == source.Count() - 2);
+
             var pairs = source.SeqPairs();
             var tripples = SysEnumerable.Zip(pairs, source.Skip(2), (pair, item) => Tuple.Create(pair.Item1, pair.Item2, item));
             return tripples;
@@ -207,13 +221,18 @@ namespace Utils
         /// <param name="itemValue">The function to calculate item value for each item.</param>
         /// <returns><c>x</c> from <paramref name="source"/> that minimizes itemValue(x)</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="source"/> is an empty enumeration.</exception>
-        public static T Minimizer<T, S>(this IEnumerable<T> source, Func<T, S> itemValue)
+        public static T Minimizer<T, S>(this IEnumerable<T> source, Converter<T, S> itemValue)
             where S: IComparable<S>
         {
-            if (source.GetEnumerator().MoveNext() == false) // we got an empty enumeration
-                throw new ArgumentException("Cannot get the minimizer of an empty enumeration");
+            Contract.Requires(source != null);
+            Contract.Requires(itemValue != null);
+            Contract.Requires(source.IsEmpty() == false);
 
-            var pairs = source.Zip(source.Select(itemValue));   // zip items with their values
+            Contract.Ensures(source.Contains(Contract.Result<T>())); // the source collection contains the minimizer
+            Contract.Ensures(Contract.ForAll(source, item => 
+                Comparer<S>.Default.Compare(itemValue(item), itemValue(Contract.Result<T>())) >= 0)); // all items are greater or equal to the minimizer
+
+            var pairs = source.Zip(source.Select(x => itemValue(x)));   // zip items with their values
             var minValue = pairs.Min(x => x.Item2);             // x.Item2 is itemValue(x). minValue will be the minimum
 
             // now we take the first item we find that has the minimum value.

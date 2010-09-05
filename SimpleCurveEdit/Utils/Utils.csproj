@@ -92,12 +92,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="CastUtils.cs" />
     <Compile Include="Converters\EnumerableToPointsCollection.cs" />
     <Compile Include="CsvReader.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Enumerable.cs" />
     <Compile Include="FreezableExtensions.cs" />
     <Compile Include="IndexedItem.cs" />
+    <Compile Include="ListExtensions.cs" />
+    <Compile Include="ListSlice.cs" />
     <Compile Include="MathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SOM.cs" />

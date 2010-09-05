@@ -1,0 +1,9 @@
+﻿<Application x:Class="MultiviewCurvesToCyl.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:alex="http://alex/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <alex:EnumerableToPointsCollection x:Key="EnumerableToPointsCollection"/>
+    </Application.Resources>
+</Application>
