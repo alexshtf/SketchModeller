@@ -17,6 +17,11 @@ namespace MultiviewCurvesToCyl
         private ReadOnlyCollection<Point> annotatedPoints;
         private StartEndAnnotation startEndAnnotation;
 
+        private readonly ObservableCollection<MenuCommandItem> startEndContextMenu;
+        private readonly ReadOnlyObservableCollection<MenuCommandItem> startEndContextMenuReadOnly;
+
+        private readonly ObservableCollection<MenuCommandItem> curveContextMenu;
+
         [ContractInvariantMethod]
         private void ObjectInvariants()
         {
@@ -37,6 +42,14 @@ namespace MultiviewCurvesToCyl
             endIndex = Curve.PolylinePoints.Count - 1;
 
             OnStartEndIndexChanged();
+
+            startEndContextMenu = new ObservableCollection<MenuCommandItem>
+            {
+                new MenuCommandItem(new DelegateCommand(o => FlipStartEnd()), "Flip start and end"),
+            };
+            startEndContextMenuReadOnly = new ReadOnlyObservableCollection<MenuCommandItem>(startEndContextMenu);
+
+            curveContextMenu = new ObservableCollection<MenuCommandItem>();
         }
 
         public SketchCurve Curve
@@ -94,6 +107,30 @@ namespace MultiviewCurvesToCyl
                 isSelected = value;
                 NotifyPropertyChanged("IsSelected");
             }
+        }
+
+        public ReadOnlyObservableCollection<MenuCommandItem> StartEndContextMenu
+        {
+            get { return startEndContextMenuReadOnly; }
+        }
+
+        public ObservableCollection<MenuCommandItem> CurveContextMenu
+        {
+            get { return curveContextMenu; }
+        }
+
+        public void FlipStartEnd()
+        {
+            var newStartIndex = endIndex;
+            var newEndIndex = startIndex;
+
+            startIndex = newStartIndex;
+            endIndex = newEndIndex;
+
+            NotifyPropertyChanged("StartIndex");
+            NotifyPropertyChanged("EndIndex");
+
+            OnStartEndIndexChanged();
         }
 
         #region change notification response

@@ -27,9 +27,23 @@ namespace MultiviewCurvesToCyl
         public MainWindow()
         {
             InitializeComponent();
-            mainViewModel = new MainViewModel();
+            mainViewModel = new MainViewModel(ChooseOpenFile, ChooseSaveFile);
             DataContext = mainViewModel;
         }
+
+        #region File choosing
+
+        private string ChooseOpenFile()
+        {
+            return null;  // TODO: Open file chooser here.
+        }
+
+        private string ChooseSaveFile()
+        {
+            return null; // TODO: Open file chooser here.
+        }
+
+        #endregion
 
         #region Sketching mouse events
 

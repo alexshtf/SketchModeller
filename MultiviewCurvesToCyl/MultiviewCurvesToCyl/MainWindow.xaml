@@ -4,7 +4,20 @@
         xmlns:local="clr-namespace:MultiviewCurvesToCyl"
         Title="MainWindow" WindowState="Maximized">
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top" />
+        <Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuItems}">
+            <Menu.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local:MenuCategoryItem}"
+                                          ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Title}" />
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type local:MenuCommandItem}">
+                    <TextBlock Text="{Binding Title}" />
+                </DataTemplate>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Command" Value="{Binding Command}" />
+                </Style>
+            </Menu.Resources>
+        </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />

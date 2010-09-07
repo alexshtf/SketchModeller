@@ -28,7 +28,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeThrowOnFailure>False</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
@@ -39,7 +39,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -82,6 +82,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
+    <Compile Include="Converters\ScaleConverter.cs" />
+    <Compile Include="DragBehavior.cs" />
+    <Compile Include="MenuCategoryItem.cs" />
+    <Compile Include="MenuCommandItem.cs" />
+    <Compile Include="BaseMenuViewModel.cs" />
+    <Compile Include="Persistency\Curve.cs" />
+    <Compile Include="Persistency\State.cs" />
     <Compile Include="SketchCurveView.xaml.cs">
       <DependentUpon>SketchCurveView.xaml</DependentUpon>
     </Compile>

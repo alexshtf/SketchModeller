@@ -50,6 +50,16 @@ namespace Utils
         /// </remarks>
         public static Tuple<Point, double, int> ProjectionOnCurve(this Point point, IEnumerable<Point> curve)
         {
+            Contract.Requires(curve != null);
+            Contract.Requires(curve.Count() >= 2);
+
+            Contract.Ensures(Contract.Result<Tuple<Point, double, int>>().Item2 >= 0); // distance is greater than zero
+            Contract.Ensures(Contract.Result<Tuple<Point, double, int>>().Item3 >= 0); // index is greater than zero
+            Contract.Ensures(Contract.Result<Tuple<Point, double, int>>().Item3 < curve.Count() - 1); // segment index is less than num of segments
+            // The projected point is closer to "point" than any other point on the curve.
+            Contract.Ensures(Contract.ForAll(curve, curvePoint => 
+                (curvePoint - point).Length >= Contract.Result<Tuple<Point, double, int>>().Item2));
+
             var count = curve.Count();
 
             var projectedPoints =
@@ -67,15 +77,36 @@ namespace Utils
 
         public static Point ProjectOnSegment(this Point pnt, Point segStart, Point segEnd)
         {
-            var u = pnt - segStart;
+            Contract.Ensures((pnt - Contract.Result<Point>()).LengthSquared <= (pnt - segStart).LengthSquared);
+            Contract.Ensures((pnt - Contract.Result<Point>()).LengthSquared <= (pnt - segEnd).LengthSquared);
+
             var v = segEnd - segStart;
+            if (v.LengthSquared <= double.Epsilon) // segment is of length almost zero. Therefore any point is valid.
+                return segStart;
+
+            var u = pnt - segStart;
             var t = (u * v) / (v * v);
+
             if (t < 0)           // to the "left" of segStart
                 return segStart;
             else if (t > 1)      // to the "right" of segEnd
                 return segEnd;
             else                 // between segStart and segEnd
-                return segStart + t * v;
+            {
+                // the point segStart + t * v is still considered a candidate because of a numerical error that can occur
+                // in the computation of "t". So we still need to choose the point with minimal distance to "pnt".
+                // We do it to ensure the contract above is correct - that is, we find the closest point to "pnt" on the segment.
+                var candidate = segStart + t * v;
+
+                var potentialResults = new Tuple<Point, double>[]
+                {
+                    Tuple.Create(candidate, (candidate - pnt).LengthSquared),
+                    Tuple.Create(segStart, (segStart - pnt).LengthSquared),
+                    Tuple.Create(segEnd, (segEnd - pnt).LengthSquared),
+                };
+
+                return potentialResults.Minimizer(x => x.Item2).Item1; 
+            }
         }
 
         public static double DistanceFromSegment(this Point pnt, Point segStart, Point segEnd)
