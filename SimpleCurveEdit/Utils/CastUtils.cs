@@ -8,7 +8,7 @@ namespace Utils
 {
     public static class CastUtils
     {
-        public static object DoWithClass<T>(this object o, Action<T> action)
+        public static DoWithClassHelper DoWithClass<T>(this object o, Action<T> action)
             where T : class
         {
             Contract.Requires(action != null);
@@ -17,10 +17,10 @@ namespace Utils
             if (concrete != null)
             {
                 action(concrete);
-                return null;
+                return new DoWithClassHelper(o, true);
             }
             else
-                return o;
+                return new DoWithClassHelper(o, false);
         }
 
         public static void DoWithStruct<T>(object o, Action<T> action)
@@ -32,6 +32,27 @@ namespace Utils
             {
                 T concrete = (T)o;
                 action(concrete);
+            }
+        }
+
+        public class DoWithClassHelper
+        {
+            private readonly object obj;
+            private readonly bool castSuccess;
+
+            internal DoWithClassHelper(object obj, bool castSuccess)
+            {
+                this.obj = obj;
+                this.castSuccess = castSuccess;
+            }
+
+            public DoWithClassHelper DoWithClass<T>(Action<T> action)
+                where T : class
+            {
+                if (!castSuccess)
+                    return obj.DoWithClass(action);
+                else
+                    return this;
             }
         }
     }
