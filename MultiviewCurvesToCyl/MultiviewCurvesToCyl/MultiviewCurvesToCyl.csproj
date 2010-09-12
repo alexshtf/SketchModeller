@@ -64,6 +64,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -83,12 +84,17 @@
     </ApplicationDefinition>
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
     <Compile Include="Converters\ScaleConverter.cs" />
-    <Compile Include="DragBehavior.cs" />
+    <Compile Include="MainViewModel.Persistence.cs" />
     <Compile Include="MenuCategoryItem.cs" />
     <Compile Include="MenuCommandItem.cs" />
     <Compile Include="BaseMenuViewModel.cs" />
-    <Compile Include="Persistency\Curve.cs" />
-    <Compile Include="Persistency\State.cs" />
+    <Compile Include="Persistence\BaseAnnotation.cs" />
+    <Compile Include="Persistence\Curve.cs" />
+    <Compile Include="Persistence\DepthAnnotation.cs" />
+    <Compile Include="Persistence\PersistenceService.cs" />
+    <Compile Include="Persistence\Point.cs" />
+    <Compile Include="Persistence\StartEndAnnotation.cs" />
+    <Compile Include="Persistence\State.cs" />
     <Compile Include="SketchCurveView.xaml.cs">
       <DependentUpon>SketchCurveView.xaml</DependentUpon>
     </Compile>

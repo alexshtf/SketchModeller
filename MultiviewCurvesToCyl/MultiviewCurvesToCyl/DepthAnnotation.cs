@@ -8,5 +8,6 @@ namespace MultiviewCurvesToCyl
     class DepthAnnotation : ICurveAnnotation
     {
         public double Depth { get; set; }
+        public int Index { get; set; }
     }
 }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
-namespace MultiviewCurvesToCyl.Persistency
+namespace MultiviewCurvesToCyl.Persistence
 {
-    [Serializable]
+    [DataContract]
     class State
     {
+        [DataMember]
         public Curve[] Curves { get; set; }
     }
 }

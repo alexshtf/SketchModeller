@@ -121,8 +121,11 @@ namespace MultiviewCurvesToCyl
 
         public void FlipStartEnd()
         {
-            var newStartIndex = endIndex;
-            var newEndIndex = startIndex;
+            SetStartEnd(newStartIndex: endIndex, newEndIndex: startIndex);
+        }
+
+        public void SetStartEnd(int newStartIndex, int newEndIndex)
+        {
 
             startIndex = newStartIndex;
             endIndex = newEndIndex;

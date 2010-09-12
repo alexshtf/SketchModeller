@@ -9,9 +9,11 @@ using System.Diagnostics.Contracts;
 
 namespace MultiviewCurvesToCyl
 {
-    class MainViewModel : BaseViewModel
+    partial class MainViewModel : BaseViewModel
     {
         private double MIN_CURVE_LENGTH = 20;
+
+        private readonly Persistence.PersistenceService persistenceService = new Persistence.PersistenceService();
 
         private readonly Func<string> chooseOpenFile;
         private readonly Func<string> chooseSaveFile;
@@ -47,12 +49,12 @@ namespace MultiviewCurvesToCyl
                 new MenuCategoryItem("File")
                 {
                     MenuCommandItem.Create("Clear", o => Clear()),
+                    MenuCommandItem.Create("Open ...", o => Open()),
                     MenuCommandItem.Create("Save", o => Save()),
                     MenuCommandItem.Create("Save as ...", o => SaveAs()),
-                    MenuCommandItem.Create("Open ...", o => Open()),
                     MenuCommandItem.Create("Exit", o => Exit()),
                 },
-                new MenuCategoryItem("Help")
+                new MenuCategoryItem("Edit")
                 {
 
                 },
@@ -63,30 +65,27 @@ namespace MultiviewCurvesToCyl
 
         public void Clear()
         {
+            Contract.Ensures(SketchCurvesViewModels.Count == 0);
+            Contract.Ensures(underConstructionCurve.Count == 0);
+            Contract.Ensures(lastSavedFile == null);
+
             underConstructionCurve = new List<Point>();
             NotifyUnderConstructionCurveChanged();
 
             SketchCurvesViewModels.Clear();
+            lastSavedFile = null;
         }
 
         public void Save()
         {
             var fileName = lastSavedFile == null ? chooseSaveFile() : lastSavedFile;
-            if (fileName != null) // we got a valid file name from the view
-            {
-                // TODO: Save a file
-                lastSavedFile = fileName;
-            }
+            SaveCore(fileName);
         }
 
         public void SaveAs()
         {
             var fileName = chooseSaveFile();
-            if (fileName != null)
-            {
-                // TODO: Save a file.
-                lastSavedFile = fileName;
-            }
+            SaveCore(fileName);
         }
 
         public void Open()
@@ -94,7 +93,8 @@ namespace MultiviewCurvesToCyl
             var fileName = chooseOpenFile();
             if (fileName != null)
             {
-                // TODO: Read stuff from a file.
+                var state = persistenceService.Load(fileName);
+                LoadPersistentState(state);
                 lastSavedFile = fileName;
             }
         }
@@ -173,6 +173,18 @@ namespace MultiviewCurvesToCyl
         {
             NotifyPropertyChanged("UnderConstructionCurve");
         }
+
+
+        private void SaveCore(string fileName)
+        {
+            if (fileName != null) // we got a valid file name from the view
+            {
+                var state = GetPersistentState();
+                persistenceService.Save(fileName, state);
+                lastSavedFile = fileName;
+            }
+        }
+
 
         #endregion
     }

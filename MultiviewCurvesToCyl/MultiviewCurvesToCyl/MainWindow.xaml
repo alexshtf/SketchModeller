@@ -30,7 +30,11 @@
                   MouseUp="OnSketchGridMouseUp"
                   MouseMove="OnSketchGridMouseMove"
                   Background="White"
-                  ClipToBounds="True">
+                  ClipToBounds="True"
+                  RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform ScaleY="-1" />
+                </Grid.RenderTransform>
                 <Polyline Points="{Binding UnderConstructionCurve, Converter={StaticResource EnumerableToPointsCollection}}"
                           Stroke="Red"
                           StrokeThickness="2"/>

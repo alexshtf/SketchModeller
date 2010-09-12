@@ -75,6 +75,13 @@ namespace Utils
             return projectedPoints.Minimizer(pair => pair.Item2); // Item2 is the distance
         }
 
+        /// <summary>
+        /// Projects a point on a segment.
+        /// </summary>
+        /// <param name="pnt">The point to project</param>
+        /// <param name="segStart">Starting segment point</param>
+        /// <param name="segEnd">Ending segment point</param>
+        /// <returns>The point on the segment that minimizes the distance to pnt.</returns>
         public static Point ProjectOnSegment(this Point pnt, Point segStart, Point segEnd)
         {
             Contract.Ensures((pnt - Contract.Result<Point>()).LengthSquared <= (pnt - segStart).LengthSquared);
@@ -109,11 +116,24 @@ namespace Utils
             }
         }
 
+        /// <summary>
+        /// Calculates the minimum distance from a point to any point on a line segment.
+        /// </summary>
+        /// <param name="pnt">The point to calculate distance from.</param>
+        /// <param name="segStart">The starting segment point</param>
+        /// <param name="segEnd">Ending segment point.</param>
+        /// <returns>The minimum distance between <paramref name="point"/> and any point on the segment between
+        /// <paramref name="segStart"/> and <paramref name="segEnd"/>.</returns>
         public static double DistanceFromSegment(this Point pnt, Point segStart, Point segEnd)
         {
             return (pnt - pnt.ProjectOnSegment(segStart, segEnd)).Length;
         }
 
+        /// <summary>
+        /// Gets the viewport that the specified <see cref="Visual3D"/> object is displayed in.
+        /// </summary>
+        /// <param name="visual3d"></param>
+        /// <returns></returns>
         public static Viewport3D GetViewport(this Visual3D visual3d)
         {
             var path = VisualPathUp(visual3d);

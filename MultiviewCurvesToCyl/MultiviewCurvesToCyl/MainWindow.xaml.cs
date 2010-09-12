@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using Utils;
+using Microsoft.Win32;
 
 namespace MultiviewCurvesToCyl
 {
@@ -21,6 +22,8 @@ namespace MultiviewCurvesToCyl
     /// </summary>
     public partial class MainWindow : Window
     {
+        private OpenFileDialog openFileDialog;
+        private SaveFileDialog saveFileDialog;
         private MainViewModel mainViewModel;
         private bool isConstructingCurve;
 
@@ -29,18 +32,31 @@ namespace MultiviewCurvesToCyl
             InitializeComponent();
             mainViewModel = new MainViewModel(ChooseOpenFile, ChooseSaveFile);
             DataContext = mainViewModel;
+
+            openFileDialog = new OpenFileDialog();
+            saveFileDialog = new SaveFileDialog();
+
+            openFileDialog.DefaultExt = saveFileDialog.DefaultExt = "xml";
         }
 
         #region File choosing
 
         private string ChooseOpenFile()
         {
-            return null;  // TODO: Open file chooser here.
+            var result = openFileDialog.ShowDialog();
+            if (result.HasValue && result.Value == true)
+                return openFileDialog.FileName;
+            else
+                return null;  
         }
 
         private string ChooseSaveFile()
         {
-            return null; // TODO: Open file chooser here.
+            var result = saveFileDialog.ShowDialog();
+            if (result.HasValue && result.Value == true)
+                return saveFileDialog.FileName;
+            else
+                return null;
         }
 
         #endregion
