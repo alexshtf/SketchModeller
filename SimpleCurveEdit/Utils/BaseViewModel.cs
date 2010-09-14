@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace Utils
 {
@@ -14,6 +15,11 @@ namespace Utils
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected void NotifyPropertyChanged<TProperty>(Expression<Func<TProperty>> expression)
+        {
+            NotifyPropertyChanged(expression.GetMemberInfo().Name);
         }
     }
 }

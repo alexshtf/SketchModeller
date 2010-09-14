@@ -1,0 +1,123 @@
+﻿<UserControl x:Class="MultiviewCurvesToCyl.NewCylinderView2D"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MultiviewCurvesToCyl"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style TargetType="Thumb" x:Key="RotateHandle">
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Ellipse Width="{TemplateBinding ActualWidth}"
+                                 Height="{TemplateBinding ActualHeight}"
+                                 Stroke="{TemplateBinding Foreground}"
+                                 Fill="{TemplateBinding Background}">
+                            <Ellipse.RenderTransformOrigin>
+                                <Point X="0.5" Y="0.5" />
+                            </Ellipse.RenderTransformOrigin>
+                            <Ellipse.RenderTransform>
+                                <ScaleTransform ScaleX="3" ScaleY="3"/>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Thumb" x:Key="ResizeHandle">
+            <Setter Property="Background" Value="Blue" />
+            <Setter Property="Cursor" Value="Cross" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Width="{TemplateBinding ActualWidth}"
+                                   Height="{TemplateBinding ActualHeight}"
+                                   Fill="{TemplateBinding Background}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Thumb" x:Key="MoveHandle">
+            <Setter Property="Background" Value="Green" />
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Cursor" Value="SizeAll" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Width="{TemplateBinding ActualWidth}"
+                                   Height="{TemplateBinding ActualHeight}"
+                                   Fill="{TemplateBinding Background}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    
+    <Canvas>
+        <Grid x:Name="container"
+              Canvas.Left="{Binding Center.X}"
+              Canvas.Top="{Binding Center.Y}"
+              Width="{Binding Length}"
+              Height="{Binding Radius}">
+            <Grid.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform>
+                        <TranslateTransform.X>
+                            <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Grid}"
+                                     Path="ActualWidth"
+                                     Converter="{StaticResource ScaleConverter}"
+                                     ConverterParameter="-0.5" />
+                        </TranslateTransform.X>
+                        <TranslateTransform.Y>
+                            <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Grid}"
+                                     Path="ActualHeight"
+                                     Converter="{StaticResource ScaleConverter}"
+                                     ConverterParameter="-0.5" />
+                        </TranslateTransform.Y>
+                    </TranslateTransform>
+                    <RotateTransform Angle="{Binding Path=Orientation, Converter={x:Static local:CylinderOrientationToDegreesConverter.Instance}}" />
+                </TransformGroup>
+            </Grid.RenderTransform>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="3" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="3" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Move handle, in the middle of the grid -->
+            <Thumb Grid.Row="1" Grid.Column="1" Style="{StaticResource MoveHandle}" DragDelta="MoveHandleDragDelta" />
+
+            <!-- Top resize handle -->
+            <Thumb Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource ResizeHandle}" DragDelta="TopDragDelta" />
+
+            <!-- Bottom resize handle -->
+            <Thumb Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource ResizeHandle}" DragDelta="BottomDragDelta"/>
+
+            <!-- Left resize handle -->
+            <Thumb Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Style="{StaticResource ResizeHandle}" DragDelta="LeftDragDelta"/>
+
+            <!-- Right resize handle -->
+            <Thumb Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Style="{StaticResource ResizeHandle}" DragDelta="RightDragDelta" />
+
+            <!-- Four rotate handles -->
+            <Thumb Grid.Row="0" Grid.Column="0" Style="{StaticResource RotateHandle}" DragDelta="RotateDragDelta" />
+            <Thumb Grid.Row="0" Grid.Column="2" Style="{StaticResource RotateHandle}" DragDelta="RotateDragDelta" />
+            <Thumb Grid.Row="2" Grid.Column="0" Style="{StaticResource RotateHandle}" DragDelta="RotateDragDelta" />
+            <Thumb Grid.Row="2" Grid.Column="2" Style="{StaticResource RotateHandle}" DragDelta="RotateDragDelta" />
+        </Grid>
+    </Canvas>
+</UserControl>

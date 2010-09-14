@@ -67,7 +67,7 @@ namespace MultiviewCurvesToCyl
             private set
             {
                 annotatedPoints = value;
-                NotifyPropertyChanged("AnnotatedPoints");
+                NotifyPropertyChanged(() => AnnotatedPoints);
             }
         }
 
@@ -80,7 +80,7 @@ namespace MultiviewCurvesToCyl
                 Contract.Requires(value < Curve.PolylinePoints.Count);
 
                 startIndex = value;
-                NotifyPropertyChanged("StartIndex");
+                NotifyPropertyChanged(() => StartIndex);
                 OnStartEndIndexChanged();
             }
         }
@@ -94,7 +94,7 @@ namespace MultiviewCurvesToCyl
                 Contract.Requires(value < Curve.PolylinePoints.Count);
 
                 endIndex = value;
-                NotifyPropertyChanged("EndIndex");
+                NotifyPropertyChanged(() => EndIndex);
                 OnStartEndIndexChanged();
             }
         }
@@ -105,7 +105,7 @@ namespace MultiviewCurvesToCyl
             set
             {
                 isSelected = value;
-                NotifyPropertyChanged("IsSelected");
+                NotifyPropertyChanged(() => IsSelected);
             }
         }
 
@@ -130,8 +130,8 @@ namespace MultiviewCurvesToCyl
             startIndex = newStartIndex;
             endIndex = newEndIndex;
 
-            NotifyPropertyChanged("StartIndex");
-            NotifyPropertyChanged("EndIndex");
+            NotifyPropertyChanged(() => StartIndex);
+            NotifyPropertyChanged(() => EndIndex);
 
             OnStartEndIndexChanged();
         }

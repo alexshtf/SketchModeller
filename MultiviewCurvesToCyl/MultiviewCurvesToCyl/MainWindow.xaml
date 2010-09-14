@@ -38,17 +38,28 @@
                 <Polyline Points="{Binding UnderConstructionCurve, Converter={StaticResource EnumerableToPointsCollection}}"
                           Stroke="Red"
                           StrokeThickness="2"/>
-                <ItemsControl ItemsSource="{Binding SketchCurvesViewModels}">
+                <ItemsControl x:Name="items2d">
+                    <ItemsControl.Resources>
+                        <DataTemplate DataType="{x:Type local:SketchCurveViewModel}">
+                            <local:SketchCurveView />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:NewCylinderViewModel}">
+                            <local:NewCylinderView2D />
+                        </DataTemplate>
+                        <CollectionViewSource x:Key="SketchCurvesViewModels" Source="{Binding SketchCurvesViewModels}" />
+                        <CollectionViewSource x:Key="NewCylinderViewModels" Source="{Binding NewCylinderViewModels}" />
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer Collection="{Binding Source={StaticResource SketchCurvesViewModels}}" />
+                            <CollectionContainer Collection="{Binding Source={StaticResource NewCylinderViewModels}}" />
+                        </CompositeCollection>
+                    </ItemsControl.ItemsSource>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <local:SketchCurveView />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
             

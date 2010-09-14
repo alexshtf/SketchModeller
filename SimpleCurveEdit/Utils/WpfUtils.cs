@@ -12,6 +12,28 @@ namespace Utils
 {
     public static class WpfUtils
     {
+        public static Vector IgnoreZ(this Vector3D p)
+        {
+            return new Vector(p.X, p.Y);
+        }
+
+        /// <summary>
+        /// Checks wether the specified point has finite coordinates.
+        /// </summary>
+        /// <param name="p">The point to be checked.</param>
+        /// <returns><c>true</c> if and only if the point <paramref name="p"/>'s coordinates are finite values.</returns>
+        [Pure]
+        public static bool IsFinite(this Point3D p)
+        {
+            return
+                !double.IsNaN(p.X) &&
+                !double.IsNaN(p.Y) &&
+                !double.IsNaN(p.Z) &&
+                !double.IsInfinity(p.X) &&
+                !double.IsInfinity(p.Y) &&
+                !double.IsInfinity(p.Z);
+        }
+
         /// <summary>
         /// Calculates linear interpolation between two points (1 - t) * p1 + t * p2
         /// </summary>
@@ -19,12 +41,14 @@ namespace Utils
         /// <param name="p2">Second point</param>
         /// <param name="t">Interpolation factor</param>
         /// <returns>The resulting interpolated point</returns>
+        [Pure]
         public static Point Lerp(Point p1, Point p2, double t)
         {
             var vec = t * (p2 - p1);
             return p1 + vec;
         }
 
+        [Pure]
         public static Point ToPoint(this string[] values)
         {
             Contract.Requires(values.Length >= 2);
@@ -48,6 +72,7 @@ namespace Utils
         /// as the segment index (we have no segments, so we cannot return a valid segment index). Otherwise, the method performs
         /// as expected.
         /// </remarks>
+        [Pure]
         public static Tuple<Point, double, int> ProjectionOnCurve(this Point point, IEnumerable<Point> curve)
         {
             Contract.Requires(curve != null);
@@ -82,6 +107,7 @@ namespace Utils
         /// <param name="segStart">Starting segment point</param>
         /// <param name="segEnd">Ending segment point</param>
         /// <returns>The point on the segment that minimizes the distance to pnt.</returns>
+        [Pure]
         public static Point ProjectOnSegment(this Point pnt, Point segStart, Point segEnd)
         {
             Contract.Ensures((pnt - Contract.Result<Point>()).LengthSquared <= (pnt - segStart).LengthSquared);
@@ -124,6 +150,7 @@ namespace Utils
         /// <param name="segEnd">Ending segment point.</param>
         /// <returns>The minimum distance between <paramref name="point"/> and any point on the segment between
         /// <paramref name="segStart"/> and <paramref name="segEnd"/>.</returns>
+        [Pure]
         public static double DistanceFromSegment(this Point pnt, Point segStart, Point segEnd)
         {
             return (pnt - pnt.ProjectOnSegment(segStart, segEnd)).Length;
@@ -167,6 +194,7 @@ namespace Utils
             }
         }
 
+        [Pure]
         public static double SquareDiff(IEnumerable<Point> first, IEnumerable<Point> second)
         {
             Contract.Requires(first != null);
@@ -177,11 +205,13 @@ namespace Utils
             return first.Zip(second).Sum(pair => (pair.Item1 - pair.Item2).LengthSquared);
         }
 
+        [Pure]
         public static Vector Perp(this Vector v)
         {
             return new Vector(v.Y, -v.Y);
         }
 
+        [Pure]
         public static Vector Normalized(this Vector v)
         {
             v.Normalize();

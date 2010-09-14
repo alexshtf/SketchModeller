@@ -83,11 +83,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
+    <Compile Include="Converters\Pos3DToPos2DConverter.cs" />
     <Compile Include="Converters\ScaleConverter.cs" />
     <Compile Include="MainViewModel.Persistence.cs" />
     <Compile Include="MenuCategoryItem.cs" />
     <Compile Include="MenuCommandItem.cs" />
     <Compile Include="BaseMenuViewModel.cs" />
+    <Compile Include="NewCylinderView2D.xaml.cs">
+      <DependentUpon>NewCylinderView2D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NewCylinderViewModel.cs" />
     <Compile Include="Persistence\BaseAnnotation.cs" />
     <Compile Include="Persistence\Curve.cs" />
     <Compile Include="Persistence\DepthAnnotation.cs" />
@@ -116,6 +121,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="NewCylinderView2D.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SketchCurveView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

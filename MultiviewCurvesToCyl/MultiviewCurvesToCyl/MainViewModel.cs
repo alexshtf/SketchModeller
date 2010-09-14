@@ -43,6 +43,7 @@ namespace MultiviewCurvesToCyl
 
             SketchCurvesViewModels = new ObservableCollection<SketchCurveViewModel>();
             underConstructionCurve = new List<Point>();
+            NewCylinderViewModels = new ObservableCollection<NewCylinderViewModel>();
 
             MenuItems = new ObservableCollection<BaseMenuViewModel>
             {
@@ -56,7 +57,7 @@ namespace MultiviewCurvesToCyl
                 },
                 new MenuCategoryItem("Edit")
                 {
-
+                    MenuCommandItem.Create("New cylinder", o => NewCylinder()),
                 },
             };
         }
@@ -104,6 +105,11 @@ namespace MultiviewCurvesToCyl
             Application.Current.Shutdown();
         }
 
+        public void NewCylinder()
+        {
+            NewCylinderViewModels.Add(new NewCylinderViewModel());
+        }
+
         #endregion
 
         #region Public properties and methods
@@ -114,6 +120,11 @@ namespace MultiviewCurvesToCyl
         /// A collection of view models for all the sketch curves.
         /// </summary>
         public ObservableCollection<SketchCurveViewModel> SketchCurvesViewModels { get; private set; }
+
+        /// <summary>
+        /// A collection of view models for all new (non-snapped) cylinders
+        /// </summary>
+        public ObservableCollection<NewCylinderViewModel> NewCylinderViewModels { get; private set; }
 
         public ReadOnlyCollection<Point> UnderConstructionCurve
         {
@@ -171,7 +182,7 @@ namespace MultiviewCurvesToCyl
 
         private void NotifyUnderConstructionCurveChanged()
         {
-            NotifyPropertyChanged("UnderConstructionCurve");
+            NotifyPropertyChanged(() => UnderConstructionCurve);
         }
 
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
 using System.Windows;
+using System.Diagnostics.Contracts;
 
 namespace Utils
 {
@@ -16,6 +17,7 @@ namespace Utils
         /// <param name="p2">Second point</param>
         /// <param name="p3">Third point</param>
         /// <returns>The estimated curvature of <paramref name="p2"/> on the curve.</returns>
+        [Pure]
         public static double QuadraticCurvatureEstimate(Point p1, Point p2, Point p3)
         {
             var curveFit = QuadraticFit(p1, p2, p3);
@@ -43,6 +45,7 @@ namespace Utils
         /// This function estimates the parameters a, b, c, d, e, f such that C(-1) = p1, C(0) = p2, C(1) = p3. It returns
         /// a tuple of two vectors. The first vector contains (a, b, c) and the second contains (d, e, f).
         /// </remarks>
+        [Pure]
         public static Tuple<Vector3D, Vector3D> QuadraticFit(Point p1, Point p2, Point p3)
         {
             var x1 = p1.X; var y1 = p1.Y;

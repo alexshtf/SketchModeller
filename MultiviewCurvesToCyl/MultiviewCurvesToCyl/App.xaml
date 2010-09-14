@@ -9,6 +9,7 @@
         <!-- Converters -->
         <alex:EnumerableToPointsCollection x:Key="EnumerableToPointsCollection"/>
         <conv:ScaleConverter x:Key="ScaleConverter"/>
+        <conv:Pos3DToPos2DConverter x:Key="Pos3DToPos2DConverter"/>
         
         <Style x:Key="MenuCommandItems" TargetType="ContextMenu" BasedOn="{StaticResource {x:Type ContextMenu}}">
             <Style.Resources>

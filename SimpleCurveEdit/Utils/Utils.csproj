@@ -97,11 +97,14 @@
     <Compile Include="CsvReader.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Enumerable.cs" />
+    <Compile Include="ExpressionHelper.cs" />
     <Compile Include="FreezableExtensions.cs" />
     <Compile Include="IndexedItem.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="ListSlice.cs" />
     <Compile Include="MathUtils.cs" />
+    <Compile Include="MathUtils3D.cs" />
+    <Compile Include="Plane3D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SOM.cs" />
     <Compile Include="WpfUtils.cs" />
