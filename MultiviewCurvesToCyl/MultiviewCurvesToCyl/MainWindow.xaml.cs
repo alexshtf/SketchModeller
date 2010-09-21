@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
 using Utils;
 using Microsoft.Win32;
@@ -67,7 +56,7 @@ namespace MultiviewCurvesToCyl
         {
             if (e.ChangedButton == MouseButton.Left && !isConstructingCurve) // start sketching. capture mouse.
             {
-                CastUtils.DoWithClass<IInputElement>(sender, senderInputElement =>
+                CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
                     {
                         isConstructingCurve = true;
 
@@ -82,7 +71,7 @@ namespace MultiviewCurvesToCyl
             }
             else if (e.ChangedButton == MouseButton.Right && isConstructingCurve)
             {
-                CastUtils.DoWithClass<IInputElement>(sender, senderInputElement =>
+                CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
                     {
                         senderInputElement.ReleaseMouseCapture();
                         mainViewModel.DiscardUnderConstructionCurve();
@@ -97,7 +86,7 @@ namespace MultiviewCurvesToCyl
         {
             if (e.ChangedButton == MouseButton.Left && isConstructingCurve)
             {
-                CastUtils.DoWithClass<IInputElement>(sender, senderInputElement =>
+                CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
                     {
                         senderInputElement.ReleaseMouseCapture();
                         mainViewModel.CommitUnderConstructionCurve();
@@ -112,7 +101,7 @@ namespace MultiviewCurvesToCyl
         {
             if (isConstructingCurve)
             {
-                CastUtils.DoWithClass<IInputElement>(sender, senderInputElement =>
+                CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
                     {
                         mainViewModel.AddUnderConstructionPoint(e.GetPosition(senderInputElement));
                     });

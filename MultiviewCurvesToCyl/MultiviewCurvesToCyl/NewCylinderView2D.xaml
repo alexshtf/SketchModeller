@@ -59,7 +59,9 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    
+    <UserControl.ContextMenu>
+        <ContextMenu Style="{StaticResource EditorObjectContextMenu}" />
+    </UserControl.ContextMenu>
     
     <Canvas>
         <Grid x:Name="container"

@@ -54,7 +54,7 @@ namespace MultiviewCurvesToCyl
             foreach (var annotation in curveViewModel.Curve.Annotations)
             {
                 annotation
-                    .DoWithClass<DepthAnnotation>(depthAnnotation =>
+                    .MatchClass<DepthAnnotation>(depthAnnotation =>
                     {
                         annotations.Add(new PDepthAnnotation
                         {

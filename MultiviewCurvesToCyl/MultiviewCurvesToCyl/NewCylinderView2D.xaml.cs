@@ -50,6 +50,9 @@ namespace MultiviewCurvesToCyl
     /// </summary>
     public partial class NewCylinderView2D : UserControl
     {
+        private const double MIN_LENGTH = 5;
+        private const double MIN_RADIUS = 5;
+
         public NewCylinderView2D()
         {
             InitializeComponent();
@@ -70,27 +73,27 @@ namespace MultiviewCurvesToCyl
 
         private void TopDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ViewModel.Radius = Math.Max(0, ViewModel.Radius - e.VerticalChange / 2);
+            ViewModel.Radius = Math.Max(MIN_RADIUS, ViewModel.Radius - e.VerticalChange / 2);
         }
 
         private void BottomDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ViewModel.Radius = Math.Max(0, ViewModel.Radius + e.VerticalChange / 2);
+            ViewModel.Radius = Math.Max(MIN_RADIUS, ViewModel.Radius + e.VerticalChange / 2);
         }
 
         private void LeftDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ViewModel.Length = Math.Max(0, ViewModel.Length - e.HorizontalChange / 2);
+            ViewModel.Length = Math.Max(MIN_LENGTH, ViewModel.Length - e.HorizontalChange / 2);
         }
 
         private void RightDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ViewModel.Length = Math.Max(0, ViewModel.Length + e.HorizontalChange / 2);
+            ViewModel.Length = Math.Max(MIN_LENGTH, ViewModel.Length + e.HorizontalChange / 2);
         }
 
         private void RotateDragDelta(object sender, DragDeltaEventArgs e)
         {
-            sender.DoWithClass<FrameworkElement>(handle =>
+            sender.MatchClass<FrameworkElement>(handle =>
             {
                 var origin = default(Point);
                 var handlePos = handle.TranslatePoint(new Point(), container);

@@ -44,6 +44,7 @@ namespace MultiviewCurvesToCyl
             SketchCurvesViewModels = new ObservableCollection<SketchCurveViewModel>();
             underConstructionCurve = new List<Point>();
             NewCylinderViewModels = new ObservableCollection<NewCylinderViewModel>();
+            SnappedCylinderViewModels = new ObservableCollection<SnappedCylinderViewModel>();
 
             MenuItems = new ObservableCollection<BaseMenuViewModel>
             {
@@ -107,7 +108,34 @@ namespace MultiviewCurvesToCyl
 
         public void NewCylinder()
         {
-            NewCylinderViewModels.Add(new NewCylinderViewModel());
+            var newCylinderViewModel = CreateNewCylinderViewModel();
+            NewCylinderViewModels.Add(newCylinderViewModel);
+        }
+
+        private NewCylinderViewModel CreateNewCylinderViewModel()
+        {
+            var result = new NewCylinderViewModel();
+            result.ContextMenu.Add(MenuCommandItem.Create("Snap", o => SnapCylinder(result)));
+            return result;
+        }
+
+        #endregion
+
+        #region New cylinder commands
+
+        public void SnapCylinder(NewCylinderViewModel toSnap)
+        {
+            NewCylinderViewModels.Remove(toSnap);
+
+            var snappedCylinderViewModel = new SnappedCylinderViewModel();
+            snappedCylinderViewModel.Initialize(
+                toSnap.Radius, 
+                toSnap.Length, 
+                toSnap.Center, 
+                toSnap.Orientation, 
+                MathUtils3D.UnitZ);
+
+            SnappedCylinderViewModels.Add(snappedCylinderViewModel);
         }
 
         #endregion
@@ -125,6 +153,11 @@ namespace MultiviewCurvesToCyl
         /// A collection of view models for all new (non-snapped) cylinders
         /// </summary>
         public ObservableCollection<NewCylinderViewModel> NewCylinderViewModels { get; private set; }
+
+        /// <summary>
+        /// A collection of view models for all snapped cylinders.
+        /// </summary>
+        public ObservableCollection<SnappedCylinderViewModel> SnappedCylinderViewModels { get; private set; }
 
         public ReadOnlyCollection<Point> UnderConstructionCurve
         {

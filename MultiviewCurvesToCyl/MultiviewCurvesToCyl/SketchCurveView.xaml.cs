@@ -39,7 +39,7 @@ namespace MultiviewCurvesToCyl
 
         private void OnStartDragDelta(object sender, DragDeltaEventArgs e)
         {
-            CastUtils.DoWithClass<Thumb>(sender, thumb =>
+            CastUtils.MatchClass<Thumb>(sender, thumb =>
                 {
                     var pointIndex = PointIndexFromThumbDrag(e, thumb);
                     ViewModel.StartIndex = pointIndex;
@@ -48,7 +48,7 @@ namespace MultiviewCurvesToCyl
 
         private void OnEndDragDelta(object sender, DragDeltaEventArgs e)
         {
-            CastUtils.DoWithClass<Thumb>(sender, thumb =>
+            CastUtils.MatchClass<Thumb>(sender, thumb =>
                 {
                     var pointIndex = PointIndexFromThumbDrag(e, thumb);
                     ViewModel.EndIndex = pointIndex;
