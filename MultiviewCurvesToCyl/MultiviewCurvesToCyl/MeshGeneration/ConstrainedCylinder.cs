@@ -19,8 +19,11 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         private const double LENGTH_LINKS_FACTOR = 0.1;
         private const int MIN_LINKS = 2;
 
-        private const double RADIUS_SLICES_FACTOR = 0.1;
+        private const double RADIUS_SLICES_FACTOR = 0.5;
         private const int MIN_SLICES = 10;
+
+        private readonly HashSet<int> firstCircleIndices;
+        private readonly HashSet<int> lastCircleIndices;
 
         public ConstrainedCylinder(double radius, double length, Point3D center, Vector3D orientation, Vector3D viewDirection)
         {
@@ -33,6 +36,9 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             Contract.Ensures(Normals.Count > 0);
             Contract.Ensures(TriangleIndices.Count > 0);
             Contract.Ensures(ConstrainedPositionIndices.Count > 0);
+
+            FirstCircleIndices = new ReadOnlySet<int>(firstCircleIndices = new HashSet<int>());
+            LastCircleIndices = new ReadOnlySet<int>(lastCircleIndices = new HashSet<int>());
 
             /*
              * We will generate the cylinder by gluing together circles around many centers. Each such center is referred to as
@@ -66,7 +72,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             for (int i = 0; i < linksCount; ++i)
             {
                 var circleCenterDistance = length * i / (double)(linksCount - 1);
-                var circleCenter = center + circleCenterDistance * orientation;
+                var circleCenter = start + circleCenterDistance * orientation;
 
                 var circle = GenerateCircle(circleCenter, u, v, radius, slicesCount);
                 var circleIndices = System.Linq.Enumerable.Range(Positions.Count, circle.Length).ToArray();
@@ -77,12 +83,19 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                 }
 
                 if (i == 0 || i == linksCount - 1) // first and last circles are always constrained
-                    ConstrainedPositionIndices.AddRange(circleIndices);
+                {
+                    if (i == 0) // first circle
+                        firstCircleIndices.AddRange(circleIndices);
+                    else // last circle
+                        lastCircleIndices.AddRange(circleIndices);
+
+                    constrainedPositionIndices.AddRange(circleIndices);
+                }
                 else // only the two half-circle start points are constrained
                 {
                     var c1 = circleIndices[0];
                     var c2 = circleIndices[1 + circleIndices.Length / 2];
-                    ConstrainedPositionIndices.AddMany(c1, c2);
+                    constrainedPositionIndices.AddMany(c1, c2);
                 }
 
                 if (i > 0) // starting at the second circle - we can add triangle indices
@@ -94,19 +107,22 @@ namespace MultiviewCurvesToCyl.MeshGeneration
 
                         // create indices of two triangles for the current quad
                         var t1 = Tuple.Create(
-                            prevCircleIndices[currIdx],
-                            circleIndices[currIdx],
-                            circleIndices[nextIdx]);
-                        var t2 = Tuple.Create(
-                            prevCircleIndices[currIdx],
                             circleIndices[nextIdx],
-                            prevCircleIndices[nextIdx]);
+                            prevCircleIndices[currIdx],
+                            circleIndices[currIdx]);
+                        var t2 = Tuple.Create(
+                            prevCircleIndices[nextIdx],
+                            prevCircleIndices[currIdx],
+                            circleIndices[nextIdx]);
 
                         TriangleIndices.AddMany(t1, t2);
                     }
                 }
             }
         }
+
+        public ReadOnlySet<int> FirstCircleIndices { get; private set; }
+        public ReadOnlySet<int> LastCircleIndices { get; private set; }
 
         private static PositionNormal[] GenerateCircle(Point3D center, Vector3D u, Vector3D v, double radius, int slicesCount)
         {
@@ -121,6 +137,8 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             Contract.Ensures(Contract.Result<PositionNormal[]>().Length == slicesCount); // we indeed produced the correct slices count
             Contract.Ensures(Contract.ForAll(Contract.Result<PositionNormal[]>(), pointNormal => 
                 Math.Abs(radius - (pointNormal.Position - center).Length) < EPSILON)); // all points on the circle are indeed radius-far from the center.
+            Contract.Ensures(Contract.ForAll(Contract.Result<PositionNormal[]>(), positionNormal =>
+                Math.Abs(positionNormal.Normal.LengthSquared - 1) < EPSILON)); // all normals are normalized
 
             var result = new PositionNormal[slicesCount];
             for (int i = 0; i < slicesCount; ++i)

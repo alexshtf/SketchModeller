@@ -26,7 +26,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             Contract.Requires(HasDuplicateTriangles(triangles) == false);
 
             this.triangles = triangles.ToList();
-            vertexCount = triangles.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3}).Max();
+            vertexCount = triangles.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3}).Max() + 1;
             vertexVertexNeighbors = GetVertexVertexNeighbors(vertexCount, triangles);
             vertexTriangleNeighbors = GetVertexTriangleNeighbors(vertexCount, triangles);
             edges = GetEdges(triangles);
@@ -80,13 +80,14 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         [Pure]
         public static bool IsValidTriangle(Tuple<int, int, int> triangle)
         {
-            return
-                triangle.Item1 > 0 &&
-                triangle.Item2 > 0 &&
-                triangle.Item3 > 0 &&
+            var result =
+                triangle.Item1 >= 0 &&
+                triangle.Item2 >= 0 &&
+                triangle.Item3 >= 0 &&
                 triangle.Item1 != triangle.Item2 &&
                 triangle.Item2 != triangle.Item3 &&
                 triangle.Item1 != triangle.Item3;
+            return result;
         }
 
         [Pure]

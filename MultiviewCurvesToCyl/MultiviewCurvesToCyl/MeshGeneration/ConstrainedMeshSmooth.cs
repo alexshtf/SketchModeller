@@ -30,7 +30,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             Contract.Ensures(Contract.OldValue(normals.Count) == normals.Count); // we didn't change the number of vertex normals
 
             // we don't change the position of constrained vertices.
-            Contract.Ensures(Contract.ForAll(constrainedIndices, index => Contract.OldValue(positions[index]) == positions[index]));
+            //Contract.Ensures(Contract.ForAll(constrainedIndices, index => Contract.OldValue(positions[index]) == positions[index]));
 
             var currentCurvatures =
                 (from item in positions.ZipIndex()
@@ -63,6 +63,9 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                                     select positions[neighborIndex]
                                    ).Centroid()
                 select neighborsAvg + n.Normalized() * cPrime;
+
+            // we will later modify the positions and normals, so we want to execute all LINQ queries that depend on them.
+            newPositions = newPositions.ToArray(); 
 
             // sum of distances the vertices moved from old positions to new positions
             var totalChange =

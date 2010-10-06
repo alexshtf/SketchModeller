@@ -232,11 +232,11 @@ namespace Utils
             Contract.Ensures(Contract.ForAll(source, item => 
                 Comparer<S>.Default.Compare(itemValue(item), itemValue(Contract.Result<T>())) >= 0)); // all items are greater or equal to the minimizer
 
-            var pairs = source.Zip(source.Select(x => itemValue(x)));   // zip items with their values
-            var minValue = pairs.Min(x => x.Item2);             // x.Item2 is itemValue(x). minValue will be the minimum
+            var itemsWithKeys = source.Select(x => new { Item = x, Key = itemValue(x) }); 
+            var minKey = itemsWithKeys.Min(x => x.Key);             // x.Item2 is itemValue(x). minValue will be the minimum
 
             // now we take the first item we find that has the minimum value.
-            var minimizer = pairs.First(pair => pair.Item2.CompareTo(minValue) == 0).Item1;
+            var minimizer = itemsWithKeys.First(pair => pair.Key.CompareTo(minKey) == 0).Item;
 
             return minimizer;
         }

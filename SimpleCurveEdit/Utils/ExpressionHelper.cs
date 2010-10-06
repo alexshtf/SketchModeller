@@ -7,6 +7,9 @@ using System.Linq.Expressions;
 
 namespace Utils
 {
+    /// <summary>
+    /// Static class with helper methods concerning expressions of type <see cref="Expression"/>
+    /// </summary>
     public static class ExpressionHelper
     {
         /// <summary>

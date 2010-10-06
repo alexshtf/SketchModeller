@@ -153,6 +153,8 @@ namespace Utils
         [Pure]
         public static double DistanceFromSegment(this Point pnt, Point segStart, Point segEnd)
         {
+            Contract.Ensures(Contract.Result<double>() >= 0);
+
             return (pnt - pnt.ProjectOnSegment(segStart, segEnd)).Length;
         }
 

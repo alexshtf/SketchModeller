@@ -47,13 +47,18 @@
                         <DataTemplate DataType="{x:Type local:NewCylinderViewModel}">
                             <local:NewCylinderView2D />
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:SnappedCylinderViewModel}">
+                            <local:SnappedCylinderView2D />
+                        </DataTemplate>
                         <CollectionViewSource x:Key="SketchCurvesViewModels" Source="{Binding SketchCurvesViewModels}" />
                         <CollectionViewSource x:Key="NewCylinderViewModels" Source="{Binding NewCylinderViewModels}" />
+                        <CollectionViewSource x:Key="SnappedCylinderViewModels" Source="{Binding SnappedCylinderViewModels}" />
                     </ItemsControl.Resources>
                     <ItemsControl.ItemsSource>
                         <CompositeCollection>
                             <CollectionContainer Collection="{Binding Source={StaticResource SketchCurvesViewModels}}" />
                             <CollectionContainer Collection="{Binding Source={StaticResource NewCylinderViewModels}}" />
+                            <CollectionContainer Collection="{Binding Source={StaticResource SnappedCylinderViewModels}}" />
                         </CompositeCollection>
                     </ItemsControl.ItemsSource>
                     <ItemsControl.ItemsPanel>
@@ -71,13 +76,15 @@
 
             <!-- Right part. The 3D interface-->
             <Grid Grid.Column="1">
-                <Viewport3D>
+                <Viewport3D x:Name="viewport3d" SizeChanged="OnViewport3DSizeChanged">
                     <Viewport3D.Camera>
                         <OrthographicCamera x:Name="camera"
-                                            Position="0,0,5"
-                                            LookDirection="0,0,-1"
+                                            Changed="OnCameraChanged"
+                                            Position="{Binding ViewPosition, Mode=TwoWay}"
+                                            LookDirection="{Binding ViewDirection, Mode=TwoWay}"
+                                            UpDirection="{Binding UpDirection, Mode=TwoWay}"
                                             NearPlaneDistance="0.1"
-                                            FarPlaneDistance="100"
+                                            FarPlaneDistance="10000"
                                             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Viewport3D}, Path=ActualWidth}">
                         </OrthographicCamera>
                     </Viewport3D.Camera>
@@ -86,9 +93,8 @@
                     <!-- Light that radiates from the camera -->
                     <ModelVisual3D>
                         <ModelVisual3D.Content>
-                            <SpotLight Direction="{Binding ElementName=camera, Path=LookDirection}"
-                                       Position="{Binding ElementName=camera, Path=Position}" 
-                                       Color="White" />
+                            <PointLight Position="{Binding ElementName=camera, Path=Position}"
+                                        Color="White" />
                         </ModelVisual3D.Content>
                     </ModelVisual3D>
 
@@ -112,6 +118,9 @@
                         <ModelVisual3D.Children>
                             <local:CloningModelVisual3D ItemsSource="{Binding NewCylinderViewModels}"
                                                         ModelFactory="{x:Static local:NewCylinderView3D.Instance}">
+                            </local:CloningModelVisual3D>
+                            <local:CloningModelVisual3D ItemsSource="{Binding SnappedCylinderViewModels}"
+                                                        ModelFactory="{x:Static local:SnappedCylinderView3D.Instance}">
                             </local:CloningModelVisual3D>
                         </ModelVisual3D.Children>
                     </ModelVisual3D>

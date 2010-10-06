@@ -87,6 +87,7 @@
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
     <Compile Include="Converters\Pos3DToPos2DConverter.cs" />
     <Compile Include="Converters\ScaleConverter.cs" />
+    <Compile Include="IHaveCameraInfo.cs" />
     <Compile Include="IModelFactory.cs" />
     <Compile Include="MainViewModel.Persistence.cs" />
     <Compile Include="MenuCategoryItem.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="MeshGeneration\ConstrainedCylinder.cs" />
     <Compile Include="MeshGeneration\ConstrainedMesh.cs" />
     <Compile Include="MeshGeneration\ConstrainedMeshSmooth.cs" />
+    <Compile Include="MeshGeneration\IndexedAttributeUpdateEventArgs.cs" />
     <Compile Include="MeshGeneration\MeshTopologyInfo.cs" />
     <Compile Include="MeshGeneration\SkeletonPoint.cs" />
     <Compile Include="MeshGeneration\SkeletonToMesh.cs" />
@@ -117,6 +119,10 @@
     <Compile Include="DepthAnnotation.cs" />
     <Compile Include="ICurveAnnotation.cs" />
     <Compile Include="SketchCurve.cs" />
+    <Compile Include="SnappedCylinderView2D.xaml.cs">
+      <DependentUpon>SnappedCylinderView2D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SnappedCylinderView3D.cs" />
     <Compile Include="SnappedCylinderViewModel.cs" />
     <Compile Include="StartEndAnnotation.cs" />
     <Page Include="MainWindow.xaml">
@@ -137,6 +143,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SketchCurveView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SnappedCylinderView2D.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

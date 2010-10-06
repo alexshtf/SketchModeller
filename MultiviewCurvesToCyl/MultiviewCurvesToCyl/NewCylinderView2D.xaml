@@ -68,7 +68,7 @@
               Canvas.Left="{Binding Center.X}"
               Canvas.Top="{Binding Center.Y}"
               Width="{Binding Length}"
-              Height="{Binding Radius}">
+              Height="{Binding Radius, Converter={StaticResource ScaleConverter}, ConverterParameter=2}">
             <Grid.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform>

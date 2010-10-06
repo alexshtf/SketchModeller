@@ -73,12 +73,12 @@ namespace MultiviewCurvesToCyl
 
         private void TopDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ViewModel.Radius = Math.Max(MIN_RADIUS, ViewModel.Radius - e.VerticalChange / 2);
+            ViewModel.Radius = Math.Max(MIN_RADIUS, ViewModel.Radius - e.VerticalChange / 4);
         }
 
         private void BottomDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ViewModel.Radius = Math.Max(MIN_RADIUS, ViewModel.Radius + e.VerticalChange / 2);
+            ViewModel.Radius = Math.Max(MIN_RADIUS, ViewModel.Radius + e.VerticalChange / 4);
         }
 
         private void LeftDragDelta(object sender, DragDeltaEventArgs e)

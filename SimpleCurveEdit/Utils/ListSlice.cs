@@ -15,6 +15,12 @@ namespace Utils
         private readonly int start;
         private readonly int end;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListSlice&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="start">The inclusive index of the first item in the list to view.</param>
+        /// <param name="end">The exclusive index of the last item in the list to view.</param>
         public ListSlice(IList<T> list, int start, int end)
         {
             this.list = list;

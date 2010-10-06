@@ -3,6 +3,8 @@ using System.Windows.Input;
 using System.Diagnostics;
 using Utils;
 using Microsoft.Win32;
+using System;
+using Petzold.Media3D;
 
 namespace MultiviewCurvesToCyl
 {
@@ -26,6 +28,7 @@ namespace MultiviewCurvesToCyl
             saveFileDialog = new SaveFileDialog();
 
             openFileDialog.DefaultExt = saveFileDialog.DefaultExt = "xml";
+            UpdateTotalMatrix();
         }
 
         #region File choosing
@@ -105,6 +108,34 @@ namespace MultiviewCurvesToCyl
                     {
                         mainViewModel.AddUnderConstructionPoint(e.GetPosition(senderInputElement));
                     });
+            }
+        }
+
+        #endregion
+
+        #region camera related
+
+        private void OnViewportInfoChanged(object sender, EventArgs e)
+        {
+            UpdateTotalMatrix();
+        }
+
+        private void OnViewport3DSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateTotalMatrix();
+        }
+
+        private void OnCameraChanged(object sender, EventArgs e)
+        {
+            UpdateTotalMatrix();
+        }
+
+        private void UpdateTotalMatrix()
+        {
+            if (mainViewModel != null)
+            {
+                var viewportInfo = new ViewportInfo { Viewport3D = viewport3d };
+                mainViewModel.TotalCameraMatrix = viewportInfo.Transform;
             }
         }
 

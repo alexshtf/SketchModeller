@@ -12,6 +12,9 @@ namespace Utils
     /// </summary>
     public class BaseViewModel : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>

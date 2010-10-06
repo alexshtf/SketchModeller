@@ -6,10 +6,11 @@ using Utils;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Diagnostics.Contracts;
+using System.Windows.Media.Media3D;
 
 namespace MultiviewCurvesToCyl
 {
-    partial class MainViewModel : BaseViewModel
+    partial class MainViewModel : BaseViewModel, IHaveCameraInfo
     {
         private double MIN_CURVE_LENGTH = 20;
 
@@ -26,6 +27,10 @@ namespace MultiviewCurvesToCyl
             Contract.Invariant(underConstructionCurve != null);
             Contract.Invariant(
                 Contract.ForAll(SketchCurvesViewModels, viewModel => CurveLength(viewModel.Curve.PolylinePoints) >= MIN_CURVE_LENGTH));
+
+            Contract.Invariant(ViewDirection.LengthSquared > 0);
+            Contract.Invariant(UpDirection.LengthSquared > 0);
+            Contract.Invariant(MathUtils3D.AreOrthogonal(ViewDirection, UpDirection));
         }
 
         /// <summary>
@@ -61,6 +66,10 @@ namespace MultiviewCurvesToCyl
                     MenuCommandItem.Create("New cylinder", o => NewCylinder()),
                 },
             };
+
+            ViewPosition = new Point3D(0, 0, 125);
+            ViewDirection = new Vector3D(0, 0, -1);
+            UpDirection = new Vector3D(0, 1, 0);
         }
 
         #region Menu commands
@@ -128,12 +137,15 @@ namespace MultiviewCurvesToCyl
             NewCylinderViewModels.Remove(toSnap);
 
             var snappedCylinderViewModel = new SnappedCylinderViewModel();
+
+            var cameraInfo = this as IHaveCameraInfo;
             snappedCylinderViewModel.Initialize(
                 toSnap.Radius, 
                 toSnap.Length, 
                 toSnap.Center, 
-                toSnap.Orientation, 
-                MathUtils3D.UnitZ);
+                toSnap.Orientation,
+                cameraInfo);
+            snappedCylinderViewModel.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
 
             SnappedCylinderViewModels.Add(snappedCylinderViewModel);
         }
@@ -141,6 +153,70 @@ namespace MultiviewCurvesToCyl
         #endregion
 
         #region Public properties and methods
+
+        #region ViewDirection property
+
+        private Vector3D viewDirection;
+
+        public Vector3D ViewDirection
+        {
+            get { return viewDirection; }
+            set
+            {
+                viewDirection = value;
+                NotifyPropertyChanged(() => ViewDirection);
+            }
+        }
+
+        #endregion
+
+        #region ViewPosition property
+
+        private Point3D viewPosition;
+
+        public Point3D ViewPosition
+        {
+            get { return viewPosition; }
+            set
+            {
+                viewPosition = value;
+                NotifyPropertyChanged(() => ViewPosition);
+            }
+        }
+
+        #endregion
+
+        #region UpDirection property
+
+        private Vector3D upDirection;
+
+        public Vector3D UpDirection
+        {
+            get { return upDirection; }
+            set
+            {
+                upDirection = value;
+                NotifyPropertyChanged(() => UpDirection);
+            }
+        }
+
+        #endregion
+
+        #region TotalCameraMatrix property
+
+        private Matrix3D totalCamerMatrix;
+
+        public Matrix3D TotalCameraMatrix
+        {
+            get { return totalCamerMatrix; }
+            set
+            {
+                totalCamerMatrix = value;
+                NotifyPropertyChanged(() => TotalCameraMatrix);
+            }
+        }
+
+        #endregion
 
         public ObservableCollection<BaseMenuViewModel> MenuItems { get; private set; }
 
@@ -217,7 +293,6 @@ namespace MultiviewCurvesToCyl
         {
             NotifyPropertyChanged(() => UnderConstructionCurve);
         }
-
 
         private void SaveCore(string fileName)
         {

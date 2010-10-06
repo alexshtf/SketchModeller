@@ -77,7 +77,7 @@ namespace MultiviewCurvesToCyl
                 {
                     Position = start + t * orientation,
                     Normal   = orientation,
-                    Radius   = 0.5,
+                    Radius   = 1,
                 };
             }
         }

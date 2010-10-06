@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="MultiviewCurvesToCyl.SnappedCylinderView2D"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <ItemsControl ItemsSource="{Binding CorrespondancesToShow}" >
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <DataTemplate.Resources>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Width" Value="3" />
+                        <Setter Property="Height" Value="3" />
+                        <Setter Property="Stroke" Value="Black" />
+                        <Setter Property="Fill" Value="Blue" />
+                        <Setter Property="Opacity" Value="0.5" />
+                    </Style>
+                </DataTemplate.Resources>
+                <Canvas>
+                    <!-- First point -->
+                    <Ellipse Canvas.Left="{Binding Item1.X}"
+                             Canvas.Top="{Binding Item1.Y}"/>
+                    
+                    <!-- Second point -->
+                    <Ellipse Canvas.Left="{Binding Item2.X}"
+                             Canvas.Top="{Binding Item2.Y}"/>
+                    
+                    <!-- Line between points -->
+                    <Line X1="{Binding Item1.X}"
+                          X2="{Binding Item2.X}"
+                          Y1="{Binding Item1.Y}"
+                          Y2="{Binding Item2.Y}"
+                          Stroke="Black"/>
+                </Canvas>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Canvas />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+    </ItemsControl>
+</UserControl>
