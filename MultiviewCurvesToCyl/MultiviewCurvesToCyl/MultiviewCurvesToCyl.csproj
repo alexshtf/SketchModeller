@@ -59,6 +59,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Meta.Numerics, Version=1.5.0.0, Culture=neutral, PublicKeyToken=67d25c65a6631347, processorArchitecture=MSIL" />
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
     </Reference>
@@ -89,6 +90,7 @@
     <Compile Include="Converters\ScaleConverter.cs" />
     <Compile Include="IHaveCameraInfo.cs" />
     <Compile Include="IModelFactory.cs" />
+    <Compile Include="LinearAlgebra.cs" />
     <Compile Include="MainViewModel.Persistence.cs" />
     <Compile Include="MenuCategoryItem.cs" />
     <Compile Include="MenuCommandItem.cs" />

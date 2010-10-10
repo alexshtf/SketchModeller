@@ -86,6 +86,13 @@
                                             NearPlaneDistance="0.1"
                                             FarPlaneDistance="10000"
                                             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Viewport3D}, Path=ActualWidth}">
+                            <OrthographicCamera.Transform>
+                                <RotateTransform3D>
+                                    <RotateTransform3D.Rotation>
+                                        <AxisAngleRotation3D Axis="0,1,0" Angle="-30" />
+                                    </RotateTransform3D.Rotation>
+                                </RotateTransform3D>
+                            </OrthographicCamera.Transform>
                         </OrthographicCamera>
                     </Viewport3D.Camera>
  

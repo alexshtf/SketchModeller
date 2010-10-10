@@ -55,8 +55,8 @@ namespace MultiviewCurvesToCyl
                 };
 
                 // register for event changes
-                viewModel.PositionUpdated += OnViewModelNormalUpdated;
-                viewModel.NormalUpdated += OnViewModelPositionUpdated;
+                viewModel.PositionUpdated += OnViewModelPositionUpdated;
+                viewModel.NormalUpdated += OnViewModelNormalUpdated;
             }
 
             private void OnViewModelPositionUpdated(object sender, IndexedAttributeUpdateEventArgs e)

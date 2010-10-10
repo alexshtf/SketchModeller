@@ -24,6 +24,8 @@ namespace MultiviewCurvesToCyl.MeshGeneration
 
         private readonly HashSet<int> firstCircleIndices;
         private readonly HashSet<int> lastCircleIndices;
+        private readonly HashSet<int> topFiberIndices;
+        private readonly HashSet<int> bottomFiberIndices;
 
         public ConstrainedCylinder(double radius, double length, Point3D center, Vector3D orientation, Vector3D viewDirection)
         {
@@ -39,6 +41,8 @@ namespace MultiviewCurvesToCyl.MeshGeneration
 
             FirstCircleIndices = new ReadOnlySet<int>(firstCircleIndices = new HashSet<int>());
             LastCircleIndices = new ReadOnlySet<int>(lastCircleIndices = new HashSet<int>());
+            TopFiberIndices = new ReadOnlySet<int>(topFiberIndices = new HashSet<int>());
+            BottomFiberIndices = new ReadOnlySet<int>(bottomFiberIndices = new HashSet<int>());
 
             /*
              * We will generate the cylinder by gluing together circles around many centers. Each such center is referred to as
@@ -82,20 +86,18 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                     Normals.Add(item.Normal);
                 }
 
-                if (i == 0 || i == linksCount - 1) // first and last circles are always constrained
-                {
-                    if (i == 0) // first circle
-                        firstCircleIndices.AddRange(circleIndices);
-                    else // last circle
-                        lastCircleIndices.AddRange(circleIndices);
 
-                    constrainedPositionIndices.AddRange(circleIndices);
-                }
-                else // only the two half-circle start points are constrained
+                // the two half-circle start points are constrained as top/bottom fiber points
+                var c1 = circleIndices[0];
+                var c2 = circleIndices[1 + circleIndices.Length / 2];
+                topFiberIndices.Add(c1);
+                bottomFiberIndices.Add(c2);
+
+                // first and last circles are always constrained
+                if (i == 0 || i == linksCount - 1) 
                 {
-                    var c1 = circleIndices[0];
-                    var c2 = circleIndices[1 + circleIndices.Length / 2];
-                    constrainedPositionIndices.AddMany(c1, c2);
+                    var setToAddTo = i == 0 ? firstCircleIndices : lastCircleIndices;
+                    setToAddTo.AddRange(circleIndices);
                 }
 
                 if (i > 0) // starting at the second circle - we can add triangle indices
@@ -119,8 +121,16 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                     }
                 }
             }
+
+            // we create the collection of all constrained indices
+            constrainedPositionIndices.UnionWith(TopFiberIndices);
+            constrainedPositionIndices.UnionWith(BottomFiberIndices);
+            constrainedPositionIndices.UnionWith(FirstCircleIndices);
+            constrainedPositionIndices.UnionWith(LastCircleIndices);
         }
 
+        public ReadOnlySet<int> TopFiberIndices { get; private set; }
+        public ReadOnlySet<int> BottomFiberIndices { get; private set; }
         public ReadOnlySet<int> FirstCircleIndices { get; private set; }
         public ReadOnlySet<int> LastCircleIndices { get; private set; }
 
