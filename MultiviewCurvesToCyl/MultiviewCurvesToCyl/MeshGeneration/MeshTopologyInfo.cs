@@ -26,7 +26,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             Contract.Requires(HasDuplicateTriangles(triangles) == false);
 
             this.triangles = triangles.ToList();
-            vertexCount = triangles.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3}).Max() + 1;
+            vertexCount = 1 + triangles.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3}).Max();
             vertexVertexNeighbors = GetVertexVertexNeighbors(vertexCount, triangles);
             vertexTriangleNeighbors = GetVertexTriangleNeighbors(vertexCount, triangles);
             edges = GetEdges(triangles);
@@ -47,6 +47,15 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         public Tuple<int, int, int> Triangles(int index)
         {
             return triangles[index];
+        }
+
+        public Tuple<int, int>[] GetEdges()
+        {
+            var result =
+                from edge in edges
+                select Tuple.Create(edge.FirstVertex, edge.SecondVertex);
+
+            return result.ToArray();
         }
 
         public IEnumerable<int> VertexNeighborsOfVertex(int vertexIndex)
@@ -202,6 +211,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var neighborhoodSets = new HashSet<int>[vertexCount];
             for (int i = 0; i < neighborhoodSets.Length; i++)
                 neighborhoodSets[i] = new HashSet<int>();
+
             foreach (var triple in triangleIndices)
             {
                 var i = triple.Item1;
@@ -209,9 +219,14 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                 var k = triple.Item3;
 
                 // this is a triangle - so every point is a neighbor of the other two
-                neighborhoodSets[i].Add(j); neighborhoodSets[i].Add(k);
-                neighborhoodSets[j].Add(i); neighborhoodSets[j].Add(k);
-                neighborhoodSets[k].Add(i); neighborhoodSets[k].Add(j);
+                neighborhoodSets[i].Add(j); 
+                neighborhoodSets[i].Add(k);
+                
+                neighborhoodSets[j].Add(i); 
+                neighborhoodSets[j].Add(k);
+                
+                neighborhoodSets[k].Add(i); 
+                neighborhoodSets[k].Add(j);
             }
 
             // we convert each set to an array to get the final adjacency info.

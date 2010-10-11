@@ -16,15 +16,13 @@ namespace AutoDiff
                 return new Constant(value);
         }
 
-        public static Term Sum(IEnumerable<Term> terms)
+        public static Sum Sum(IEnumerable<Term> terms)
         {
             Contract.Requires(terms.Count() > 1);
-            var v1 = terms.ElementAt(0);
-            var v2 = terms.ElementAt(1);
-            return Sum(v1, v2, terms.Skip(2).ToArray());
+            return new Sum(terms);
         }
 
-        public static Term Sum(Term v1, Term v2, params Term[] rest)
+        public static Sum Sum(Term v1, Term v2, params Term[] rest)
         {
             var result = new Sum(v1, v2, rest);
             return result;

@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiviewCurvesToCyl", "Mul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "..\SimpleCurveEdit\Utils\Utils.csproj", "{062A3D45-7340-484E-AA04-D2446D7D5203}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDiff", "..\AutoDiff\AutoDiff\AutoDiff.csproj", "{62551FD3-C21F-4E16-A7FC-6A017508809C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{062A3D45-7340-484E-AA04-D2446D7D5203}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{062A3D45-7340-484E-AA04-D2446D7D5203}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{062A3D45-7340-484E-AA04-D2446D7D5203}.Release|x86.ActiveCfg = Release|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{62551FD3-C21F-4E16-A7FC-6A017508809C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

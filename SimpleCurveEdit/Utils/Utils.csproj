@@ -91,6 +91,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayUtils.cs" />
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="BindingUtils.cs" />
     <Compile Include="CastUtils.cs" />

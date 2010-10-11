@@ -138,8 +138,8 @@ namespace MultiviewCurvesToCyl
                             CylinderData.Positions[item.Index], 
                             CylinderData.Positions[item.Index] - item.ErrorVector));
 
-                    // we store the indices already modified by the circles transformation
-                    var modifiedByCirclesTransform = new List<int>();
+                    // the positions that we now manually move and will constrain during the smooth step
+                    var manuallyMovedPoints = new List<Tuple<int, Point3D>>();
 
                     // we will calculate the transformation that is applied to both circles, and we will
                     // re-apply this transformation to the whole circle instead of just two points on this circle.
@@ -170,17 +170,21 @@ namespace MultiviewCurvesToCyl
 
                         // now we apply the transformation t to all points on a single circle
                         foreach (var index in singleCircleIndices.All)
-                            CylinderData.Positions[index] = CylinderData.Positions[index] * t;
+                            manuallyMovedPoints.Add(Tuple.Create(index, CylinderData.Positions[index] * t));
                     }
 
                     // move the vertices along the error vectors, in small steps of size STEP_SIZE.
                     var leftToUpdate = errorVectors.Where(x => !allMovedOnCircles.Contains(x.Index));
                     foreach (var item in leftToUpdate)
-                        CylinderData.Positions[item.Index] = CylinderData.Positions[item.Index] - STEP_SIZE * item.ErrorVector;
-                    
+                        manuallyMovedPoints.Add(Tuple.Create(item.Index, CylinderData.Positions[item.Index] - STEP_SIZE * item.ErrorVector));
+
+                    var inflation = new FibermeshInflation(CylinderData);
+                    inflation.SmoothStep(manuallyMovedPoints);
+
                     // perform smoothing step to spread the change to the whole mesh
-                    ConstrainedMeshSmooth.Step(CylinderData.Positions, CylinderData.Normals, topologyInfo, CylinderData.ConstrainedPositionIndices);
+                    //ConstrainedMeshSmooth.Step(CylinderData.Positions, CylinderData.Normals, topologyInfo, CylinderData.ConstrainedPositionIndices);
                     
+
                     // notify the user about position/normal updates on the whole mesh
                     for(int i = 0; i < CylinderData.Positions.Count; ++i)
                     {

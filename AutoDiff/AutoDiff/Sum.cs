@@ -16,6 +16,11 @@ namespace AutoDiff
             Terms = allTerms.ToList().AsReadOnly();
         }
 
+        internal Sum(IEnumerable<Term> terms)
+        {
+            Terms = terms.ToList().AsReadOnly();
+        }
+
         public ReadOnlyCollection<Term> Terms { get; private set; }
         
         public override void Accept(ITermVisitor visitor)

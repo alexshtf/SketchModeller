@@ -2,11 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics.Contracts;
 
 namespace AutoDiff
 {
     public static class Evaluator
     {
+        public static double Evaluate(Term term, Variable[] variables, double[] values)
+        {
+            Contract.Requires(variables.Length == values.Length);
+            Contract.Requires(Contract.ForAll(variables, variable => variable != null));
+
+            var dictionary = new Dictionary<Variable, double>();
+            for (int i = 0; i < variables.Length; ++i)
+                dictionary.Add(variables[i], values[i]);
+
+            return Evaluate(term, dictionary);
+        }
+
         public static double Evaluate(Term term, IDictionary<Variable, double> values)
         {
             var evaluator = new EvalVisitor(values);

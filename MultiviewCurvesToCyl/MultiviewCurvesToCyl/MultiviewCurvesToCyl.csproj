@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -48,6 +48,7 @@
     <CodeContractsBaseLineFile />
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -98,6 +99,7 @@
     <Compile Include="MeshGeneration\ConstrainedCylinder.cs" />
     <Compile Include="MeshGeneration\ConstrainedMesh.cs" />
     <Compile Include="MeshGeneration\ConstrainedMeshSmooth.cs" />
+    <Compile Include="MeshGeneration\FibermeshInflation.cs" />
     <Compile Include="MeshGeneration\IndexedAttributeUpdateEventArgs.cs" />
     <Compile Include="MeshGeneration\MeshTopologyInfo.cs" />
     <Compile Include="MeshGeneration\SkeletonPoint.cs" />
@@ -178,6 +180,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AutoDiff\AutoDiff\AutoDiff.csproj">
+      <Project>{62551FD3-C21F-4E16-A7FC-6A017508809C}</Project>
+      <Name>AutoDiff</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SimpleCurveEdit\Utils\Utils.csproj">
       <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>
       <Name>Utils</Name>
