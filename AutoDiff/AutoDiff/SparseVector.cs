@@ -89,7 +89,7 @@ namespace AutoDiff
 
         public static SparseVector Sum(SparseVector left, SparseVector right)
         {
-            var result = new SparseVector();
+            var result = new SparseVector(left.count + right.count);
 
             int i = 0;
             int j = 0;
@@ -100,19 +100,19 @@ namespace AutoDiff
 
                 if (leftIdx < rightIdx)
                 {
-                    result.AddTuple(left.nonZeros[i]);
+                    result.UnsafeAdd(left.nonZeros[i]);
                     ++i;                
                 }
                 else if (rightIdx < leftIdx)
                 {
-                    result.AddTuple(right.nonZeros[j]);
+                    result.UnsafeAdd(right.nonZeros[j]);
                     ++j;
                 }
                 else
                 {
                     var leftVal = left.nonZeros[i].Item2;
                     var rightVal = right.nonZeros[j].Item2;
-                    result.AddTuple(Tuple.Create(leftIdx, leftVal + rightVal));
+                    result.UnsafeAdd(Tuple.Create(leftIdx, leftVal + rightVal));
                     ++i;
                     ++j;
                 }
@@ -120,13 +120,13 @@ namespace AutoDiff
 
             while (i < left.count)
             {
-                result.AddTuple(left.nonZeros[i]);
+                result.UnsafeAdd(left.nonZeros[i]);
                 ++i;
             }
 
             while (j < right.count)
             {
-                result.AddTuple(right.nonZeros[j]);
+                result.UnsafeAdd(right.nonZeros[j]);
                 ++j;
             }
 
