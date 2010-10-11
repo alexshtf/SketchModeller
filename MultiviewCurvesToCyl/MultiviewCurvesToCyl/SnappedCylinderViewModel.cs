@@ -111,7 +111,9 @@ namespace MultiviewCurvesToCyl
             var allMovedOnCircles = pointsOnCirclesCache.SelectMany(x => x.ErrorCorrected).ToArray();
 
             // there should be two such points on every circle
-            Contract.Assume(Contract.ForAll(pointsOnCirclesCache, indices => indices.ErrorCorrected.Length == 2)); 
+            Contract.Assume(Contract.ForAll(pointsOnCirclesCache, indices => indices.ErrorCorrected.Length == 2));
+
+            var inflation = new FibermeshInflation(CylinderData);
 
             // perform the smoothing steps with dispatcher timer (to show animation to the user).
             const int COUNT = 20;
@@ -178,8 +180,8 @@ namespace MultiviewCurvesToCyl
                     foreach (var item in leftToUpdate)
                         manuallyMovedPoints.Add(Tuple.Create(item.Index, CylinderData.Positions[item.Index] - STEP_SIZE * item.ErrorVector));
 
-                    var inflation = new FibermeshInflation(CylinderData);
-                    inflation.SmoothStep(manuallyMovedPoints);
+                    for (int i = 0; i < 5; ++i)
+                        inflation.SmoothStep(manuallyMovedPoints);
 
                     // perform smoothing step to spread the change to the whole mesh
                     //ConstrainedMeshSmooth.Step(CylinderData.Positions, CylinderData.Normals, topologyInfo, CylinderData.ConstrainedPositionIndices);
@@ -222,8 +224,6 @@ namespace MultiviewCurvesToCyl
                 s[9], s[10], s[11], 1);
 
             return result;
-
-            //return Matrix3D.Identity;
         }
     
         public ObservableCollection<Tuple<Point3D, Point3D>> CorrespondancesToShow { get; private set; } 

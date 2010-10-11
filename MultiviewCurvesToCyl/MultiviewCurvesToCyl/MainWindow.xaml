@@ -89,7 +89,7 @@
                             <OrthographicCamera.Transform>
                                 <RotateTransform3D>
                                     <RotateTransform3D.Rotation>
-                                        <AxisAngleRotation3D Axis="0,1,0" Angle="-30" />
+                                        <AxisAngleRotation3D Axis="0,1,0" Angle="0" />
                                     </RotateTransform3D.Rotation>
                                 </RotateTransform3D>
                             </OrthographicCamera.Transform>
@@ -100,7 +100,7 @@
                     <!-- Light that radiates from the camera -->
                     <ModelVisual3D>
                         <ModelVisual3D.Content>
-                            <PointLight Position="{Binding ElementName=camera, Path=Position}"
+                            <PointLight Position="{Binding ViewPosition}"
                                         Color="White" />
                         </ModelVisual3D.Content>
                     </ModelVisual3D>

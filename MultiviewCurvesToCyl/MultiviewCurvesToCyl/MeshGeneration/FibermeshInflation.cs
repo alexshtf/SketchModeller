@@ -42,17 +42,15 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                 .ToArray();
 
             var scalarVariables = ArrayUtils.Generate<Variable>(mesh.Positions.Count);
-            var laplacianTerm = SumSqr(GetLaplacians(scalarVariables, allIndices));
+            var scalarLaplacianTerm = SumSqr(GetLaplacians(scalarVariables, allIndices));
 
 
-            const double CURVATURE_EQUALITY_WEIGHT = 100;
             var currentCurvatures = GetCurvatureEstimates();
             var curvaturesEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentCurvatures));
-            var targetCurvaturesFunction = laplacianTerm + CURVATURE_EQUALITY_WEIGHT * curvaturesEqualityTerm;
-            var targetCurvatures = QuadraticMinimize(targetCurvaturesFunction, scalarVariables);
+            var targetCurvaturesFunction = 1.0 * scalarLaplacianTerm + 1.0 * curvaturesEqualityTerm;
+            var targetCurvatures = QuadraticMinimize(targetCurvaturesFunction, scalarVariables, initial: currentCurvatures, epsilon: 1E-4);
 
 
-            const double EDGE_LENGTH_EQUALITY_WEIGHT = 100;
             var currentEdgeLengths =
                 (from index in allIndices
                  let currentPosition = mesh.Positions[index]
@@ -62,13 +60,13 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                  select edgeLengths.Average()
                 ).ToArray();
             var edgeLengthsEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentEdgeLengths));
-            var targetEdgeLengthsFunction = laplacianTerm + EDGE_LENGTH_EQUALITY_WEIGHT * edgeLengthsEqualityTerm;
-            var targetEdgeLengths = QuadraticMinimize(targetEdgeLengthsFunction, scalarVariables);
+            var targetEdgeLengthsFunction = 1.0 * scalarLaplacianTerm + 0.1 * edgeLengthsEqualityTerm;
+            var targetEdgeLengths = QuadraticMinimize(targetEdgeLengthsFunction, scalarVariables, initial: currentEdgeLengths, epsilon: 1E-4);
 
 
             var targetLaplacianVectors =
                 (from index in allIndices
-                 let areaEstimate = Math.Pow(currentEdgeLengths[index], 2)
+                 let areaEstimate = 1.0 //Math.Pow(currentEdgeLengths[index], 2)
                  select areaEstimate * currentCurvatures[index] * mesh.Normals[index]
                 ).ToArray();
             var targetLaplacianX = (from item in targetLaplacianVectors select (Term)item.X).ToArray();
@@ -82,6 +80,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var constrainedTargetLaplacianX = ElementsAt(targetLaplacianX, constrainedIndicesArray);
             var constrainedTargetLaplacianY = ElementsAt(targetLaplacianY, constrainedIndicesArray);
             var constrainedTargetLaplacianZ = ElementsAt(targetLaplacianZ, constrainedIndicesArray);
+
 
             var targetEdges = (from edge in topologyInfo.GetEdges()
                                let vi = mesh.Positions[edge.Item1]
@@ -150,19 +149,24 @@ namespace MultiviewCurvesToCyl.MeshGeneration
 
             var allTerms = new Term[]
             {
-                1.0 * freePositionLaplacianTerm,
-                0.1 * constrainedPositionLaplacianTerm,
-                1000 * positionEqualityTerm,
-                0.001 * edgeEqualityTerm,
+                TermBuilder.Constant(0),
+                1.0    * freePositionLaplacianTerm,
+                0.9    * constrainedPositionLaplacianTerm,
+                100.0  * positionEqualityTerm,
+                0.001  * edgeEqualityTerm,
             };
             var finalFunction = TermBuilder.Sum(allTerms);
             var allVariables = positionVariablesX.Concat(positionVariablesY).Concat(positionVariablesZ).ToArray();
-            var optimalValues = QuadraticMinimize(finalFunction, allVariables, 100);
+            var currentPositionsArray =
+                (from item in mesh.Positions select item.X).Concat(
+                 from item in mesh.Positions select item.Y).Concat(
+                 from item in mesh.Positions select item.Z).ToArray();
+            var optimalValues = QuadraticMinimize(finalFunction, allVariables, epsilon: 100, initial: currentPositionsArray);
 
             for (int i = 0; i < mesh.Positions.Count; ++i)
             {
-                var x = optimalValues[i];
-                var y = optimalValues[mesh.Positions.Count + i];
+                var x = optimalValues[0 * mesh.Positions.Count + i];
+                var y = optimalValues[1 * mesh.Positions.Count + i];
                 var z = optimalValues[2 * mesh.Positions.Count + i];
                 mesh.Positions[i] = new Point3D(x, y, z);
             }
@@ -180,9 +184,14 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         }
 
         [Pure]
-        private static double[] QuadraticMinimize(Term targetFunction, Variable[] targetCurvatureVariables, double epsilon = 1E-2)
+        private static double[] QuadraticMinimize(Term targetFunction, Variable[] targetCurvatureVariables, double epsilon = 1E-2, double[] initial = null)
         {
+            Contract.Requires(initial == null || targetCurvatureVariables.Length == initial.Length);
+
             var x = new double[targetCurvatureVariables.Length];
+            if (initial != null)
+                Array.Copy(initial, x, initial.Length);
+
             var xOld = new double[x.Length];
             for(int i = 0; i < xOld.Length; ++i)
                 xOld[i] = double.NaN;
@@ -352,10 +361,12 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             {
                 var vertexIndex = indices[k];
                 var neighborhoodValues =
-                    from neighborIndex in topologyInfo.VertexNeighborsOfVertex(vertexIndex)
-                    select terms[neighborIndex];
+                    (from neighborIndex in topologyInfo.VertexNeighborsOfVertex(vertexIndex)
+                     select terms[neighborIndex]
+                    ).ToArray();
                 var currentValue = terms[k];
-                result[k] = currentValue - TermBuilder.Sum(neighborhoodValues);
+                var factor = -1.0 / neighborhoodValues.Length;
+                result[k] = currentValue + factor * TermBuilder.Sum(neighborhoodValues);
             }
 
             return result;
@@ -370,7 +381,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
 
             var result = new T[indices.Length];
             for (int i = 0; i < indices.Length; ++i)
-                result[i] = list[i];
+                result[i] = list[indices[i]];
             return result;
         }
     }

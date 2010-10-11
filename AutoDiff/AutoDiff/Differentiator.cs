@@ -17,33 +17,39 @@ namespace AutoDiff
             Contract.Requires(variables.Length == values.Length);
             Contract.Ensures(Contract.Result<double[]>().Length == variables.Length);
 
-            return Differentiate(term, variables.Zip(values).ToList());
+            var visitor = new DiffVisitor(variables, values);
+            term.Accept(visitor);
+            return visitor.Gradient.ToArray(values.Length);
         }
 
-        public static double[] Differentiate(Term term, IList<Tuple<Variable, double>> values)
+        public static double[] Differentiate(Term term, IList<Tuple<Variable, double>> pairs)
         {
             Contract.Requires(term != null);
-            Contract.Requires(values != null);
-            Contract.Ensures(Contract.Result<double[]>().Length == values.Count);
+            Contract.Requires(pairs != null);
+            Contract.Ensures(Contract.Result<double[]>().Length == pairs.Count);
 
-            var variables = values.Select(x => x.Item1).ToList();
-            var valuesDictionary = values.ToDictionary(pair => pair.Item1, pair => pair.Item2);
-            var visitor = new DiffVisitor(variables, valuesDictionary);
-            term.Accept(visitor);
-            return visitor.Gradient.ToArray(values.Count);
+            var variables = pairs.Select(x => x.Item1).ToArray();
+            var values = pairs.Select(x => x.Item2).ToArray();
+            return Differentiate(term, variables, values);
         }
 
         private class DiffVisitor : ITermVisitor
         {
             private readonly IList<Variable> variables;
-            private readonly IDictionary<Variable, double> values;
+            private readonly IDictionary<Variable, double> valueOf;
             private readonly IDictionary<Variable, int> indexOf;
 
-            public DiffVisitor(IList<Variable> variables, IDictionary<Variable, double> values)
+            public DiffVisitor(IList<Variable> variables, double[] values)
             {
                 this.variables = variables;
-                this.values = values;
-                indexOf = variables.ZipIndex().ToDictionary(pair => pair.Value, pair => pair.Index);
+                this.valueOf = new Dictionary<Variable, double>();
+                this.indexOf = new Dictionary<Variable, int>();
+
+                for (int i = 0; i < variables.Count; ++i)
+                {
+                    valueOf.Add(variables[i], values[i]);
+                    indexOf.Add(variables[i], i);
+                }
             }
 
             public SparseVector Gradient { get; private set; }
@@ -97,7 +103,7 @@ namespace AutoDiff
 
             private double Evaluate(Term t)
             {
-                return Evaluator.Evaluate(t, values);
+                return Evaluator.Evaluate(t, valueOf);
             }
 
             private SparseVector Differentiate(Term term)
