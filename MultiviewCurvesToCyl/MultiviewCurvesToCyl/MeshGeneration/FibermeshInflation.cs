@@ -184,83 +184,18 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         }
 
         [Pure]
-        private static double[] QuadraticMinimize(Term targetFunction, Variable[] targetCurvatureVariables, double epsilon = 1E-2, double[] initial = null)
+        private static double[] QuadraticMinimize(Term targetFunction, Variable[] variables, double epsilon = 1E-2, double[] initial = null)
         {
-            Contract.Requires(initial == null || targetCurvatureVariables.Length == initial.Length);
-
-            var x = new double[targetCurvatureVariables.Length];
-            if (initial != null)
-                Array.Copy(initial, x, initial.Length);
-
-            var xOld = new double[x.Length];
-            for(int i = 0; i < xOld.Length; ++i)
-                xOld[i] = double.NaN;
-
-            double diff;
-            while (!((diff = SquareDiff(x, xOld)) < epsilon))
+            var minimizer = new QuadraticOptimizer(targetFunction, variables);
+            foreach (var optimizationResult in minimizer.Minimize(initial))
             {
-                var gradient = Differentiator.Differentiate(targetFunction, targetCurvatureVariables, x);
-
-                var stepSize = CalculateStepSize(
-                    function: targetFunction,
-                    variables: targetCurvatureVariables,
-                    x: x,
-                    gradient: gradient);
-
-                xOld = x;
-                x = GradientStep(x, gradient, stepSize);
+                var diff = SquareDiff(optimizationResult.CurrentMinimizer, optimizationResult.PrevMinimizer);
+                if (diff < epsilon)
+                    return optimizationResult.CurrentMinimizer;
             }
 
-            return x;
-        }
-
-        [Pure]
-        private static double CalculateStepSize(Term function, Variable[] variables, double[] x, double[] gradient)
-        {
-            Contract.Requires(function != null);
-            Contract.Requires(variables != null);
-            Contract.Requires(x.Length == gradient.Length);
-            Contract.Requires(x.Length == variables.Length);
-
-            // we use the fact that the original function is quadratic, therefore the line-search
-            // function is quadratic in the step size. We will interpolate the step-size function
-            // and find the step-size that minimizes it.
-
-            // the vector (x - gradient). This is the input for step size = 1
-            var xOne = x.Zip(gradient, (v, g) => v - g).ToArray();
-
-            // the vector (x - 2 * gradient). This is the input for step size = 2
-            var xTwo = x.Zip(gradient, (v, g) => v - 2 * g).ToArray();
-
-            var a = Evaluator.Evaluate(function, variables, x);    // evaluate the value for step size = 0
-            var b = Evaluator.Evaluate(function, variables, xOne); // evaluate the value for step size = 1
-            var c = Evaluator.Evaluate(function, variables, xTwo); // evaluate the value for step size = 2
-
-            // We will calculate the coefficients of g(s) = alpha * s² + beta * s + gamma, where s is the step size.
-            // However we do not need gamma for the minimizer.
-            var alpha = (a - 2 * b + c) / 2;
-            var beta = (-3 * a + 4 * b - c) / 2;
-
-            Contract.Assume(alpha > 0); // g(s) is a strongly convex parabola
-            Contract.Assume(beta < 0);  // g(s) has will have a positive minimizer
-            
-            var minimizer = -beta / (2 * alpha);
-            Contract.Assert(minimizer > 0);
-            
-            return minimizer;
-        }
-
-        [Pure]
-        private static double[] GradientStep(double[] x, double[] gradient, double stepSize)
-        {
-            Contract.Requires(x.Length == gradient.Length);
-            Contract.Ensures(Contract.Result<double[]>().Length == x.Length);
-
-            var result = new double[x.Length];
-            for (int i = 0; i < x.Length; i++)
-                result[i] = x[i] - stepSize * gradient[i];
-
-            return result;
+            Debug.Fail("We should have not reached here.");
+            return null;
         }
 
         [Pure]

@@ -116,6 +116,7 @@
     <Compile Include="Persistence\Point.cs" />
     <Compile Include="Persistence\StartEndAnnotation.cs" />
     <Compile Include="Persistence\State.cs" />
+    <Compile Include="QuadraticOptimizer.cs" />
     <Compile Include="SketchCurveView.xaml.cs">
       <DependentUpon>SketchCurveView.xaml</DependentUpon>
     </Compile>
