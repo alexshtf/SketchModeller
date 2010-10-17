@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using AutoDiff;
 using System.Diagnostics.Contracts;
-using Bluebit.MatrixLibrary;
+using NSuperLU;
 
 namespace MultiviewCurvesToCyl
 {
@@ -13,31 +13,16 @@ namespace MultiviewCurvesToCyl
         public static double[] Solve(Term targetFunction, Variable[] variables)
         {
             var quadraticFactorsData = ExtractQuadraticFactors(targetFunction, variables);
-
-            var matrix = new SparseMatrix(variables.Length, variables.Length);
-            foreach (var item in quadraticFactorsData.QuadraticFactors)
+            using (var factoredMatrix = new FactoredSparseMatrix(quadraticFactorsData.QuadraticFactors.ToArray(), variables.Length))
             {
-                var row = item.Item1;
-                var column = item.Item2;
-                var value = item.Item3;
+                var vec = new double[variables.Length];
+                foreach(var item in quadraticFactorsData.LinearFactors)
+                    vec[item.Item1] = -0.5 * item.Item2;
 
-                matrix[row, column] = value;
+                var solution = factoredMatrix.Solve(vec);
+
+                return solution;
             }
-
-            var vec = new Vector(variables.Length);
-            foreach (var item in quadraticFactorsData.LinearFactors)
-            {
-                var index = item.Item1;
-                var value = item.Item2;
-
-                vec[index] = -0.5 * value;
-            }
-
-            var solver = new SparseSolver(matrix);
-            var solution = solver.Solve(vec);
-            var result = solution.ToArray();
-
-            return result;
         }
 
         public static QuadraticFactorsData ExtractQuadraticFactors(Term targetFunction, Variable[] variables)

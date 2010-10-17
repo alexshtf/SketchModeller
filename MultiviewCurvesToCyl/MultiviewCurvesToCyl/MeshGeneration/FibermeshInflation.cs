@@ -8,7 +8,7 @@ using Utils;
 using System.Windows.Media.Media3D;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Bluebit.MatrixLibrary;
+using NSuperLU;
 
 namespace MultiviewCurvesToCyl.MeshGeneration
 {
@@ -27,9 +27,9 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         private readonly Variable[] positionVariablesZ;
         private readonly Variable[] allPositionVariables;
 
-        private readonly SparseSolver curvaturesSolver;
-        private readonly SparseSolver edgeLengthSolver;
-        private readonly SparseSolver positionSolver;
+        private readonly FactoredSparseMatrix curvaturesSolver;
+        private readonly FactoredSparseMatrix edgeLengthSolver;
+        private readonly FactoredSparseMatrix positionSolver;
 
         [ContractInvariantMethod]
         private void ObjectInvariants()
@@ -77,22 +77,13 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             positionSolver = GetSolver(fakePositionFunc, allPositionVariables);
         }
 
-        private SparseSolver GetSolver(Term fakeCurvaturesFunc, Variable[] variables)
+        private FactoredSparseMatrix GetSolver(Term fakeCurvaturesFunc, Variable[] variables)
         {
             var quadraticFactorsData = QuadraticFunctionHelper.ExtractQuadraticFactors(fakeCurvaturesFunc, variables);
+            var quadraticFactors = quadraticFactorsData.QuadraticFactors.ToArray();
 
-            var sparseMatrix = new SparseMatrix(variables.Length, variables.Length);
-            foreach (var item in quadraticFactorsData.QuadraticFactors)
-            {
-                var row = item.Item1;
-                var col = item.Item2;
-                var val = item.Item3;
-
-                sparseMatrix[row, col] = val;
-            }
-
-            var solver = new SparseSolver(sparseMatrix);
-            return solver;
+            var result = new FactoredSparseMatrix(quadraticFactors, variables.Length);
+            return result;
         }
 
         public void SmoothStep(Point3D[] constrainedPositionsArray)
@@ -123,14 +114,14 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             }
         }
 
-        private double[] FindMinimum(Term targetFunction, Variable[] variables, SparseSolver linearSolver)
+        private double[] FindMinimum(Term targetFunction, Variable[] variables, FactoredSparseMatrix linearSolver)
         {
             // to minimize <x, Ax> + <b, x> + c we need to solve the system
             // Ax = -0.5 * b. So we will construct the vector -0.5*b and use the solver for A
             // to get the solution.
 
             var linearData = QuadraticFunctionHelper.ExtractLinearFactors(targetFunction, variables);
-            var vec = new Vector(variables.Length);
+            var vec = new double[variables.Length];
             foreach (var item in linearData.LinearFactors)
             {
                 var index = item.Item1;
@@ -138,9 +129,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                 vec[index] = -0.5 * value;
             }
 
-            var solution = linearSolver.Solve(vec);
-            var result = solution.ToArray();
-
+            var result = linearSolver.Solve(vec);
             return result;
         }
 

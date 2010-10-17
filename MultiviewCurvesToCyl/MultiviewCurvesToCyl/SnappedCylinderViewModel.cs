@@ -123,10 +123,10 @@ namespace MultiviewCurvesToCyl
             var inflation = new FibermeshInflation(CylinderData, inflationConstrainedIndices.ToArray());
 
             // perform the smoothing steps with dispatcher timer (to show animation to the user).
-            const int COUNT = 10;
-            const double STEP_SIZE = 0.2;
+            const int COUNT = 2;
+            const double STEP_SIZE = 0.9;
             smoothStepTimer = new DispatcherTimer();
-            smoothStepTimer.Interval = TimeSpan.FromSeconds(0.1);
+            smoothStepTimer.Interval = TimeSpan.FromSeconds(0.01);
             int ticks = 1;
             smoothStepTimer.Tick += (sender, args) =>
                 {
@@ -188,8 +188,9 @@ namespace MultiviewCurvesToCyl
                         manuallyMovedPoints.Add(CylinderData.Positions[item.Index] - STEP_SIZE * item.ErrorVector);
 
                     // perform smoothing step to spread the change to the whole mesh
-                    for (int i = 0; i < 5; ++i)
-                        inflation.SmoothStep(manuallyMovedPoints.ToArray());                    
+                    var manuallyMovedPointsArray = manuallyMovedPoints.ToArray(); 
+                    for (int i = 0; i < 3; ++i)
+                        inflation.SmoothStep(manuallyMovedPointsArray);                    
 
                     // notify the user about position/normal updates on the whole mesh
                     for(int i = 0; i < CylinderData.Positions.Count; ++i)
