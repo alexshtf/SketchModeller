@@ -8,6 +8,7 @@ using Utils;
 using System.Windows.Media.Media3D;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Bluebit.MatrixLibrary;
 
 namespace MultiviewCurvesToCyl.MeshGeneration
 {
@@ -15,6 +16,20 @@ namespace MultiviewCurvesToCyl.MeshGeneration
     {
         private readonly ConstrainedMesh mesh;
         private readonly MeshTopologyInfo topologyInfo;
+        private readonly int[] allIndices;
+        private readonly int[] constrainedIndicesArray;
+
+        private readonly Variable[] scalarVariables;
+        private readonly Term scalarLaplacianTerm;
+
+        private readonly Variable[] positionVariablesX;
+        private readonly Variable[] positionVariablesY;
+        private readonly Variable[] positionVariablesZ;
+        private readonly Variable[] allPositionVariables;
+
+        private readonly SparseSolver curvaturesSolver;
+        private readonly SparseSolver edgeLengthSolver;
+        private readonly SparseSolver positionSolver;
 
         [ContractInvariantMethod]
         private void ObjectInvariants()
@@ -23,55 +38,129 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             Contract.Invariant(topologyInfo != null);
         }
 
-        public FibermeshInflation(ConstrainedMesh mesh)
+        public FibermeshInflation(ConstrainedMesh mesh, int[] constrainedIndices)
         {
             Contract.Requires(mesh != null);
 
             this.mesh = mesh;
             this.topologyInfo = new MeshTopologyInfo(mesh.TriangleIndices);
+            this.constrainedIndicesArray = constrainedIndices;
+
+            var vertexCount = mesh.Positions.Count;
+            allIndices = System.Linq.Enumerable.Range(0, vertexCount).ToArray();
+
+            scalarVariables = ArrayUtils.Generate<Variable>(vertexCount);
+            positionVariablesX = ArrayUtils.Generate<Variable>(vertexCount);
+            positionVariablesY = ArrayUtils.Generate<Variable>(vertexCount);
+            positionVariablesZ = ArrayUtils.Generate<Variable>(vertexCount);
+            allPositionVariables = 
+                positionVariablesX.Concat(
+                positionVariablesY).Concat(
+                positionVariablesZ).ToArray();
+
+            scalarLaplacianTerm = SumSqr(GetLaplacians(scalarVariables, allIndices));
+
+            // we will now generate target functions based on fake data
+            // we know that the quadratic factors of the target functions don't change and therefore
+            // the matrix part of the quadratic functions stays the same. So we can construct solvers
+            // that will efficiently solve our optimization problems
+            var fakeCurvatures = System.Linq.Enumerable.Repeat(1.0, vertexCount).ToArray();
+            var fakeEdgeLengths = System.Linq.Enumerable.Repeat(1.0, vertexCount).ToArray();
+            var fakeConstrainedPositions = ElementsAt(mesh.Positions, constrainedIndicesArray);
+
+            var fakeCurvaturesFunc = CreateCurvaturesFunction(fakeCurvatures);
+            var fakeEdgeLengthFunc = CreateEdgeLengthsFunction(fakeEdgeLengths);
+            var fakePositionFunc = CreatePositionsFunction(fakeCurvatures, fakeEdgeLengths, fakeConstrainedPositions);
+
+            curvaturesSolver = GetSolver(fakeCurvaturesFunc, scalarVariables);
+            edgeLengthSolver = GetSolver(fakeEdgeLengthFunc, scalarVariables);
+            positionSolver = GetSolver(fakePositionFunc, allPositionVariables);
         }
 
-        public void SmoothStep(List<Tuple<int, Point3D>> constrainedIndices)
+        private SparseSolver GetSolver(Term fakeCurvaturesFunc, Variable[] variables)
         {
-            var allIndices = System.Linq.Enumerable.Range(0, mesh.Positions.Count).ToArray();
-            var constrainedIndicesArray = constrainedIndices.Select(x => x.Item1).ToArray();
-            var constrainedPositionsArray = constrainedIndices.Select(x => x.Item2).ToArray();
-            var freeIndicesArray =
-                allIndices
-                .Except(new HashSet<int>(constrainedIndicesArray))
-                .ToArray();
+            var quadraticFactorsData = QuadraticFunctionHelper.ExtractQuadraticFactors(fakeCurvaturesFunc, variables);
 
-            var scalarVariables = ArrayUtils.Generate<Variable>(mesh.Positions.Count);
-            var scalarLaplacianTerm = SumSqr(GetLaplacians(scalarVariables, allIndices));
+            var sparseMatrix = new SparseMatrix(variables.Length, variables.Length);
+            foreach (var item in quadraticFactorsData.QuadraticFactors)
+            {
+                var row = item.Item1;
+                var col = item.Item2;
+                var val = item.Item3;
 
+                sparseMatrix[row, col] = val;
+            }
 
+            var solver = new SparseSolver(sparseMatrix);
+            return solver;
+        }
+
+        public void SmoothStep(Point3D[] constrainedPositionsArray)
+        {
+            Contract.Assume(constrainedIndicesArray.Length == constrainedPositionsArray.Length);
+
+            // calculate the target curvatures that we will strive to have after smoothing step
             var currentCurvatures = GetCurvatureEstimates();
-            var curvaturesEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentCurvatures));
-            var targetCurvaturesFunction = 1.0 * scalarLaplacianTerm + 1.0 * curvaturesEqualityTerm;
-            var targetCurvatures = QuadraticMinimize(targetCurvaturesFunction, scalarVariables, initial: currentCurvatures, epsilon: 1E-4);
+            var targetCurvaturesFunction = CreateCurvaturesFunction(currentCurvatures);
+            var targetCurvatures = FindMinimum(targetCurvaturesFunction, scalarVariables, curvaturesSolver);
 
+            // calculate target edge lengths that we will strive to have after smoothing step
+            var currentEdgeLengths = GetEdgeLengthsEstimate();
+            var targetEdgeLengthsFunction = CreateEdgeLengthsFunction(currentEdgeLengths);
+            var targetEdgeLengths = FindMinimum(targetEdgeLengthsFunction, scalarVariables, edgeLengthSolver);
 
-            var currentEdgeLengths =
-                (from index in allIndices
-                 let currentPosition = mesh.Positions[index]
-                 let edgeLengths = from neighborIndex in topologyInfo.VertexNeighborsOfVertex(index)
-                                   let neighborPosition = mesh.Positions[neighborIndex]
-                                   select (currentPosition - neighborPosition).Length
-                 select edgeLengths.Average()
-                ).ToArray();
-            var edgeLengthsEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentEdgeLengths));
-            var targetEdgeLengthsFunction = 1.0 * scalarLaplacianTerm + 0.1 * edgeLengthsEqualityTerm;
-            var targetEdgeLengths = QuadraticMinimize(targetEdgeLengthsFunction, scalarVariables, initial: currentEdgeLengths, epsilon: 1E-4);
+            // calculate the positions
+            var positionsFunction = CreatePositionsFunction(targetCurvatures, targetEdgeLengths, constrainedPositionsArray);
+            var optimalPositions = FindMinimum(positionsFunction, allPositionVariables, positionSolver);
 
+            // put the optimal positions back to the mesh
+            for (int i = 0; i < mesh.Positions.Count; ++i)
+            {
+                var x = optimalPositions[0 * mesh.Positions.Count + i];
+                var y = optimalPositions[1 * mesh.Positions.Count + i];
+                var z = optimalPositions[2 * mesh.Positions.Count + i];
+                mesh.Positions[i] = new Point3D(x, y, z);
+            }
+        }
 
+        private double[] FindMinimum(Term targetFunction, Variable[] variables, SparseSolver linearSolver)
+        {
+            // to minimize <x, Ax> + <b, x> + c we need to solve the system
+            // Ax = -0.5 * b. So we will construct the vector -0.5*b and use the solver for A
+            // to get the solution.
+
+            var linearData = QuadraticFunctionHelper.ExtractLinearFactors(targetFunction, variables);
+            var vec = new Vector(variables.Length);
+            foreach (var item in linearData.LinearFactors)
+            {
+                var index = item.Item1;
+                var value = item.Item2;
+                vec[index] = -0.5 * value;
+            }
+
+            var solution = linearSolver.Solve(vec);
+            var result = solution.ToArray();
+
+            return result;
+        }
+
+        #region Target functions creation
+
+        private Term CreatePositionsFunction(double[] targetCurvatures, double[] targetEdgeLengths, Point3D[] constrainedPositionsArray)
+        {
             var targetLaplacianVectors =
                 (from index in allIndices
                  let areaEstimate = 1.0 //Math.Pow(currentEdgeLengths[index], 2)
-                 select areaEstimate * currentCurvatures[index] * mesh.Normals[index]
+                 select areaEstimate * targetCurvatures[index] * mesh.Normals[index]
                 ).ToArray();
             var targetLaplacianX = (from item in targetLaplacianVectors select (Term)item.X).ToArray();
             var targetLaplacianY = (from item in targetLaplacianVectors select (Term)item.Y).ToArray();
             var targetLaplacianZ = (from item in targetLaplacianVectors select (Term)item.Z).ToArray();
+
+            var freeIndicesArray =
+                allIndices
+                .Except(new HashSet<int>(constrainedIndicesArray))
+                .ToArray();
 
             var freeTargetLaplacianX = ElementsAt(targetLaplacianX, freeIndicesArray);
             var freeTargetLaplacianY = ElementsAt(targetLaplacianY, freeIndicesArray);
@@ -80,7 +169,6 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var constrainedTargetLaplacianX = ElementsAt(targetLaplacianX, constrainedIndicesArray);
             var constrainedTargetLaplacianY = ElementsAt(targetLaplacianY, constrainedIndicesArray);
             var constrainedTargetLaplacianZ = ElementsAt(targetLaplacianZ, constrainedIndicesArray);
-
 
             var targetEdges = (from edge in topologyInfo.GetEdges()
                                let vi = mesh.Positions[edge.Item1]
@@ -97,16 +185,12 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var constrainedTargetPositionsY = (from item in constrainedPositionsArray select (Term)item.Y).ToArray();
             var constrainedTargetPositionsZ = (from item in constrainedPositionsArray select (Term)item.Z).ToArray();
 
-            var positionVariablesX = ArrayUtils.Generate<Variable>(mesh.Positions.Count);
-            var positionVariablesY = ArrayUtils.Generate<Variable>(mesh.Positions.Count);
-            var positionVariablesZ = ArrayUtils.Generate<Variable>(mesh.Positions.Count);
-
             var constrainedPositionVariablesX = ElementsAt(positionVariablesX, constrainedIndicesArray);
             var constrainedPositionVariablesY = ElementsAt(positionVariablesY, constrainedIndicesArray);
             var constrainedPositionVariablesZ = ElementsAt(positionVariablesZ, constrainedIndicesArray);
 
-            var edgeVariablesX = 
-                (from tuple in topologyInfo.GetEdges() 
+            var edgeVariablesX =
+                (from tuple in topologyInfo.GetEdges()
                  select positionVariablesX[tuple.Item1] - positionVariablesX[tuple.Item2]
                 ).ToArray();
             var edgeVariablesY =
@@ -156,21 +240,26 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                 0.001  * edgeEqualityTerm,
             };
             var finalFunction = TermBuilder.Sum(allTerms);
-            var allVariables = positionVariablesX.Concat(positionVariablesY).Concat(positionVariablesZ).ToArray();
-            var currentPositionsArray =
-                (from item in mesh.Positions select item.X).Concat(
-                 from item in mesh.Positions select item.Y).Concat(
-                 from item in mesh.Positions select item.Z).ToArray();
-            var optimalValues = QuadraticMinimize(finalFunction, allVariables, epsilon: 100, initial: currentPositionsArray);
-
-            for (int i = 0; i < mesh.Positions.Count; ++i)
-            {
-                var x = optimalValues[0 * mesh.Positions.Count + i];
-                var y = optimalValues[1 * mesh.Positions.Count + i];
-                var z = optimalValues[2 * mesh.Positions.Count + i];
-                mesh.Positions[i] = new Point3D(x, y, z);
-            }
+            return finalFunction;
         }
+
+        private Term CreateCurvaturesFunction(double[] currentCurvatures)
+        {
+            var curvaturesEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentCurvatures));
+            var targetCurvaturesFunction = 1.0 * scalarLaplacianTerm + 1.0 * curvaturesEqualityTerm;
+
+            return targetCurvaturesFunction;
+        }
+
+        private Term CreateEdgeLengthsFunction(double[] currentEdgeLengths)
+        {
+            var edgeLengthsEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentEdgeLengths));
+            var targetEdgeLengthsFunction = 1.0 * scalarLaplacianTerm + 0.1 * edgeLengthsEqualityTerm;
+
+            return targetEdgeLengthsFunction;
+        }
+
+        #endregion
 
         [Pure]
         private double CalculateArea(Tuple<int, int, int> triangle)
@@ -184,30 +273,6 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         }
 
         [Pure]
-        private static double[] QuadraticMinimize(Term targetFunction, Variable[] variables, double epsilon = 1E-2, double[] initial = null)
-        {
-            var minimizer = new QuadraticOptimizer(targetFunction, variables);
-            foreach (var optimizationResult in minimizer.Minimize(initial))
-            {
-                var diff = SquareDiff(optimizationResult.CurrentMinimizer, optimizationResult.PrevMinimizer);
-                if (diff < epsilon)
-                    return optimizationResult.CurrentMinimizer;
-            }
-
-            Debug.Fail("We should have not reached here.");
-            return null;
-        }
-
-        [Pure]
-        public static Variable[] GenerateVariables(int count)
-        {
-            Variable[] variables = new Variable[count];
-            for (int i = 0; i < count; ++i)
-                variables[i] = new Variable();
-
-            return variables;
-        }
-
         private Term[] ValuesToTerms(double[] values)
         {
             var result = new Term[values.Length];
@@ -221,6 +286,20 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         private Term[] GetLaplacians(Term[] values, int[] indices)
         {
             return GetLaplacians(topologyInfo, values, indices);
+        }
+
+        [Pure]
+        private double[] GetEdgeLengthsEstimate()
+        {
+            var currentEdgeLengths =
+                (from index in allIndices
+                 let currentPosition = mesh.Positions[index]
+                 let edgeLengths = from neighborIndex in topologyInfo.VertexNeighborsOfVertex(index)
+                                   let neighborPosition = mesh.Positions[neighborIndex]
+                                   select (currentPosition - neighborPosition).Length
+                 select edgeLengths.Average()
+                ).ToArray();
+            return currentEdgeLengths;
         }
 
         [Pure]
@@ -307,6 +386,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             return result;
         }
 
+        [Pure]
         private static T[] ElementsAt<T>(IList<T> list, int[] indices)
         {
             Contract.Requires(list != null);

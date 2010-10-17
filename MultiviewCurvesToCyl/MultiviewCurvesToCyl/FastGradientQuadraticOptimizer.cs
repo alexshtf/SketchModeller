@@ -25,7 +25,7 @@ namespace MultiviewCurvesToCyl
     /// that f is indeed convex and quadratic.
     /// </para>
     /// </remarks>
-    class QuadraticOptimizer
+    class FastGradientQuadraticOptimizer
     {
         /*
          * This class computes the minimum using the fast gradient scheme described in the paper 
@@ -35,16 +35,11 @@ namespace MultiviewCurvesToCyl
 
         private readonly Term targetFunction;
         private readonly Variable[] variables;
-        private readonly double[] b;
 
-        public QuadraticOptimizer(Term targetFunction, Variable[] variables)
+        public FastGradientQuadraticOptimizer(Term targetFunction, Variable[] variables)
         {
             this.targetFunction = targetFunction;
             this.variables = variables;
-
-            // The gradien grad(x) of f(x) is grad(x) = 2Ax + b. Therefore b = grad(0)
-            var zeroVector = new double[variables.Length];
-            this.b = Differentiator.Differentiate(targetFunction, variables, zeroVector);
         }
 
         /// <summary>
@@ -112,25 +107,6 @@ namespace MultiviewCurvesToCyl
             var result = new double[y.Length];
             for (int i = 0; i < y.Length; ++i)
                 result[i] = y[i] - factor * yGradient[i];
-            return result;
-        }
-
-        /// <summary>
-        /// Computes the Q_L(x, y) as specified in the paper
-        /// </summary>
-        /// <param name="l">The lipschitz constant L</param>
-        /// <param name="x">x input argument</param>
-        /// <param name="y">y input argument</param>
-        /// <returns>The value of F's quadratic approximation Q_L(x, y)</returns>
-        private double QL(double l, double[] x, double[] y)
-        {
-            Contract.Requires(x.Length == y.Length);
-            Contract.Requires(x.Length == variables.Length);
-            Contract.Requires(l > 0);
-
-            var diff = Diff(x, y);
-            var grady = Gradient(y);
-            var result = F(y) + InnerProduct(diff, grady) + 0.5 * l * InnerProduct(diff, diff);
             return result;
         }
 

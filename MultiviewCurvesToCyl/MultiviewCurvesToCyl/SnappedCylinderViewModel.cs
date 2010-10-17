@@ -113,14 +113,21 @@ namespace MultiviewCurvesToCyl
             // there should be two such points on every circle
             Contract.Assume(Contract.ForAll(pointsOnCirclesCache, indices => indices.ErrorCorrected.Length == 2));
 
-            var inflation = new FibermeshInflation(CylinderData);
+            // here we construct an array of indices of points that will be constrained.
+            // later we specify the points themselves, and they must be specified in THE SAME ORDER
+            var inflationConstrainedIndices = new List<int>();
+            foreach (var singleCircleIndices in pointsOnCirclesCache)
+                inflationConstrainedIndices.AddRange(singleCircleIndices.All);
+            inflationConstrainedIndices.AddRange(topBottomIndices.Except(allMovedOnCircles));
+
+            var inflation = new FibermeshInflation(CylinderData, inflationConstrainedIndices.ToArray());
 
             // perform the smoothing steps with dispatcher timer (to show animation to the user).
-            const int COUNT = 20;
-            const double STEP_SIZE = 0.1;
+            const int COUNT = 10;
+            const double STEP_SIZE = 0.2;
             smoothStepTimer = new DispatcherTimer();
-            smoothStepTimer.Interval = TimeSpan.FromSeconds(0.5);
-            int ticks = 0;
+            smoothStepTimer.Interval = TimeSpan.FromSeconds(0.1);
+            int ticks = 1;
             smoothStepTimer.Tick += (sender, args) =>
                 {
                     // find error vectors for top/bottom fibers using closest projections on the curves.
@@ -141,7 +148,7 @@ namespace MultiviewCurvesToCyl
                             CylinderData.Positions[item.Index] - item.ErrorVector));
 
                     // the positions that we now manually move and will constrain during the smooth step
-                    var manuallyMovedPoints = new List<Tuple<int, Point3D>>();
+                    var manuallyMovedPoints = new List<Point3D>();
 
                     // we will calculate the transformation that is applied to both circles, and we will
                     // re-apply this transformation to the whole circle instead of just two points on this circle.
@@ -172,20 +179,17 @@ namespace MultiviewCurvesToCyl
 
                         // now we apply the transformation t to all points on a single circle
                         foreach (var index in singleCircleIndices.All)
-                            manuallyMovedPoints.Add(Tuple.Create(index, CylinderData.Positions[index] * t));
+                            manuallyMovedPoints.Add(CylinderData.Positions[index] * t);
                     }
 
                     // move the vertices along the error vectors, in small steps of size STEP_SIZE.
                     var leftToUpdate = errorVectors.Where(x => !allMovedOnCircles.Contains(x.Index));
                     foreach (var item in leftToUpdate)
-                        manuallyMovedPoints.Add(Tuple.Create(item.Index, CylinderData.Positions[item.Index] - STEP_SIZE * item.ErrorVector));
-
-                    for (int i = 0; i < 5; ++i)
-                        inflation.SmoothStep(manuallyMovedPoints);
+                        manuallyMovedPoints.Add(CylinderData.Positions[item.Index] - STEP_SIZE * item.ErrorVector);
 
                     // perform smoothing step to spread the change to the whole mesh
-                    //ConstrainedMeshSmooth.Step(CylinderData.Positions, CylinderData.Normals, topologyInfo, CylinderData.ConstrainedPositionIndices);
-                    
+                    for (int i = 0; i < 5; ++i)
+                        inflation.SmoothStep(manuallyMovedPoints.ToArray());                    
 
                     // notify the user about position/normal updates on the whole mesh
                     for(int i = 0; i < CylinderData.Positions.Count; ++i)
@@ -197,7 +201,25 @@ namespace MultiviewCurvesToCyl
                     // stop the timer when we did the above steps COUNT times.
                     ++ticks;
                     if (ticks > COUNT)
+                    {
                         smoothStepTimer.Stop();
+                        // find error vectors for top/bottom fibers using closest projections on the curves.
+                        errorVectors =
+                            from index in topBottomIndices
+                            let position = CylinderData.Positions[index]
+                            let projections = curves3d.Select(curve => position.ProjectionOnCurve(curve))
+                            let closestProjection = projections.Minimizer(x => x.Distance).Position
+                            select new { Index = index, ErrorVector = position - closestProjection };
+                        errorVectors = errorVectors.ToArray(); // execute the query. we are going to modify the positions.
+
+                        // show the new correspondances to the user
+                        CorrespondancesToShow.Clear();
+                        CorrespondancesToShow.AddRange(
+                            from item in errorVectors
+                            select Tuple.Create(
+                                CylinderData.Positions[item.Index],
+                                CylinderData.Positions[item.Index] - item.ErrorVector));
+                    }
                     System.Diagnostics.Debug.WriteLine(ticks);
                 };
             smoothStepTimer.Start();

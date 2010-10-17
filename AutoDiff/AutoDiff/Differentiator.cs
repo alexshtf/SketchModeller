@@ -17,7 +17,7 @@ namespace AutoDiff
             Contract.Requires(variables.Length == values.Length);
             Contract.Ensures(Contract.Result<double[]>().Length == variables.Length);
 
-            var visitor = new DiffVisitor(variables, values);
+            var visitor = new DiffVisitor(term, variables, values);
             term.Accept(visitor);
             return visitor.Gradient.ToArray(values.Length);
         }
@@ -35,11 +35,12 @@ namespace AutoDiff
 
         private class DiffVisitor : ITermVisitor
         {
+            private readonly EvaluationCache evaluationCache;
             private readonly IList<Variable> variables;
             private readonly IDictionary<Variable, double> valueOf;
             private readonly IDictionary<Variable, int> indexOf;
 
-            public DiffVisitor(IList<Variable> variables, double[] values)
+            public DiffVisitor(Term root, IList<Variable> variables, double[] values)
             {
                 this.variables = variables;
                 this.valueOf = new Dictionary<Variable, double>();
@@ -50,6 +51,8 @@ namespace AutoDiff
                     valueOf.Add(variables[i], values[i]);
                     indexOf.Add(variables[i], i);
                 }
+
+                this.evaluationCache = new EvaluationCache(root, valueOf);
             }
 
             public SparseVector Gradient { get; private set; }
@@ -103,7 +106,7 @@ namespace AutoDiff
 
             private double Evaluate(Term t)
             {
-                return Evaluator.Evaluate(t, valueOf);
+                return evaluationCache[t];
             }
 
             private SparseVector Differentiate(Term term)

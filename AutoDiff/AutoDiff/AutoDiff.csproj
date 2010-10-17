@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Constant.cs" />
     <Compile Include="Differentiator.cs" />
+    <Compile Include="EvaluationCache.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="Exp.cs" />
     <Compile Include="IntPower.cs" />

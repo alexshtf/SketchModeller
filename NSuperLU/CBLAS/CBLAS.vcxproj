@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{96EE8440-71D4-4274-83C2-71ECB97F5F6B}</ProjectGuid>
+    <RootNamespace>CBLAS</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="caxpy.c" />
+    <ClCompile Include="ccopy.c" />
+    <ClCompile Include="cdotc.c" />
+    <ClCompile Include="cgemv.c" />
+    <ClCompile Include="cgerc.c" />
+    <ClCompile Include="chemv.c" />
+    <ClCompile Include="cher2.c" />
+    <ClCompile Include="cscal.c" />
+    <ClCompile Include="cswap.c" />
+    <ClCompile Include="ctrsv.c" />
+    <ClCompile Include="dasum.c" />
+    <ClCompile Include="daxpy.c" />
+    <ClCompile Include="dcabs1.c" />
+    <ClCompile Include="dcopy.c" />
+    <ClCompile Include="ddot.c" />
+    <ClCompile Include="dgemv.c" />
+    <ClCompile Include="dger.c" />
+    <ClCompile Include="dnrm2.c" />
+    <ClCompile Include="drot.c" />
+    <ClCompile Include="dscal.c" />
+    <ClCompile Include="dswap.c" />
+    <ClCompile Include="dsymv.c" />
+    <ClCompile Include="dsyr2.c" />
+    <ClCompile Include="dtrsv.c" />
+    <ClCompile Include="dzasum.c" />
+    <ClCompile Include="dznrm2.c" />
+    <ClCompile Include="icamax.c" />
+    <ClCompile Include="idamax.c" />
+    <ClCompile Include="isamax.c" />
+    <ClCompile Include="izamax.c" />
+    <ClCompile Include="sasum.c" />
+    <ClCompile Include="saxpy.c" />
+    <ClCompile Include="scasum.c" />
+    <ClCompile Include="scnrm2.c" />
+    <ClCompile Include="scopy.c" />
+    <ClCompile Include="sdot.c" />
+    <ClCompile Include="sgemv.c" />
+    <ClCompile Include="sger.c" />
+    <ClCompile Include="snrm2.c" />
+    <ClCompile Include="srot.c" />
+    <ClCompile Include="sscal.c" />
+    <ClCompile Include="sswap.c" />
+    <ClCompile Include="ssymv.c" />
+    <ClCompile Include="ssyr2.c" />
+    <ClCompile Include="strsv.c" />
+    <ClCompile Include="zaxpy.c" />
+    <ClCompile Include="zcopy.c" />
+    <ClCompile Include="zdotc.c" />
+    <ClCompile Include="zgemv.c" />
+    <ClCompile Include="zgerc.c" />
+    <ClCompile Include="zhemv.c" />
+    <ClCompile Include="zher2.c" />
+    <ClCompile Include="zscal.c" />
+    <ClCompile Include="zswap.c" />
+    <ClCompile Include="ztrsv.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="f2c.h" />
+    <ClInclude Include="slu_Cnames.h" />
+    <ClInclude Include="superlu_f2c.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
