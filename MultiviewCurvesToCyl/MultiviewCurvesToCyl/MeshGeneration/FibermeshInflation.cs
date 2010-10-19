@@ -223,10 +223,10 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var allTerms = new Term[]
             {
                 TermBuilder.Constant(0),
-                1.0    * freePositionLaplacianTerm,
-                0.9    * constrainedPositionLaplacianTerm,
-                100.0  * positionEqualityTerm,
-                0.001  * edgeEqualityTerm,
+                1.0   * freePositionLaplacianTerm,
+                1.0   * constrainedPositionLaplacianTerm,
+                100.0 * positionEqualityTerm,
+                0.1   * edgeEqualityTerm,
             };
             var finalFunction = TermBuilder.Sum(allTerms);
             return finalFunction;

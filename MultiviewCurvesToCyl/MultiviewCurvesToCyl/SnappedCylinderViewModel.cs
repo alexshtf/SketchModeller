@@ -123,8 +123,8 @@ namespace MultiviewCurvesToCyl
             var inflation = new FibermeshInflation(CylinderData, inflationConstrainedIndices.ToArray());
 
             // perform the smoothing steps with dispatcher timer (to show animation to the user).
-            const int COUNT = 3;
-            const double STEP_SIZE = 0.9;
+            const int COUNT = 10;
+            const double STEP_SIZE = 0.2;
             snappingTimer = new DispatcherTimer();
             snappingTimer.Interval = TimeSpan.FromSeconds(0.01);
             int ticks = 1;

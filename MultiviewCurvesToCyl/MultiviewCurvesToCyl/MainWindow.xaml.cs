@@ -164,12 +164,9 @@ namespace MultiviewCurvesToCyl
         private void NavigationModeChangeHandler()
         {
             if (mainViewModel.IsInNavigationMode)
-            {
-            }
+                viewport3dContainer.CaptureMouse();
             else
-            { 
-                // TODO: Maybe release mouse capture
-            }
+                viewport3dContainer.ReleaseMouseCapture();
         }
 
         private Point lastPoint;
