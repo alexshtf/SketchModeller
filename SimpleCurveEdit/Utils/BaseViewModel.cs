@@ -8,6 +8,32 @@ using System.Linq.Expressions;
 namespace Utils
 {
     /// <summary>
+    /// Extension methods related to base view models.
+    /// </summary>
+    public static class BaseViewModelExtensions
+    {
+
+        /// <summary>
+        /// Matches property changed event args against a lambda-style property and executes the action if the match succeeds.
+        /// </summary>
+        /// <typeparam name="TProperty">Property type</typeparam>
+        /// <param name="e">Property changed event args</param>
+        /// <param name="expression">Lambda expression containing the property name.</param>
+        /// <param name="action">The action to execute.</param>
+        public static void Match<TProperty>(this PropertyChangedEventArgs e, Expression<Func<TProperty>> expression, Action action)
+        {
+            if (string.IsNullOrEmpty(e.PropertyName))
+                action();
+            else
+            {
+                var propertyName = expression.GetMemberInfo().Name;
+                if (e.PropertyName == propertyName)
+                    action();
+            }
+        }
+    }
+
+    /// <summary>
     /// A base class for view models. Supports property change notification via strings and via lambda expressions
     /// </summary>
     public class BaseViewModel : INotifyPropertyChanged

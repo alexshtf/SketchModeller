@@ -88,6 +88,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainWindow.Controller.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="QuadraticFunctionHelper.cs" />
     <Compile Include="BaseEditorObjectViewModel.cs" />
     <Compile Include="CloningModelVisual3D.cs" />

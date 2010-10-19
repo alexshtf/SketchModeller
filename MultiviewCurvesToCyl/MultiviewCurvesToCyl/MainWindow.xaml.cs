@@ -5,6 +5,7 @@ using Utils;
 using Microsoft.Win32;
 using System;
 using Petzold.Media3D;
+using System.ComponentModel;
 
 namespace MultiviewCurvesToCyl
 {
@@ -17,6 +18,7 @@ namespace MultiviewCurvesToCyl
         private SaveFileDialog saveFileDialog;
         private MainViewModel mainViewModel;
         private bool isConstructingCurve;
+        private Controller controller;
 
         public MainWindow()
         {
@@ -29,6 +31,15 @@ namespace MultiviewCurvesToCyl
 
             openFileDialog.DefaultExt = saveFileDialog.DefaultExt = "xml";
             UpdateTotalMatrix();
+
+            controller = new Controller(mainViewModel);
+
+            mainViewModel.PropertyChanged += OnMainViewModelPropertyChanged;
+        }
+
+        private void OnMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            e.Match(() => mainViewModel.IsInNavigationMode, NavigationModeChangeHandler);
         }
 
         #region File choosing
@@ -57,6 +68,9 @@ namespace MultiviewCurvesToCyl
 
         private void OnSketchGridMouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (mainViewModel.IsInNavigationMode)
+                return;
+
             if (e.ChangedButton == MouseButton.Left && !isConstructingCurve) // start sketching. capture mouse.
             {
                 CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
@@ -87,6 +101,9 @@ namespace MultiviewCurvesToCyl
 
         private void OnSketchGridMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (mainViewModel.IsInNavigationMode)
+                return;
+
             if (e.ChangedButton == MouseButton.Left && isConstructingCurve)
             {
                 CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
@@ -102,6 +119,9 @@ namespace MultiviewCurvesToCyl
 
         private void OnSketchGridMouseMove(object sender, MouseEventArgs e)
         {
+            if (mainViewModel.IsInNavigationMode)
+                return;
+
             if (isConstructingCurve)
             {
                 CastUtils.MatchClass<IInputElement>(sender, senderInputElement =>
@@ -140,5 +160,47 @@ namespace MultiviewCurvesToCyl
         }
 
         #endregion
+
+        private void NavigationModeChangeHandler()
+        {
+            if (mainViewModel.IsInNavigationMode)
+            {
+            }
+            else
+            { 
+                // TODO: Maybe release mouse capture
+            }
+        }
+
+        private Point lastPoint;
+
+        private void OnViewport3DMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            lastPoint = e.GetPosition(viewport3d);
+        }
+
+        private void OnViewport3DMouseMove(object sender, MouseEventArgs e)
+        {
+            if (mainViewModel.IsInNavigationMode && e.LeftButton == MouseButtonState.Pressed)
+            {
+                var currentPos = e.GetPosition(viewport3d);
+                var diff = currentPos - lastPoint;
+                controller.RotateView(diff);
+
+                lastPoint = currentPos;
+            }
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape)
+                mainViewModel.IsInNavigationMode = false;
+        }
+
+        private void rootPanel_MouseMove(object sender, MouseEventArgs e)
+        {
+
+        }
     }
 }

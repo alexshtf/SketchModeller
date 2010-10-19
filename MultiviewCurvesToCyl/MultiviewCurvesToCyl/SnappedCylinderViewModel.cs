@@ -24,7 +24,7 @@ namespace MultiviewCurvesToCyl
 
         private IHaveCameraInfo cameraInfo;
         private MeshTopologyInfo topologyInfo;
-        private DispatcherTimer smoothStepTimer;
+        private DispatcherTimer snappingTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnappedCylinderViewModel"/> class.
@@ -123,12 +123,12 @@ namespace MultiviewCurvesToCyl
             var inflation = new FibermeshInflation(CylinderData, inflationConstrainedIndices.ToArray());
 
             // perform the smoothing steps with dispatcher timer (to show animation to the user).
-            const int COUNT = 2;
+            const int COUNT = 3;
             const double STEP_SIZE = 0.9;
-            smoothStepTimer = new DispatcherTimer();
-            smoothStepTimer.Interval = TimeSpan.FromSeconds(0.01);
+            snappingTimer = new DispatcherTimer();
+            snappingTimer.Interval = TimeSpan.FromSeconds(0.01);
             int ticks = 1;
-            smoothStepTimer.Tick += (sender, args) =>
+            snappingTimer.Tick += (sender, args) =>
                 {
                     // find error vectors for top/bottom fibers using closest projections on the curves.
                     var errorVectors =
@@ -162,24 +162,11 @@ namespace MultiviewCurvesToCyl
                         var e1 = errorVectors.Where(item => item.Index == i1).First().ErrorVector;
                         var e2 = errorVectors.Where(item => item.Index == i2).First().ErrorVector;
 
-                        // store original positions
-                        var p1 = CylinderData.Positions[i1];
-                        var p2 = CylinderData.Positions[i2];
-
-                        // calculate positions after modification
-                        var q1 = p1 - STEP_SIZE * e1;
-                        var q2 = p2 - STEP_SIZE * e2;
-
-                        // calculate the linear transformation
-                        var t = GetTransform(p1, q1, p2, q2);
-
-                        // we assume that t is indeed the transformation transforming p1 -> q1 and p2 -> q2
-                        Contract.Assume((p1 * t - q1).LengthSquared < EPSILON);
-                        Contract.Assume((p2 * t - q2).LengthSquared < EPSILON);
+                        var transformedPoints = Transform3DCircle(CylinderData, singleCircleIndices.All.ToArray(), i1, i2, e1, e2, STEP_SIZE);
 
                         // now we apply the transformation t to all points on a single circle
-                        foreach (var index in singleCircleIndices.All)
-                            manuallyMovedPoints.Add(CylinderData.Positions[index] * t);
+                        for (int i = 0; i < singleCircleIndices.All.Count; ++i)
+                            manuallyMovedPoints.Add(transformedPoints[i]);
                     }
 
                     // move the vertices along the error vectors, in small steps of size STEP_SIZE.
@@ -189,7 +176,7 @@ namespace MultiviewCurvesToCyl
 
                     // perform smoothing step to spread the change to the whole mesh
                     var manuallyMovedPointsArray = manuallyMovedPoints.ToArray(); 
-                    for (int i = 0; i < 3; ++i)
+                    for (int i = 0; i < 5; ++i)
                         inflation.SmoothStep(manuallyMovedPointsArray);                    
 
                     // notify the user about position/normal updates on the whole mesh
@@ -203,7 +190,7 @@ namespace MultiviewCurvesToCyl
                     ++ticks;
                     if (ticks > COUNT)
                     {
-                        smoothStepTimer.Stop();
+                        snappingTimer.Stop();
                         // find error vectors for top/bottom fibers using closest projections on the curves.
                         errorVectors =
                             from index in topBottomIndices
@@ -223,28 +210,42 @@ namespace MultiviewCurvesToCyl
                     }
                     System.Diagnostics.Debug.WriteLine(ticks);
                 };
-            smoothStepTimer.Start();
+            snappingTimer.Start();
         }
 
-        private Matrix3D GetTransform(Point3D p1, Point3D q1, Point3D p2, Point3D q2)
+        private Point3D[] Transform3DCircle(ConstrainedCylinder cylinder, int[] circleIndices, int i1, int i2, Vector3D e1, Vector3D e2, double stepSize)
         {
-            Matrix m = new Matrix(new double[,]
-            {
-                { p1.X, p1.Y, p1.Z, 0   , 0   , 0   , 0   , 0   , 0   , 1, 0, 0},
-                { 0   , 0   , 0   , p1.X, p1.Y, p1.Z, 0   , 0   , 0   , 0, 1, 0},
-                { 0   , 0   , 0   , 0   , 0   , 0   , p1.X, p1.Y, p1.Z, 0, 0, 1},
-                { p2.X, p2.Y, p2.Z, 0   , 0   , 0   , 0   , 0   , 0   , 1, 0, 0},
-                { 0   , 0   , 0   , p2.X, p2.Y, p2.Z, 0   , 0   , 0   , 0, 1, 0},
-                { 0   , 0   , 0   , 0   , 0   , 0   , p2.X, p2.Y, p2.Z, 0, 0, 1},
-            });
-            ColumnVector vec = new ColumnVector(new double[] { q1.X, q1.Y, q1.Z, q2.X, q2.Y, q2.Z });
+            Contract.Requires(cylinder != null);
+            Contract.Requires(circleIndices != null);
+            Contract.Requires(Contract.ForAll(circleIndices, index => index < cylinder.Positions.Count));
+            Contract.Requires(Contract.Exists(circleIndices, index => index == i1));
+            Contract.Requires(Contract.Exists(circleIndices, index => index == i2));
+            Contract.Requires(stepSize > 0);
+            Contract.Ensures(Contract.Result<Point3D[]>().Length == circleIndices.Length);
 
-            var s = LinearAlgebra.LeastNormSolution(m, vec);
-            var result = new Matrix3D(
-                s[0], s[3], s[6], 0,
-                s[1], s[4], s[7], 0,
-                s[2], s[5], s[8], 0,
-                s[9], s[10], s[11], 1);
+            // current positions of the snapped vertices
+            var p1 = cylinder.Positions[i1];
+            var p2 = cylinder.Positions[i2];
+
+            // the approximate circle center
+            var c = MathUtils3D.Lerp(p1, p2, 0.5); 
+
+            // new positions of the snapped vertices
+            var q1 = p1 - stepSize * e1;
+            var q2 = p2 - stepSize * e2;
+
+            // approximate the new circle radius/center
+            var nr = (q2 - q1).Length / 2;
+            var nc = MathUtils3D.Lerp(q1, q2, 0.5);
+
+            // approximate new positions on the circle
+            var result = new Point3D[circleIndices.Length];
+            for (int i = 0; i < circleIndices.Length; ++i)
+            {
+                var p = cylinder.Positions[circleIndices[i]];
+                var v = (p - c).Normalized();
+                result[i] = nc + nr * v;
+            }
 
             return result;
         }

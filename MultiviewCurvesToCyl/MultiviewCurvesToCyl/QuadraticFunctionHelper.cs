@@ -10,21 +10,6 @@ namespace MultiviewCurvesToCyl
 {
     static class QuadraticFunctionHelper
     {
-        public static double[] Solve(Term targetFunction, Variable[] variables)
-        {
-            var quadraticFactorsData = ExtractQuadraticFactors(targetFunction, variables);
-            using (var factoredMatrix = new FactoredSparseMatrix(quadraticFactorsData.QuadraticFactors.ToArray(), variables.Length))
-            {
-                var vec = new double[variables.Length];
-                foreach(var item in quadraticFactorsData.LinearFactors)
-                    vec[item.Item1] = -0.5 * item.Item2;
-
-                var solution = factoredMatrix.Solve(vec);
-
-                return solution;
-            }
-        }
-
         public static QuadraticFactorsData ExtractQuadraticFactors(Term targetFunction, Variable[] variables)
         {
             var indexOf = new Dictionary<Variable, int>();

@@ -64,10 +64,11 @@ namespace MultiviewCurvesToCyl
                 new MenuCategoryItem("Edit")
                 {
                     MenuCommandItem.Create("New cylinder", o => NewCylinder()),
+                    MenuCommandItem.Create("Enter navigation mode", o => EnterNavigationMode()),
                 },
             };
 
-            ViewPosition = new Point3D(0, 0, 125);
+            ViewPosition = new Point3D(0, 0, 700);
             ViewDirection = new Vector3D(0, 0, -1);
             UpDirection = new Vector3D(0, 1, 0);
         }
@@ -119,6 +120,11 @@ namespace MultiviewCurvesToCyl
         {
             var newCylinderViewModel = CreateNewCylinderViewModel();
             NewCylinderViewModels.Add(newCylinderViewModel);
+        }
+
+        public void EnterNavigationMode()
+        {
+            IsInNavigationMode = true;
         }
 
         private NewCylinderViewModel CreateNewCylinderViewModel()
@@ -218,6 +224,22 @@ namespace MultiviewCurvesToCyl
 
         #endregion
 
+        #region IsInNavigationMode property
+
+        private bool isInNavigationMode;
+
+        public bool IsInNavigationMode
+        {
+            get { return isInNavigationMode; }
+            set
+            {
+                isInNavigationMode = value;
+                NotifyPropertyChanged(() => IsInNavigationMode);
+            }
+        }
+
+        #endregion
+
         public ObservableCollection<BaseMenuViewModel> MenuItems { get; private set; }
 
         /// <summary>
@@ -306,6 +328,20 @@ namespace MultiviewCurvesToCyl
 
 
         #endregion
+
+        /// <summary>
+        /// Rotates the camera with a new view and up direction, keeping its position.
+        /// </summary>
+        /// <param name="newViewDirection">The new camera view direction</param>
+        /// <param name="newUpDirection">The new camera up direction</param>
+        public void RotateCamera(Vector3D newViewDirection, Vector3D newUpDirection)
+        {
+            viewDirection = newViewDirection;
+            upDirection = newUpDirection;
+
+            NotifyPropertyChanged(() => ViewDirection);
+            NotifyPropertyChanged(() => UpDirection);
+        }
     }
      
 

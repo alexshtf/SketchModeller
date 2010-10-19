@@ -3,8 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:alex="http://alex/xaml"
         xmlns:local="clr-namespace:MultiviewCurvesToCyl"
-        Title="MainWindow" WindowState="Maximized">
-    <DockPanel LastChildFill="True">
+        Title="MainWindow" 
+        WindowState="Maximized">
+    <DockPanel x:Name="rootPanel" 
+               LastChildFill="True"
+               MouseMove="rootPanel_MouseMove">
         <Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuItems}">
             <Menu.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local:MenuCategoryItem}"
@@ -75,10 +78,22 @@
                           Width="5"/>
 
             <!-- Right part. The 3D interface-->
-            <Grid Grid.Column="1">
-                <Viewport3D x:Name="viewport3d" SizeChanged="OnViewport3DSizeChanged">
+            <Grid Grid.Column="1" 
+                  Background="White"
+                  MouseMove="OnViewport3DMouseMove"
+                  MouseDown="OnViewport3DMouseDown">
+                <Viewport3D x:Name="viewport3d" 
+                            SizeChanged="OnViewport3DSizeChanged">
                     <Viewport3D.Camera>
-                        <OrthographicCamera x:Name="camera"
+                        <PerspectiveCamera x:Name="camera"
+                                           Changed="OnCameraChanged"
+                                           Position="{Binding ViewPosition, Mode=TwoWay}"
+                                           LookDirection="{Binding ViewDirection, Mode=TwoWay}"
+                                           UpDirection="{Binding UpDirection, Mode=TwoWay}"
+                                           FieldOfView="45.0"
+                                           NearPlaneDistance="0.1"
+                                           FarPlaneDistance="10000" />
+                        <!--<OrthographicCamera x:Name="camera"
                                             Changed="OnCameraChanged"
                                             Position="{Binding ViewPosition, Mode=TwoWay}"
                                             LookDirection="{Binding ViewDirection, Mode=TwoWay}"
@@ -86,21 +101,14 @@
                                             NearPlaneDistance="0.1"
                                             FarPlaneDistance="10000"
                                             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Viewport3D}, Path=ActualWidth}">
-                            <OrthographicCamera.Transform>
-                                <RotateTransform3D>
-                                    <RotateTransform3D.Rotation>
-                                        <AxisAngleRotation3D Axis="0,1,0" Angle="0" />
-                                    </RotateTransform3D.Rotation>
-                                </RotateTransform3D>
-                            </OrthographicCamera.Transform>
-                        </OrthographicCamera>
+                        </OrthographicCamera>-->
                     </Viewport3D.Camera>
- 
-                    
+
+
                     <!-- Light that radiates from the camera -->
                     <ModelVisual3D>
                         <ModelVisual3D.Content>
-                            <PointLight Position="{Binding ViewPosition}"
+                            <PointLight Position="{Binding ViewPosition, Mode=OneWay}"
                                         Color="White" />
                         </ModelVisual3D.Content>
                     </ModelVisual3D>
@@ -131,7 +139,7 @@
                             </local:CloningModelVisual3D>
                         </ModelVisual3D.Children>
                     </ModelVisual3D>
-                   
+
                 </Viewport3D>
             </Grid>
         </Grid>
