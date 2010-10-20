@@ -4,7 +4,12 @@
         xmlns:alex="http://alex/xaml"
         xmlns:local="clr-namespace:MultiviewCurvesToCyl"
         Title="MainWindow" 
-        WindowState="Maximized">
+        WindowState="Maximized" 
+        mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        d:DesignHeight="327" 
+        d:DesignWidth="654" >
     <DockPanel x:Name="rootPanel" 
                LastChildFill="True"
                MouseMove="rootPanel_MouseMove">
@@ -23,6 +28,37 @@
             </Menu.Resources>
         </Menu>
         <Grid>
+            <Grid.Resources>
+                <Style x:Key="TitleStyle" TargetType="Border">
+                    <Style.Resources>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Foreground" Value="Blue" />
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="Background" Value="LightBlue" />
+                    <Setter Property="BorderBrush" Value="Blue" />
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="CornerRadius" Value="2" />
+                    <Setter Property="Padding" Value="5" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                </Style>
+                <Style x:Key="HUDStyle" TargetType="Border">
+                    <Style.Resources>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Foreground" Value="Red" />
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="Width" Value="200" />
+                    <Setter Property="Background" Value="LightBlue" />
+                    <Setter Property="BorderBrush" Value="Red" />
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="CornerRadius" Value="2" />
+                    <Setter Property="Padding" Value="5" />
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="VerticalAlignment" Value="Bottom" />
+                </Style>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -72,13 +108,8 @@
                 </ItemsControl>
             </Grid>
             <Border Grid.Column="0"
-                    BorderBrush="Blue"
-                    BorderThickness="2"
-                    CornerRadius="5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
-                    Padding="5">
-                <TextBlock Foreground="Blue">Sketch &amp; snap interface</TextBlock>
+                    Style="{StaticResource TitleStyle}">
+                <TextBlock TextWrapping="WrapWithOverflow">Sketch &amp; snap interface</TextBlock>
             </Border>
 
             <GridSplitter ResizeDirection="Columns"
@@ -103,15 +134,6 @@
                                            FieldOfView="45.0"
                                            NearPlaneDistance="0.1"
                                            FarPlaneDistance="10000" />
-                        <!--<OrthographicCamera x:Name="camera"
-                                            Changed="OnCameraChanged"
-                                            Position="{Binding ViewPosition, Mode=TwoWay}"
-                                            LookDirection="{Binding ViewDirection, Mode=TwoWay}"
-                                            UpDirection="{Binding UpDirection, Mode=TwoWay}"
-                                            NearPlaneDistance="0.1"
-                                            FarPlaneDistance="10000"
-                                            Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Viewport3D}, Path=ActualWidth}">
-                        </OrthographicCamera>-->
                     </Viewport3D.Camera>
 
 
@@ -153,27 +175,13 @@
                 </Viewport3D>
             </Grid>
             <Border Grid.Column="1"
-                    BorderBrush="Blue"
-                    BorderThickness="2"
-                    CornerRadius="5"
-                    Padding="5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top">
-                <TextBlock Foreground="Blue">3D view interface</TextBlock>
+                    Style="{StaticResource TitleStyle}">
+                <TextBlock>3D view interface</TextBlock>
             </Border>
 
             <!-- HUD -->
-            <Border BorderBrush="Red" 
-                    BorderThickness="2" 
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    CornerRadius="5"
+            <Border Style="{StaticResource HUDStyle}"
                     Grid.ColumnSpan="2">                
-                <Border.Resources>
-                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                        <Setter Property="Foreground" Value="Red" />
-                    </Style>
-                </Border.Resources>
                 <Grid>
                     <StackPanel Visibility="{Binding IsInNavigationMode, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock HorizontalAlignment="Center">Navigation mode</TextBlock>

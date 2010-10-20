@@ -18,6 +18,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         private readonly MeshTopologyInfo topologyInfo;
         private readonly int[] allIndices;
         private readonly int[] constrainedIndicesArray;
+        private readonly int[] freeIndicesArray;
 
         private readonly Variable[] scalarVariables;
         private readonly Term scalarLaplacianTerm;
@@ -46,8 +47,14 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             this.topologyInfo = new MeshTopologyInfo(mesh.TriangleIndices);
             this.constrainedIndicesArray = constrainedIndices;
 
+
             var vertexCount = mesh.Positions.Count;
             allIndices = System.Linq.Enumerable.Range(0, vertexCount).ToArray();
+            
+            this.freeIndicesArray =
+                allIndices
+                .Except(new HashSet<int>(constrainedIndicesArray))
+                .ToArray();
 
             scalarVariables = ArrayUtils.Generate<Variable>(vertexCount);
             positionVariablesX = ArrayUtils.Generate<Variable>(vertexCount);
@@ -146,19 +153,6 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var targetLaplacianY = (from item in targetLaplacianVectors select (Term)item.Y).ToArray();
             var targetLaplacianZ = (from item in targetLaplacianVectors select (Term)item.Z).ToArray();
 
-            var freeIndicesArray =
-                allIndices
-                .Except(new HashSet<int>(constrainedIndicesArray))
-                .ToArray();
-
-            var freeTargetLaplacianX = ElementsAt(targetLaplacianX, freeIndicesArray);
-            var freeTargetLaplacianY = ElementsAt(targetLaplacianY, freeIndicesArray);
-            var freeTargetLaplacianZ = ElementsAt(targetLaplacianZ, freeIndicesArray);
-
-            var constrainedTargetLaplacianX = ElementsAt(targetLaplacianX, constrainedIndicesArray);
-            var constrainedTargetLaplacianY = ElementsAt(targetLaplacianY, constrainedIndicesArray);
-            var constrainedTargetLaplacianZ = ElementsAt(targetLaplacianZ, constrainedIndicesArray);
-
             var targetEdges = (from edge in topologyInfo.GetEdges()
                                let vi = mesh.Positions[edge.Item1]
                                let vj = mesh.Positions[edge.Item2]
@@ -191,26 +185,37 @@ namespace MultiviewCurvesToCyl.MeshGeneration
                  select positionVariablesZ[tuple.Item1] - positionVariablesZ[tuple.Item2]
                 ).ToArray();
 
+            var boundIndices = (from idx in allIndices where topologyInfo.IsBoundaryVertex(idx) select idx).ToArray();
+            var innerIndices = (from idx in allIndices where !topologyInfo.IsBoundaryVertex(idx) select idx).ToArray();
+
             var laplacianVariablesX = GetLaplacians(positionVariablesX, allIndices);
             var laplacianVariablesY = GetLaplacians(positionVariablesY, allIndices);
             var laplacianVariablesZ = GetLaplacians(positionVariablesZ, allIndices);
 
-            var freeLaplacianVariablesX = ElementsAt(laplacianVariablesX, freeIndicesArray);
-            var freeLaplacianVariablesY = ElementsAt(laplacianVariablesY, freeIndicesArray);
-            var freeLaplacianVariablesZ = ElementsAt(laplacianVariablesZ, freeIndicesArray);
+            var boundLaplacianVariablesX = ElementsAt(laplacianVariablesX, boundIndices);
+            var boundLaplacianVariablesY = ElementsAt(laplacianVariablesY, boundIndices);
+            var boundLaplacianVariablesZ = ElementsAt(laplacianVariablesZ, boundIndices);
 
-            var constrainedLaplacianVariablesX = ElementsAt(laplacianVariablesX, constrainedIndicesArray);
-            var constrainedLaplacianVariablesY = ElementsAt(laplacianVariablesY, constrainedIndicesArray);
-            var constrainedLaplacianVariablesZ = ElementsAt(laplacianVariablesZ, constrainedIndicesArray);
+            var innerLaplacianVariablesX = ElementsAt(laplacianVariablesX, innerIndices);
+            var innerLaplacianVariablesY = ElementsAt(laplacianVariablesY, innerIndices);
+            var innerLaplacianVariablesZ = ElementsAt(laplacianVariablesZ, innerIndices);
 
-            var freePositionLaplacianTerm =
-                SquareDiff(freeLaplacianVariablesX, freeTargetLaplacianX) +
-                SquareDiff(freeLaplacianVariablesY, freeTargetLaplacianY) +
-                SquareDiff(freeLaplacianVariablesZ, freeTargetLaplacianZ);
-            var constrainedPositionLaplacianTerm =
-                SquareDiff(constrainedLaplacianVariablesX, constrainedTargetLaplacianX) +
-                SquareDiff(constrainedLaplacianVariablesY, constrainedTargetLaplacianY) +
-                SquareDiff(constrainedLaplacianVariablesZ, constrainedTargetLaplacianZ);
+            var boundTargetLaplacianX = ElementsAt(targetLaplacianX, boundIndices);
+            var boundTargetLaplacianY = ElementsAt(targetLaplacianY, boundIndices);
+            var boundTargetLaplacianZ = ElementsAt(targetLaplacianZ, boundIndices);
+
+            var innerTargetLaplacianX = ElementsAt(targetLaplacianX, innerIndices);
+            var innerTargetLaplacianY = ElementsAt(targetLaplacianY, innerIndices);
+            var innerTargetLaplacianZ = ElementsAt(targetLaplacianZ, innerIndices);
+
+            var boundPositionLaplacianTerm =
+                SquareDiff(boundLaplacianVariablesX, boundTargetLaplacianX) +
+                SquareDiff(boundLaplacianVariablesY, boundTargetLaplacianY) +
+                SquareDiff(boundLaplacianVariablesZ, boundTargetLaplacianZ);
+            var innerPositionLaplacianTerm =
+                SquareDiff(innerLaplacianVariablesX, innerTargetLaplacianX) +
+                SquareDiff(innerLaplacianVariablesY, innerTargetLaplacianY) +
+                SquareDiff(innerLaplacianVariablesZ, innerTargetLaplacianZ);
             var positionEqualityTerm =
                 SquareDiff(constrainedPositionVariablesX, constrainedTargetPositionsX) +
                 SquareDiff(constrainedPositionVariablesY, constrainedTargetPositionsY) +
@@ -223,10 +228,10 @@ namespace MultiviewCurvesToCyl.MeshGeneration
             var allTerms = new Term[]
             {
                 TermBuilder.Constant(0),
-                1.0   * freePositionLaplacianTerm,
-                1.0   * constrainedPositionLaplacianTerm,
-                100.0 * positionEqualityTerm,
-                0.1   * edgeEqualityTerm,
+                0.1    * boundPositionLaplacianTerm,
+                1.0    * innerPositionLaplacianTerm,
+                1000.0 * positionEqualityTerm,
+                0.001  * edgeEqualityTerm,
             };
             var finalFunction = TermBuilder.Sum(allTerms);
             return finalFunction;
@@ -234,8 +239,19 @@ namespace MultiviewCurvesToCyl.MeshGeneration
 
         private Term CreateCurvaturesFunction(double[] currentCurvatures)
         {
-            var curvaturesEqualityTerm = SquareDiff(scalarVariables, ValuesToTerms(currentCurvatures));
-            var targetCurvaturesFunction = 1.0 * scalarLaplacianTerm + 1.0 * curvaturesEqualityTerm;
+            var freeScalarVariables = ElementsAt(scalarVariables, freeIndicesArray);
+            var consScalarVariables = ElementsAt(scalarVariables, constrainedIndicesArray);
+
+            var allCurvaturesTerms = ValuesToTerms(currentCurvatures);
+            var freeCurvaturesTerms = ElementsAt(allCurvaturesTerms, freeIndicesArray);
+            var consCurvaturesTerms = ElementsAt(allCurvaturesTerms, constrainedIndicesArray);
+
+            var freeCurvaturesEqualityTerm = SquareDiff(freeScalarVariables, freeCurvaturesTerms);
+            var consCurvaturesEqualityTerm = SquareDiff(consScalarVariables, consCurvaturesTerms);
+            var targetCurvaturesFunction = 
+                1.0 * scalarLaplacianTerm + 
+                0.1 * freeCurvaturesEqualityTerm +
+                1.0 * consCurvaturesEqualityTerm;
 
             return targetCurvaturesFunction;
         }
