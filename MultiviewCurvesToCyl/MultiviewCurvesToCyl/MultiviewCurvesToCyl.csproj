@@ -139,6 +139,7 @@
     </Compile>
     <Compile Include="SnappedCylinderView3D.cs" />
     <Compile Include="SnappedCylinderViewModel.cs" />
+    <Compile Include="SnappedCylinderWireframeView3D.cs" />
     <Compile Include="StartEndAnnotation.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

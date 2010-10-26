@@ -7,6 +7,7 @@ using Utils;
 using System.Windows.Media;
 using System.Windows;
 using MultiviewCurvesToCyl.MeshGeneration;
+using System.ComponentModel;
 
 namespace MultiviewCurvesToCyl
 {
@@ -21,20 +22,22 @@ namespace MultiviewCurvesToCyl
                 {
                     var model = new GeometryModel3D();
                     result.Content = model;
-                    var helper = new GeometryModel3DHelper(model, viewModel);
-                    GeometryModel3DHelper.SetInstance(model, helper);
+                    var helper = new GeometryModel3DHelper(result, model, viewModel);
+                    GeometryModel3DHelper.SetInstance(result, helper);
                 });
             return result;
         }
 
         private class GeometryModel3DHelper
         {
+            private ModelVisual3D father;
             private GeometryModel3D view;
             private SnappedCylinderViewModel viewModel;
 
-            public GeometryModel3DHelper(GeometryModel3D view, SnappedCylinderViewModel viewModel)
+            public GeometryModel3DHelper(ModelVisual3D father, GeometryModel3D view, SnappedCylinderViewModel viewModel)
             {
                 // assign fields
+                this.father = father;
                 this.view = view;
                 this.viewModel = viewModel;
 
@@ -59,6 +62,18 @@ namespace MultiviewCurvesToCyl
                 // register for event changes
                 viewModel.PositionUpdated += OnViewModelPositionUpdated;
                 viewModel.NormalUpdated += OnViewModelNormalUpdated;
+                viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            }
+
+            private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                e.Match(() => viewModel.IsInWireframeMode, () =>
+                    {
+                        if (viewModel.IsInWireframeMode)
+                            father.Content = null;
+                        else
+                            father.Content = view;
+                    });
             }
 
             private void OnViewModelPositionUpdated(object sender, IndexedAttributeUpdateEventArgs e)
@@ -81,12 +96,12 @@ namespace MultiviewCurvesToCyl
             public static readonly DependencyProperty InstanceProperty =
                 DependencyProperty.RegisterAttached("Instance", typeof(GeometryModel3DHelper), typeof(GeometryModel3DHelper));
 
-            public static void SetInstance(GeometryModel3D target, GeometryModel3DHelper value)
+            public static void SetInstance(Visual3D target, GeometryModel3DHelper value)
             {
                 target.SetValue(InstanceProperty, value);
             }
 
-            public static GeometryModel3DHelper GetInstance(GeometryModel3D target)
+            public static GeometryModel3DHelper GetInstance(Visual3D target)
             {
                 return (GeometryModel3DHelper)target.GetValue(InstanceProperty);
             } 

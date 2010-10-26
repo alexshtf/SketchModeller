@@ -62,7 +62,7 @@ namespace MultiviewCurvesToCyl
         /// <param name="center">The cylinder center.</param>
         /// <param name="orientation">The cylinder orientation.</param>
         /// <param name="initCameraInfo">The camera info</param>
-        public void Initialize(double radius, double length, Point3D center, Vector3D orientation, IHaveCameraInfo initCameraInfo)
+        public void Initialize(double radius, double length, Point3D center, Vector3D orientation, IHaveCameraInfo initCameraInfo, bool wireframe)
         {
             Contract.Requires(IsInitialized == false, "Cannot initialize the object twice");
             Contract.Requires(initCameraInfo != null);
@@ -70,6 +70,7 @@ namespace MultiviewCurvesToCyl
             cameraInfo = initCameraInfo;
             CylinderData = new ConstrainedCylinder(radius, length, center, orientation, cameraInfo.ViewDirection);
             topologyInfo = new MeshTopologyInfo(CylinderData.TriangleIndices);
+            IsInWireframeMode = wireframe;
             IsInitialized = true;
         }
 
@@ -261,6 +262,22 @@ namespace MultiviewCurvesToCyl
         /// Occurs when a normal of a vertex on the mesh is updated.
         /// </summary>
         public event EventHandler<IndexedAttributeUpdateEventArgs> NormalUpdated;
+
+        #region IsInWireframeMode property
+
+        private bool isInWireframeMode;
+
+        public bool IsInWireframeMode
+        {
+            get { return isInWireframeMode; }
+            set
+            {
+                isInWireframeMode = value;
+                NotifyPropertyChanged(() => IsInWireframeMode);
+            }
+        }
+
+        #endregion
 
         private IEnumerable<Point3D> GetCurvePoints(SketchCurve curve)
         {

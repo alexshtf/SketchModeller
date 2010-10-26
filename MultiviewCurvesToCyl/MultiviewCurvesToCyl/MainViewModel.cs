@@ -141,6 +141,8 @@ namespace MultiviewCurvesToCyl
         private void ToggleWireframe()
         {
             IsWireframeShown = !IsWireframeShown;
+            foreach (var item in SnappedCylinderViewModels)
+                item.IsInWireframeMode = IsWireframeShown;
         }
 
         #endregion
@@ -159,7 +161,8 @@ namespace MultiviewCurvesToCyl
                 toSnap.Length, 
                 toSnap.Center, 
                 toSnap.Orientation,
-                cameraInfo);
+                cameraInfo,
+                IsWireframeShown);
             snappedCylinderViewModel.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
 
             SnappedCylinderViewModels.Add(snappedCylinderViewModel);

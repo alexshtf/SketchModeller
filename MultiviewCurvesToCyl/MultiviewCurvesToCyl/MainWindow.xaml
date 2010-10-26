@@ -164,10 +164,11 @@
                         </ModelVisual3D.Transform>
                         <ModelVisual3D.Children>
                             <local:CloningModelVisual3D ItemsSource="{Binding NewCylinderViewModels}"
-                                                        ModelFactory="{x:Static local:NewCylinderView3D.Instance}">
-                            </local:CloningModelVisual3D>
+                                                        ModelFactory="{x:Static local:NewCylinderView3D.Instance}" />
                             <local:CloningVisual3D ItemsSource="{Binding SnappedCylinderViewModels}"
                                                    Visual3DFactory="{x:Static local:SnappedCylinderView3D.Instance}" />
+                            <local:CloningVisual3D ItemsSource="{Binding SnappedCylinderViewModels}"
+                                                   Visual3DFactory="{x:Static local:SnappedCylinderWireframeView3D.Instance}" />
                         </ModelVisual3D.Children>
                     </ModelVisual3D>
 
