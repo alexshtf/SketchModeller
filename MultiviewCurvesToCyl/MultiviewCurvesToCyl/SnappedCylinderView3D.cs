@@ -10,17 +10,19 @@ using MultiviewCurvesToCyl.MeshGeneration;
 
 namespace MultiviewCurvesToCyl
 {
-    class SnappedCylinderView3D : IModelFactory
+    class SnappedCylinderView3D : IVisual3DFactory
     {
         public static readonly SnappedCylinderView3D Instance = new SnappedCylinderView3D();
 
-        public Model3D Create(object dataItem)
+        public Visual3D Create(object dataItem)
         {
-            var result = new GeometryModel3D();
+            var result = new ModelVisual3D();
             dataItem.MatchClass<SnappedCylinderViewModel>(viewModel =>
                 {
-                    var helper = new GeometryModel3DHelper(result, viewModel);
-                    GeometryModel3DHelper.SetInstance(result, helper);
+                    var model = new GeometryModel3D();
+                    result.Content = model;
+                    var helper = new GeometryModel3DHelper(model, viewModel);
+                    GeometryModel3DHelper.SetInstance(model, helper);
                 });
             return result;
         }

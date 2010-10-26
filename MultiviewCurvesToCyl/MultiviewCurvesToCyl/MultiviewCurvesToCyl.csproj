@@ -88,7 +88,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CloningVisual3D.cs" />
     <Compile Include="Converters\ReverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="IVisual3DFactory.cs" />
     <Compile Include="MainWindow.Controller.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="QuadraticFunctionHelper.cs" />

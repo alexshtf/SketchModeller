@@ -26,6 +26,14 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         public Collection<Tuple<int, int, int>> TriangleIndices { get; private set; }
         public ReadOnlySet<int> ConstrainedPositionIndices { get; private set; }
 
+        protected ConstrainedMesh(ConstrainedMesh other)
+        {
+            Positions = new Collection<Point3D>(other.Positions.ToArray());
+            Normals = new Collection<Vector3D>(other.Normals.ToArray());
+            TriangleIndices = new Collection<Tuple<int, int, int>>(other.TriangleIndices.ToArray());
+            ConstrainedPositionIndices = new ReadOnlySet<int>(new HashSet<int>(other.ConstrainedPositionIndices));
+        }
+
         [ContractInvariantMethod]
         private void ObjectInvariants()
         {

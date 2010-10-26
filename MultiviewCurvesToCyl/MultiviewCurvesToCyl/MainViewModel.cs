@@ -64,7 +64,11 @@ namespace MultiviewCurvesToCyl
                 new MenuCategoryItem("Edit")
                 {
                     MenuCommandItem.Create("New cylinder", o => NewCylinder()),
+                },
+                new MenuCategoryItem("View")
+                {
                     MenuCommandItem.Create("Enter navigation mode", o => EnterNavigationMode()),
+                    MenuCommandItem.Create("Toggle wireframe", o => ToggleWireframe()),
                 },
             };
 
@@ -134,6 +138,11 @@ namespace MultiviewCurvesToCyl
             return result;
         }
 
+        private void ToggleWireframe()
+        {
+            IsWireframeShown = !IsWireframeShown;
+        }
+
         #endregion
 
         #region New cylinder commands
@@ -159,6 +168,22 @@ namespace MultiviewCurvesToCyl
         #endregion
 
         #region Public properties and methods
+
+        #region IsWireframeShown property
+
+        private bool isWireframeShown;
+
+        public bool IsWireframeShown
+        {
+            get { return isWireframeShown; }
+            set
+            {
+                isWireframeShown = value;
+                NotifyPropertyChanged(() => IsWireframeShown);
+            }
+        }
+
+        #endregion
 
         #region ViewDirection property
 
