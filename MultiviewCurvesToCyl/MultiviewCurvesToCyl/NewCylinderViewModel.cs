@@ -5,6 +5,7 @@ using System.Text;
 using Utils;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
+using MultiviewCurvesToCyl.Base;
 
 namespace MultiviewCurvesToCyl
 {

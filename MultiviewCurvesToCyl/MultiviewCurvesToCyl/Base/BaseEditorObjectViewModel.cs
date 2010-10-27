@@ -5,7 +5,7 @@ using System.Text;
 using Utils;
 using System.Collections.ObjectModel;
 
-namespace MultiviewCurvesToCyl
+namespace MultiviewCurvesToCyl.Base
 {
     class BaseEditorObjectViewModel : BaseViewModel
     {

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Diagnostics.Contracts;
 using System.Windows.Media.Media3D;
+using MultiviewCurvesToCyl.Base;
 
 namespace MultiviewCurvesToCyl
 {

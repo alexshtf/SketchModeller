@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Utils;
 
-namespace MultiviewCurvesToCyl
+namespace MultiviewCurvesToCyl.Base
 {
     abstract class BaseMenuViewModel : BaseViewModel
     {

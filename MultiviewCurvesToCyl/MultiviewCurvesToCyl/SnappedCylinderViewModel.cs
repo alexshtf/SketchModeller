@@ -10,6 +10,7 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using Meta.Numerics.Matrices;
+using MultiviewCurvesToCyl.Base;
 
 namespace MultiviewCurvesToCyl
 {

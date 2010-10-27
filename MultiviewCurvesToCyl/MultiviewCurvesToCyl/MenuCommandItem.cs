@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Input;
 using Utils;
 using System.Diagnostics.Contracts;
+using MultiviewCurvesToCyl.Base;
 
 namespace MultiviewCurvesToCyl
 {

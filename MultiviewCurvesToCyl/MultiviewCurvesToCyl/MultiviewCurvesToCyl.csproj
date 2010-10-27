@@ -96,15 +96,16 @@
     <Compile Include="Converters\ReverseBooleanToVisibilityConverter.cs" />
     <Compile Include="IVisual3DFactory.cs" />
     <Compile Include="MainWindow.Controller.cs" />
+    <Compile Include="Math\FastGradientQuadraticOptimizer.cs" />
+    <Compile Include="Math\LinearAlgebra.cs" />
+    <Compile Include="Math\QuadraticFunctionHelper.cs" />
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="QuadraticFunctionHelper.cs" />
     <Compile Include="CloningModelVisual3D.cs" />
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
     <Compile Include="Converters\Pos3DToPos2DConverter.cs" />
     <Compile Include="Converters\ScaleConverter.cs" />
     <Compile Include="IHaveCameraInfo.cs" />
     <Compile Include="IModelFactory.cs" />
-    <Compile Include="LinearAlgebra.cs" />
     <Compile Include="MainViewModel.Persistence.cs" />
     <Compile Include="MenuCategoryItem.cs" />
     <Compile Include="MenuCommandItem.cs" />
@@ -128,7 +129,6 @@
     <Compile Include="Persistence\Point.cs" />
     <Compile Include="Persistence\StartEndAnnotation.cs" />
     <Compile Include="Persistence\State.cs" />
-    <Compile Include="FastGradientQuadraticOptimizer.cs" />
     <Compile Include="SketchCurveView.xaml.cs">
       <DependentUpon>SketchCurveView.xaml</DependentUpon>
     </Compile>
@@ -204,6 +204,7 @@
       <Name>Utils</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
