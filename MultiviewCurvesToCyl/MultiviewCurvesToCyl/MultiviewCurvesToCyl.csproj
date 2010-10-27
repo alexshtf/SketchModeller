@@ -88,13 +88,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Base\Base3DViewModel.cs" />
+    <Compile Include="Base\BaseEditorObjectViewModel.cs" />
+    <Compile Include="Base\BaseMenuViewModel.cs" />
+    <Compile Include="Base\I3DViewModel.cs" />
     <Compile Include="CloningVisual3D.cs" />
     <Compile Include="Converters\ReverseBooleanToVisibilityConverter.cs" />
     <Compile Include="IVisual3DFactory.cs" />
     <Compile Include="MainWindow.Controller.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="QuadraticFunctionHelper.cs" />
-    <Compile Include="BaseEditorObjectViewModel.cs" />
     <Compile Include="CloningModelVisual3D.cs" />
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
     <Compile Include="Converters\Pos3DToPos2DConverter.cs" />
@@ -105,7 +108,6 @@
     <Compile Include="MainViewModel.Persistence.cs" />
     <Compile Include="MenuCategoryItem.cs" />
     <Compile Include="MenuCommandItem.cs" />
-    <Compile Include="BaseMenuViewModel.cs" />
     <Compile Include="MeshGeneration\ConstrainedCylinder.cs" />
     <Compile Include="MeshGeneration\ConstrainedMesh.cs" />
     <Compile Include="MeshGeneration\ConstrainedMeshSmooth.cs" />
