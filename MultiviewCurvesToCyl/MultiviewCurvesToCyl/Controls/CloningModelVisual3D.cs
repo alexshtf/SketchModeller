@@ -11,7 +11,7 @@ using Utils;
 using System.Windows;
 using System.Diagnostics.Contracts;
 
-namespace MultiviewCurvesToCyl
+namespace MultiviewCurvesToCyl.Controls
 {
     class CloningModelVisual3D : ModelVisual3D
     {

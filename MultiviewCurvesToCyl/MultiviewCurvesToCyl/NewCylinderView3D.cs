@@ -7,6 +7,7 @@ using Utils;
 using System.Windows.Media;
 using System.Windows.Data;
 using System.Globalization;
+using MultiviewCurvesToCyl.Controls;
 
 namespace MultiviewCurvesToCyl
 {

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
 
-namespace MultiviewCurvesToCyl
+namespace MultiviewCurvesToCyl.Controls
 {
-    interface IVisual3DFactory
+    interface IModelFactory
     {
-        Visual3D Create(object item);
+        Model3D Create(object dataItem);
     }
 }

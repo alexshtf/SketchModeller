@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows;
 using MultiviewCurvesToCyl.MeshGeneration;
 using System.ComponentModel;
+using MultiviewCurvesToCyl.Controls;
 
 namespace MultiviewCurvesToCyl
 {
