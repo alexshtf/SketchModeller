@@ -88,6 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Base\Base3DView.cs" />
     <Compile Include="Base\Base3DViewModel.cs" />
     <Compile Include="Base\BaseEditorObjectViewModel.cs" />
     <Compile Include="Base\BaseMenuViewModel.cs" />
