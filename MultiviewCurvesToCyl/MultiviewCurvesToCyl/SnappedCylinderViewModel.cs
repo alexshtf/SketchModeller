@@ -14,7 +14,7 @@ using MultiviewCurvesToCyl.Base;
 
 namespace MultiviewCurvesToCyl
 {
-    class SnappedCylinderViewModel : BaseEditorObjectViewModel
+    class SnappedCylinderViewModel : Base3DViewModel
     {
         public const double EPSILON = 1E-5;
         public const double INITIAL_LENGTH = 5;
@@ -263,22 +263,6 @@ namespace MultiviewCurvesToCyl
         /// Occurs when a normal of a vertex on the mesh is updated.
         /// </summary>
         public event EventHandler<IndexedAttributeUpdateEventArgs> NormalUpdated;
-
-        #region IsInWireframeMode property
-
-        private bool isInWireframeMode;
-
-        public bool IsInWireframeMode
-        {
-            get { return isInWireframeMode; }
-            set
-            {
-                isInWireframeMode = value;
-                NotifyPropertyChanged(() => IsInWireframeMode);
-            }
-        }
-
-        #endregion
 
         private IEnumerable<Point3D> GetCurvePoints(SketchCurve curve)
         {

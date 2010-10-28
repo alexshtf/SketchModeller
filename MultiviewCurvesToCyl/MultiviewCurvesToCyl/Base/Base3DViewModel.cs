@@ -6,7 +6,7 @@ using Utils;
 
 namespace MultiviewCurvesToCyl.Base
 {
-    class Base3DViewModel : BaseViewModel, I3DViewModel
+    class Base3DViewModel : BaseEditorObjectViewModel, I3DViewModel
     {
         #region IsInWireframeMode property
 
@@ -17,9 +17,12 @@ namespace MultiviewCurvesToCyl.Base
             get { return isInWireframeMode; }
             set
             {
-                var oldVal = isInWireframeMode;
-                isInWireframeMode = value;
-                OnIsInWireframeModeChanged(oldVal, value);
+                if (value != isInWireframeMode)
+                {
+                    var oldVal = isInWireframeMode;
+                    isInWireframeMode = value;
+                    OnIsInWireframeModeChanged(oldVal, value);
+                }
             }
         }
 

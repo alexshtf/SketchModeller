@@ -168,8 +168,6 @@
                                                            ModelFactory="{x:Static local:NewCylinderView3D.Instance}" />
                             <controls:CloningVisual3D ItemsSource="{Binding SnappedCylinderViewModels}"
                                                       Visual3DFactory="{x:Static local:SnappedCylinderView3D.Instance}" />
-                            <controls:CloningVisual3D ItemsSource="{Binding SnappedCylinderViewModels}"
-                                                      Visual3DFactory="{x:Static local:SnappedCylinderWireframeView3D.Instance}" />
                         </ModelVisual3D.Children>
                     </ModelVisual3D>
 

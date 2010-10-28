@@ -9,105 +9,58 @@ using System.Windows;
 using MultiviewCurvesToCyl.MeshGeneration;
 using System.ComponentModel;
 using MultiviewCurvesToCyl.Controls;
+using MultiviewCurvesToCyl.Base;
+using Petzold.Media3D;
 
 namespace MultiviewCurvesToCyl
 {
-    class SnappedCylinderView3D : IVisual3DFactory
+    class SnappedCylinderView3D : Base3DView<SnappedCylinderViewModel>
     {
-        public static readonly SnappedCylinderView3D Instance = new SnappedCylinderView3D();
+        public static SnappedCylinderView3D Instance = new SnappedCylinderView3D();
 
-        public Visual3D Create(object dataItem)
+        protected override Visual3D CreateWireframeVisual(SnappedCylinderViewModel viewModel)
         {
-            var result = new ModelVisual3D();
-            dataItem.MatchClass<SnappedCylinderViewModel>(viewModel =>
-                {
-                    var model = new GeometryModel3D();
-                    result.Content = model;
-                    var helper = new GeometryModel3DHelper(result, model, viewModel);
-                    GeometryModel3DHelper.SetInstance(result, helper);
-                });
-            return result;
+            var visual = new WireFrame();
+            var triangleIndicesSequence = viewModel.CylinderData.TriangleIndices.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3 });
+            visual.Positions = new Point3DCollection(viewModel.CylinderData.Positions);
+            visual.Normals = new Vector3DCollection(viewModel.CylinderData.Normals);
+            visual.TriangleIndices = new Int32Collection(triangleIndicesSequence);
+            visual.Color = Colors.Red;
+
+            viewModel.PositionUpdated += (sender, args) => visual.Positions[args.Index] = viewModel.CylinderData.Positions[args.Index];
+            viewModel.NormalUpdated += (sender, args) => visual.Normals[args.Index] = viewModel.CylinderData.Normals[args.Index];
+
+            return visual;
         }
 
-        private class GeometryModel3DHelper
+        protected override Visual3D CreateSolidVisual(SnappedCylinderViewModel viewModel)
         {
-            private ModelVisual3D father;
-            private GeometryModel3D view;
-            private SnappedCylinderViewModel viewModel;
+            var visual = new ModelVisual3D();
+            var geometryModel = new GeometryModel3D();
+            visual.Content = geometryModel;
 
-            public GeometryModel3DHelper(ModelVisual3D father, GeometryModel3D view, SnappedCylinderViewModel viewModel)
+            var triangleIndicesSequence = viewModel.CylinderData.TriangleIndices.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3 });
+            var geometry = new MeshGeometry3D
             {
-                // assign fields
-                this.father = father;
-                this.view = view;
-                this.viewModel = viewModel;
+                Positions = new Point3DCollection(viewModel.CylinderData.Positions),
+                Normals = new Vector3DCollection(viewModel.CylinderData.Normals),
+                TriangleIndices = new Int32Collection(triangleIndicesSequence),
+            };
+            geometryModel.Geometry = geometry;
 
-                // perform initialization
-                var triangleIndicesSequence = viewModel.CylinderData.TriangleIndices.SelectMany(x => new int[] { x.Item1, x.Item2, x.Item3 });
-                view.Geometry = new MeshGeometry3D
-                {
-                    Positions = new Point3DCollection(viewModel.CylinderData.Positions),
-                    Normals = new Vector3DCollection(viewModel.CylinderData.Normals),
-                    TriangleIndices = new Int32Collection(triangleIndicesSequence),
-                };
-
-                view.Material = new DiffuseMaterial
-                {
-                    Brush = new SolidColorBrush { Color = Colors.White },
-                };
-                view.BackMaterial = new DiffuseMaterial
-                {
-                    Brush = new SolidColorBrush { Color = Colors.Red },
-                };
-
-                // register for event changes
-                viewModel.PositionUpdated += OnViewModelPositionUpdated;
-                viewModel.NormalUpdated += OnViewModelNormalUpdated;
-                viewModel.PropertyChanged += OnViewModelPropertyChanged;
-            }
-
-            private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+            geometryModel.Material = new DiffuseMaterial
             {
-                e.Match(() => viewModel.IsInWireframeMode, () =>
-                    {
-                        if (viewModel.IsInWireframeMode)
-                            father.Content = null;
-                        else
-                            father.Content = view;
-                    });
-            }
-
-            private void OnViewModelPositionUpdated(object sender, IndexedAttributeUpdateEventArgs e)
+                Brush = new SolidColorBrush { Color = Colors.White },
+            };
+            geometryModel.BackMaterial = new DiffuseMaterial
             {
-                MeshGeometry.Positions[e.Index] = viewModel.CylinderData.Positions[e.Index];
-            }
+                Brush = new SolidColorBrush { Color = Colors.Red },
+            };
 
-            private void OnViewModelNormalUpdated(object sender, IndexedAttributeUpdateEventArgs e)
-            {
-                MeshGeometry.Normals[e.Index] = viewModel.CylinderData.Normals[e.Index];
-            }
+            viewModel.PositionUpdated += (sender, args) => geometry.Positions[args.Index] = viewModel.CylinderData.Positions[args.Index];
+            viewModel.NormalUpdated += (sender, args) => geometry.Normals[args.Index] = viewModel.CylinderData.Normals[args.Index];
 
-            private MeshGeometry3D MeshGeometry
-            {
-                get { return (MeshGeometry3D)view.Geometry; }
-            }
-
-            #region Instance attached property
-            
-            public static readonly DependencyProperty InstanceProperty =
-                DependencyProperty.RegisterAttached("Instance", typeof(GeometryModel3DHelper), typeof(GeometryModel3DHelper));
-
-            public static void SetInstance(Visual3D target, GeometryModel3DHelper value)
-            {
-                target.SetValue(InstanceProperty, value);
-            }
-
-            public static GeometryModel3DHelper GetInstance(Visual3D target)
-            {
-                return (GeometryModel3DHelper)target.GetValue(InstanceProperty);
-            } 
-
-            #endregion
+            return visual;
         }
     }
 }
