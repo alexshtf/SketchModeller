@@ -139,6 +139,11 @@
     </Compile>
     <Compile Include="Views\NewCylinder\NewCylinderView3D.cs" />
     <Compile Include="Views\NewCylinder\NewCylinderViewModel.cs" />
+    <Compile Include="Views\PointsBasedCylinder\PointsBasedCylinderView2D.xaml.cs">
+      <DependentUpon>PointsBasedCylinderView2D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PointsBasedCylinder\PointsBasedCylinderView3D.cs" />
+    <Compile Include="Views\PointsBasedCylinder\PointsBasedCylinderViewModel.cs" />
     <Compile Include="Views\SnappedCylinder\SnappedCylinderView2D.xaml.cs">
       <DependentUpon>SnappedCylinderView2D.xaml</DependentUpon>
     </Compile>
@@ -164,6 +169,10 @@
     <Page Include="Views\NewCylinder\NewCylinderView2D.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PointsBasedCylinder\PointsBasedCylinderView2D.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SnappedCylinder\SnappedCylinderView2D.xaml">
       <Generator>MSBuild:Compile</Generator>
