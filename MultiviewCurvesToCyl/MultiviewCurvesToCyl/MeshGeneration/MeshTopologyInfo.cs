@@ -133,7 +133,7 @@ namespace MultiviewCurvesToCyl.MeshGeneration
         {
             Contract.Requires(edges != null);
             Contract.Requires(triangles != null);
-            Contract.Ensures(Contract.Result<HashSet<EdgeInfo>>().IsSubsetOf(edges));
+            Contract.Ensures(Contract.ForAll(Contract.Result<HashSet<EdgeInfo>>(), edge => edges.Contains(edge)));
 
             // edge to triangles-count dictionary initially stores 0 triangles for each edge. We will increase this number
             // as we enumerate the triangles.

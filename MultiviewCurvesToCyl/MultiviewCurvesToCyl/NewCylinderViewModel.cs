@@ -12,7 +12,7 @@ namespace MultiviewCurvesToCyl
     /// <summary>
     /// View model for newly created cyllinders, before any snapping began.
     /// </summary>
-    class NewCylinderViewModel : BaseEditorObjectViewModel
+    class NewCylinderViewModel : Base3DViewModel
     {
         private const double INITIAL_LENGTH = 100;
         private const double INITIAL_RADIUS = 50;

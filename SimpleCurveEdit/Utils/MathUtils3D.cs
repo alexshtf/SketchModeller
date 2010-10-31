@@ -81,7 +81,7 @@ namespace Utils
         public static Vector3D MostSimilarPerpendicular(Vector3D similarTo, Vector3D orthogonalTo)
         {
             Contract.Requires(!AreParallel(similarTo, orthogonalTo));
-            Contract.Ensures(Math.Abs(Vector3D.DotProduct(orthogonalTo, Contract.Result<Vector3D>())) < EPSILON); // the result is really orthogonal
+            Contract.Ensures(AreOrthogonal(orthogonalTo, Contract.Result<Vector3D>())); // the result is really orthogonal
 
             orthogonalTo.Normalize();
 

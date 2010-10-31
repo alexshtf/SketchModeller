@@ -8,59 +8,98 @@ using System.Windows.Media;
 using System.Windows.Data;
 using System.Globalization;
 using MultiviewCurvesToCyl.Controls;
+using MultiviewCurvesToCyl.Base;
+using Petzold.Media3D;
 
 namespace MultiviewCurvesToCyl
 {
-    class NewCylinderView3D : IModelFactory
+    class NewCylinderView3D : Base3DView<NewCylinderViewModel>
     {
         public static readonly NewCylinderView3D Instance = new NewCylinderView3D();
 
         private const int SKELETON_POINTS = 50;
         private const int CYLINDER_SLICES = 50;
 
-        public Model3D Create(object dataItem)
+        protected override Visual3D CreateWireframeVisual(NewCylinderViewModel viewModel)
         {
-            var result = new GeometryModel3D();
-            dataItem.MatchClass<NewCylinderViewModel>(viewModel =>
-                {
-                    var skeleton = GenerateCylinderSkeleton(viewModel, SKELETON_POINTS);
-                    var meshData = SkeletonToMesh.SkeletonToCylinder(skeleton, CYLINDER_SLICES);
+            var untransformed = CreateCylinderWireframe(viewModel);
+            var transformed = BindTransformations(untransformed, viewModel);
+            return transformed;
+        }
 
-                    result.Geometry = new MeshGeometry3D
-                    {
-                        Positions = new Point3DCollection(meshData.Item1),
-                        Normals = new Vector3DCollection(meshData.Item2),
-                        TriangleIndices = new Int32Collection(meshData.Item3),
-                    };
-                    result.Material = new DiffuseMaterial
-                    {
-                        Brush = new SolidColorBrush { Color = Colors.White },
-                    };
-                    result.BackMaterial = new DiffuseMaterial
-                    {
-                        Brush = new SolidColorBrush { Color = Colors.Red },
-                    };
+        protected override Visual3D CreateSolidVisual(NewCylinderViewModel viewModel)
+        {
+            var untransformed = CreateCylinderSolid(viewModel);
+            var transformed = BindTransformations(untransformed, viewModel);
+            return transformed;
+        }
 
-                    var lengthRadiusScaleTransform = new ScaleTransform3D();
-                    lengthRadiusScaleTransform.Bind(ScaleTransform3D.ScaleXProperty, "Length", viewModel);
-                    lengthRadiusScaleTransform.Bind(ScaleTransform3D.ScaleYProperty, "Radius", viewModel);
-                    lengthRadiusScaleTransform.ScaleZ = 1.0;
+        private ModelVisual3D CreateCylinderSolid(NewCylinderViewModel viewModel)
+        {
+            var skeleton = GenerateCylinderSkeleton(viewModel, SKELETON_POINTS);
+            var meshData = SkeletonToMesh.SkeletonToCylinder(skeleton, CYLINDER_SLICES);
 
-                    var translateTransform = new TranslateTransform3D();
-                    translateTransform.Bind(TranslateTransform3D.OffsetXProperty, "Center.X", viewModel);
-                    translateTransform.Bind(TranslateTransform3D.OffsetYProperty, "Center.Y", viewModel);
-                    translateTransform.Bind(TranslateTransform3D.OffsetZProperty, "Center.Z", viewModel);
+            var result = new ModelVisual3D();
+            var geometryModel = new GeometryModel3D();
+            result.Content = geometryModel;
 
-                    var orientationTransform = new RotateTransform3D();
-                    orientationTransform.Rotation = new AxisAngleRotation3D();
-                    orientationTransform.Rotation.Bind(AxisAngleRotation3D.AxisProperty, "Orientation", viewModel, OrientationToAxisConverter.Instance);
-                    orientationTransform.Rotation.Bind(AxisAngleRotation3D.AngleProperty, "Orientation", viewModel, OrientationToAngleConverter.Instance);
+            geometryModel.Geometry = new MeshGeometry3D
+            {
+                Positions = new Point3DCollection(meshData.Item1),
+                Normals = new Vector3DCollection(meshData.Item2),
+                TriangleIndices = new Int32Collection(meshData.Item3),
+            };
+            geometryModel.Material = new DiffuseMaterial
+            {
+                Brush = new SolidColorBrush { Color = Colors.White },
+            };
+            geometryModel.BackMaterial = new DiffuseMaterial
+            {
+                Brush = new SolidColorBrush { Color = Colors.Red },
+            };
 
-                    result.Transform = new Transform3DGroup
-                    {
-                        Children = new Transform3DCollection { lengthRadiusScaleTransform, orientationTransform, translateTransform },
-                    };
-                });
+            return result;
+        }
+
+        private ModelVisual3D CreateCylinderWireframe(NewCylinderViewModel viewModel)
+        {
+            var result = new WireFrame();
+            result.Color = Colors.Red;
+
+            var skeleton = GenerateCylinderSkeleton(viewModel, SKELETON_POINTS);
+            var meshData = SkeletonToMesh.SkeletonToCylinder(skeleton, CYLINDER_SLICES);
+
+            result.Positions = new Point3DCollection(meshData.Item1);
+            result.Normals = new Vector3DCollection(meshData.Item2);
+            result.TriangleIndices = new Int32Collection(meshData.Item3);
+
+            return result;
+        }
+
+        private ModelVisual3D BindTransformations(ModelVisual3D untransformed, NewCylinderViewModel viewModel)
+        {
+            var result = new ModelVisual3D();
+            result.Children.Add(untransformed);
+
+            var lengthRadiusScaleTransform = new ScaleTransform3D();
+            lengthRadiusScaleTransform.Bind(ScaleTransform3D.ScaleXProperty, "Length", viewModel);
+            lengthRadiusScaleTransform.Bind(ScaleTransform3D.ScaleYProperty, "Radius", viewModel);
+            lengthRadiusScaleTransform.Bind(ScaleTransform3D.ScaleZProperty, "Radius", viewModel);
+
+            var translateTransform = new TranslateTransform3D();
+            translateTransform.Bind(TranslateTransform3D.OffsetXProperty, "Center.X", viewModel);
+            translateTransform.Bind(TranslateTransform3D.OffsetYProperty, "Center.Y", viewModel);
+            translateTransform.Bind(TranslateTransform3D.OffsetZProperty, "Center.Z", viewModel);
+
+            var orientationTransform = new RotateTransform3D();
+            orientationTransform.Rotation = new AxisAngleRotation3D();
+            orientationTransform.Rotation.Bind(AxisAngleRotation3D.AxisProperty, "Orientation", viewModel, OrientationToAxisConverter.Instance);
+            orientationTransform.Rotation.Bind(AxisAngleRotation3D.AngleProperty, "Orientation", viewModel, OrientationToAngleConverter.Instance);
+
+            result.Transform = new Transform3DGroup
+            {
+                Children = new Transform3DCollection { lengthRadiusScaleTransform, orientationTransform, translateTransform },
+            };
 
             return result;
         }
@@ -77,8 +116,8 @@ namespace MultiviewCurvesToCyl
                 yield return new SkeletonPoint
                 {
                     Position = start + t * orientation,
-                    Normal   = orientation,
-                    Radius   = 1,
+                    Normal = orientation,
+                    Radius = 1,
                 };
             }
         }

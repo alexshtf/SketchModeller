@@ -164,8 +164,8 @@
                             </TranslateTransform3D>
                         </ModelVisual3D.Transform>
                         <ModelVisual3D.Children>
-                            <controls:CloningModelVisual3D ItemsSource="{Binding NewCylinderViewModels}"
-                                                           ModelFactory="{x:Static local:NewCylinderView3D.Instance}" />
+                            <controls:CloningVisual3D ItemsSource="{Binding NewCylinderViewModels}"
+                                                      Visual3DFactory="{x:Static local:NewCylinderView3D.Instance}" />
                             <controls:CloningVisual3D ItemsSource="{Binding SnappedCylinderViewModels}"
                                                       Visual3DFactory="{x:Static local:SnappedCylinderView3D.Instance}" />
                         </ModelVisual3D.Children>

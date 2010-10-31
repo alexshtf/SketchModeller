@@ -144,6 +144,8 @@ namespace MultiviewCurvesToCyl
             IsWireframeShown = !IsWireframeShown;
             foreach (var item in SnappedCylinderViewModels)
                 item.IsInWireframeMode = IsWireframeShown;
+            foreach (var item in NewCylinderViewModels)
+                item.IsInWireframeMode = IsWireframeShown;
         }
 
         #endregion

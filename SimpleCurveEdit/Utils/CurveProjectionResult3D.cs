@@ -60,5 +60,13 @@ namespace Utils
                 return result;
             }
         }
+
+        public override int GetHashCode()
+        {
+            return 
+                Position.GetHashCode() ^
+                SegmentIndex.GetHashCode() ^
+                Distance.GetHashCode();
+        }
     }
 }
