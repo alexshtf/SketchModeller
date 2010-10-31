@@ -8,6 +8,7 @@ using System.Windows;
 using System.Diagnostics.Contracts;
 using System.Windows.Media.Media3D;
 using MultiviewCurvesToCyl.Base;
+using System.Windows.Input;
 
 namespace MultiviewCurvesToCyl
 {
@@ -56,20 +57,20 @@ namespace MultiviewCurvesToCyl
             {
                 new MenuCategoryItem("File")
                 {
-                    MenuCommandItem.Create("Clear", o => Clear()),
-                    MenuCommandItem.Create("Open ...", o => Open()),
-                    MenuCommandItem.Create("Save", o => Save()),
-                    MenuCommandItem.Create("Save as ...", o => SaveAs()),
+                    MenuCommandItem.Create("Clear", o => Clear(), keyGesture: new KeyGesture(Key.C, ModifierKeys.Control)),
+                    MenuCommandItem.Create("Open ...", o => Open(), keyGesture: new KeyGesture(Key.O, ModifierKeys.Control)),
+                    MenuCommandItem.Create("Save", o => Save(), keyGesture: new KeyGesture(Key.S, ModifierKeys.Control)),
+                    MenuCommandItem.Create("Save as ...", o => SaveAs(), keyGesture: new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift)),
                     MenuCommandItem.Create("Exit", o => Exit()),
                 },
                 new MenuCategoryItem("Edit")
                 {
-                    MenuCommandItem.Create("New cylinder", o => NewCylinder()),
+                    MenuCommandItem.Create("New cylinder", o => NewCylinder(), keyGesture: new KeyGesture(Key.C, ModifierKeys.Alt)),
                 },
                 new MenuCategoryItem("View")
                 {
-                    MenuCommandItem.Create("Enter navigation mode", o => EnterNavigationMode()),
-                    MenuCommandItem.Create("Toggle wireframe", o => ToggleWireframe()),
+                    MenuCommandItem.Create("Enter navigation mode", o => EnterNavigationMode(), keyGesture: new KeyGesture(Key.F2)),
+                    MenuCommandItem.Create("Toggle wireframe", o => ToggleWireframe(), keyGesture: new KeyGesture(Key.F3)),
                 },
             };
 
@@ -174,6 +175,27 @@ namespace MultiviewCurvesToCyl
         #endregion
 
         #region Public properties and methods
+
+        public IEnumerable<MenuCommandItem> GetAllMenuCommandItems()
+        {
+            var stack = new Stack<BaseMenuViewModel>();
+            foreach (var item in MenuItems)
+                stack.Push(item);
+
+            while (stack.Count > 0)
+            {
+                var item = stack.Pop();
+                Contract.Assume(item is MenuCommandItem || item is MenuCategoryItem);
+                var categoryItem = item as MenuCategoryItem;
+                if (categoryItem != null)
+                {
+                    foreach (var child in categoryItem.Children)
+                        stack.Push(child);
+                }
+                else
+                    yield return (MenuCommandItem)item;
+            }
+        }
 
         #region IsWireframeShown property
 

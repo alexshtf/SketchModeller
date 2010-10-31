@@ -45,7 +45,7 @@ namespace MultiviewCurvesToCyl
 
             startEndContextMenu = new ObservableCollection<MenuCommandItem>
             {
-                new MenuCommandItem(new DelegateCommand(o => FlipStartEnd()), "Flip start and end"),
+                new MenuCommandItem(new DelegateCommand(o => FlipStartEnd()), "Flip start and end", null),
             };
             startEndContextMenuReadOnly = new ReadOnlyObservableCollection<MenuCommandItem>(startEndContextMenu);
 

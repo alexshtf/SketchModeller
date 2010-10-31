@@ -97,6 +97,7 @@
     <Compile Include="Controls\CloningVisual3D.cs" />
     <Compile Include="Controls\IModelFactory.cs" />
     <Compile Include="Controls\IVisual3DFactory.cs" />
+    <Compile Include="Converters\KeyGestureToStringConverter.cs" />
     <Compile Include="Converters\ReverseBooleanToVisibilityConverter.cs" />
     <Compile Include="MainWindow.Controller.cs" />
     <Compile Include="Math\FastGradientQuadraticOptimizer.cs" />

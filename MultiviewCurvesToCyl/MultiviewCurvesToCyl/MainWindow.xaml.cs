@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using Petzold.Media3D;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MultiviewCurvesToCyl
 {
@@ -193,6 +194,18 @@ namespace MultiviewCurvesToCyl
             base.OnKeyDown(e);
             if (e.Key == Key.Escape)
                 mainViewModel.IsInNavigationMode = false;
+            else
+            {
+                var itemsWithGestures =
+                    from item in mainViewModel.GetAllMenuCommandItems()
+                    where item.KeyGesture != null
+                    select item;
+                foreach (var item in itemsWithGestures)
+                {
+                    if (item.KeyGesture.Matches(null, e) && item.Command.CanExecute(null))
+                        item.Command.Execute(null);
+                }
+            }
         }
 
         private void rootPanel_MouseMove(object sender, MouseEventArgs e)

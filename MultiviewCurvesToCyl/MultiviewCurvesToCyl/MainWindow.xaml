@@ -18,13 +18,14 @@
             <Menu.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local:MenuCategoryItem}"
                                           ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding Title}" />
+                    <TextBlock Text="{Binding Title}" DockPanel.Dock="Left" />
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type local:MenuCommandItem}">
                     <TextBlock Text="{Binding Title}" />
                 </DataTemplate>
                 <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
                     <Setter Property="Command" Value="{Binding Command}" />
+                    <Setter Property="InputGestureText" Value="{Binding KeyGesture, Converter={StaticResource KeyGestureToStringConverter}}" />
                 </Style>
             </Menu.Resources>
         </Menu>
@@ -180,7 +181,7 @@
 
             <!-- HUD -->
             <Border Style="{StaticResource HUDStyle}"
-                    Grid.ColumnSpan="2">                
+                    Grid.ColumnSpan="2">
                 <Grid>
                     <StackPanel Visibility="{Binding IsInNavigationMode, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock HorizontalAlignment="Center">Navigation mode</TextBlock>

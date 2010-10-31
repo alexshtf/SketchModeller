@@ -93,8 +93,7 @@ namespace MultiviewCurvesToCyl
 
             // we will use the set that contains both top and bottom fiber indices multiple times
             // therefore we calculate it once here
-            var topBottomIndices = new HashSet<int>(CylinderData.TopFiberIndices);
-            topBottomIndices.UnionWith(CylinderData.BottomFiberIndices);
+            var topBottomIndices = CylinderData.TopFiberIndices.Concat(CylinderData.BottomFiberIndices).ToArray();
 
             // we need to know for each circle - which points will move as a part of the correction step
             // because later we wish to correct the whole circle according to the transformation applied
@@ -133,13 +132,7 @@ namespace MultiviewCurvesToCyl
             snappingTimer.Tick += (sender, args) =>
                 {
                     // find error vectors for top/bottom fibers using closest projections on the curves.
-                    var errorVectors =
-                        from index in topBottomIndices
-                        let position = CylinderData.Positions[index]
-                        let projections = curves3d.Select(curve => position.ProjectionOnCurve(curve))
-                        let closestProjection = projections.Minimizer(x => x.Distance).Position
-                        select new { Index = index, ErrorVector = position - closestProjection };
-                    errorVectors = errorVectors.ToArray(); // execute the query. we are going to modify the positions.
+                    var errorVectors = GetErrorVectors(curves3d, topBottomIndices);
 
                     // show the new correspondances to the user
                     CorrespondancesToShow.Clear();
@@ -193,14 +186,7 @@ namespace MultiviewCurvesToCyl
                     if (ticks > COUNT)
                     {
                         snappingTimer.Stop();
-                        // find error vectors for top/bottom fibers using closest projections on the curves.
-                        errorVectors =
-                            from index in topBottomIndices
-                            let position = CylinderData.Positions[index]
-                            let projections = curves3d.Select(curve => position.ProjectionOnCurve(curve))
-                            let closestProjection = projections.Minimizer(x => x.Distance).Position
-                            select new { Index = index, ErrorVector = position - closestProjection };
-                        errorVectors = errorVectors.ToArray(); // execute the query. we are going to modify the positions.
+                        errorVectors = GetErrorVectors(curves3d, topBottomIndices);
 
                         // show the new correspondances to the user
                         CorrespondancesToShow.Clear();
@@ -213,6 +199,18 @@ namespace MultiviewCurvesToCyl
                     System.Diagnostics.Debug.WriteLine(ticks);
                 };
             snappingTimer.Start();
+        }
+
+        private IEnumerable<ErrorVectorData> GetErrorVectors(IEnumerable<IEnumerable<Point3D>> curves3d, IEnumerable<int> topBottomIndices)
+        {
+            var errorVectors =
+                from index in topBottomIndices
+                let position = CylinderData.Positions[index]
+                let projections = curves3d.Select(curve => position.ProjectionOnCurve(curve))
+                let closestProjection = projections.Minimizer(x => x.Distance).Position
+                select new ErrorVectorData { Index = index, ErrorVector = position - closestProjection };
+            errorVectors = errorVectors.ToArray(); // execute the query. we are going to modify the positions.
+            return errorVectors;
         }
 
         private Point3D[] Transform3DCircle(ConstrainedCylinder cylinder, int[] circleIndices, int i1, int i2, Vector3D e1, Vector3D e2, double stepSize)
@@ -293,6 +291,16 @@ namespace MultiviewCurvesToCyl
         {
             if (method != null)
                 method(this, new IndexedAttributeUpdateEventArgs(index));
+        }
+
+        #endregion
+
+        #region ErrorVectorData struct
+
+        private struct ErrorVectorData
+        {
+            public int Index;
+            public Vector3D ErrorVector;
         }
 
         #endregion
