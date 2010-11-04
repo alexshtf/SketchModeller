@@ -69,9 +69,12 @@
     <Compile Include="EvaluationCache.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="Exp.cs" />
+    <Compile Include="Inequality.cs" />
+    <Compile Include="InequalityExtensions.cs" />
     <Compile Include="IntPower.cs" />
     <Compile Include="ITermVisitor.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="PiecewiseTerm.cs" />
     <Compile Include="Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SparseVector.cs" />

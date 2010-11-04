@@ -37,7 +37,7 @@ namespace AutoDiff
             return result;
         }
 
-        public static Term Power(Term t, int power)
+        public static Term Power(Term t, double power)
         {
             return new IntPower(t, power);
         }
@@ -50,6 +50,16 @@ namespace AutoDiff
         public static Term Log(Term arg)
         {
             return new Log(arg);
+        }
+
+        public static Term Piecewise(IEnumerable<Tuple<Inequality, Term>> pieces)
+        {
+            return new PiecewiseTerm(pieces);
+        }
+
+        public static Term Piecewise(params Tuple<Inequality, Term>[] pieces)
+        {
+            return Piecewise(pieces as IEnumerable<Tuple<Inequality, Term>>);
         }
 
         /// <summary>

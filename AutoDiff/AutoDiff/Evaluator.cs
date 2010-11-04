@@ -98,6 +98,25 @@ namespace AutoDiff
                 exp.Arg.Accept(this);
                 Result = Math.Exp(Result);
             }
+
+
+            public void Visit(PiecewiseTerm piecewiseTerm)
+            {
+                foreach (var pair in piecewiseTerm.Pieces)
+                {
+                    var inequalityTerm = pair.Item1.Term;
+                    inequalityTerm.Accept(this);
+                    if (Result <= 0) // we found a piece that satisfies its inequality.
+                    {
+                        var valueTerm = pair.Item2;
+                        valueTerm.Accept(this);
+                        return;
+                    }
+                }
+
+                // if we reached here it means we didn't return in the above loop --> no piece satisfies the conditions.
+                throw new InvalidOperationException("Piecewise evaluation failed. No piece satisfies the conditions");
+            }
         }
 
     }

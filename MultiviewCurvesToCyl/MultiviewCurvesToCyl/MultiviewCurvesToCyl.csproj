@@ -100,9 +100,15 @@
     <Compile Include="Converters\KeyGestureToStringConverter.cs" />
     <Compile Include="Converters\ReverseBooleanToVisibilityConverter.cs" />
     <Compile Include="MainWindow.Controller.cs" />
+    <Compile Include="Math\FastGradientOptimizer.cs" />
+    <Compile Include="Math\FastGradientOptimizerBase.cs" />
     <Compile Include="Math\FastGradientQuadraticOptimizer.cs" />
+    <Compile Include="Math\GradientDescentOptimizer.cs" />
+    <Compile Include="Math\GradientDescentOptimizerBase.cs" />
     <Compile Include="Math\LinearAlgebra.cs" />
+    <Compile Include="Math\OptimizationStepResult.cs" />
     <Compile Include="Math\QuadraticFunctionHelper.cs" />
+    <Compile Include="Math\TermVector3D.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Converters\ListAndIndexToPointConverter.cs" />
     <Compile Include="Converters\Pos3DToPos2DConverter.cs" />

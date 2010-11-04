@@ -120,6 +120,12 @@ namespace MultiviewCurvesToCyl
             {
                 throw new NotSupportedException();
             }
+
+
+            public void Visit(PiecewiseTerm piecewiseTerm)
+            {
+                throw new NotSupportedException();
+            }
         }
 
         #endregion

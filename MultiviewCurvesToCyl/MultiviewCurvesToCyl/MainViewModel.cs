@@ -136,7 +136,8 @@ namespace MultiviewCurvesToCyl
         private NewCylinderViewModel CreateNewCylinderViewModel()
         {
             var result = new NewCylinderViewModel();
-            result.ContextMenu.Add(MenuCommandItem.Create("Snap", o => SnapCylinder(result)));
+            result.ContextMenu.Add(MenuCommandItem.Create("Snap fibermesh", o => SnapFibermeshCylinder(result)));
+            result.ContextMenu.Add(MenuCommandItem.Create("Snap points-based cylinder", o => SnapPointsBasedCylinder(result)));
             return result;
         }
 
@@ -153,7 +154,7 @@ namespace MultiviewCurvesToCyl
 
         #region New cylinder commands
 
-        public void SnapCylinder(NewCylinderViewModel toSnap)
+        public void SnapFibermeshCylinder(NewCylinderViewModel toSnap)
         {
             NewCylinderViewModels.Remove(toSnap);
 
@@ -171,6 +172,23 @@ namespace MultiviewCurvesToCyl
 
             SnappedCylinderViewModels.Add(snappedCylinderViewModel);
         }
+
+        private void SnapPointsBasedCylinder(NewCylinderViewModel toSnap)
+        {
+            NewCylinderViewModels.Remove(toSnap);
+            var pointsBasedCylinder = new PointsBasedCylinderViewModel();
+            var camerainfo = this as IHaveCameraInfo;
+            pointsBasedCylinder.Initialize(
+                toSnap.Radius, 
+                toSnap.Length, 
+                toSnap.Center, 
+                toSnap.Orientation, 
+                camerainfo, 
+                IsWireframeShown);
+            pointsBasedCylinder.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
+            System.Diagnostics.Debug.WriteLine(pointsBasedCylinder.IsInitialized);
+        }
+
 
         #endregion
 

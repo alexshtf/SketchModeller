@@ -18,7 +18,7 @@ namespace AutoDiff
 
         internal Sum(IEnumerable<Term> terms)
         {
-            Terms = terms.ToList().AsReadOnly();
+            Terms = Array.AsReadOnly(terms.ToArray());
         }
 
         public ReadOnlyCollection<Term> Terms { get; private set; }

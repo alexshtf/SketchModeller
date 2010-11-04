@@ -7,14 +7,14 @@ namespace AutoDiff
 {
     public class IntPower : Term
     {
-        public IntPower(Term baseTerm, int exponent)
+        public IntPower(Term baseTerm, double exponent)
         {
             Base = baseTerm;
             Exponent = exponent;
         }
 
         public Term Base { get; private set; }
-        public int Exponent { get; private set; }
+        public double Exponent { get; private set; }
 
         public override void Accept(ITermVisitor visitor)
         {

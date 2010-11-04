@@ -22,5 +22,7 @@ namespace AutoDiff
         void Visit(Log log);
 
         void Visit(Exp exp);
+
+        void Visit(PiecewiseTerm piecewiseTerm);
     }
 }

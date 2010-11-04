@@ -142,6 +142,23 @@ namespace AutoDiff
                 var val = Evaluate(exp);
                 Gradient = Scale(argGrad, val);
             }
+
+
+            public void Visit(PiecewiseTerm piecewiseTerm)
+            {
+                foreach (var pair in piecewiseTerm.Pieces)
+                {
+                    var inequalityTerm = pair.Item1.Term;
+                    var valueTerm = pair.Item2;
+                    if (Evaluate(inequalityTerm) <= 0)
+                    {
+                        valueTerm.Accept(this);
+                        return;
+                    }
+                }
+
+                throw new InvalidOperationException("Piecewise evaluation failed. No piece satisfies the conditions.");
+            }
         }
 
     }
