@@ -9,6 +9,8 @@ using Utils;
 using System.Diagnostics.Contracts;
 using System.Windows;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace MultiviewCurvesToCyl
 {
@@ -17,6 +19,8 @@ namespace MultiviewCurvesToCyl
         private const double SOFT_MIN_MAX_POWER = 10;
         private const int MIN_SKELETN_SIZE = 20;
         private const double SKELETON_SIZE_FACTOR = 0.1;
+        private const double RADIUS_SLICES_FACTOR = 0.5;
+        private const int MIN_SLICES = 10;
 
         private double radius;
         private double length;
@@ -24,6 +28,10 @@ namespace MultiviewCurvesToCyl
         private Vector3D orientation;
         private IHaveCameraInfo cameraInfo;
         private SkeletonPoint[] skeleton;
+
+        private Point3D[] meshPositions;
+        private Vector3D[] meshNormals;
+        private int[] meshIndices;
 
         public PointsBasedCylinderViewModel()
         {
@@ -82,74 +90,159 @@ namespace MultiviewCurvesToCyl
                 select GetCurvePoints(curve);
             curves3d = curves3d.ToArray();
 
-            var skeletonSize = Math.Max(MIN_SKELETN_SIZE, (int)Math.Round(length * SKELETON_SIZE_FACTOR));
-            var vars = ArrayUtils.Generate<Variable>(3 * skeletonSize);
-            var varPoints = new TermVector3D[skeletonSize];
-            for (int i = 0; i < skeletonSize; ++i)
-                varPoints[i] = new TermVector3D(vars[3*i + 0], vars[3*i + 1], vars[3*i + 2]);
-
             Contract.Assume(curves3d.Count() == 2);
             var firstCurve = curves3d.ElementAt(0).ToArray();
             var secondCurve = curves3d.ElementAt(1).ToArray();
             FlipSecondIfNecessary(firstCurve, secondCurve);
 
-            // we should minimize the maximal distance of a skeleton point from both curves
-            var maxDistances =
-                from varPoint in varPoints
-                let fstDistances = from pnt in firstCurve
-                                   select (varPoint - pnt).LengthSquared
-                let sndDistances = from pnt in secondCurve
-                                   select (varPoint - pnt).LengthSquared
-                let d1 = SoftMin(fstDistances) // distance from first curve
-                let d2 = SoftMin(sndDistances) // distsnce from second curve
-                select SoftMax(d1, d2);
-            var maxDistancesTerm = TermBuilder.Sum(maxDistances);
+            // get skeleton size
+            var maxDistanceSquared = MaxDistanceSquared(firstCurve, secondCurve);
+            var skeletonSize = Math.Max(MIN_SKELETN_SIZE, (int)Math.Round(Math.Sqrt(maxDistanceSquared) * SKELETON_SIZE_FACTOR));
+         
+            // extract first/last wanted cylinder points
+            var firstSkeletonPoint = MathUtils3D.Lerp(firstCurve.First(), secondCurve.First(), 0.5);
+            var lastSkeletonPoint =  MathUtils3D.Lerp(firstCurve.Last(), secondCurve.Last(), 0.5);
 
-            // we should minimize the laplacian magnitudes so that our skeleton will be as smooth as possible
-            var seqLaplacian =
-                from triple in varPoints.SeqTripples()
-                let p1 = triple.Item1
-                let p2 = triple.Item2
-                let p3 = triple.Item3
-                select (p2 - 0.5 * (p1 + p3)).LengthSquared;
-            var seqDistancesTerm = TermBuilder.Sum(seqLaplacian);
+            // generate and iteratively-improve approximation
+            var currApproximation = CreateSkeletonApproximation(firstSkeletonPoint, lastSkeletonPoint, skeletonSize);
+            for (int i = 0; i < 3; ++i)
+            {
+                currApproximation = ImproveApproximation(firstCurve, secondCurve, currApproximation);
+                currApproximation = UniformSamplePolyline(currApproximation);
+            }
 
-            // put hard constraints on the positions of the first and last points
-            var hardConstraintsTerm =
-                (varPoints.First() - MathUtils3D.Lerp(firstCurve.First(), secondCurve.First(), 0.5)).LengthSquared +
-                (varPoints.Last() - MathUtils3D.Lerp(firstCurve.Last(), secondCurve.Last(), 0.5)).LengthSquared;
+            skeleton = BuildSkeleton(firstCurve, secondCurve, currApproximation);
 
-            var targetFunction = 0.1 * maxDistancesTerm + seqDistancesTerm + 1000 * hardConstraintsTerm;
-            var minimum = Minimize(targetFunction, vars, new double[vars.Length]);
-            var skeletonPositions = new Point3D[varPoints.Length];
-            for (int i = 0; i < skeletonPositions.Length; ++i)
-                skeletonPositions[i] = new Point3D(minimum[3 * i + 0], minimum[3 * i + 1], minimum[3 * i + 2]);
+            var slicesCount = Math.Max(MIN_SLICES, (int)Math.Round(radius * RADIUS_SLICES_FACTOR));
+            var meshData = SkeletonToMesh.SkeletonToCylinder(skeleton, slicesCount);
+            meshPositions = meshData.Item1;
+            meshNormals = meshData.Item2;
+            meshIndices = meshData.Item3;
+        }
+
+        private Point3D[] UniformSamplePolyline(Point3D[] currApproximation)
+        {
+            var result = new Point3D[currApproximation.Length];
+
+            // calculate arc length
+            var polylineLength =
+                (from seg in currApproximation.SeqPairs()
+                 let p1 = seg.Item1
+                 let p2 = seg.Item2
+                 select (p2 - p1).Length
+                ).Sum();
+
+            // segment-length helper function (length of the i-th segment)
+            Func<int, double> segmentLength = idx =>
+                {
+                    var p1 = currApproximation[idx + 0];
+                    var p2 = currApproximation[idx + 1];
+                    return (p2 - p1).Length;
+                };
+
+            // main sampling loop
+            int segsCount = currApproximation.Length - 1;
+            int currSeg = 0;
+            double lengthOnPoly = 0;
+            for (int i = 0; i < result.Length; ++i)
+            {
+                var targetLength = polylineLength * (double)i / (double)(result.Length - 1);
+                while (currSeg < segsCount &&
+                       lengthOnPoly + segmentLength(currSeg) < targetLength)
+                {
+                    lengthOnPoly = lengthOnPoly + segmentLength(currSeg);
+                    currSeg = currSeg + 1;
+                }
+
+                var lengthOnSeg = targetLength - lengthOnPoly;
+                var t = lengthOnSeg / segmentLength(currSeg);
+                result[i] = MathUtils3D.Lerp(currApproximation[currSeg], currApproximation[currSeg + 1], t);
+            }
+
+            return result;
+        }
+
+        private Point3D[] ImproveApproximation(
+            Point3D[] firstCurve, 
+            Point3D[] secondCurve, 
+            Point3D[] currentApproximation)
+        {
+            var result = new Point3D[currentApproximation.Length];
+            var partitioner = Partitioner.Create(0, currentApproximation.Length);
+
+            Parallel.ForEach(partitioner, (range, loopstate) =>
+                {
+                    for (int i = range.Item1; i < range.Item2; ++i)
+                    {
+                        var p1 = currentApproximation[i].ProjectionOnCurve(firstCurve).Position;
+                        var p2 = currentApproximation[i].ProjectionOnCurve(secondCurve).Position;
+                        result[i] = MathUtils3D.Lerp(p1, p2, 0.5);
+                    }
+                });
+
+            return result;
+        }
+
+        private Point3D[] CreateSkeletonApproximation(
+            Point3D firstSkeletonPoint, 
+            Point3D lastSkeletonPoint, 
+            int skeletonSize)
+        {
+            Point3D[] resultPoints = new Point3D[skeletonSize];
+            for (int i = 0; i < skeletonSize; ++i)
+            {
+                double t = i / (double)(skeletonSize - 1);
+                var pnt = MathUtils3D.Lerp(firstSkeletonPoint, lastSkeletonPoint, t);
+                resultPoints[i] = pnt;
+            }
+
+            return resultPoints;
         }
 
         private static SkeletonPoint[] BuildSkeleton(Point3D[] firstCurve, Point3D[] secondCurve, Point3D[] skeletonPositions)
         {
-            // TODO: Build skeleton here.
-            return null;
+            var skeletonSize = skeletonPositions.Length;
+            var result = new SkeletonPoint[skeletonSize];
+
+            var partitioner = Partitioner.Create(0, skeletonSize);
+            Parallel.ForEach(partitioner, (range, loopState) =>
+                {
+                    for (int i = range.Item1; i < range.Item2; ++i)
+                    {
+                        var pos = skeletonPositions[i];
+                        result[i] = new SkeletonPoint();
+                        result[i].Position = pos;
+                        result[i].Radius =
+                            0.5 * pos.ProjectionOnCurve(firstCurve).Distance +
+                            0.5 * pos.ProjectionOnCurve(secondCurve).Distance;
+                        if (i < skeletonSize - 1)
+                            result[i].Normal = skeletonPositions[i + 1] - skeletonPositions[i];
+                    }
+
+                });
+            result[skeletonSize - 1].Normal = result[skeletonSize - 2].Normal;
+
+            for (int i = 0; i < skeletonSize; ++i)
+                result[i].Normal = result[i].Normal.Normalized();
+
+            return result;
         }
 
-        private double[] Minimize(Term targetFunction, Variable[] vars, double[] initial)
+        private double MaxDistanceSquared(Point3D[] firstCurve, Point3D[] secondCurve)
         {
-            var optimizer = new GradientDescentOptimizer(
-                targetFunction, 
-                vars, 
-                (x, gradient, targetFunc, variables) => 
-                    FastGradientOptimizer.InexactStepSize(x, gradient, targetFunc, variables, 1.0, 1.2, 0.001));
-            
-            var epsilon = 1E-1;
-
-            foreach (var stepResult in optimizer.Minimize(initial))
+            var allPoints = firstCurve.Concat(secondCurve).ToArray();
+            var maxDistance = 0.0;
+            for (int i = 0; i < allPoints.Length; ++i)
             {
-                if (Math.Abs(stepResult.CurrentTarget - stepResult.PrevTarget) < epsilon)
-                    return stepResult.CurrentMinimizer;
+                for (int j = i + 1; j < allPoints.Length; ++j)
+                {
+                    var currDistance = (allPoints[i] - allPoints[j]).LengthSquared;
+                    if (currDistance > maxDistance)
+                        maxDistance = currDistance;
+                }
             }
 
-            // we should never reach here. The above look is infinite unless we return from it.
-            return null;
+            return maxDistance;
         }
 
 
@@ -185,40 +278,48 @@ namespace MultiviewCurvesToCyl
                 select new Point3D(pnt.X, pnt.Y, 0);
         }
 
-        #region Term building math functions
 
-        private static Term SoftMax(Term first, Term second)
+        private double[] Minimize(Term targetFunction, Variable[] vars, double[] initial)
         {
-            var sum = TermBuilder.Power(first, SOFT_MIN_MAX_POWER) + TermBuilder.Power(second, SOFT_MIN_MAX_POWER);
-            return TermBuilder.Power(sum, 1 / SOFT_MIN_MAX_POWER);
-        }
-
-        private static Term SoftMin(IEnumerable<Term> terms)
-        {
-            var powers = from term in terms
-                         select TermBuilder.Power(term, -SOFT_MIN_MAX_POWER);
-            var result =
-                TermBuilder.Power(TermBuilder.Sum(powers), -1 / SOFT_MIN_MAX_POWER);
+            var optimizer = new LBFGSOptimizer(targetFunction, vars);
+            var result = optimizer.Minimize(initial);
             return result;
         }
 
-        private static Term PointSegmentDistanceSquared(TermVector3D point, Point3D segStart, Point3D segEnd)
-        {
-            var segVec = segEnd - segStart;
-            var recipLengthSquared = 1 / segVec.LengthSquared;
+        #region Term building math functions
 
-            var t = ((point - segStart) * segVec) * recipLengthSquared;
-            return TermBuilder.Piecewise(
-                Tuple.Create(t.LessThanEquals(0), (point - segStart).LengthSquared),    // ||point - segStart|| when t <= 0
-                Tuple.Create(t.GreaterThanEquals(1), (point - segEnd).LengthSquared),   // ||point - segEnd|| when t >= 0
-                Tuple.Create(Inequality.AlwaysTrue, PointLineDistanceSquared(point, segStart, segVec, recipLengthSquared))); // normal point-line distance otherwise
+        //private static Term SoftMax(Term first, Term second)
+        //{
+        //    var sum = TermBuilder.Power(first, SOFT_MIN_MAX_POWER) + TermBuilder.Power(second, SOFT_MIN_MAX_POWER);
+        //    return TermBuilder.Power(sum, 1 / SOFT_MIN_MAX_POWER);
+        //}
 
-        }
+        //private static Term SoftMin(IEnumerable<Term> terms)
+        //{
+        //    var powers = from term in terms
+        //                 select TermBuilder.Power(term, -SOFT_MIN_MAX_POWER);
+        //    var result =
+        //        TermBuilder.Power(TermBuilder.Sum(powers), -1 / SOFT_MIN_MAX_POWER);
+        //    return result;
+        //}
 
-        private static Term PointLineDistanceSquared(TermVector3D point, Point3D segStart, Vector3D segVec, double recipLengthSquared)
-        {
-            return TermVector3D.CrossProduct(segVec, segStart - point).LengthSquared * recipLengthSquared;
-        }
+        //private static Term PointSegmentDistanceSquared(TermVector3D point, Point3D segStart, Point3D segEnd)
+        //{
+        //    var segVec = segEnd - segStart;
+        //    var recipLengthSquared = 1 / segVec.LengthSquared;
+
+        //    var t = ((point - segStart) * segVec) * recipLengthSquared;
+        //    return TermBuilder.Piecewise(
+        //        Tuple.Create(t.LessThanEquals(0), (point - segStart).LengthSquared),    // ||point - segStart|| when t <= 0
+        //        Tuple.Create(t.GreaterThanEquals(1), (point - segEnd).LengthSquared),   // ||point - segEnd|| when t >= 0
+        //        Tuple.Create(Inequality.AlwaysTrue, PointLineDistanceSquared(point, segStart, segVec, recipLengthSquared))); // normal point-line distance otherwise
+
+        //}
+
+        //private static Term PointLineDistanceSquared(TermVector3D point, Point3D segStart, Vector3D segVec, double recipLengthSquared)
+        //{
+        //    return TermVector3D.CrossProduct(segVec, segStart - point).LengthSquared * recipLengthSquared;
+        //}
 
         #endregion
     }

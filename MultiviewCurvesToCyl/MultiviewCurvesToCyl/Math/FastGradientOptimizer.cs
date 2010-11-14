@@ -74,7 +74,12 @@ namespace MultiviewCurvesToCyl
 
         private static IEnumerable<double> GenerateStepSize(double min, double max, double factor)
         {
-            while( )
+            double current = max;
+            while (current >= min)
+            {
+                yield return current;
+                current = current / factor;
+            }
         }
     }
 }

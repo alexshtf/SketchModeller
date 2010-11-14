@@ -105,6 +105,7 @@
     <Compile Include="Math\FastGradientQuadraticOptimizer.cs" />
     <Compile Include="Math\GradientDescentOptimizer.cs" />
     <Compile Include="Math\GradientDescentOptimizerBase.cs" />
+    <Compile Include="Math\LBFGSOptimizer.cs" />
     <Compile Include="Math\LinearAlgebra.cs" />
     <Compile Include="Math\OptimizationStepResult.cs" />
     <Compile Include="Math\QuadraticFunctionHelper.cs" />
@@ -211,6 +212,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AlgLib\AlgLib.csproj">
+      <Project>{2704B03D-E674-4086-93F9-F0D129514D31}</Project>
+      <Name>AlgLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AutoDiff\AutoDiff\AutoDiff.csproj">
       <Project>{62551FD3-C21F-4E16-A7FC-6A017508809C}</Project>
       <Name>AutoDiff</Name>
