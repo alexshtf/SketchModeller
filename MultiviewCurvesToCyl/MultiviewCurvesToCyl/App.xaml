@@ -27,6 +27,11 @@
 
         <Style x:Key="EditorObjectContextMenu"  TargetType="ContextMenu" BasedOn="{StaticResource MenuCommandItems}">
             <Setter Property="ItemsSource" Value="{Binding ContextMenu}" />
+            <Style.Resources>
+                <DataTemplate DataType="{x:Type local:MenuCommandItem}">
+                    <TextBlock Text="{Binding Title}" />
+                </DataTemplate>
+            </Style.Resources>
         </Style>
     </Application.Resources>
 </Application>

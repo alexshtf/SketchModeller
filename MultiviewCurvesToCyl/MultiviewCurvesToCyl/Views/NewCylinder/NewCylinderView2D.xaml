@@ -60,7 +60,8 @@
         </Style>
     </UserControl.Resources>
     <UserControl.ContextMenu>
-        <ContextMenu Style="{StaticResource EditorObjectContextMenu}" />
+        <ContextMenu Style="{StaticResource EditorObjectContextMenu}">
+        </ContextMenu>
     </UserControl.ContextMenu>
     
     <Canvas>
