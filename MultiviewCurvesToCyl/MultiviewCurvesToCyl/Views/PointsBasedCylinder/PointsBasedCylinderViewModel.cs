@@ -16,17 +16,12 @@ namespace MultiviewCurvesToCyl
 {
     class PointsBasedCylinderViewModel : Base3DViewModel
     {
-        private const double SOFT_MIN_MAX_POWER = 10;
-        private const int MIN_SKELETN_SIZE = 20;
         private const double SKELETON_SIZE_FACTOR = 0.1;
+        private const int MIN_SKELETN_SIZE = 20;
+
         private const double RADIUS_SLICES_FACTOR = 0.5;
         private const int MIN_SLICES = 10;
 
-        private double radius;
-        private double length;
-        private Point3D center;
-        private Vector3D orientation;
-        private IHaveCameraInfo cameraInfo;
         private SkeletonPoint[] skeleton;
 
         private Point3D[] meshPositions;
@@ -60,17 +55,11 @@ namespace MultiviewCurvesToCyl
         /// <param name="center">The cylinder center.</param>
         /// <param name="orientation">The cylinder orientation.</param>
         /// <param name="initCameraInfo">The camera info</param>
-        public void Initialize(double radius, double length, Point3D center, Vector3D orientation, IHaveCameraInfo initCameraInfo, bool wireframe)
+        public void Initialize(bool wireframe)
         {
             Contract.Requires(IsInitialized == false, "Cannot initialize the object twice");
-            Contract.Requires(initCameraInfo != null);
 
-            cameraInfo = initCameraInfo;
             IsInWireframeMode = wireframe;
-            this.radius = radius;
-            this.length = length;
-            this.center = center;
-            this.orientation = orientation;
             IsInitialized = true;
         }
 
@@ -103,21 +92,63 @@ namespace MultiviewCurvesToCyl
             var firstSkeletonPoint = MathUtils3D.Lerp(firstCurve.First(), secondCurve.First(), 0.5);
             var lastSkeletonPoint =  MathUtils3D.Lerp(firstCurve.Last(), secondCurve.Last(), 0.5);
 
-            // generate and iteratively-improve approximation
+            // generate and iteratively-improve mesh skeleton
             var currApproximation = CreateSkeletonApproximation(firstSkeletonPoint, lastSkeletonPoint, skeletonSize);
             for (int i = 0; i < 3; ++i)
             {
                 currApproximation = ImproveApproximation(firstCurve, secondCurve, currApproximation);
                 currApproximation = UniformSamplePolyline(currApproximation);
             }
+            skeleton = BuildSkeletonFromPoints(firstCurve, secondCurve, currApproximation);
 
-            skeleton = BuildSkeleton(firstCurve, secondCurve, currApproximation);
-
-            var slicesCount = Math.Max(MIN_SLICES, (int)Math.Round(radius * RADIUS_SLICES_FACTOR));
+            // create the mesh data
+            var maxRadius = skeleton.Select(x => x.Radius).Max();
+            var slicesCount = Math.Max(MIN_SLICES, (int)Math.Round(maxRadius * RADIUS_SLICES_FACTOR));
             var meshData = SkeletonToMesh.SkeletonToCylinder(skeleton, slicesCount);
-            meshPositions = meshData.Item1;
-            meshNormals = meshData.Item2;
-            meshIndices = meshData.Item3;
+
+            // set mesh properties + notify outside world.
+            Positions = meshData.Item1;
+            Normals = meshData.Item2;
+            TriangleIndices = meshData.Item3;
+        }
+
+        /// <summary>
+        /// Mesh vertex positions
+        /// </summary>
+        public Point3D[] Positions
+        {
+            get { return meshPositions; }
+            private set
+            {
+                meshPositions = value;
+                NotifyPropertyChanged(() => Positions);
+            }
+        }
+
+        /// <summary>
+        /// Mesh normals
+        /// </summary>
+        public Vector3D[] Normals
+        {
+            get { return meshNormals; }
+            private set
+            {
+                meshNormals = value;
+                NotifyPropertyChanged(() => Normals);
+            }
+        }
+
+        /// <summary>
+        /// Mesh triangle indices
+        /// </summary>
+        public int[] TriangleIndices
+        {
+            get { return meshIndices; }
+            set
+            {
+                meshIndices = value;
+                NotifyPropertyChanged(() =>TriangleIndices);
+            }
         }
 
         private Point3D[] UniformSamplePolyline(Point3D[] currApproximation)
@@ -199,7 +230,7 @@ namespace MultiviewCurvesToCyl
             return resultPoints;
         }
 
-        private static SkeletonPoint[] BuildSkeleton(Point3D[] firstCurve, Point3D[] secondCurve, Point3D[] skeletonPositions)
+        private static SkeletonPoint[] BuildSkeletonFromPoints(Point3D[] firstCurve, Point3D[] secondCurve, Point3D[] skeletonPositions)
         {
             var skeletonSize = skeletonPositions.Length;
             var result = new SkeletonPoint[skeletonSize];
@@ -277,50 +308,5 @@ namespace MultiviewCurvesToCyl
                 from pnt in slice
                 select new Point3D(pnt.X, pnt.Y, 0);
         }
-
-
-        private double[] Minimize(Term targetFunction, Variable[] vars, double[] initial)
-        {
-            var optimizer = new LBFGSOptimizer(targetFunction, vars);
-            var result = optimizer.Minimize(initial);
-            return result;
-        }
-
-        #region Term building math functions
-
-        //private static Term SoftMax(Term first, Term second)
-        //{
-        //    var sum = TermBuilder.Power(first, SOFT_MIN_MAX_POWER) + TermBuilder.Power(second, SOFT_MIN_MAX_POWER);
-        //    return TermBuilder.Power(sum, 1 / SOFT_MIN_MAX_POWER);
-        //}
-
-        //private static Term SoftMin(IEnumerable<Term> terms)
-        //{
-        //    var powers = from term in terms
-        //                 select TermBuilder.Power(term, -SOFT_MIN_MAX_POWER);
-        //    var result =
-        //        TermBuilder.Power(TermBuilder.Sum(powers), -1 / SOFT_MIN_MAX_POWER);
-        //    return result;
-        //}
-
-        //private static Term PointSegmentDistanceSquared(TermVector3D point, Point3D segStart, Point3D segEnd)
-        //{
-        //    var segVec = segEnd - segStart;
-        //    var recipLengthSquared = 1 / segVec.LengthSquared;
-
-        //    var t = ((point - segStart) * segVec) * recipLengthSquared;
-        //    return TermBuilder.Piecewise(
-        //        Tuple.Create(t.LessThanEquals(0), (point - segStart).LengthSquared),    // ||point - segStart|| when t <= 0
-        //        Tuple.Create(t.GreaterThanEquals(1), (point - segEnd).LengthSquared),   // ||point - segEnd|| when t >= 0
-        //        Tuple.Create(Inequality.AlwaysTrue, PointLineDistanceSquared(point, segStart, segVec, recipLengthSquared))); // normal point-line distance otherwise
-
-        //}
-
-        //private static Term PointLineDistanceSquared(TermVector3D point, Point3D segStart, Vector3D segVec, double recipLengthSquared)
-        //{
-        //    return TermVector3D.CrossProduct(segVec, segStart - point).LengthSquared * recipLengthSquared;
-        //}
-
-        #endregion
     }
 }

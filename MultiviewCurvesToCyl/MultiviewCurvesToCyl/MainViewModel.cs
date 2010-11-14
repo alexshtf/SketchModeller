@@ -52,6 +52,7 @@ namespace MultiviewCurvesToCyl
             underConstructionCurve = new List<Point>();
             NewCylinderViewModels = new ObservableCollection<NewCylinderViewModel>();
             SnappedCylinderViewModels = new ObservableCollection<SnappedCylinderViewModel>();
+            PointsBasedCylinderViewModels = new ObservableCollection<PointsBasedCylinderViewModel>();
 
             MenuItems = new ObservableCollection<BaseMenuViewModel>
             {
@@ -177,18 +178,11 @@ namespace MultiviewCurvesToCyl
         {
             NewCylinderViewModels.Remove(toSnap);
             var pointsBasedCylinder = new PointsBasedCylinderViewModel();
-            var camerainfo = this as IHaveCameraInfo;
-            pointsBasedCylinder.Initialize(
-                toSnap.Radius, 
-                toSnap.Length, 
-                toSnap.Center, 
-                toSnap.Orientation, 
-                camerainfo, 
-                IsWireframeShown);
+            pointsBasedCylinder.Initialize(IsWireframeShown);
             pointsBasedCylinder.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
-            System.Diagnostics.Debug.WriteLine(pointsBasedCylinder.IsInitialized);
-        }
 
+            PointsBasedCylinderViewModels.Add(pointsBasedCylinder);
+        }
 
         #endregion
 
@@ -327,6 +321,11 @@ namespace MultiviewCurvesToCyl
         /// A collection of view models for all snapped cylinders.
         /// </summary>
         public ObservableCollection<SnappedCylinderViewModel> SnappedCylinderViewModels { get; private set; }
+
+        /// <summary>
+        /// A collection of view-models for all points-based cylinders.
+        /// </summary>
+        public ObservableCollection<PointsBasedCylinderViewModel> PointsBasedCylinderViewModels { get; private set; }
 
         public ReadOnlyCollection<Point> UnderConstructionCurve
         {
