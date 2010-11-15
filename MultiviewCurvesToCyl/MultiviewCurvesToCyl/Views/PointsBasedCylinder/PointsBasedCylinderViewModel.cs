@@ -94,7 +94,7 @@ namespace MultiviewCurvesToCyl
 
             // generate and iteratively-improve mesh skeleton
             var currApproximation = CreateSkeletonApproximation(firstSkeletonPoint, lastSkeletonPoint, skeletonSize);
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 5; ++i)
             {
                 currApproximation = ImproveApproximation(firstCurve, secondCurve, currApproximation);
                 currApproximation = UniformSamplePolyline(currApproximation);
@@ -178,7 +178,7 @@ namespace MultiviewCurvesToCyl
             for (int i = 0; i < result.Length; ++i)
             {
                 var targetLength = polylineLength * (double)i / (double)(result.Length - 1);
-                while (currSeg < segsCount &&
+                while (currSeg < segsCount - 1 &&
                        lengthOnPoly + segmentLength(currSeg) < targetLength)
                 {
                     lengthOnPoly = lengthOnPoly + segmentLength(currSeg);

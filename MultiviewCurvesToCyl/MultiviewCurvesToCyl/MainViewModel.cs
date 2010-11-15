@@ -66,7 +66,8 @@ namespace MultiviewCurvesToCyl
                 },
                 new MenuCategoryItem("Edit")
                 {
-                    MenuCommandItem.Create("New cylinder", o => NewCylinder(), keyGesture: new KeyGesture(Key.C, ModifierKeys.Alt)),
+                    MenuCommandItem.Create("New fibermesh cylinder", o => NewFibermeshCylinder(), keyGesture: new KeyGesture(Key.C, ModifierKeys.Alt)),
+                    MenuCommandItem.Create("New skeleton-cylinder", o => NewSkeletonCylinder()),
                 },
                 new MenuCategoryItem("View")
                 {
@@ -123,10 +124,18 @@ namespace MultiviewCurvesToCyl
             Application.Current.Shutdown();
         }
 
-        public void NewCylinder()
+        public void NewFibermeshCylinder()
         {
             var newCylinderViewModel = CreateNewCylinderViewModel();
             NewCylinderViewModels.Add(newCylinderViewModel);
+        }
+
+        public void NewSkeletonCylinder()
+        {
+            var pointsBasedCylinder = new PointsBasedCylinderViewModel();
+            pointsBasedCylinder.Initialize(IsWireframeShown);
+            pointsBasedCylinder.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
+            PointsBasedCylinderViewModels.Add(pointsBasedCylinder);
         }
 
         public void EnterNavigationMode()
@@ -138,7 +147,6 @@ namespace MultiviewCurvesToCyl
         {
             var result = new NewCylinderViewModel();
             result.ContextMenu.Add(MenuCommandItem.Create("Snap fibermesh", o => SnapFibermeshCylinder(result)));
-            result.ContextMenu.Add(MenuCommandItem.Create("Snap points-based cylinder", o => SnapPointsBasedCylinder(result)));
             return result;
         }
 
@@ -148,6 +156,8 @@ namespace MultiviewCurvesToCyl
             foreach (var item in SnappedCylinderViewModels)
                 item.IsInWireframeMode = IsWireframeShown;
             foreach (var item in NewCylinderViewModels)
+                item.IsInWireframeMode = IsWireframeShown;
+            foreach (var item in PointsBasedCylinderViewModels)
                 item.IsInWireframeMode = IsWireframeShown;
         }
 
@@ -172,16 +182,6 @@ namespace MultiviewCurvesToCyl
             snappedCylinderViewModel.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
 
             SnappedCylinderViewModels.Add(snappedCylinderViewModel);
-        }
-
-        private void SnapPointsBasedCylinder(NewCylinderViewModel toSnap)
-        {
-            NewCylinderViewModels.Remove(toSnap);
-            var pointsBasedCylinder = new PointsBasedCylinderViewModel();
-            pointsBasedCylinder.Initialize(IsWireframeShown);
-            pointsBasedCylinder.SnapTo(SketchCurvesViewModels.Select(x => x.Curve));
-
-            PointsBasedCylinderViewModels.Add(pointsBasedCylinder);
         }
 
         #endregion
