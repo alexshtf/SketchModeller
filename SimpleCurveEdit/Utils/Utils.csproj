@@ -112,7 +112,6 @@
     <Compile Include="CurveProjectionResult3D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadOnlySet.cs" />
-    <Compile Include="SOM.cs" />
     <Compile Include="WeakDictionary.cs" />
     <Compile Include="WpfUtils.cs" />
   </ItemGroup>
