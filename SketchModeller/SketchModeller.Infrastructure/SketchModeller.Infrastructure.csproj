@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{062A3D45-7340-484E-AA04-D2446D7D5203}</ProjectGuid>
+    <ProjectGuid>{BB3DF5E2-38F3-40DC-80C6-3158C894CB59}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Utils</RootNamespace>
-    <AssemblyName>Utils</AssemblyName>
+    <RootNamespace>SketchModeller.Infrastructure</RootNamespace>
+    <AssemblyName>SketchModeller.Infrastructure</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -43,79 +42,48 @@
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions />
     <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Reactive, Version=1.0.2787.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayUtils.cs" />
-    <Compile Include="BaseViewModel.cs" />
-    <Compile Include="BindingUtils.cs" />
-    <Compile Include="CastUtils.cs" />
-    <Compile Include="ChangeNotifyingValue.cs" />
-    <Compile Include="CollectionUtils.cs" />
-    <Compile Include="Converters\EnumerableToPointsCollection.cs" />
-    <Compile Include="Converters\InvertBooleanConverter.cs" />
-    <Compile Include="CsvReader.cs" />
-    <Compile Include="DelegateCommand.cs" />
-    <Compile Include="Enumerable.cs" />
-    <Compile Include="ExpressionHelper.cs" />
-    <Compile Include="FreezableExtensions.cs" />
-    <Compile Include="IndexedItem.cs" />
-    <Compile Include="ListExtensions.cs" />
-    <Compile Include="ListSlice.cs" />
-    <Compile Include="MathUtils.cs" />
-    <Compile Include="MathUtils3D.cs" />
-    <Compile Include="Plane3D.cs" />
-    <Compile Include="CurveProjectionResult3D.cs" />
+    <Compile Include="Data\ComplexCurve.cs" />
+    <Compile Include="Data\Joint.cs" />
+    <Compile Include="Data\Point.cs" />
+    <Compile Include="Data\PointsSequence.cs" />
+    <Compile Include="Data\Polyline.cs" />
+    <Compile Include="Data\Segment.cs" />
+    <Compile Include="Data\SketchData.cs" />
+    <Compile Include="ErrorMessages.cs" />
+    <Compile Include="Events\LoadSketchEvent.cs" />
+    <Compile Include="Events\WorkingEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadOnlySet.cs" />
-    <Compile Include="WeakDictionary.cs" />
-    <Compile Include="WpfUtils.cs" />
+    <Compile Include="RegionNames.cs" />
+    <Compile Include="Services\ISketchCatalog.cs" />
+    <Compile Include="Services\ISketchProcessing.cs" />
+    <Compile Include="Shared\DisplayOptions.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

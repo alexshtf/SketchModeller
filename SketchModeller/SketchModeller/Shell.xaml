@@ -1,0 +1,44 @@
+﻿<Window x:Class="SketchModeller.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cal="http://www.codeplex.com/CompositeWPF"
+        xmlns:skm="http://SketchModeller"
+        xmlns:utils="http://alex/xaml"
+        Title="Shell" Height="600" Width="1000"
+        IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}">
+    <DockPanel LastChildFill="True">
+        <Button DockPanel.Dock="Bottom" Click="OnDebugClick">Debug</Button>
+        <ItemsControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.Toolbar}" 
+                      DockPanel.Dock="Top">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <DockPanel LastChildFill="True"
+                       Grid.Column="0">
+                <TextBlock DockPanel.Dock="Top" 
+                           HorizontalAlignment="Stretch"
+                           TextAlignment="Center"
+                           Background="Gray">Sketch</TextBlock>
+                <ContentControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.Sketch}" />
+            </DockPanel>
+            <DockPanel LastChildFill="True"
+                       Grid.Column="1">
+                <TextBlock DockPanel.Dock="Top" 
+                           HorizontalAlignment="Stretch"
+                           TextAlignment="Center"
+                           Background="Gray">Model</TextBlock>
+                <ContentControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.Model}"/>
+            </DockPanel>
+            <GridSplitter Grid.Column="0"
+                          Width="4" />
+        </Grid>
+    </DockPanel>
+</Window>
