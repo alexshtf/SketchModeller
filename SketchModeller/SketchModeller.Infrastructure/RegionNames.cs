@@ -9,6 +9,7 @@ namespace SketchModeller.Infrastructure
     {
         public static readonly string Sketch = "Sketch";
         public static readonly string Model = "Model";
-        public static readonly string Toolbar = "Toolbar";
+        public static readonly string MainMenu = "MainMenu";
+        public static readonly string ToolBar = "ToolBar";
     }
 }

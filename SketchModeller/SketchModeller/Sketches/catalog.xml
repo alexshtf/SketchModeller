@@ -3,4 +3,7 @@
   <sketch name="sketch1"
           file="sketch1.png"
           info="sketch1.xml" />
+  <sketch name="sketch2"
+          file="sketch2.png"
+          info="sketch2.xml" />
 </catalog>

@@ -12,6 +12,17 @@ namespace Utils
     /// </summary>
     public static class BaseViewModelExtensions
     {
+        public static bool Match<TProperty>(this PropertyChangedEventArgs e, Expression<Func<TProperty>> expression)
+        {
+            if (string.IsNullOrEmpty(e.PropertyName))
+                return true;
+
+            var propertyName = expression.GetMemberInfo().Name;
+            if (e.PropertyName == propertyName)
+                return true;
+
+            return false;
+        }
 
         /// <summary>
         /// Matches property changed event args against a lambda-style property and executes the action if the match succeeds.
@@ -22,14 +33,8 @@ namespace Utils
         /// <param name="action">The action to execute.</param>
         public static void Match<TProperty>(this PropertyChangedEventArgs e, Expression<Func<TProperty>> expression, Action action)
         {
-            if (string.IsNullOrEmpty(e.PropertyName))
+            if (e.Match(expression))
                 action();
-            else
-            {
-                var propertyName = expression.GetMemberInfo().Name;
-                if (e.PropertyName == propertyName)
-                    action();
-            }
         }
     }
 

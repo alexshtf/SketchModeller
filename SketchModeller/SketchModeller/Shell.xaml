@@ -8,14 +8,10 @@
         IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}">
     <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Bottom" Click="OnDebugClick">Debug</Button>
-        <ItemsControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.Toolbar}" 
-                      DockPanel.Dock="Top">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <Menu cal:RegionManager.RegionName="{x:Static skm:RegionNames.MainMenu}"
+              DockPanel.Dock="Top"/>
+        <ToolBarTray cal:RegionManager.RegionName="{x:Static skm:RegionNames.ToolBar}"
+                     DockPanel.Dock="Top" />
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -27,7 +23,24 @@
                            HorizontalAlignment="Stretch"
                            TextAlignment="Center"
                            Background="Gray">Sketch</TextBlock>
-                <ContentControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.Sketch}" />
+                <Viewport3D>
+                    <Viewport3D.Camera>
+                        <PerspectiveCamera NearPlaneDistance="0.1"
+                                           FarPlaneDistance="100"
+                                           Position="0,0,4"
+                                           LookDirection="0,0,-1"
+                                           UpDirection="0,1,0" />
+                    </Viewport3D.Camera>
+                    <Viewport3D.Children>
+                        <ModelVisual3D>
+                            <ModelVisual3D.Content>
+                                <AmbientLight Color="Gray" />
+                            </ModelVisual3D.Content>
+                        </ModelVisual3D>
+                        <ModelVisual3D cal:RegionManager.RegionName="{x:Static skm:RegionNames.Sketch}">
+                        </ModelVisual3D>
+                    </Viewport3D.Children>
+                </Viewport3D>
             </DockPanel>
             <DockPanel LastChildFill="True"
                        Grid.Column="1">

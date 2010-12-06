@@ -6,7 +6,7 @@ using Microsoft.Practices.Prism.Events;
 
 namespace SketchModeller.Infrastructure.Events
 {
-    public class WorkingEvent : CompositePresentationEvent<bool>
+    public class StartWorkingEvent : CompositePresentationEvent<Guid>
     {
     }
 }

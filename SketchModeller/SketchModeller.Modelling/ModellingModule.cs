@@ -26,15 +26,24 @@ namespace SketchModeller.Modelling
 
         public void Initialize()
         {
+            // register shared data
+            container.RegisterType<DisplayOptions, DisplayOptions>(new ContainerControlledLifetimeManager());
+            container.RegisterType<SessionData, SessionData>(new ContainerControlledLifetimeManager());
+            container.RegisterType<UiState, UiState>(new ContainerControlledLifetimeManager());
+
             // register services
             container.RegisterType<ISketchProcessing, SketchProcessing>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
-            container.RegisterType<DisplayOptions, DisplayOptions>(new ContainerControlledLifetimeManager());
+
+            // register global objects objects
+            container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());
 
             // register views.
             regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchImageView));
-            regionManager.RegisterViewWithRegion(RegionNames.Toolbar, typeof(OpenImageView));
-            regionManager.RegisterViewWithRegion(RegionNames.Toolbar, typeof(DisplayOptionsView));
+            regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchModellingView));
+            regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(OpenImageView));
+            regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(DisplayOptionsView));
+            regionManager.RegisterViewWithRegion(RegionNames.ToolBar, typeof(PrimitivesToolbar));
         }
     }
 }

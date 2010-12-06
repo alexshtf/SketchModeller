@@ -17,23 +17,30 @@ namespace SketchModeller.Modelling.Views
 {
     public class SketchImageViewModel : NotificationObject, System.Windows.IWeakEventListener
     {
-        private ISketchCatalog sketchCatalog;
-        private IEventAggregator eventAggregator;
         private DisplayOptions displayOptions;
+        private SessionData sessionData;
+        private UiState uiState;
 
         public SketchImageViewModel()
         {
         }
 
         [InjectionConstructor]
-        public SketchImageViewModel(ISketchCatalog sketchCatalog, IEventAggregator eventAggregator, DisplayOptions displayOptions)
+        public SketchImageViewModel(DisplayOptions displayOptions, SessionData sessionData, UiState uiState)
             : this()
         {
-            this.eventAggregator = eventAggregator;
-            this.sketchCatalog = sketchCatalog;
-            eventAggregator.GetEvent<LoadSketchEvent>().Subscribe(LoadSketch);
             this.displayOptions = displayOptions;
+            this.sessionData = sessionData;
+            this.uiState = uiState;
+
             SetupDisplayOptionsSync();
+            SetupSessionDataSync();
+        }
+
+        public void SetImageSize(double width, double height)
+        {
+            uiState.ImageWidth = width;
+            uiState.ImageHeight = height;
         }
 
         #region ImageData property
@@ -100,45 +107,20 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        private void LoadSketch(string fileName)
-        {
-            sketchCatalog.LoadSketchAsync(fileName).ObserveOnDispatcher().Subscribe(
-                result => 
-                { 
-                    ImageData = result.Image;
-                    Points = result.Points;
-                },
-                ex => eventAggregator.GetEvent<WorkingEvent>().Publish(false),
-                () => eventAggregator.GetEvent<WorkingEvent>().Publish(false));
-            eventAggregator.GetEvent<WorkingEvent>().Publish(true);
-        }
-
         #region property sync related
-
-        private string IsImageShownName
-        {
-            get { return PropertySupport.ExtractPropertyName(() => displayOptions.IsImageShown); }
-        }
-
-        private string IsSketchShownName
-        {
-            get { return PropertySupport.ExtractPropertyName(() => displayOptions.IsSketchShown); }
-        }
 
         private void SetupDisplayOptionsSync()
         {
-            PropertyChangedEventManager.AddListener(
-                displayOptions, 
-                this,
-                IsImageShownName);
-
-            PropertyChangedEventManager.AddListener(
-                displayOptions,
-                this,
-                IsSketchShownName);
+            displayOptions.AddListener(this, () => displayOptions.IsImageShown);
+            displayOptions.AddListener(this, () => displayOptions.IsSketchShown);
 
             IsImageShown = displayOptions.IsImageShown;
             IsSketchShown = displayOptions.IsSketchShown;
+        }
+
+        private void SetupSessionDataSync()
+        {
+            sessionData.AddListener(this, () => sessionData.SketchData);
         }
 
         bool System.Windows.IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -148,11 +130,22 @@ namespace SketchModeller.Modelling.Views
 
             var eventArgs = (PropertyChangedEventArgs)e;
 
-            if (eventArgs.PropertyName == IsSketchShownName)
-                IsSketchShown = displayOptions.IsSketchShown;
+            if (sender == displayOptions)
+            {
+                if (eventArgs.Match(() => displayOptions.IsSketchShown))
+                    IsSketchShown = displayOptions.IsSketchShown;
 
-            if (eventArgs.PropertyName == IsImageShownName)
-                IsImageShown = displayOptions.IsImageShown;
+                if (eventArgs.Match(() => displayOptions.IsImageShown))
+                    IsImageShown = displayOptions.IsImageShown;
+            }
+            else if (sender == sessionData)
+            {
+                if (eventArgs.Match(() => sessionData.SketchData))
+                {
+                    ImageData = sessionData.SketchData.Image;
+                    Points = sessionData.SketchData.Points;
+                }
+            }
 
             return true;
         }

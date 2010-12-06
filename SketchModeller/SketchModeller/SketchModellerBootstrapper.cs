@@ -7,11 +7,23 @@ using System.Windows;
 using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Prism.Modularity;
 using SketchModeller.Modelling;
+using Microsoft.Practices.Prism.Regions;
+using Controls;
+using System.Windows.Controls;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller
 {
     class SketchModellerBootstrapper : UnityBootstrapper
     {
+        protected override RegionAdapterMappings ConfigureRegionAdapterMappings()
+        {
+            var mapping = base.ConfigureRegionAdapterMappings();
+            mapping.RegisterMapping(typeof(ModelVisual3D), Container.Resolve<ModelVisual3DRegionAdapter>());
+            mapping.RegisterMapping(typeof(ToolBarTray), Container.Resolve<ToolBarTrayRegionAdapter>());
+            return mapping;
+        }
+
         protected override DependencyObject CreateShell()
         {
             return Container.Resolve<Shell>();

@@ -12,24 +12,28 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Practices.Unity;
+using System.ComponentModel;
+using Microsoft.Practices.Prism.ViewModel;
+using SketchModeller.Infrastructure.Data;
+using Utils;
 
 namespace SketchModeller.Modelling.Views
 {
     /// <summary>
-    /// Interaction logic for DisplayOptionsView.xaml
+    /// Interaction logic for SketchModellingView.xaml
     /// </summary>
-    public partial class DisplayOptionsView
+    public partial class SketchModellingView
     {
-        public DisplayOptionsView()
+        public SketchModellingView()
         {
             InitializeComponent();
         }
 
         [InjectionConstructor]
-        public DisplayOptionsView(DisplayOptionsViewModel viewModel)
+        public SketchModellingView(SketchModellingViewModel viewModel)
             : this()
         {
-            DataContext = viewModel;
+            ViewModel3DHelper.InheritViewModel(this, viewModel);
         }
     }
 }

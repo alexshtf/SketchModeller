@@ -16,17 +16,17 @@ using Microsoft.Practices.Unity;
 namespace SketchModeller.Modelling.Views
 {
     /// <summary>
-    /// Interaction logic for DisplayOptionsView.xaml
+    /// Interaction logic for PrimitivesToolbar.xaml
     /// </summary>
-    public partial class DisplayOptionsView
+    public partial class PrimitivesToolbar
     {
-        public DisplayOptionsView()
+        public PrimitivesToolbar()
         {
             InitializeComponent();
         }
 
         [InjectionConstructor]
-        public DisplayOptionsView(DisplayOptionsViewModel viewModel)
+        public PrimitivesToolbar(PrimitivesToolbarViewModel viewModel)
             : this()
         {
             DataContext = viewModel;

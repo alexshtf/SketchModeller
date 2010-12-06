@@ -20,10 +20,21 @@ namespace Controls
 
         // Using a DependencyProperty as the backing store for Points.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PointsProperty =
-            DependencyProperty.Register("Points", typeof(PointCollection), typeof(Scatter), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange));
+            DependencyProperty.Register("Points", typeof(PointCollection), typeof(Scatter), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender, OnPointsChanged));
 
+
+        private static void OnPointsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var scatter = (Scatter)sender;
+            scatter.OnPointsChanged();
+        }
 
         #endregion
+
+        private void OnPointsChanged()
+        {
+            this.InvalidateVisual();
+        }
 
         protected override Geometry DefiningGeometry
         {
@@ -35,9 +46,10 @@ namespace Controls
                 var result = new GeometryGroup();
                 foreach (var point in Points)
                 {
-                    var pointGeometry = new EllipseGeometry(point, 2, 2);
+                    var pointGeometry = new EllipseGeometry(point, 0.5, 0.5);
                     result.Children.Add(pointGeometry);
                 }
+                result.Freeze();
 
                 return result;
             }

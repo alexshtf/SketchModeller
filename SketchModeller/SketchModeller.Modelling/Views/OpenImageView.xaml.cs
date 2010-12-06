@@ -19,7 +19,7 @@ namespace SketchModeller.Modelling.Views
     /// <summary>
     /// Interaction logic for OpenImageView.xaml
     /// </summary>
-    public partial class OpenImageView : UserControl
+    public partial class OpenImageView
     {
         private OpenImageViewModel viewModel;
 

@@ -64,11 +64,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ModelVisual3DRegionAdapter.cs" />
+    <Compile Include="MultiItemRegionAdapterBase.cs" />
     <Compile Include="Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="SketchModellerBootstrapper.cs" />
+    <Compile Include="ToolBarTrayRegionAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -84,6 +87,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Sketches\sketch2.png" />
+    <Resource Include="Sketches\sketch2.xml" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -97,6 +102,7 @@
     <Content Include="Sketches\sketch1.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Sketches\sketch2.csv" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Shell.xaml">
