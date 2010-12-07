@@ -32,8 +32,6 @@ namespace SketchModeller.Modelling.Views
             this.container = container;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
-            uiState.AddListener(this, () => uiState.ImageWidth);
-            uiState.AddListener(this, () => uiState.ImageHeight);
 
             sketchPlane = uiState.SketchPlane;
         }
@@ -51,38 +49,6 @@ namespace SketchModeller.Modelling.Views
             {
                 sketchPlane = value;
                 RaisePropertyChanged(() => SketchPlane);
-            }
-        }
-
-        #endregion
-
-        #region ImageWidth property
-
-        private double imageWidth;
-
-        public double ImageWidth
-        {
-            get { return imageWidth; }
-            set
-            {
-                imageWidth = value;
-                RaisePropertyChanged(() => ImageWidth);
-            }
-        }
-
-        #endregion
-
-        #region ImageHeight property
-
-        private double imageHeight;
-
-        public double ImageHeight
-        {
-            get { return imageHeight; }
-            set
-            {
-                imageHeight = value;
-                RaisePropertyChanged(() => ImageHeight);
             }
         }
 
@@ -107,11 +73,6 @@ namespace SketchModeller.Modelling.Views
             var eventArgs = (PropertyChangedEventArgs)e;
             if (eventArgs.Match(() => uiState.SketchPlane))
                 SketchPlane = uiState.SketchPlane;
-
-            if (eventArgs.Match(() => uiState.ImageWidth))
-                ImageWidth = uiState.ImageWidth;
-            if (eventArgs.Match(() => uiState.ImageHeight))
-                ImageHeight = uiState.ImageHeight;
 
             return true;
         }

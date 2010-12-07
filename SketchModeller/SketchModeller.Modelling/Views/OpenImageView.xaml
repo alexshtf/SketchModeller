@@ -3,15 +3,16 @@
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+          xmlns:alex="http://alex/xaml"
           mc:Ignorable="d" 
           Header="Load sketch"
           ItemsSource="{Binding SketchNames}"
           x:Name="rootItem">
-    <MenuItem.ItemContainerStyle>
-        <Style TargetType="MenuItem">
+    <MenuItem.Resources>
+        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding}" />
             <Setter Property="Command" Value="{Binding ElementName=rootItem, Path=DataContext.LoadSketchCommand}" />
             <Setter Property="CommandParameter" Value="{Binding}" />
         </Style>
-    </MenuItem.ItemContainerStyle>
+    </MenuItem.Resources>
 </MenuItem>

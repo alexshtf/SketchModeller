@@ -37,12 +37,6 @@ namespace SketchModeller.Modelling.Views
             SetupSessionDataSync();
         }
 
-        public void SetImageSize(double width, double height)
-        {
-            uiState.ImageWidth = width;
-            uiState.ImageHeight = height;
-        }
-
         #region ImageData property
 
         private double[,] imageData;

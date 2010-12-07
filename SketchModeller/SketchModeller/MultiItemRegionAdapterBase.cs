@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.Regions;
 using System.Collections.Specialized;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace SketchModeller
 {
@@ -30,8 +32,8 @@ namespace SketchModeller
                         for (int i = 0; i < eventArgs.NewItems.Count; ++i)
                         {
                             var targetIdx = i + eventArgs.NewStartingIndex;
-                            var visual3d = (TItem)eventArgs.NewItems[i];
-                            controlItems.Insert(targetIdx, visual3d);
+                            var child = (TItem)eventArgs.NewItems[i];
+                            controlItems.Insert(targetIdx, child);
                         };
                         break;
                     case NotifyCollectionChangedAction.Move:

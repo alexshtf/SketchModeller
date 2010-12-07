@@ -11,5 +11,6 @@ namespace SketchModeller.Infrastructure
         public static readonly string Model = "Model";
         public static readonly string MainMenu = "MainMenu";
         public static readonly string ToolBar = "ToolBar";
+        public static readonly string SideBar = "SideBar";
     }
 }

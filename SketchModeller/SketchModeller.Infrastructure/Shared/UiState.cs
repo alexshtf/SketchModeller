@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using SketchModeller.Infrastructure.Data;
+using System.Collections.ObjectModel;
 
 namespace SketchModeller.Infrastructure.Shared
 {
@@ -13,6 +14,7 @@ namespace SketchModeller.Infrastructure.Shared
         {
             Tool = Shared.Tool.Manipulation;
             SketchPlane = SketchPlane.Default;
+            SketchPlanes = new ObservableCollection<SketchPlane>() { SketchPlane };
         }
 
         #region Tool property
@@ -47,36 +49,6 @@ namespace SketchModeller.Infrastructure.Shared
 
         #endregion
 
-        #region ImageWidth property
-
-        private double imageWidth;
-
-        public double ImageWidth
-        {
-            get { return imageWidth; }
-            set
-            {
-                imageWidth = value;
-                RaisePropertyChanged(() => ImageWidth);
-            }
-        }
-
-        #endregion
-
-        #region ImageHeight property
-
-        private double imageHeight;
-
-        public double ImageHeight
-        {
-            get { return imageHeight; }
-            set
-            {
-                imageHeight = value;
-                RaisePropertyChanged(() => ImageHeight);
-            }
-        }
-
-        #endregion
-    }
+        public ObservableCollection<SketchPlane> SketchPlanes { get; private set; }
+     }
 }

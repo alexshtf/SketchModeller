@@ -55,6 +55,13 @@ namespace SketchModeller
         protected override void InitializeModules()
         {
             base.InitializeModules();
+
+            //Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            //    {
+            //        Application.Current.Resources.MergedDictionaries.Clear();
+            //        Application.Current.Resources.MergedDictionaries.Add(
+            //            new ResourceDictionary { Source = new Uri("Themes/ExpressionDark.xaml", UriKind.Relative) });
+            //    }));
         }
     }
 }

@@ -36,21 +36,18 @@ namespace SketchModeller.Modelling
             Work.Execute<SketchData>(
                 eventAggregator, 
                 workItem: () => sketchCatalog.LoadSketchAsync(sketchName), 
-                onNext: UpdateSketchData);
+                onNext: OnSketchLoaded);
         }
 
-        private void UpdateSketchData(SketchData sketchData)
+        private void OnSketchLoaded(SketchData sketchData)
         {
             sessionData.SketchData = sketchData;
             var imWidth = sketchData.Image.GetLength(0);
             var imHeight = sketchData.Image.GetLength(1);
-            uiState.SketchPlane = new SketchPlane(
-                center: MathUtils3D.Origin,
-                xAxis: MathUtils3D.UnitX,
-                yAxis: MathUtils3D.UnitY,
-                normal: MathUtils3D.UnitZ,
-                width: imWidth,
-                height: imHeight);
+            
+            uiState.SketchPlane = uiState.SketchPlanes[0];
+            while (uiState.SketchPlanes.Count > 1)
+                uiState.SketchPlanes.RemoveAt(1);
         }
     }
 }

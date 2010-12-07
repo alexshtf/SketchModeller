@@ -12,6 +12,15 @@
               DockPanel.Dock="Top"/>
         <ToolBarTray cal:RegionManager.RegionName="{x:Static skm:RegionNames.ToolBar}"
                      DockPanel.Dock="Top" />
+        <TabControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.SideBar}"
+                    DockPanel.Dock="Left"
+                    MinWidth="200">
+            <TabControl.Resources>
+                <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                    <Setter Property="Header" Value="{Binding ViewName}" />
+                </Style>
+            </TabControl.Resources>
+        </TabControl>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -25,7 +34,8 @@
                            Background="Gray">Sketch</TextBlock>
                 <Viewport3D>
                     <Viewport3D.Camera>
-                        <PerspectiveCamera NearPlaneDistance="0.1"
+                        <PerspectiveCamera x:Name="camera"
+                                           NearPlaneDistance="0.1"
                                            FarPlaneDistance="100"
                                            Position="0,0,4"
                                            LookDirection="0,0,-1"

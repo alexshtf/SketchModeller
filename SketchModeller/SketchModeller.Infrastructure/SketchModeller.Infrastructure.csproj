@@ -83,6 +83,7 @@
     <Compile Include="Events\LoadSketchEvent.cs" />
     <Compile Include="Events\StartWorkingEvent.cs" />
     <Compile Include="Events\StopWorkingEvent.cs" />
+    <Compile Include="IHeaderedView.cs" />
     <Compile Include="MenuCommandData.cs" />
     <Compile Include="Work.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

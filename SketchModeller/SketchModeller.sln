@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SketchModeller.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SketchModeller.Modelling", "SketchModeller.Modelling\SketchModeller.Modelling.csproj", "{C12C25AB-5DB5-4836-8062-97194B8D469C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{BEA0988A-A137-4997-8FB2-AB3666F4B672}"
+	ProjectSection(SolutionItems) = preProject
+		libs\ReuxablesLegacy.dll = libs\ReuxablesLegacy.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

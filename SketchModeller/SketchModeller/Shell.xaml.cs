@@ -12,6 +12,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
+using System.ComponentModel;
+using Utils;
+using System.Diagnostics;
 
 namespace SketchModeller
 {
@@ -20,6 +23,8 @@ namespace SketchModeller
     /// </summary>
     public partial class Shell : Window
     {
+        private ShellViewModel viewModel;
+
         public Shell()
         {
             InitializeComponent();
@@ -28,12 +33,23 @@ namespace SketchModeller
         public Shell(IUnityContainer container)
             : this()
         {
-            DataContext = container.Resolve<ShellViewModel>();
+            viewModel = container.Resolve<ShellViewModel>();
+            DataContext = viewModel;
+            viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        }
+
+        void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.Match(() => viewModel.SketchPlane))
+            {
+                Trace.Fail("TODO: Update camera from SketchPlane");
+            }
         }
 
         private void OnDebugClick(object sender, RoutedEventArgs e)
         {
-
+            if (Debugger.IsAttached)
+                Debugger.Break();
         }
     }
 }

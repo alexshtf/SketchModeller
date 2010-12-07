@@ -9,7 +9,7 @@ using Microsoft.Practices.Prism.ViewModel;
 
 namespace SketchModeller.Modelling
 {
-    static class PropertyChangedEventManagerHelper
+    public static class PropertyChangedEventManagerHelper
     {
         public static void AddListener<TProperty>(
             this INotifyPropertyChanged source, 
