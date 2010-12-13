@@ -40,47 +40,10 @@ namespace SketchModeller.Modelling.Services.Sketch
             var result = from info in GetSketchMetadataAsync(sketchName)
                          let fileName = Path.Combine(CATALOG_PATH, info.File)
                          from image in sketchProcessing.LoadSketchImageAsync(fileName)
-                         let infoFile = Path.Combine(CATALOG_PATH, info.InfoFile)
-                         from data in LoadSketchDataAsync(infoFile)
-                         select new SketchData 
-                         { 
-                             Image = image,
-                             Points = data.Points,
-                         };
+                         from sketchData in sketchProcessing.ProcessSketchImageAsync(image)
+                         select sketchData;
 
             return result;
-        }
-
-        private IObservable<InternalSketchData> LoadSketchDataAsync(string infoFile)
-        {
-            Func<InternalSketchData> loadSketchData = () =>
-                {
-                    var infoElement = XElement.Load(infoFile);
-                    var pointsFile = (string)infoElement.Element("points");
-                    
-                    var infoDirectory = Path.GetDirectoryName(Path.GetFullPath(infoFile));
-                    pointsFile = Path.Combine(infoDirectory, pointsFile);
-                    using (var csvPoints = DataSet.Open(pointsFile))
-                    {
-                        Trace.Assert(csvPoints.Dimensions.Count == 2, "CSV file must have two columns");
-                        var xs = csvPoints[0];
-                        var ys = csvPoints[1];
-                        
-                        Trace.Assert(xs.Rank == 1 && ys.Rank == 1, "Both columns must have rank 1");
-                        Trace.Assert(xs.Dimensions[0].Length == ys.Dimensions[0].Length, "Both columns must be of the same length");
-
-                        var xsArray = (double[])xs.GetData();
-                        var ysArray = (double[])ys.GetData();
-                        var pointsArray = new Point[xsArray.Length];
-                        for (int i = 0; i < xsArray.Length; ++i)
-                            pointsArray[i] = new Point { X = xsArray[i], Y = ysArray[i] };
-
-                        return new InternalSketchData { Points = pointsArray };
-                    }
-                };
-            return Observable.FromAsyncPattern<InternalSketchData>(
-                loadSketchData.BeginInvoke, 
-                loadSketchData.EndInvoke)();
         }
 
         private IObservable<SketchMetadata> GetSketchMetadataAsync(string sketchName)

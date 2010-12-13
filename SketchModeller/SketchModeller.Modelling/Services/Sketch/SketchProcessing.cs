@@ -9,6 +9,11 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using System.Windows.Media;
 
+using WFPixelFormat = System.Drawing.Imaging.PixelFormat;
+using WFBitmap = System.Drawing.Bitmap;
+using WFColor = System.Drawing.Color;
+using AForge.Imaging.Filters;
+
 namespace SketchModeller.Modelling.Services.Sketch
 {
     class SketchProcessing : ISketchProcessing
@@ -47,7 +52,43 @@ namespace SketchModeller.Modelling.Services.Sketch
 
         public IObservable<SketchData> ProcessSketchImageAsync(double[,] image)
         {
-            return null;
+            Func<SketchData> process = () =>
+                {
+                    var w = image.GetLength(0);
+                    var h = image.GetLength(1);
+
+                    var bmp = new WFBitmap(w, h, WFPixelFormat.Format32bppArgb);
+                    for (var x = 0; x < w; ++x)
+                        for (var y = 0; y < h; ++y)
+                        {
+                            var value = (int)Math.Round(255 * image[x, y]);
+                            var color = WFColor.FromArgb(value, value, value);
+                            bmp.SetPixel(x, y, color);
+                        }
+
+                    bmp = Grayscale.CommonAlgorithms.BT709.Apply(bmp);
+                    bmp = new FlatFieldCorrection().Apply(bmp);
+                    bmp = new ContrastStretch().Apply(bmp);
+                    bmp = new OtsuThreshold().Apply(bmp);
+                    var points = new List<Point>();
+                    for (int x = 0; x < bmp.Width; ++x)
+                        for (int y = 0; y < bmp.Height; ++y)
+                        {
+                            var color = bmp.GetPixel(x, y);
+                            var brightness = color.GetBrightness();
+                            if (brightness < 0.1)
+                                points.Add(new Point { X = x, Y = y });
+                        }
+
+                    return new SketchData 
+                    { 
+                        Image = image, 
+                        Points = points.ToArray(),
+                    };
+                };
+
+            var observable = Observable.FromAsyncPattern<SketchData>(process.BeginInvoke, process.EndInvoke)();
+            return observable;
         }
 
 

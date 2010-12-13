@@ -1,0 +1,38 @@
+﻿<ModelVisual3D x:Class="SketchModeller.Modelling.Views.NewCylinderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cp="http://schemas.charlespetzold.com/2007/xaml"
+             xmlns:skm="http://SketchModeller"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <ModelVisual3D.Children>
+        <ModelUIElement3D x:Name="uiElement">
+            <ModelUIElement3D.Model>
+                <GeometryModel3D x:Name="geometry">
+                    <GeometryModel3D.Transform>
+                        <Transform3DGroup>
+                            <RotateTransform3D>
+                                <RotateTransform3D.Rotation>
+                                    <AxisAngleRotation3D x:Name="rotation" />
+                                </RotateTransform3D.Rotation>
+                            </RotateTransform3D>
+                            <TranslateTransform3D x:Name="translation" />
+                        </Transform3DGroup>
+                    </GeometryModel3D.Transform>
+                    <GeometryModel3D.Material>
+                        <DiffuseMaterial Brush="White"
+                                         Color="{skm:TransparentColor BaseColor=Gray, Alpha=128}" />
+                    </GeometryModel3D.Material>
+                </GeometryModel3D>
+            </ModelUIElement3D.Model>
+        </ModelUIElement3D>
+        <!--<cp:Cylinder x:Name="cylinder">
+            <cp:Cylinder.Material>
+                <DiffuseMaterial Brush="White" 
+                                 Color="Gray" />
+            </cp:Cylinder.Material>
+        </cp:Cylinder>-->
+    </ModelVisual3D.Children>
+</ModelVisual3D>

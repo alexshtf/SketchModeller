@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Windows.Media.Media3D;
+using Utils;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -11,14 +12,32 @@ namespace SketchModeller.Modelling.Views
     {
         public NewCylinderViewModel()
         {
-            diameter = 40;
-            length = 100;
+            diameter = 0.1;
+            length = 0.2;
+            axis = MathUtils3D.UnitZ;
         }
 
-        public void Initialize(Point3D point3d)
+        public void Initialize(Point3D center, Vector3D axis)
         {
-            Center = point3d;
+            Center = center;
+            Axis = axis;
         }
+
+        #region Axis property
+
+        private Vector3D axis;
+
+        public Vector3D Axis
+        {
+            get { return axis; }
+            set
+            {
+                axis = value;
+                RaisePropertyChanged(() => Axis);
+            }
+        }
+
+        #endregion
 
         #region Diameter property
 

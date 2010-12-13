@@ -12,6 +12,7 @@ using SketchModeller.Modelling;
 using System.ComponentModel;
 using Utils;
 using SketchModeller.Infrastructure.Data;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller
 {
@@ -19,6 +20,7 @@ namespace SketchModeller
     {
         private HashSet<Guid> workingIds;
         private UiState uiState;
+        private IEventAggregator eventAggregator;
 
         public ShellViewModel()
         {
@@ -28,6 +30,7 @@ namespace SketchModeller
         public ShellViewModel(IEventAggregator eventAggregator, UiState uiState)
             : this()
         {
+            this.eventAggregator = eventAggregator;
             this.uiState = uiState;
             uiState.AddListener(this, () => uiState.SketchPlane);
 
@@ -38,6 +41,12 @@ namespace SketchModeller
         public bool IsWorking
         {
             get { return workingIds.Count > 0; }
+        }
+
+        public void OnSketchClick(Point3D p1, Point3D p2)
+        {
+            var payload = new SketchClickInfo(p1, p2);
+            eventAggregator.GetEvent<SketchClickEvent>().Publish(payload);
         }
 
         private void OnStartWorking(Guid workId)
@@ -92,5 +101,6 @@ namespace SketchModeller
         }
 
         #endregion
+
     }
 }

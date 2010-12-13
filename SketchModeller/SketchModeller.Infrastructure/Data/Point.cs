@@ -17,7 +17,7 @@ namespace SketchModeller.Infrastructure.Data
             set
             {
                 x = value;
-                RaisePropertyChanged(() => this.X);
+                RaisePropertyChanged("X");
             }
         }
 
@@ -27,7 +27,7 @@ namespace SketchModeller.Infrastructure.Data
             set
             {
                 y = value;
-                RaisePropertyChanged(() => this.Y);
+                RaisePropertyChanged("Y");
             }
         }
     }

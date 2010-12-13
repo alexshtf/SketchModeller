@@ -81,6 +81,9 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Petzold.Media3D">
+      <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -118,6 +121,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Scatter.cs" />
+    <Compile Include="Scatter3D.cs" />
+    <Compile Include="TransparentColorExtension.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

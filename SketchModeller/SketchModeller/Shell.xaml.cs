@@ -15,6 +15,7 @@ using Microsoft.Practices.Unity;
 using System.ComponentModel;
 using Utils;
 using System.Diagnostics;
+using Petzold.Media3D;
 
 namespace SketchModeller
 {
@@ -50,6 +51,25 @@ namespace SketchModeller
         {
             if (Debugger.IsAttached)
                 Debugger.Break();
+        }
+
+        private void OnSketchMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var mousePos = e.GetPosition(viewport3d);
+            LineRange lineRange;
+            if (ViewportInfo.Point2DtoPoint3D(viewport3d, mousePos, out lineRange))
+                viewModel.OnSketchClick(lineRange.Point1, lineRange.Point2);
+            
+        }
+
+        private void OnSketchMouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void OnSketchMouseMove(object sender, MouseEventArgs e)
+        {
+
         }
     }
 }

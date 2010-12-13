@@ -11,6 +11,9 @@ using System.ComponentModel;
 using Microsoft.Practices.Prism.ViewModel;
 using SketchModeller.Infrastructure.Data;
 using Utils;
+using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Events;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -25,13 +28,15 @@ namespace SketchModeller.Modelling.Views
             sketchPlane = SketchPlane.Default;
         }
 
-        public SketchModellingViewModel(UiState uiState, IUnityContainer container)
+        [InjectionConstructor]
+        public SketchModellingViewModel(UiState uiState, IEventAggregator eventAggregator, IUnityContainer container)
             : this()
         {
             this.uiState = uiState;
             this.container = container;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
+            eventAggregator.GetEvent<SketchClickEvent>().Subscribe(OnSketchClick);
 
             sketchPlane = uiState.SketchPlane;
         }
@@ -54,15 +59,35 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        public void TryAddNewPrimitive(Point3D point3d)
+        public void OnSketchClick(SketchClickInfo info)
         {
             if (uiState.Tool == Tool.InsertCylinder)
             {
+                var point3d = GetClickPoint(info); // TODO: Extract from info.
                 var viewModel = container.Resolve<NewCylinderViewModel>();
-                viewModel.Initialize(point3d);
-                NewPrimitiveViewModels.Add(new NewCylinderViewModel());
+                viewModel.Initialize(center: point3d, axis: sketchPlane.YAxis);
+                NewPrimitiveViewModels.Add(viewModel);
             }
             uiState.Tool = Tool.Manipulation;
+
+        }
+
+        private Point3D GetClickPoint(SketchClickInfo info)
+        {
+            var sketchPlane = uiState.SketchPlane;
+
+            // extract mathematicsl symbols from sketchplane / info
+            var p0 = sketchPlane.Center;
+            var n = sketchPlane.Normal;
+            var l0 = info.RayStart;
+            var l = info.RayEnd - info.RayStart;
+
+            var t = Vector3D.DotProduct(p0 - l0, n) / Vector3D.DotProduct(l, n);
+            
+            Debug.Assert(!double.IsNaN(t) && !double.IsInfinity(t), "Intersection point must exist. We on purpose orient the camera towards the sketch plane");
+            Debug.Assert(t >= 0, "Intersection point must be on the ray, because we on purpose orient the camera towards the sketch plane");
+
+            return l0 + t * l;
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

@@ -81,6 +81,8 @@
     <Compile Include="Data\SketchPlane.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />
+    <Compile Include="Events\SelectionEvent.cs" />
+    <Compile Include="Events\SketchClickEvent.cs" />
     <Compile Include="Events\StartWorkingEvent.cs" />
     <Compile Include="Events\StopWorkingEvent.cs" />
     <Compile Include="IHeaderedView.cs" />

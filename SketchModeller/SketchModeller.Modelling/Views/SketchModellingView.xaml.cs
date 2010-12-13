@@ -16,6 +16,10 @@ using System.ComponentModel;
 using Microsoft.Practices.Prism.ViewModel;
 using SketchModeller.Infrastructure.Data;
 using Utils;
+using SketchModeller.Modelling;
+using Controls;
+using System.Windows.Media.Media3D;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -24,6 +28,8 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchModellingView
     {
+        private SketchModellingViewModel viewModel;
+
         public SketchModellingView()
         {
             InitializeComponent();
@@ -33,7 +39,23 @@ namespace SketchModeller.Modelling.Views
         public SketchModellingView(SketchModellingViewModel viewModel)
             : this()
         {
-            ViewModel3DHelper.InheritViewModel(this, viewModel);
+            this.viewModel = viewModel;
+            cloningVisual3D.ItemsSource = viewModel.NewPrimitiveViewModels;
+            cloningVisual3D.Visual3DFactory = new Visual3DFactory();
+        }
+
+        class Visual3DFactory : IVisual3DFactory
+        {
+            public Visual3D Create(object item)
+            {
+                Visual3D result = null;
+                
+                item.MatchClass<NewCylinderViewModel>(
+                    viewModel => result = new NewCylinderView(viewModel));
+
+                Contract.Assume(result != null);
+                return result;
+            }
         }
     }
 }
