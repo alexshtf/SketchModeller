@@ -16,6 +16,8 @@ using Utils;
 using Petzold.Media3D;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
+using Microsoft.Practices.Prism.Logging;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -24,19 +26,26 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class NewCylinderView : INewPrimitiveView, IWeakEventListener
     {
+        private bool isMoving;
+        private Viewport3D viewport;
+        private Point3D lastSketchPlanePoint;
+
         private NewCylinderViewModel viewModel;
         private HollowCylinderMesh cylinderMesh;
+        private ILoggerFacade logger;
 
         public NewCylinderView()
         {
             InitializeComponent();
             cylinderMesh = new HollowCylinderMesh();
+            logger = new EmptyLogger();
         }
 
-        public NewCylinderView(NewCylinderViewModel viewModel)
+        public NewCylinderView(NewCylinderViewModel viewModel, ILoggerFacade logger)
             : this()
         {
             this.viewModel = viewModel;
+            this.logger = logger;
 
             viewModel.AddListener(this, () => viewModel.Center);
             viewModel.AddListener(this, () => viewModel.Diameter);
@@ -48,6 +57,74 @@ namespace SketchModeller.Modelling.Views
             geometry.Geometry = cylinderMesh.Geometry;
             UpdateTranslation();
             UpdateRotation();
+
+            uiElement.MouseDown += OnMouseDown;
+            uiElement.MouseUp += OnMouseUp;
+            uiElement.MouseMove += OnMouseMove;
+        }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                isMoving = true;
+                logger.Log("Capturing mouse", Category.Debug, Priority.None);
+                bool success = uiElement.CaptureMouse();
+                if (!success)
+                    logger.Log("Mouse capture failed", Category.Warn, Priority.None);
+
+                viewport = this.VisualPathUp().OfType<Viewport3D>().FirstOrDefault();
+                var sketchPlanePoint = GetPointOnSketchPlane(e.GetPosition(uiElement));
+                if (sketchPlanePoint != null)
+                    lastSketchPlanePoint = sketchPlanePoint.Value;
+                else
+                    logger.Log("Error getting point on sketch plane", Category.Warn, Priority.None);
+            }
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                isMoving = false;
+                logger.Log("Releasing mouse capture", Category.Debug, Priority.None);
+                uiElement.ReleaseMouseCapture();
+            }
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMoving)
+            {
+                var position = Mouse.GetPosition(uiElement);
+                var maybePnt = GetPointOnSketchPlane(position);
+                if (maybePnt != null)
+                {
+                    var pnt = maybePnt.Value;
+                    var moveVector = pnt - lastSketchPlanePoint;
+                    lastSketchPlanePoint = pnt;
+
+                    viewModel.Center = viewModel.Center + moveVector;
+                }
+                else
+                    logger.Log("Ray calc failed. Will not move the object", Category.Warn, Priority.None);
+            }
+        }
+
+        private Point3D? GetPointOnSketchPlane(Point position)
+        {
+            LineRange ray;
+            if (ViewportInfo.Point2DtoPoint3D(viewport, position, out ray))
+            {
+                var plane3d = Plane3D.FromPointAndNormal(viewModel.SketchPlane.Center, viewModel.SketchPlane.Normal);
+                var t = plane3d.IntersectLine(ray.Point1, ray.Point2);
+                Contract.Assume(t > 0, "The sketch-plane is before us. The ray always intersects it");
+
+                var intersectionPoint = MathUtils3D.Lerp(ray.Point1, ray.Point2, t);
+                return intersectionPoint;
+            }
+            else
+                return null;
         }
 
         private void UpdateMeshGeometry()

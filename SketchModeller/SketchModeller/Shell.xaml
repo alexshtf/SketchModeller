@@ -28,7 +28,7 @@
             </Grid.ColumnDefinitions>
             <DockPanel LastChildFill="True"
                        Grid.Column="0"
-                       Background="White"
+                       Background="DarkGray"
                        MouseDown="OnSketchMouseDown"
                        MouseUp="OnSketchMouseUp"
                        MouseMove="OnSketchMouseMove">

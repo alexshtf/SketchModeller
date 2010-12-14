@@ -5,11 +5,16 @@ using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Windows.Media.Media3D;
 using Utils;
+using SketchModeller.Infrastructure.Shared;
+using SketchModeller.Infrastructure.Data;
+using Microsoft.Practices.Unity;
 
 namespace SketchModeller.Modelling.Views
 {
     public class NewCylinderViewModel : NewPrimitiveViewModel
     {
+        private readonly UiState uiState;
+
         public NewCylinderViewModel()
         {
             diameter = 0.1;
@@ -17,10 +22,22 @@ namespace SketchModeller.Modelling.Views
             axis = MathUtils3D.UnitZ;
         }
 
+        [InjectionConstructor]
+        public NewCylinderViewModel(UiState uiState)
+            : this()
+        {
+            this.uiState = uiState;
+        }
+
         public void Initialize(Point3D center, Vector3D axis)
         {
             Center = center;
             Axis = axis;
+        }
+
+        public SketchPlane SketchPlane
+        {
+            get { return uiState.SketchPlane; }
         }
 
         #region Axis property

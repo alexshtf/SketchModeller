@@ -140,6 +140,7 @@ namespace Utils
             return cross.LengthSquared < EPSILON;
         }
 
+        /// <summary>
         /// Calculates linear interpolation between two points (1 - t) * p1 + t * p2
         /// </summary>
         /// <param name="p1">First point</param>
@@ -250,6 +251,22 @@ namespace Utils
                 select new CurveProjectionResult3D(projectedPoint, index, distance);
 
             return projectedPoints.Minimizer(pair => pair.Distance);
+        }
+
+        /// <summary>
+        /// Intersects a plane with a line
+        /// </summary>
+        /// <param name="plane">The plane to intersect with</param>
+        /// <param name="p1">First point on the line</param>
+        /// <param name="p2">Second point on the line</param>
+        /// <returns>If the intersection exists - returns a value <c>t</c> such that the intersection point is 
+        /// <c>t*p2 + (1-t)*p1</c>. If the intersection point doesn't exist, returns <c>NaN</c></returns>
+        [Pure]
+        public static double IntersectLine(this Plane3D plane, Point3D p1, Point3D p2)
+        {
+            var l = p2 - p1;
+            var t = (plane.D - Vector3D.DotProduct((Vector3D)p1, plane.Normal)) / Vector3D.DotProduct(l, plane.Normal);
+            return t;
         }
     }
 }

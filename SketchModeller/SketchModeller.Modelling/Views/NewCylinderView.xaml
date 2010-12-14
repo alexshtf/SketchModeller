@@ -28,11 +28,5 @@
                 </GeometryModel3D>
             </ModelUIElement3D.Model>
         </ModelUIElement3D>
-        <!--<cp:Cylinder x:Name="cylinder">
-            <cp:Cylinder.Material>
-                <DiffuseMaterial Brush="White" 
-                                 Color="Gray" />
-            </cp:Cylinder.Material>
-        </cp:Cylinder>-->
     </ModelVisual3D.Children>
 </ModelVisual3D>

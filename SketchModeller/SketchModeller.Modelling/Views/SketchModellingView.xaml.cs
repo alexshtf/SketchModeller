@@ -20,6 +20,7 @@ using SketchModeller.Modelling;
 using Controls;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
+using Microsoft.Practices.Prism.Logging;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -36,22 +37,29 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public SketchModellingView(SketchModellingViewModel viewModel)
+        public SketchModellingView(SketchModellingViewModel viewModel, ILoggerFacade logger)
             : this()
         {
             this.viewModel = viewModel;
             cloningVisual3D.ItemsSource = viewModel.NewPrimitiveViewModels;
-            cloningVisual3D.Visual3DFactory = new Visual3DFactory();
+            cloningVisual3D.Visual3DFactory = new Visual3DFactory(logger);
         }
 
         class Visual3DFactory : IVisual3DFactory
         {
+            private ILoggerFacade logger;
+
+            public Visual3DFactory(ILoggerFacade logger)
+            {
+                this.logger = logger;
+            }
+
             public Visual3D Create(object item)
             {
                 Visual3D result = null;
                 
                 item.MatchClass<NewCylinderViewModel>(
-                    viewModel => result = new NewCylinderView(viewModel));
+                    viewModel => result = new NewCylinderView(viewModel, logger));
 
                 Contract.Assume(result != null);
                 return result;
