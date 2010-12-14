@@ -15,6 +15,7 @@ using Microsoft.Practices.Unity;
 using System.ComponentModel;
 using Utils;
 using System.Windows.Threading;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -45,12 +46,29 @@ namespace SketchModeller.Modelling.Views
         {
             this.viewModel = viewModel;
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
-            grid.DataContext = viewModel;
+            //grid.DataContext = viewModel;
             ViewModel3DHelper.InheritViewModel(this, viewModel);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            // when visibility flags get updated
+            e.Match(() => viewModel.IsImageShown, () => ShowHide(viewModel.IsImageShown, imageVisibilityTransform));
+            e.Match(() => viewModel.IsSketchShown, () => ShowHide(viewModel.IsSketchShown, scatterVisibilityTransform));
+
+            // when points get updated
+            e.Match(() => viewModel.Points, () =>
+                {
+                    // IMPORTANT!!!! We assume that viewModel.ImageWidth and viewModel.ImageHeight have the correct
+                    // values at this stage. That is, when we notify about points update we already have the image data.
+                    var points3d = from pnt in viewModel.Points
+                                   let x = 2 * pnt.X / (double)viewModel.ImageWidth - 1
+                                   let y = 1 - 2 * pnt.Y / (double)viewModel.ImageHeight
+                                   select new Point3D(x, y, 0);
+                    scatter.Points = new Point3DCollection(points3d);
+                });
+
+            // when image gets updated
             e.Match(() => viewModel.ImageData, () =>
                 {
                     // get image information
@@ -70,8 +88,14 @@ namespace SketchModeller.Modelling.Views
                     writableBitmap.Freeze();
 
                     // display the image
-                    image.Source = writableBitmap;
+                    imageBrush.ImageSource = writableBitmap;
                 });
+        }
+
+        private void ShowHide(bool flag, ScaleTransform3D visibilityTransform)
+        {
+            double value = flag ? 1.0 : 0;
+            visibilityTransform.ScaleX = visibilityTransform.ScaleY = visibilityTransform.ScaleZ = value;
         }
     }
 }

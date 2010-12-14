@@ -69,6 +69,16 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        public int ImageWidth
+        {
+            get { return imageData.GetLength(0); }
+        }
+
+        public int ImageHeight
+        {
+            get { return imageData.GetLength(1); }
+        }
+
         #region IsImageShown property
 
         private bool isImageShown;

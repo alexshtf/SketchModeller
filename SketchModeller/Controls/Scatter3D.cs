@@ -71,7 +71,7 @@ namespace Controls
         private void OnBrushChanged()
         {
             var model = (GeometryModel3D)Content;
-            var material = new EmissiveMaterial { Brush = this.Brush };
+            var material = new DiffuseMaterial { Brush = this.Brush };
             material.Freeze();
             model.Material = material;
         }
@@ -108,17 +108,18 @@ namespace Controls
 
         private static readonly int[] BOX_TRIANGLE_INDICES = 
             {
-                0, 3, 2,
-                1, 2, 5,
-                2, 6, 5,
-                3, 6, 2,
-                3, 7, 6,
-                0, 4, 3,
-                3, 4, 7,
-                4, 6, 7,
-                4, 5, 6,
-                0, 5, 4,
-                0, 1, 5,
+                2,3,1, 
+                2,1,0, 
+                7,1,3, 
+                7,5,1, 
+                6,5,7, 
+                6,4,5, 
+                6,2,0, 
+                2,0,4, 
+                2,7,3, 
+                2,6,7, 
+                0,1,5, 
+                0,5,4,
             };
 
         #endregion
@@ -138,15 +139,15 @@ namespace Controls
 
             var baseIndex = positions.Count;
             
-            positions.Add(new Point3D(x0 - PointSize / 2, y0 + PointSize / 2, z0 + PointSize / 2));
-            positions.Add(new Point3D(x0 + PointSize / 2, y0 + PointSize / 2, z0 + PointSize / 2));
-            positions.Add(new Point3D(x0 + PointSize / 2, y0 - PointSize / 2, z0 + PointSize / 2));
-            positions.Add(new Point3D(x0 - PointSize / 2, y0 - PointSize / 2, z0 + PointSize / 2));
-            
+            positions.Add(new Point3D(x0 - PointSize / 2, y0 - PointSize / 2, z0 - PointSize / 2));
+            positions.Add(new Point3D(x0 + PointSize / 2, y0 - PointSize / 2, z0 - PointSize / 2));
             positions.Add(new Point3D(x0 - PointSize / 2, y0 + PointSize / 2, z0 - PointSize / 2));
             positions.Add(new Point3D(x0 + PointSize / 2, y0 + PointSize / 2, z0 - PointSize / 2));
-            positions.Add(new Point3D(x0 + PointSize / 2, y0 - PointSize / 2, z0 - PointSize / 2));
-            positions.Add(new Point3D(x0 - PointSize / 2, y0 - PointSize / 2, z0 - PointSize / 2));
+            
+            positions.Add(new Point3D(x0 - PointSize / 2, y0 - PointSize / 2, z0 + PointSize / 2));
+            positions.Add(new Point3D(x0 + PointSize / 2, y0 - PointSize / 2, z0 + PointSize / 2));
+            positions.Add(new Point3D(x0 - PointSize / 2, y0 + PointSize / 2, z0 + PointSize / 2));
+            positions.Add(new Point3D(x0 + PointSize / 2, y0 + PointSize / 2, z0 + PointSize / 2));
 
             for (int i = 0; i < BOX_TRIANGLE_INDICES.Length; ++i)
                 triangleIndices.Add(baseIndex + BOX_TRIANGLE_INDICES[i]);

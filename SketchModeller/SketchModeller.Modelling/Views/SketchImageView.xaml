@@ -8,32 +8,36 @@
                mc:Ignorable="d" 
                d:DesignHeight="300" d:DesignWidth="300">
     <ModelVisual3D.Children>
-        <Viewport2DVisual3D>
-            <Viewport2DVisual3D.Geometry>
-                <MeshGeometry3D Positions="-1,1,0 -1,-1,0 1,-1,0 1,1,0"
-                                TextureCoordinates="0,0 0,1 1,1 1,0" 
-                                TriangleIndices="0 1 2 0 2 3" />
-            </Viewport2DVisual3D.Geometry>
-            <Viewport2DVisual3D.Material>
-                <DiffuseMaterial Brush="White" 
-                                 AmbientColor="White" 
-                                 Viewport2DVisual3D.IsVisualHostMaterial="True"  />
-            </Viewport2DVisual3D.Material>
-            <Grid x:Name="grid">
-                <Image x:Name="image" 
-                       Stretch="None" 
-                       HorizontalAlignment="Center" 
-                       VerticalAlignment="Center" 
-                       Visibility="{Binding Path=IsImageShown, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}"/>
-                <Path x:Name="path"
-                      Data="{Binding Path=Points, Converter={x:Static conv:ModelPointsToScatterConverter.Instance}}"
-                      Stroke="Blue"
-                      StrokeThickness="1"
-                      Fill="Blue"
-                      Width="{Binding ElementName=image, Path=ActualWidth}"
-                      Height="{Binding ElementName=image, Path=ActualHeight}"
-                      Visibility="{Binding Path=IsSketchShown, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}"/>
-            </Grid>
-        </Viewport2DVisual3D>
+        <!--The image-->
+        <ModelVisual3D>
+            <ModelVisual3D.Transform>
+                <ScaleTransform3D x:Name="imageVisibilityTransform" />
+            </ModelVisual3D.Transform>
+            <ModelVisual3D.Content>
+                <GeometryModel3D>
+                    <GeometryModel3D.Material>
+                        <DiffuseMaterial Color="{skm:TransparentColor BaseColor=White, Alpha=128}">
+                            <DiffuseMaterial.Brush>
+                                <ImageBrush x:Name="imageBrush" />
+                            </DiffuseMaterial.Brush>
+                        </DiffuseMaterial>
+                    </GeometryModel3D.Material>
+                    <GeometryModel3D.Geometry>
+                        <MeshGeometry3D Positions="-1,1,0 -1,-1,0 1,-1,0 1,1,0"
+                                        TextureCoordinates="0,0 0,1 1,1 1,0" 
+                                        TriangleIndices="0 1 2 0 2 3" />
+                    </GeometryModel3D.Geometry>
+                </GeometryModel3D>
+            </ModelVisual3D.Content>
+        </ModelVisual3D>
+        
+        <!--The points-->
+        <skm:Scatter3D x:Name="scatter"
+                       Brush="Blue"
+                       PointSize="0.01">
+            <skm:Scatter3D.Transform>
+                <ScaleTransform3D x:Name="scatterVisibilityTransform" />
+            </skm:Scatter3D.Transform>
+        </skm:Scatter3D>
     </ModelVisual3D.Children>
 </ModelVisual3D>

@@ -25,6 +25,10 @@
                         <DiffuseMaterial Brush="White"
                                          Color="{skm:TransparentColor BaseColor=Gray, Alpha=128}" />
                     </GeometryModel3D.Material>
+                    <GeometryModel3D.BackMaterial>
+                        <DiffuseMaterial Brush="Red"
+                                         Color="{skm:TransparentColor BaseColor=Gray, Alpha=128}" />
+                    </GeometryModel3D.BackMaterial>
                 </GeometryModel3D>
             </ModelUIElement3D.Model>
         </ModelUIElement3D>
