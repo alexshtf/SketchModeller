@@ -8,7 +8,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <ModelVisual3D.Children>
-        <ModelUIElement3D x:Name="uiElement">
+        <ModelUIElement3D x:Name="uiElement" 
+                          Focusable="True"
+                          MouseDown="OnMouseDown"
+                          MouseUp="OnMouseUp"
+                          MouseMove="OnMouseMove"
+                          KeyDown="OnKeyDown">
             <ModelUIElement3D.Model>
                 <GeometryModel3D x:Name="geometry">
                     <GeometryModel3D.Transform>

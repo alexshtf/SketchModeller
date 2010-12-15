@@ -45,6 +45,20 @@ namespace SketchModeller.Modelling.Views
             cloningVisual3D.Visual3DFactory = new Visual3DFactory(logger);
         }
 
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                var source = e.Source as DependencyObject;
+                var newPrimitveView = source.PrimitiveViewParent();
+                if (newPrimitveView != null)
+                {
+                    var newPrimitiveViewModel = newPrimitveView.ViewModel;
+                    viewModel.Delete(newPrimitiveViewModel);
+                }
+            }
+        }
+
         class Visual3DFactory : IVisual3DFactory
         {
             private ILoggerFacade logger;

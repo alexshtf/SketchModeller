@@ -57,10 +57,6 @@ namespace SketchModeller.Modelling.Views
             geometry.Geometry = cylinderMesh.Geometry;
             UpdateTranslation();
             UpdateRotation();
-
-            uiElement.MouseDown += OnMouseDown;
-            uiElement.MouseUp += OnMouseUp;
-            uiElement.MouseMove += OnMouseMove;
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -79,6 +75,11 @@ namespace SketchModeller.Modelling.Views
                     lastSketchPlanePoint = sketchPlanePoint.Value;
                 else
                     logger.Log("Error getting point on sketch plane", Category.Warn, Priority.None);
+
+                logger.Log("Focusing the UIElement3D", Category.Debug, Priority.None);
+                success = uiElement.Focus();
+                if (!success)
+                    logger.Log("Focus request failed", Category.Warn, Priority.None);
             }
         }
 
@@ -178,6 +179,18 @@ namespace SketchModeller.Modelling.Views
         NewPrimitiveViewModel INewPrimitiveView.ViewModel
         {
             get { return viewModel; }
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Add)
+                viewModel.Length = viewModel.Length + 0.01;
+            if (e.Key == Key.Subtract)
+                viewModel.Length = viewModel.Length - 0.01;
+            if (e.Key == Key.Up)
+                viewModel.Diameter = viewModel.Diameter + 0.01;
+            if (e.Key == Key.Down)
+                viewModel.Diameter = viewModel.Diameter - 0.01;
         }
     }
 }

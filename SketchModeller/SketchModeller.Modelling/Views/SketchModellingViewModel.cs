@@ -101,5 +101,10 @@ namespace SketchModeller.Modelling.Views
 
             return true;
         }
+
+        public void Delete(NewPrimitiveViewModel newPrimitiveViewModel)
+        {
+            NewPrimitiveViewModels.Remove(newPrimitiveViewModel);
+        }
     }
 }
