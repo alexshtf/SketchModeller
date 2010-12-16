@@ -62,9 +62,7 @@ namespace SketchModeller.Modelling.Views
                     // IMPORTANT!!!! We assume that viewModel.ImageWidth and viewModel.ImageHeight have the correct
                     // values at this stage. That is, when we notify about points update we already have the image data.
                     var points3d = from pnt in viewModel.Points
-                                   let x = 2 * pnt.X / (double)viewModel.ImageWidth - 1
-                                   let y = 1 - 2 * pnt.Y / (double)viewModel.ImageHeight
-                                   select new Point3D(x, y, 0);
+                                   select new Point3D(pnt.X, pnt.Y, 0);
                     scatter.Points = new Point3DCollection(points3d);
                 });
 

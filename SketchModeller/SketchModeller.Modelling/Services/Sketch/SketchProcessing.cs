@@ -77,7 +77,11 @@ namespace SketchModeller.Modelling.Services.Sketch
                             var color = bmp.GetPixel(x, y);
                             var brightness = color.GetBrightness();
                             if (brightness < 0.1)
-                                points.Add(new Point { X = x, Y = y });
+                            {
+                                var xNormalized = 2 * x / (double)bmp.Width - 1;
+                                var yNormalized = 1 - 2 * y / (double)bmp.Height;
+                                points.Add(new Point { X = xNormalized, Y = yNormalized });
+                            }
                         }
 
                     return new SketchData 
