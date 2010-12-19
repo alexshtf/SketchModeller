@@ -29,10 +29,18 @@ namespace SketchModeller.Modelling.Views
             this.uiState = uiState;
         }
 
-        public void Initialize(Point3D center, Vector3D axis)
+        public void Initialize(System.Windows.Media.Media3D.Point3D center, Vector3D axis)
         {
             Center = center;
             Axis = axis;
+        }
+
+        internal void Initialize(NewCylinder newCylinder)
+        {
+            Center = newCylinder.Center.ToWpfPoint();
+            Axis = newCylinder.Axis.ToWpfVector();
+            Length = newCylinder.Length;
+            Diameter = newCylinder.Diameter;
         }
 
         public SketchPlane SketchPlane
@@ -74,9 +82,9 @@ namespace SketchModeller.Modelling.Views
 
         #region Center property
 
-        private Point3D center;
+        private System.Windows.Media.Media3D.Point3D center;
 
-        public Point3D Center
+        public System.Windows.Media.Media3D.Point3D Center
         {
             get { return center; }
             set
@@ -103,5 +111,6 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+
     }
 }

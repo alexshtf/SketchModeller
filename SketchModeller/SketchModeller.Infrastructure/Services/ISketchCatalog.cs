@@ -12,7 +12,10 @@ namespace SketchModeller.Infrastructure.Services
     public interface ISketchCatalog
     {
         IObservable<string[]> GetSketchNamesAsync();
+
         IObservable<SketchData> LoadSketchAsync(string sketchName);
+
+        IObservable<Unit> SaveSketchAsync(string sketchName, SketchData sketchData);
     }
 
     [ContractClassFor(typeof(ISketchCatalog))]
@@ -28,6 +31,14 @@ namespace SketchModeller.Infrastructure.Services
         {
             Contract.Requires(!string.IsNullOrEmpty(sketchName));
             Contract.Ensures(Contract.Result<IObservable<SketchData>>() != null);
+            return null;
+        }
+
+        public IObservable<Unit> SaveSketchAsync(string sketchName, SketchData sketchData)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(sketchName));
+            Contract.Requires(sketchData != null);
+            Contract.Ensures(Contract.Result<IObservable<Unit>>() != null);
             return null;
         }
     }

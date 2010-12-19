@@ -10,6 +10,8 @@ using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Infrastructure.Data;
 using Utils;
 using SketchModeller.Infrastructure;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace SketchModeller.Modelling
 {
@@ -33,15 +35,21 @@ namespace SketchModeller.Modelling
 
         private void OnLoadSketch(string sketchName)
         {
-            Work.Execute<SketchData>(
+            Work.Execute<Tuple<SketchData, string>>(
                 eventAggregator, 
-                workItem: () => sketchCatalog.LoadSketchAsync(sketchName), 
+                workItem: () => (from sketchData in sketchCatalog.LoadSketchAsync(sketchName)
+                                 select Tuple.Create(sketchData, sketchName)), 
                 onNext: OnSketchLoaded);
         }
 
-        private void OnSketchLoaded(SketchData sketchData)
+        private void OnSketchLoaded(Tuple<SketchData, string> tuple)
         {
+            var sketchData = tuple.Item1;
+            var sketchName = tuple.Item2;
+
+            sessionData.SketchName = sketchName;
             sessionData.SketchData = sketchData;
+
             var imWidth = sketchData.Image.GetLength(0);
             var imHeight = sketchData.Image.GetLength(1);
             

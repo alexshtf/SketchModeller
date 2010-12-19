@@ -11,11 +11,23 @@ using Microsoft.Practices.Prism.Regions;
 using Controls;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
+using SketchModeller.Infrastructure.Shared;
 
 namespace SketchModeller
 {
     class SketchModellerBootstrapper : UnityBootstrapper
     {
+        protected override void ConfigureContainer()
+        {
+            base.ConfigureContainer();
+
+            // register shared data
+            Container.RegisterType<DisplayOptions, DisplayOptions>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<SessionData, SessionData>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<UiState, UiState>(new ContainerControlledLifetimeManager());
+
+        }
+
         protected override RegionAdapterMappings ConfigureRegionAdapterMappings()
         {
             var mapping = base.ConfigureRegionAdapterMappings();
@@ -55,13 +67,6 @@ namespace SketchModeller
         protected override void InitializeModules()
         {
             base.InitializeModules();
-
-            //Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            //    {
-            //        Application.Current.Resources.MergedDictionaries.Clear();
-            //        Application.Current.Resources.MergedDictionaries.Add(
-            //            new ResourceDictionary { Source = new Uri("Themes/ExpressionDark.xaml", UriKind.Relative) });
-            //    }));
         }
     }
 }

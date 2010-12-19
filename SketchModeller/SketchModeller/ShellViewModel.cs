@@ -18,8 +18,11 @@ namespace SketchModeller
 {
     class ShellViewModel : NotificationObject, IWeakEventListener
     {
+        private const string TITLE_FORMAT = "Editing {0}";
+
         private HashSet<Guid> workingIds;
         private UiState uiState;
+        private SessionData sessionData;
         private IEventAggregator eventAggregator;
 
         public ShellViewModel()
@@ -27,12 +30,15 @@ namespace SketchModeller
             workingIds = new HashSet<Guid>();
         }
 
-        public ShellViewModel(IEventAggregator eventAggregator, UiState uiState)
+        public ShellViewModel(IEventAggregator eventAggregator, UiState uiState, SessionData sessionData)
             : this()
         {
             this.eventAggregator = eventAggregator;
             this.uiState = uiState;
+            this.sessionData = sessionData;
+
             uiState.AddListener(this, () => uiState.SketchPlane);
+            sessionData.AddListener(this, () => sessionData.SketchName);
 
             eventAggregator.GetEvent<StartWorkingEvent>().Subscribe(OnStartWorking);
             eventAggregator.GetEvent<StopWorkingEvent>().Subscribe(OnStopWorking);
@@ -43,7 +49,23 @@ namespace SketchModeller
             get { return workingIds.Count > 0; }
         }
 
-        public void OnSketchClick(Point3D p1, Point3D p2)
+        #region Title property
+
+        private string title;
+
+        public string Title
+        {
+            get { return title; }
+            set
+            {
+                title = value;
+                RaisePropertyChanged(() => Title);
+            }
+        }
+
+        #endregion
+
+        public void OnSketchClick(System.Windows.Media.Media3D.Point3D p1, System.Windows.Media.Media3D.Point3D p2)
         {
             var payload = new SketchClickInfo(p1, p2);
             eventAggregator.GetEvent<SketchClickEvent>().Publish(payload);
@@ -91,6 +113,9 @@ namespace SketchModeller
             var eventArgs = (PropertyChangedEventArgs)e;
             if (eventArgs.Match(() => uiState.SketchPlane))
                 OnSketchPlaneChanged();
+
+            if (eventArgs.Match(() => sessionData.SketchName))
+                Title = string.Format(TITLE_FORMAT, sessionData.SketchName);
 
             return true;
         }

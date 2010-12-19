@@ -15,7 +15,6 @@ namespace SketchModeller.Modelling.Views
     {
         private UiState uiState;
         private ILoggerFacade log;
-        private object lastCurrentItem;
 
         public SketchPlanesViewModel(UiState uiState, ILoggerFacade log)
         {

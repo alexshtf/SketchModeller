@@ -43,7 +43,7 @@ namespace SketchModeller
         {
             if (e.Match(() => viewModel.SketchPlane))
             {
-                Trace.Fail("TODO: Update camera from SketchPlane");
+               // Trace.Fail("TODO: Update camera from SketchPlane");
             }
         }
 

@@ -22,7 +22,6 @@ namespace SketchModeller.Modelling.Views
     public partial class SketchPlanesView : UserControl, IHeaderedView
     {
         private object lastSelected;
-        private Blocker lastSelectedBlocker;
 
         public SketchPlanesView()
         {

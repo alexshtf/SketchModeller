@@ -15,12 +15,18 @@ using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Diagnostics;
 
+using IFPoint3D = SketchModeller.Infrastructure.Data.Point3D;
+using WPFPoint3D = System.Windows.Media.Media3D.Point3D;
+using SketchModeller.Infrastructure.Services;
+
 namespace SketchModeller.Modelling.Views
 {
     public class SketchModellingViewModel : NotificationObject, IWeakEventListener
     {
         private UiState uiState;
+        private SessionData sessionData;
         private IUnityContainer container;
+        private ISketchCatalog sketchCatalog;
 
         public SketchModellingViewModel()
         {
@@ -29,14 +35,23 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public SketchModellingViewModel(UiState uiState, IEventAggregator eventAggregator, IUnityContainer container)
+        public SketchModellingViewModel(
+            UiState uiState, 
+            SessionData sessionData, 
+            IEventAggregator eventAggregator, 
+            IUnityContainer container,
+            ISketchCatalog sketchCatalog)
             : this()
         {
             this.uiState = uiState;
+            this.sessionData = sessionData;
             this.container = container;
+            this.sketchCatalog = sketchCatalog;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
+            sessionData.AddListener(this, () => sessionData.SketchData);
             eventAggregator.GetEvent<SketchClickEvent>().Subscribe(OnSketchClick);
+            eventAggregator.GetEvent<SaveSketchEvent>().Subscribe(OnSaveSketch);
 
             sketchPlane = uiState.SketchPlane;
         }
@@ -59,6 +74,20 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        public void OnSaveSketch(object dummy)
+        {
+            sessionData.SketchData.Cylinders = 
+                (from cylinderVM in NewPrimitiveViewModels.OfType<NewCylinderViewModel>()
+                 select new NewCylinder
+                 {
+                     Axis = cylinderVM.Axis.ToDataPoint(),
+                     Center = cylinderVM.Center.ToDataPoint(),
+                     Diameter = cylinderVM.Diameter,
+                     Length = cylinderVM.Length,
+                 }).ToArray();
+            sketchCatalog.SaveSketchAsync(sessionData.SketchName, sessionData.SketchData);
+        }
+
         public void OnSketchClick(SketchClickInfo info)
         {
             if (uiState.Tool == Tool.InsertCylinder)
@@ -72,22 +101,28 @@ namespace SketchModeller.Modelling.Views
 
         }
 
-        private Point3D GetClickPoint(SketchClickInfo info)
+        private void ResetModellingObjects(SketchData sketchData)
         {
-            var sketchPlane = uiState.SketchPlane;
+            NewPrimitiveViewModels.Clear();
+            if (sketchData.Cylinders != null)
+            {
+                foreach (var newCylinder in sketchData.Cylinders)
+                {
+                    var viewModel = container.Resolve<NewCylinderViewModel>();
+                    viewModel.Initialize(newCylinder);
+                }
+            }
+        }
 
-            // extract mathematicsl symbols from sketchplane / info
-            var p0 = sketchPlane.Center;
-            var n = sketchPlane.Normal;
-            var l0 = info.RayStart;
-            var l = info.RayEnd - info.RayStart;
-
-            var t = Vector3D.DotProduct(p0 - l0, n) / Vector3D.DotProduct(l, n);
+        private System.Windows.Media.Media3D.Point3D GetClickPoint(SketchClickInfo info)
+        {
+            var plane = Plane3D.FromPointAndNormal(uiState.SketchPlane.Center, uiState.SketchPlane.Normal);
+            var t = plane.IntersectLine(info.RayStart, info.RayEnd);
             
             Debug.Assert(!double.IsNaN(t) && !double.IsInfinity(t), "Intersection point must exist. We on purpose orient the camera towards the sketch plane");
             Debug.Assert(t >= 0, "Intersection point must be on the ray, because we on purpose orient the camera towards the sketch plane");
 
-            return l0 + t * l;
+            return MathUtils3D.Lerp(info.RayStart, info.RayEnd, t);
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -98,6 +133,8 @@ namespace SketchModeller.Modelling.Views
             var eventArgs = (PropertyChangedEventArgs)e;
             if (eventArgs.Match(() => uiState.SketchPlane))
                 SketchPlane = uiState.SketchPlane;
+            if (eventArgs.Match(() => sessionData.SketchData))
+                ResetModellingObjects(sessionData.SketchData);
 
             return true;
         }

@@ -26,11 +26,6 @@ namespace SketchModeller.Modelling
 
         public void Initialize()
         {
-            // register shared data
-            container.RegisterType<DisplayOptions, DisplayOptions>(new ContainerControlledLifetimeManager());
-            container.RegisterType<SessionData, SessionData>(new ContainerControlledLifetimeManager());
-            container.RegisterType<UiState, UiState>(new ContainerControlledLifetimeManager());
-
             // register services
             container.RegisterType<ISketchProcessing, SketchProcessing>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());

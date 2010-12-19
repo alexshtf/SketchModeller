@@ -72,8 +72,11 @@
   <ItemGroup>
     <Compile Include="Blocker.cs" />
     <Compile Include="Data\ComplexCurve.cs" />
+    <Compile Include="Data\DataExtensions.cs" />
     <Compile Include="Data\Joint.cs" />
+    <Compile Include="Data\NewCylinder.cs" />
     <Compile Include="Data\Point.cs" />
+    <Compile Include="Data\Point3D.cs" />
     <Compile Include="Data\PointsSequence.cs" />
     <Compile Include="Data\Polyline.cs" />
     <Compile Include="Data\Segment.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Data\SketchPlane.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />
+    <Compile Include="Events\SaveSketchEvent.cs" />
     <Compile Include="Events\SelectionEvent.cs" />
     <Compile Include="Events\SketchClickEvent.cs" />
     <Compile Include="Events\StartWorkingEvent.cs" />

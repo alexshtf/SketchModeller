@@ -5,14 +5,15 @@
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
           xmlns:alex="http://alex/xaml"
           mc:Ignorable="d" 
-          Header="Load sketch"
-          ItemsSource="{Binding SketchNames}"
+          Header="Model"
           x:Name="rootItem">
     <MenuItem.Resources>
-        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+        <Style x:Key="itemContainerStyle" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding}" />
             <Setter Property="Command" Value="{Binding ElementName=rootItem, Path=DataContext.LoadSketchCommand}" />
             <Setter Property="CommandParameter" Value="{Binding}" />
         </Style>
     </MenuItem.Resources>
+    <MenuItem Header="Save" Command="{Binding SaveSketchCommand}" />
+    <MenuItem Header="Load" ItemsSource="{Binding SketchNames}" ItemContainerStyle="{StaticResource itemContainerStyle}" />
 </MenuItem>

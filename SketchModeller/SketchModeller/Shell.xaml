@@ -4,8 +4,10 @@
         xmlns:cal="http://www.codeplex.com/CompositeWPF"
         xmlns:skm="http://SketchModeller"
         xmlns:utils="http://alex/xaml"
-        Title="Shell" Height="600" Width="1000"
-        IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}">
+        Height="600" 
+        Width="1000"
+        IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}"
+        Title="{Binding Title}">
     <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Bottom" Click="OnDebugClick">Debug</Button>
         <Menu cal:RegionManager.RegionName="{x:Static skm:RegionNames.MainMenu}"

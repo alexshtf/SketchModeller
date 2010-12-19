@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
+using System.Xml.Serialization;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -11,6 +12,7 @@ namespace SketchModeller.Infrastructure.Data
         private double x;
         private double y;
 
+        [XmlAttribute]
         public double X
         {
             get { return x; }
@@ -21,6 +23,7 @@ namespace SketchModeller.Infrastructure.Data
             }
         }
 
+        [XmlAttribute]
         public double Y
         {
             get { return y; }

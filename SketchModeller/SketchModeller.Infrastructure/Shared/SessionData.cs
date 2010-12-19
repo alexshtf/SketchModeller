@@ -25,6 +25,22 @@ namespace SketchModeller.Infrastructure.Shared
         }
 
         #endregion
+
+        #region SketchName property
+
+        private string sketchName;
+
+        public string SketchName
+        {
+            get { return sketchName; }
+            set
+            {
+                sketchName = value;
+                RaisePropertyChanged(() => SketchName);
+            }
+        }
+
+        #endregion
     }
 
     public static class SessionDataExtensions

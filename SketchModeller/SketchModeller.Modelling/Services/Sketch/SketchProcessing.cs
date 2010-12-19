@@ -46,7 +46,7 @@ namespace SketchModeller.Modelling.Services.Sketch
                     }
                 };
 
-            var observable = Observable.FromAsyncPattern<double[,]>(loadAction.BeginInvoke, loadAction.EndInvoke)();
+            var observable = Observable.ToAsync(loadAction)();
             return observable;
         }
 
@@ -91,7 +91,7 @@ namespace SketchModeller.Modelling.Services.Sketch
                     };
                 };
 
-            var observable = Observable.FromAsyncPattern<SketchData>(process.BeginInvoke, process.EndInvoke)();
+            var observable = Observable.ToAsync(process)();
             return observable;
         }
 
