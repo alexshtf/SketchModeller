@@ -10,6 +10,8 @@ using SketchModeller.Modelling.Views;
 using SketchModeller.Infrastructure.Services;
 using SketchModeller.Modelling.Services.Sketch;
 using SketchModeller.Infrastructure.Shared;
+using System.Windows.Markup;
+using System.Windows;
 
 namespace SketchModeller.Modelling
 {
@@ -26,6 +28,10 @@ namespace SketchModeller.Modelling
 
         public void Initialize()
         {
+            // load styles
+            var stylesDictionary = new ResourceDictionary { Source = new Uri("/SketchModeller.Modelling;component/styles.xaml", UriKind.Relative) };
+            Application.Current.Resources.MergedDictionaries.Add(stylesDictionary);
+
             // register services
             container.RegisterType<ISketchProcessing, SketchProcessing>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());

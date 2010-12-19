@@ -18,6 +18,7 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Logging;
 using System.Diagnostics;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -57,6 +58,7 @@ namespace SketchModeller.Modelling.Views
             geometry.Geometry = cylinderMesh.Geometry;
             UpdateTranslation();
             UpdateRotation();
+
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -90,6 +92,14 @@ namespace SketchModeller.Modelling.Views
                 isMoving = false;
                 logger.Log("Releasing mouse capture", Category.Debug, Priority.None);
                 uiElement.ReleaseMouseCapture();
+            }
+            if (e.ChangedButton == MouseButton.Right)
+            {
+                var newEventArgs = new MenuCommandsEventArgs(RoutedEvents.ContextMenuCommandsEvent);
+                newEventArgs.MenuCommands.AddRange(viewModel.ContextMenu);
+                uiElement.RaiseEvent(newEventArgs);
+
+                e.Handled = true;
             }
         }
 

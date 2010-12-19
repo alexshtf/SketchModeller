@@ -8,6 +8,24 @@
         Width="1000"
         IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}"
         Title="{Binding Title}">
+    <Window.Resources>
+        <Style x:Key="commandsContextMenu" TargetType="ContextMenu" BasedOn="{StaticResource {x:Type ContextMenu}}">
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Command" Value="{Binding Command}" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Bottom" Click="OnDebugClick">Debug</Button>
         <Menu cal:RegionManager.RegionName="{x:Static skm:RegionNames.MainMenu}"
@@ -33,7 +51,13 @@
                        Background="DarkGray"
                        MouseDown="OnSketchMouseDown"
                        MouseUp="OnSketchMouseUp"
-                       MouseMove="OnSketchMouseMove">
+                       MouseMove="OnSketchMouseMove"
+                       skm:RoutedEvents.ContextMenuCommands="OnContextMenuCommands">
+                <DockPanel.ContextMenu>
+                    <ContextMenu x:Name="sketchContextMenu"
+                                 Closed="OnContextMenuClosed"
+                                 Style="{StaticResource commandsContextMenu}" />
+                </DockPanel.ContextMenu>
                 <TextBlock DockPanel.Dock="Top" 
                            HorizontalAlignment="Stretch"
                            TextAlignment="Center"

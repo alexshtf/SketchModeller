@@ -16,6 +16,7 @@ using System.ComponentModel;
 using Utils;
 using System.Diagnostics;
 using Petzold.Media3D;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller
 {
@@ -43,7 +44,19 @@ namespace SketchModeller
         {
             if (e.Match(() => viewModel.SketchPlane))
             {
-               // Trace.Fail("TODO: Update camera from SketchPlane");
+                var sketchPlane = viewModel.SketchPlane;
+
+                var fovRadians = camera.FieldOfView * Math.PI / 180;
+                var height = sketchPlane.Height * 1.5; // add 50% height.
+                var distance = height / Math.Tan(fovRadians);
+
+                var normal = sketchPlane.Normal.Normalized();
+                var center = sketchPlane.Center;
+                var position = sketchPlane.Center - distance * normal;
+
+                camera.Position = position;
+                camera.LookDirection = normal;
+                camera.UpDirection = sketchPlane.YAxis.Normalized();
             }
         }
 
@@ -70,6 +83,20 @@ namespace SketchModeller
         private void OnSketchMouseMove(object sender, MouseEventArgs e)
         {
 
+        }
+
+        private void OnContextMenuCommands(object sender, MenuCommandsEventArgs e)
+        {
+            if (e.MenuCommands.Count > 0)
+            {
+                sketchContextMenu.ItemsSource = e.MenuCommands;
+                sketchContextMenu.IsOpen = true;
+            }
+        }
+
+        private void OnContextMenuClosed(object sender, RoutedEventArgs e)
+        {
+            sketchContextMenu.ItemsSource = null;
         }
     }
 }

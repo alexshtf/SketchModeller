@@ -150,6 +150,10 @@
     <Compile Include="Views\SketchPlanesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DisplayOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

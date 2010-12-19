@@ -18,6 +18,7 @@ using System.Diagnostics;
 using IFPoint3D = SketchModeller.Infrastructure.Data.Point3D;
 using WPFPoint3D = System.Windows.Media.Media3D.Point3D;
 using SketchModeller.Infrastructure.Services;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -27,6 +28,7 @@ namespace SketchModeller.Modelling.Views
         private SessionData sessionData;
         private IUnityContainer container;
         private ISketchCatalog sketchCatalog;
+        private IEventAggregator eventAggregator;
 
         public SketchModellingViewModel()
         {
@@ -47,6 +49,7 @@ namespace SketchModeller.Modelling.Views
             this.sessionData = sessionData;
             this.container = container;
             this.sketchCatalog = sketchCatalog;
+            this.eventAggregator = eventAggregator;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
             sessionData.AddListener(this, () => sessionData.SketchData);
@@ -76,6 +79,7 @@ namespace SketchModeller.Modelling.Views
 
         public void OnSaveSketch(object dummy)
         {
+            // synchronize modelling session changed back to SketchData
             sessionData.SketchData.Cylinders = 
                 (from cylinderVM in NewPrimitiveViewModels.OfType<NewCylinderViewModel>()
                  select new NewCylinder
@@ -85,7 +89,11 @@ namespace SketchModeller.Modelling.Views
                      Diameter = cylinderVM.Diameter,
                      Length = cylinderVM.Length,
                  }).ToArray();
-            sketchCatalog.SaveSketchAsync(sessionData.SketchName, sessionData.SketchData);
+
+            // save the new SketchData to the relevant files
+            Work.Execute(
+                eventAggregator, 
+                () => sketchCatalog.SaveSketchAsync(sessionData.SketchName, sessionData.SketchData));
         }
 
         public void OnSketchClick(SketchClickInfo info)
@@ -110,6 +118,7 @@ namespace SketchModeller.Modelling.Views
                 {
                     var viewModel = container.Resolve<NewCylinderViewModel>();
                     viewModel.Initialize(newCylinder);
+                    NewPrimitiveViewModels.Add(viewModel);
                 }
             }
         }
