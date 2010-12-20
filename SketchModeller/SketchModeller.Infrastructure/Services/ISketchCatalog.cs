@@ -8,13 +8,31 @@ using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Infrastructure.Services
 {
+    /// <summary>
+    /// A service through which components load the existing sketches in the system.
+    /// </summary>
     [ContractClass(typeof(SketchCatalogContract))]
     public interface ISketchCatalog
     {
+        /// <summary>
+        /// Asynchronously gets all the sketch names that exist in the system.
+        /// </summary>
+        /// <returns>An observable that provides the sketch names when the operation completes.</returns>
         IObservable<string[]> GetSketchNamesAsync();
 
+        /// <summary>
+        /// Asynchronously loads a sketch given its name.
+        /// </summary>
+        /// <param name="sketchName">The name of the sketch to load.</param>
+        /// <returns>An observable that provides the sketch names when the operation completes.</returns>
         IObservable<SketchData> LoadSketchAsync(string sketchName);
 
+        /// <summary>
+        /// Asynchronously saves a sketch given its name and data.
+        /// </summary>
+        /// <param name="sketchName">The name of the sketch</param>
+        /// <param name="sketchData">The sketch data</param>
+        /// <returns>An observable, that notifies that the operation completes.</returns>
         IObservable<Unit> SaveSketchAsync(string sketchName, SketchData sketchData);
     }
 
