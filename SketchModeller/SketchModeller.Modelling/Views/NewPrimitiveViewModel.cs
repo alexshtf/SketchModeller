@@ -16,5 +16,6 @@ namespace SketchModeller.Modelling.Views
         }
 
         public ObservableCollection<MenuCommandData> ContextMenu { get; private set; }
+        public object Model { get; set; }
     }
 }

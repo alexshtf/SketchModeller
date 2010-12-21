@@ -19,6 +19,7 @@ using IFPoint3D = SketchModeller.Infrastructure.Data.Point3D;
 using WPFPoint3D = System.Windows.Media.Media3D.Point3D;
 using SketchModeller.Infrastructure.Services;
 using SketchModeller.Infrastructure;
+using System.Collections.Specialized;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -29,6 +30,7 @@ namespace SketchModeller.Modelling.Views
         private IUnityContainer container;
         private ISketchCatalog sketchCatalog;
         private IEventAggregator eventAggregator;
+        private ViewModelCollectionGenerator<NewPrimitiveViewModel> viewModelGenerator;
 
         public SketchModellingViewModel()
         {
@@ -54,9 +56,13 @@ namespace SketchModeller.Modelling.Views
             uiState.AddListener(this, () => uiState.SketchPlane);
             sessionData.AddListener(this, () => sessionData.SketchData);
             eventAggregator.GetEvent<SketchClickEvent>().Subscribe(OnSketchClick);
-            eventAggregator.GetEvent<SaveSketchEvent>().Subscribe(OnSaveSketch);
 
             sketchPlane = uiState.SketchPlane;
+
+            viewModelGenerator = new ViewModelCollectionGenerator<NewPrimitiveViewModel>(
+                NewPrimitiveViewModels, 
+                sessionData.NewPrimitives, 
+                NewPrimitiveDataToNewPrimitiveViewModel);
         }
 
         public ObservableCollection<NewPrimitiveViewModel> NewPrimitiveViewModels { get; private set; }
@@ -77,33 +83,40 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        public void OnSaveSketch(object dummy)
+        public void Delete(NewPrimitiveViewModel newPrimitiveViewModel)
         {
-            // synchronize modelling session changed back to SketchData
-            sessionData.SketchData.Cylinders = 
-                (from cylinderVM in NewPrimitiveViewModels.OfType<NewCylinderViewModel>()
-                 select new NewCylinder
-                 {
-                     Axis = cylinderVM.Axis.ToDataPoint(),
-                     Center = cylinderVM.Center.ToDataPoint(),
-                     Diameter = cylinderVM.Diameter,
-                     Length = cylinderVM.Length,
-                 }).ToArray();
-
-            // save the new SketchData to the relevant files
-            Work.Execute(
-                eventAggregator, 
-                () => sketchCatalog.SaveSketchAsync(sessionData.SketchName, sessionData.SketchData));
+            var model = newPrimitiveViewModel.Model;
+            sessionData.NewPrimitives.Remove(model);
         }
 
-        public void OnSketchClick(SketchClickInfo info)
+        private NewPrimitiveViewModel NewPrimitiveDataToNewPrimitiveViewModel(object data)
+        {
+            NewPrimitiveViewModel result = null;
+            data.MatchClass<NewCylinder>(cylinder =>
+                {
+                    var viewModel = container.Resolve<NewCylinderViewModel>();
+                    viewModel.Initialize(cylinder);
+                    result = viewModel;
+                });
+
+            if (result != null)
+                result.Model = data;
+            return result;
+        }
+
+        private void OnSketchClick(SketchClickInfo info)
         {
             if (uiState.Tool == Tool.InsertCylinder)
             {
-                var point3d = GetClickPoint(info); // TODO: Extract from info.
-                var viewModel = container.Resolve<NewCylinderViewModel>();
-                viewModel.Initialize(center: point3d, axis: sketchPlane.YAxis);
-                NewPrimitiveViewModels.Add(viewModel);
+                var point3d = GetClickPoint(info);
+                var cylinderData = new NewCylinder
+                {
+                    Center = point3d.ToDataPoint(),
+                    Axis = sketchPlane.YAxis.ToDataPoint(),
+                    Diameter = 0.1,
+                    Length = 0.2,
+                };
+                sessionData.NewPrimitives.Add(cylinderData);
             }
             uiState.Tool = Tool.Manipulation;
 
@@ -136,21 +149,18 @@ namespace SketchModeller.Modelling.Views
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
-            if (managerType != typeof(PropertyChangedEventManager))
-                return false;
-             
-            var eventArgs = (PropertyChangedEventArgs)e;
-            if (eventArgs.Match(() => uiState.SketchPlane))
-                SketchPlane = uiState.SketchPlane;
-            if (eventArgs.Match(() => sessionData.SketchData))
-                ResetModellingObjects(sessionData.SketchData);
+            if (managerType == typeof(PropertyChangedEventManager))
+            {
+                var eventArgs = (PropertyChangedEventArgs)e;
+                if (eventArgs.Match(() => uiState.SketchPlane))
+                    SketchPlane = uiState.SketchPlane;
+                if (eventArgs.Match(() => sessionData.SketchData))
+                    ResetModellingObjects(sessionData.SketchData);
 
-            return true;
-        }
+                return true;
+            }
 
-        public void Delete(NewPrimitiveViewModel newPrimitiveViewModel)
-        {
-            NewPrimitiveViewModels.Remove(newPrimitiveViewModel);
+            return false;
         }
     }
 }

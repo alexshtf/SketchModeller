@@ -50,6 +50,21 @@ namespace SketchModeller.Modelling
             sessionData.SketchName = sketchName;
             sessionData.SketchData = sketchData;
 
+            sessionData.NewPrimitives.Clear();
+            if (sketchData.Cylinders != null)
+            {
+                foreach (var item in sketchData.Cylinders)
+                {
+                    sessionData.NewPrimitives.Add(new NewCylinder
+                    {
+                        Axis = item.Axis,
+                        Center = item.Center,
+                        Length = item.Length,
+                        Diameter = item.Diameter,
+                    });
+                }
+            }
+
             var imWidth = sketchData.Image.GetLength(0);
             var imHeight = sketchData.Image.GetLength(1);
             

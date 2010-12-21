@@ -5,15 +5,24 @@ using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using SketchModeller.Infrastructure.Data;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace SketchModeller.Infrastructure.Shared
 {
     public class SessionData : NotificationObject
     {
+        public SessionData()
+        {
+            NewPrimitives = new ObservableCollection<object>();
+        }
+
         #region SketchData property
 
         private SketchData sketchData;
 
+        /// <summary>
+        /// The last loaded/saved sketch data.
+        /// </summary>
         public SketchData SketchData
         {
             get { return sketchData; }
@@ -30,6 +39,9 @@ namespace SketchModeller.Infrastructure.Shared
 
         private string sketchName;
 
+        /// <summary>
+        /// The currently loaded name.
+        /// </summary>
         public string SketchName
         {
             get { return sketchName; }
@@ -41,6 +53,8 @@ namespace SketchModeller.Infrastructure.Shared
         }
 
         #endregion
+
+        public ObservableCollection<object> NewPrimitives { get; private set; }
     }
 
     public static class SessionDataExtensions

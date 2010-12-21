@@ -38,6 +38,7 @@ namespace SketchModeller.Modelling
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());
+            container.RegisterInstance(container.Resolve<SketchSaver>(), new ContainerControlledLifetimeManager());
 
             // register views.
             regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchImageView));

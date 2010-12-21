@@ -9,11 +9,14 @@ using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Infrastructure.Data;
 using Microsoft.Practices.Unity;
 
+using WpfPoint3D = System.Windows.Media.Media3D.Point3D;
+
 namespace SketchModeller.Modelling.Views
 {
     public class NewCylinderViewModel : NewPrimitiveViewModel
     {
         private readonly UiState uiState;
+        private NewCylinder model;
 
         public NewCylinderViewModel()
         {
@@ -27,9 +30,10 @@ namespace SketchModeller.Modelling.Views
             : this()
         {
             this.uiState = uiState;
+            model = new NewCylinder();
         }
 
-        public void Initialize(System.Windows.Media.Media3D.Point3D center, Vector3D axis)
+        public void Initialize(WpfPoint3D center, Vector3D axis)
         {
             Center = center;
             Axis = axis;
@@ -41,6 +45,7 @@ namespace SketchModeller.Modelling.Views
             Axis = newCylinder.Axis.ToWpfVector();
             Length = newCylinder.Length;
             Diameter = newCylinder.Diameter;
+            model = newCylinder;
         }
 
         public SketchPlane SketchPlane
@@ -59,6 +64,7 @@ namespace SketchModeller.Modelling.Views
             {
                 axis = value;
                 RaisePropertyChanged(() => Axis);
+                model.Axis = value.ToDataPoint();
             }
         }
 
@@ -75,6 +81,7 @@ namespace SketchModeller.Modelling.Views
             {
                 diameter = value;
                 RaisePropertyChanged(() => Diameter);
+                model.Diameter = value;
             }
         }
 
@@ -82,15 +89,16 @@ namespace SketchModeller.Modelling.Views
 
         #region Center property
 
-        private System.Windows.Media.Media3D.Point3D center;
+        private WpfPoint3D center;
 
-        public System.Windows.Media.Media3D.Point3D Center
+        public WpfPoint3D Center
         {
             get { return center; }
             set
             {
                 center = value;
                 RaisePropertyChanged(() => Center);
+                model.Center = value.ToDataPoint();
             }
         }
 
@@ -107,6 +115,7 @@ namespace SketchModeller.Modelling.Views
             {
                 length = value;
                 RaisePropertyChanged(() => Length);
+                model.Length = value;
             }
         }
 
