@@ -94,6 +94,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ContextMenuStyleSelector.cs" />
     <Compile Include="ModelVisual3DRegionAdapter.cs" />
     <Compile Include="MultiItemRegionAdapterBase.cs" />
     <Compile Include="Shell.xaml.cs">

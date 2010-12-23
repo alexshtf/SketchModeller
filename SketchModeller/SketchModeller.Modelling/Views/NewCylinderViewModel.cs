@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Windows.Media.Media3D;
-using Utils;
 using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Infrastructure.Data;
 using Microsoft.Practices.Unity;
 
 using WpfPoint3D = System.Windows.Media.Media3D.Point3D;
+using SketchModeller.Infrastructure;
+using Microsoft.Practices.Prism.Commands;
+using CollectionUtils = Utils.CollectionUtils;
+using MathUtils3D = Utils.MathUtils3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -17,6 +20,7 @@ namespace SketchModeller.Modelling.Views
     {
         private readonly UiState uiState;
         private NewCylinder model;
+        private Dictionary<KeyboardEditModes, CheckedMenuCommandData> editModeToCommand;
 
         public NewCylinderViewModel()
         {
@@ -31,7 +35,66 @@ namespace SketchModeller.Modelling.Views
         {
             this.uiState = uiState;
             model = new NewCylinder();
+            
+            var editLength = 
+                new CheckedMenuCommandData(new DelegateCommand(EditLengthExecute), title: "Edit length", isChecked: true);
+            var editDiameter = 
+                new CheckedMenuCommandData(new DelegateCommand(EditDiameterExecute), title: "Edit diameter");
+            var pitch = 
+                new CheckedMenuCommandData(new DelegateCommand(PitchExecute), title: "Edit pitch");
+            var roll = 
+                new CheckedMenuCommandData(new DelegateCommand(RollExecute), title: "Edit roll");
+            editModeToCommand = new Dictionary<KeyboardEditModes, CheckedMenuCommandData>
+            {
+                { KeyboardEditModes.Length, editLength },
+                { KeyboardEditModes.Diameter, editDiameter },
+                { KeyboardEditModes.Pitch, pitch },
+                { KeyboardEditModes.Roll, roll },
+            };
+
+            CollectionUtils.AddMany(ContextMenu, editLength, editDiameter, pitch, roll);
         }
+
+        #region Command execute methods
+
+        private void EditLengthExecute()
+        {
+            ChangeEditMode(KeyboardEditModes.Length);
+        }
+
+        private void EditDiameterExecute()
+        {
+            ChangeEditMode(KeyboardEditModes.Diameter);
+        }
+
+        private void PitchExecute()
+        {
+            ChangeEditMode(KeyboardEditModes.Pitch);
+        }
+
+        private void RollExecute()
+        {
+            ChangeEditMode(KeyboardEditModes.Roll);
+        }
+
+        private void ChangeEditMode(KeyboardEditModes newEditMode)
+        {
+            var matchingCommand = editModeToCommand[newEditMode];
+            var isEnabled = matchingCommand.IsChecked;
+            if (isEnabled)
+            {
+                var commandsToDisable = 
+                    from command in editModeToCommand.Values
+                    where command != matchingCommand
+                    select command;
+
+                foreach (var command in commandsToDisable)
+                    command.IsChecked = false;
+                KeyboardEditMode = newEditMode;
+            }
+        }
+
+        #endregion
 
         public void Initialize(WpfPoint3D center, Vector3D axis)
         {
@@ -52,6 +115,22 @@ namespace SketchModeller.Modelling.Views
         {
             get { return uiState.SketchPlane; }
         }
+
+        #region KeyboardEditMode property
+
+        private KeyboardEditModes keyboardEditMode;
+
+        public KeyboardEditModes KeyboardEditMode
+        {
+            get { return keyboardEditMode; }
+            set
+            {
+                keyboardEditMode = value;
+                RaisePropertyChanged(() => KeyboardEditMode);
+            }
+        }
+
+        #endregion
 
         #region Axis property
 
@@ -120,6 +199,14 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+
+        public enum KeyboardEditModes
+        {
+            Length,
+            Diameter,
+            Pitch,
+            Roll,
+        }
 
     }
 }

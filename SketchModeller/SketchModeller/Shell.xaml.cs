@@ -68,21 +68,14 @@ namespace SketchModeller
 
         private void OnSketchMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var mousePos = e.GetPosition(viewport3d);
-            LineRange lineRange;
-            if (ViewportInfo.Point2DtoPoint3D(viewport3d, mousePos, out lineRange))
-                viewModel.OnSketchClick(lineRange.Point1, lineRange.Point2);
-            
-        }
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                var mousePos = e.GetPosition(viewport3d);
+                LineRange lineRange;
+                if (ViewportInfo.Point2DtoPoint3D(viewport3d, mousePos, out lineRange))
+                    viewModel.OnSketchClick(lineRange.Point1, lineRange.Point2);
 
-        private void OnSketchMouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void OnSketchMouseMove(object sender, MouseEventArgs e)
-        {
-
+            }            
         }
 
         private void OnContextMenuCommands(object sender, MenuCommandsEventArgs e)
@@ -97,6 +90,11 @@ namespace SketchModeller
         private void OnContextMenuClosed(object sender, RoutedEventArgs e)
         {
             sketchContextMenu.ItemsSource = null;
+        }
+
+        private void DockPanel_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

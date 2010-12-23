@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blocker.cs" />
+    <Compile Include="CheckedMenuCommandData.cs" />
     <Compile Include="Data\ComplexCurve.cs" />
     <Compile Include="Data\DataExtensions.cs" />
     <Compile Include="Data\Joint.cs" />
