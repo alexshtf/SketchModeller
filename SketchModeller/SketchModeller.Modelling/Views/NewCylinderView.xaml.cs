@@ -35,6 +35,9 @@ namespace SketchModeller.Modelling.Views
         private HollowCylinderMesh cylinderMesh;
         private ILoggerFacade logger;
 
+        public static readonly Brush UnfocusedBrush = Brushes.White;
+        public static readonly Brush FocusedBrush = Brushes.LightBlue;
+
         public NewCylinderView()
         {
             InitializeComponent();
@@ -194,13 +197,21 @@ namespace SketchModeller.Modelling.Views
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Add)
-                viewModel.Length = viewModel.Length + 0.01;
+                viewModel.Edit(+1);
             if (e.Key == Key.Subtract)
-                viewModel.Length = viewModel.Length - 0.01;
-            if (e.Key == Key.Up)
-                viewModel.Diameter = viewModel.Diameter + 0.01;
-            if (e.Key == Key.Down)
-                viewModel.Diameter = viewModel.Diameter - 0.01;
+                viewModel.Edit(-1);
+        }
+
+        private void OnIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var inputElement = sender as IInputElement;
+            if (inputElement != null)
+            {
+                if (inputElement.IsKeyboardFocusWithin)
+                    frontDiffuseMaterial.Brush = FocusedBrush;
+                else
+                    frontDiffuseMaterial.Brush = UnfocusedBrush;
+            }
         }
     }
 }

@@ -13,11 +13,15 @@ using SketchModeller.Infrastructure;
 using Microsoft.Practices.Prism.Commands;
 using CollectionUtils = Utils.CollectionUtils;
 using MathUtils3D = Utils.MathUtils3D;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Views
 {
     public class NewCylinderViewModel : NewPrimitiveViewModel
     {
+        private const double MIN_LENGTH = 0.01;
+        private const double MIN_DIAMETER = 0.01;
+
         private readonly UiState uiState;
         private NewCylinder model;
         private Dictionary<KeyboardEditModes, CheckedMenuCommandData> editModeToCommand;
@@ -33,6 +37,8 @@ namespace SketchModeller.Modelling.Views
         public NewCylinderViewModel(UiState uiState)
             : this()
         {
+            Contract.Requires(uiState != null);
+
             this.uiState = uiState;
             model = new NewCylinder();
             
@@ -52,10 +58,20 @@ namespace SketchModeller.Modelling.Views
                 { KeyboardEditModes.Roll, roll },
             };
 
-            CollectionUtils.AddMany(ContextMenu, editLength, editDiameter, pitch, roll);
+            CollectionUtils.AddMany(ContextMenu, 
+                editLength, 
+                editDiameter, 
+                pitch, 
+                roll,
+                new MenuCommandData(new DelegateCommand(ResetAxisExecute), "Reset axis"));
         }
 
         #region Command execute methods
+
+        private void ResetAxisExecute()
+        {
+            Axis = uiState.SketchPlane.YAxis;
+        }
 
         private void EditLengthExecute()
         {
@@ -98,12 +114,19 @@ namespace SketchModeller.Modelling.Views
 
         public void Initialize(WpfPoint3D center, Vector3D axis)
         {
+            Contract.Requires(axis != MathUtils3D.ZeroVector);
+
             Center = center;
             Axis = axis;
         }
 
         internal void Initialize(NewCylinder newCylinder)
         {
+            Contract.Requires(newCylinder != null);
+            Contract.Requires(newCylinder.Axis.ToWpfVector() != MathUtils3D.ZeroVector);
+            Contract.Requires(newCylinder.Length > 0);
+            Contract.Requires(newCylinder.Diameter > 0);
+
             Center = newCylinder.Center.ToWpfPoint();
             Axis = newCylinder.Axis.ToWpfVector();
             Length = newCylinder.Length;
@@ -199,6 +222,37 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+        
+        public void Edit(int sign)
+        {
+            Contract.Requires(sign != 0);
+            sign = Math.Sign(sign);
+
+            switch (KeyboardEditMode)
+            {
+                case KeyboardEditModes.Length:
+                    Length = Math.Max(MIN_LENGTH, Length + sign * 0.01);
+                    break;
+                case KeyboardEditModes.Diameter:
+                    Diameter = Math.Max(MIN_DIAMETER, Diameter + sign * 0.01);
+                    break;
+                case KeyboardEditModes.Pitch:
+                    Axis = RotateVector(vector: Axis, rotateAxis: uiState.SketchPlane.XAxis, degrees: sign);
+                    break;
+                case KeyboardEditModes.Roll:
+                    Axis = RotateVector(vector: Axis, rotateAxis: uiState.SketchPlane.Normal, degrees: sign);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private Vector3D RotateVector(Vector3D vector, Vector3D rotateAxis, double degrees)
+        {
+            var transform = new RotateTransform3D(new AxisAngleRotation3D(rotateAxis, degrees));
+            var result = transform.Transform(vector);
+            return result;
+        }
 
         public enum KeyboardEditModes
         {

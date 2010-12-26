@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cp="http://schemas.charlespetzold.com/2007/xaml"
              xmlns:skm="http://SketchModeller"
+             xmlns:local="clr-namespace:SketchModeller.Modelling.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <ModelVisual3D.Children>
@@ -13,7 +14,8 @@
                           MouseDown="OnMouseDown"
                           MouseUp="OnMouseUp"
                           MouseMove="OnMouseMove"
-                          KeyDown="OnKeyDown">
+                          KeyDown="OnKeyDown"
+                          IsKeyboardFocusWithinChanged="OnIsKeyboardFocusWithinChanged">
             <ModelUIElement3D.Model>
                 <GeometryModel3D x:Name="geometry">
                     <GeometryModel3D.Transform>
@@ -27,7 +29,8 @@
                         </Transform3DGroup>
                     </GeometryModel3D.Transform>
                     <GeometryModel3D.Material>
-                        <DiffuseMaterial Brush="White"
+                        <DiffuseMaterial Brush="{x:Static local:NewCylinderView.UnfocusedBrush}"
+                                         x:Name="frontDiffuseMaterial"
                                          Color="{skm:TransparentColor BaseColor=Gray, Alpha=128}" />
                     </GeometryModel3D.Material>
                     <GeometryModel3D.BackMaterial>
