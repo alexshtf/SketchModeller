@@ -12,6 +12,7 @@ using SketchModeller.Modelling.Services.Sketch;
 using SketchModeller.Infrastructure.Shared;
 using System.Windows.Markup;
 using System.Windows;
+using SketchModeller.Modelling.ModelViews;
 
 namespace SketchModeller.Modelling
 {
@@ -46,6 +47,7 @@ namespace SketchModeller.Modelling
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(OpenImageView));
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(DisplayOptionsView));
             regionManager.RegisterViewWithRegion(RegionNames.ToolBar, typeof(PrimitivesToolbar));
+            regionManager.RegisterViewWithRegion(RegionNames.Model, typeof(ModelViewerView));
 
             var sketchPlanesView = container.Resolve<SketchPlanesView>();
             var sidebar = regionManager.Regions[RegionNames.SideBar];

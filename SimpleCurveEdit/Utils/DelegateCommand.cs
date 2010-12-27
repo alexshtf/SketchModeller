@@ -7,6 +7,7 @@ using System.Diagnostics.Contracts;
 
 namespace Utils
 {
+    /*
     /// <summary>
     /// An implementation of the <see cref="ICommand"/> interface for WPF commands with user supplied delegates.
     /// </summary>
@@ -69,4 +70,5 @@ namespace Utils
             executeAction(parameter);
         }
     }
+     * */
 }
