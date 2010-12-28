@@ -111,6 +111,7 @@
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
     <Compile Include="ModellingModule.cs" />
+    <Compile Include="ModelViews\ModelViewerFactory.cs" />
     <Compile Include="ModelViews\ModelViewerView.xaml.cs">
       <DependentUpon>ModelViewerView.xaml</DependentUpon>
     </Compile>

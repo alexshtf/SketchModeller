@@ -19,6 +19,21 @@ namespace Utils
         /// <returns>The member info.</returns>
         public static MemberInfo GetMemberInfo(this Expression expression)
         {
+            var memberExpression = MemberExpressionFromLambda(expression);
+            return memberExpression.Member;
+        }
+
+        public static Tuple<object, MemberInfo> GetTargetAndMember(this Expression expression)
+        {
+            var memberExpression = MemberExpressionFromLambda(expression);
+            var targetExpression = Expression.Lambda<Func<object>>(memberExpression.Expression);
+            var targetGetter = targetExpression.Compile();
+            var target = targetGetter();
+            return Tuple.Create(target, memberExpression.Member);
+        }
+
+        private static MemberExpression MemberExpressionFromLambda(Expression expression)
+        {
             var lambda = (LambdaExpression)expression;
 
             MemberExpression memberExpression;
@@ -28,8 +43,7 @@ namespace Utils
                 memberExpression = (MemberExpression)unaryExpression.Operand;
             }
             else memberExpression = (MemberExpression)lambda.Body;
-
-            return memberExpression.Member;
+            return memberExpression;
         }
     }
 }

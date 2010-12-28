@@ -9,6 +9,7 @@ using SketchModeller.Infrastructure.Shared;
 using Microsoft.Practices.Prism.Commands;
 using System.Windows.Media.Media3D;
 using Utils;
+using System.Collections.ObjectModel;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -16,18 +17,28 @@ namespace SketchModeller.Modelling.ModelViews
     {
         private const double MOVE_SPEED = 0.01;
         private readonly UiState uiState;
+        private readonly SessionData sessionData;
 
         public ModelViewerViewModel()
         {
+            Position = new Point3D(0, 0, -4);
+            LookDirection = new Vector3D(0, 0, 1);
+            UpDirection = new Vector3D(0, 1, 0);
+            Primitives = new ReadOnlyObservableCollection<object>(new ObservableCollection<object>());
         }
 
         [InjectionConstructor]
-        public ModelViewerViewModel(UiState uiState)
+        public ModelViewerViewModel(UiState uiState, SessionData sessionData)
+            : this()
         {
+            this.uiState = uiState;
+            this.sessionData = sessionData;
+
             MoveForward = new DelegateCommand(() =>Move(MathUtils3D.UnitZ));
             MoveBack = new DelegateCommand(() => Move(-MathUtils3D.UnitZ));
             MoveLeft = new DelegateCommand(() => Move(-MathUtils3D.UnitX));
             MoveRight = new DelegateCommand(() => Move(MathUtils3D.UnitX));
+            Primitives = new ReadOnlyObservableCollection<object>(sessionData.NewPrimitives);
         }
 
         public ICommand MoveForward { get; private set; }
@@ -39,6 +50,8 @@ namespace SketchModeller.Modelling.ModelViews
         public ICommand LookDown { get; private set; }
         public ICommand LookLeft { get; private set; }
         public ICommand LookRight { get; private set; }
+
+        public ReadOnlyObservableCollection<object> Primitives { get; private set; }
 
         #region Position property
 

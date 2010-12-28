@@ -15,6 +15,8 @@ using System.Diagnostics;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using Microsoft.Practices.Unity;
+using System.Windows.Threading;
+using Microsoft.Practices.Prism.Logging;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -23,43 +25,75 @@ namespace SketchModeller.Modelling.ModelViews
     /// </summary>
     public partial class ModelViewerView : UserControl
     {
+        private readonly DispatcherTimer navigationTimer;
+        private readonly ModelViewerViewModel viewModel;
+        private readonly ILoggerFacade logger;
+        private readonly Dictionary<Key, ICommand> keyDownCommands;
+
         public ModelViewerView()
         {
             InitializeComponent();
+            logger = new EmptyLogger();
+            keyDownCommands = new Dictionary<Key, ICommand>();
         }
 
         [InjectionConstructor]
-        public ModelViewerView(ModelViewerViewModel viewModel)
+        public ModelViewerView(ModelViewerViewModel viewModel, ILoggerFacade logger)
             : this()
         {
+            this.viewModel = viewModel;
             DataContext = viewModel;
+            navigationTimer = new DispatcherTimer();
+            navigationTimer.Interval = TimeSpan.FromMilliseconds(20);
+            navigationTimer.Tick += new EventHandler(OnNavigationTimerTick);
+            this.logger = logger;
+
+            keyDownCommands[Key.Up] = viewModel.LookUp;
+            keyDownCommands[Key.Left] = viewModel.LookLeft;
+            keyDownCommands[Key.Right] = viewModel.LookRight;
+            keyDownCommands[Key.Down] = viewModel.LookDown;
+            keyDownCommands[Key.W] = viewModel.MoveForward;
+            keyDownCommands[Key.A] = viewModel.MoveLeft;
+            keyDownCommands[Key.D] = viewModel.MoveRight;
+            keyDownCommands[Key.S] = viewModel.MoveBack;
         }
 
-        private void OnTextboxPreviewKeyDown(object sender, KeyEventArgs e)
+        private void OnNavigationTimerTick(object sender, EventArgs e)
         {
-
-            switch(e.Key)
+            foreach (var item in keyDownCommands)
             {
-                case Key.Up:
-                    ClickButton(up);
-                    break;
-                case Key.Down:
-                    ClickButton(down);
-                    break;
-                case Key.Left:
-                    ClickButton(left);
-                    break;
-                case Key.Right:
-                    ClickButton(right);
-                    break;
+                var key = item.Key;
+                var command = item.Value;
+                if (Keyboard.IsKeyDown(key) && command != null && command.CanExecute(null))
+                    command.Execute(null);
             }
         }
 
-        private void ClickButton(Button button)
+        private void OnRectangleMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var peer = new ButtonAutomationPeer(button);
-            var invokeProv =  peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-            invokeProv.Invoke();
+            var inputElement = sender as IInputElement;
+            logger.Log("Focusing navigation panel", Category.Debug, Priority.None);
+            bool success = inputElement.Focus();
+            if (!success)
+                logger.Log("Error focusing navigation panel", Category.Warn, Priority.None);
+        }
+
+        private void OnNavigationPanelKeyDown(object sender, KeyEventArgs e)
+        {
+            // we want the control to ignore arrow keys to prevent focus navigation when they are pressed.
+            var arrowKeys = new Key[] { Key.Left, Key.Right, Key.Up, Key.Down };
+            if (arrowKeys.Contains(e.Key))
+                e.Handled = true;
+        }
+
+        private void OnNavigationPanelGotFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            navigationTimer.Start();
+        }
+
+        private void OnNavigationPanelLostFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            navigationTimer.Stop();
         }
     }
 }

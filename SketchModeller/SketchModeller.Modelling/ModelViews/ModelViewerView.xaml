@@ -4,32 +4,62 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:skm="http://SketchModeller"
+             xmlns:local="clr-namespace:SketchModeller.Modelling.ModelViews"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel LastChildFill="True">
         <Border BorderBrush="Black" BorderThickness="1" DockPanel.Dock="Bottom">
             <Grid x:Name="controlPanel">
-                <Grid x:Name="navigationPanel">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" x:Name="controls">
+                    <Rectangle Width="100" 
+                               Height="100" 
+                               RadiusX="5" 
+                               RadiusY="5" 
+                               StrokeThickness="2" 
+                               Focusable="True"
+                               MouseDown="OnRectangleMouseDown"
+                               PreviewKeyDown="OnNavigationPanelKeyDown"
+                               GotKeyboardFocus="OnNavigationPanelGotFocus"
+                               LostKeyboardFocus="OnNavigationPanelLostFocus">
+                        <Rectangle.Style>
+                            <Style TargetType="Rectangle">
+                                <Setter Property="Stroke" Value="LightBlue" />
+                                <Setter Property="Fill" Value="Blue" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                        <Setter Property="Stroke" Value="Green" />
+                                        <Setter Property="Fill" Value="LightBlue" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
+                    </Rectangle>
+                    <TextBlock IsHitTestVisible="False"
+                               Width="90"
+                               Height="90" 
+                               TextWrapping="Wrap" 
+                               Text="Navigation panel. Use W,S,A,D to move, arrows to look." />
+                </Grid>
+                <Grid Grid.Column="1" VerticalAlignment="Top">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Grid.Resources>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Focusable" Value="False" />
-                        </Style>
-                    </Grid.Resources>
-                    <Button Content="↑" Grid.Row="0" Grid.Column="1" x:Name="up" Command="{Binding MoveForward}" />
-                    <Button Content="←" Grid.Row="1" Grid.Column="0" x:Name="left" Command="{Binding MoveLeft}" />
-                    <Button Content="→" Grid.Row="1" Grid.Column="2" x:Name="right" Command="{Binding MoveRight}" />
-                    <Button Content="↓" Grid.Row="2" Grid.Column="1" x:Name="down" Command="{Binding MoveBack}" />
-                    <TextBox Grid.Row="1" Grid.Column="1" PreviewKeyDown="OnTextboxPreviewKeyDown"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Position" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Look direction" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Up direction" />
+                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position}" />
+                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection}" />
+                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection}" />
                 </Grid>
             </Grid>
         </Border>
@@ -52,11 +82,13 @@
                         </ModelVisual3D.Content>
                     </ModelVisual3D>
                     <cp:Axes Color="Blue"
-                             Extent="1"
+                             Extent="2"
                              Thickness="0.01"
-                             LargeTick="0.5"
-                             SmallTick="0.1" />
-                    <skm:CloningVisual3D x:Name="primitivesDisplay" />
+                             LargeTick="0.02"
+                             SmallTick="0.01" />
+                    <skm:CloningVisual3D x:Name="primitivesDisplay"
+                                         Visual3DFactory="{x:Static local:ModelViewerFactory.Instance}"
+                                         ItemsSource="{Binding Primitives}"/>
                 </Viewport3D.Children>
             </Viewport3D>
         </Border>
