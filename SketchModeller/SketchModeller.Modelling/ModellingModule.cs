@@ -34,7 +34,6 @@ namespace SketchModeller.Modelling
             Application.Current.Resources.MergedDictionaries.Add(stylesDictionary);
 
             // register services
-            container.RegisterType<ISketchProcessing, SketchProcessing>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
 
             // register global objects objects

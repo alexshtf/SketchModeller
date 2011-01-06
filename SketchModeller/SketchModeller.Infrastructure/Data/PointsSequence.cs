@@ -5,9 +5,12 @@ using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [DebuggerDisplay("Count = {Points.Count}")]
+    [DebuggerTypeProxy(typeof(PointsSequenceDebugView))]
     public class PointsSequence : NotificationObject
     {
         public ObservableCollection<Point> Points { get; private set; }
@@ -29,6 +32,22 @@ namespace SketchModeller.Infrastructure.Data
             Contract.Requires(Contract.ForAll(points, pnt => pnt != null));
 
             Points = new ObservableCollection<Point>(points);
+        }
+
+        internal class PointsSequenceDebugView
+        {
+            private PointsSequence sequence;
+
+            public PointsSequenceDebugView(PointsSequence sequence)
+            {
+                this.sequence = sequence;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public Point[] Points
+            {
+                get { return sequence.Points.ToArray(); }
+            }
         }
     }
 }

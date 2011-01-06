@@ -10,25 +10,8 @@ namespace SketchModeller.Infrastructure.Shared
     {
         public DisplayOptions()
         {
-            IsImageShown = true;
             IsSketchShown = true;
         }
-
-        #region IsImageShown property
-
-        private bool isImageShown;
-
-        public bool IsImageShown
-        {
-            get { return isImageShown; }
-            set
-            {
-                isImageShown = value;
-                RaisePropertyChanged(() => IsImageShown);
-            }
-        }
-
-        #endregion   
 
         #region IsSketchShown property
 

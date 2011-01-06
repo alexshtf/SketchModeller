@@ -64,9 +64,6 @@ namespace SketchModeller.Modelling
                     });
                 }
             }
-
-            var imWidth = sketchData.Image.GetLength(0);
-            var imHeight = sketchData.Image.GetLength(1);
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)

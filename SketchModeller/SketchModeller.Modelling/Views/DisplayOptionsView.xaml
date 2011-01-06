@@ -5,6 +5,5 @@
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
           mc:Ignorable="d" 
           Header="Display">
-    <MenuItem Header="Show image" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsImageShown}" />
     <MenuItem Header="Show sketch" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsSketchShown}" />
 </MenuItem>

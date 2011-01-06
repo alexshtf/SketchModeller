@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Xml.Serialization;
+using System.Diagnostics;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [DebuggerDisplay("({x}, {y}, {z})")]
     public class Point3D : NotificationObject
     {
         #region X property

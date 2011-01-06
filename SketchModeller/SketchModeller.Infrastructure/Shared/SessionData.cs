@@ -6,6 +6,7 @@ using Microsoft.Practices.Prism.ViewModel;
 using SketchModeller.Infrastructure.Data;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace SketchModeller.Infrastructure.Shared
 {
@@ -55,19 +56,5 @@ namespace SketchModeller.Infrastructure.Shared
         #endregion
 
         public ObservableCollection<object> NewPrimitives { get; private set; }
-    }
-
-    public static class SessionDataExtensions
-    {
-        public static Size ImageSize(this SessionData sessionData)
-        {
-            if (sessionData.SketchData == null)
-                return default(Size);
-
-            var width = sessionData.SketchData.Image.GetLength(0);
-            var height = sessionData.SketchData.Image.GetLength(1);
-        
-            return new Size(width, height);
-        }
     }
 }

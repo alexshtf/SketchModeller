@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Xml.Serialization;
+using System.Diagnostics;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [DebuggerDisplay("({x}, {y})")]
     public class Point : NotificationObject
     {
         private double x;

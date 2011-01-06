@@ -8,9 +8,14 @@ namespace SketchModeller.Infrastructure.Data
 {
     public class SketchData
     {
-        [XmlIgnoreAttribute]
-        public double[,] Image { get; set; }
+        [XmlIgnore]
         public Point[] Points { get; set; }
+        [XmlIgnore]
+        public Polyline[] Polylines { get; set; }
+        [XmlIgnore]
+        public Polygon[] Polygons { get; set; }
+
+        // modelling data
         public NewCylinder[] Cylinders { get; set; }
     }
 }

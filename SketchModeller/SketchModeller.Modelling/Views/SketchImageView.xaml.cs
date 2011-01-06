@@ -16,6 +16,7 @@ using System.ComponentModel;
 using Utils;
 using System.Windows.Threading;
 using System.Windows.Media.Media3D;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -24,8 +25,23 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchImageView 
     {
+        private static readonly Brush SKETCH_STROKE_NORMAL = Brushes.Black;
+        private static readonly Brush SKETCH_STROKE_OVER = Brushes.Orange;
+
+        private static readonly Transform DEFAULT_GEOMETRY_TRANSFORM;
+
         private SketchImageViewModel viewModel;
         private DispatcherTimer timer;
+
+        static SketchImageView()
+        {
+            var tg = new TransformGroup();
+            tg.Children.Add(new TranslateTransform(1, 1));
+            tg.Children.Add(new ScaleTransform(256, 256));
+            tg.Freeze();
+
+            DEFAULT_GEOMETRY_TRANSFORM = tg;
+        }
 
         public SketchImageView()
         {
@@ -53,8 +69,8 @@ namespace SketchModeller.Modelling.Views
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // when visibility flags get updated
-            e.Match(() => viewModel.IsImageShown, () => ShowHide(viewModel.IsImageShown, imageVisibilityTransform));
-            e.Match(() => viewModel.IsSketchShown, () => ShowHide(viewModel.IsSketchShown, scatterVisibilityTransform));
+            e.Match(() => viewModel.IsSketchShown, () => 
+                ShowHide(viewModel.IsSketchShown, scatterVisibilityTransform, sketchVisibilityTransform));
 
             // when points get updated
             e.Match(() => viewModel.Points, () =>
@@ -66,34 +82,53 @@ namespace SketchModeller.Modelling.Views
                     scatter.Points = new Point3DCollection(points3d);
                 });
 
-            // when image gets updated
-            e.Match(() => viewModel.ImageData, () =>
-                {
-                    // get image information
-                    var imageData = viewModel.ImageData;
-                    var width = imageData.GetLength(0);
-                    var height = imageData.GetLength(1);
-
-                    // convert the image data to a 1D array of float values.
-                    float[] floatPixelsArray = new float[width * height];
-                    for (int i = 0; i < width; ++i)
-                        for (int j = 0; j < height; ++j)
-                            floatPixelsArray[i + j * width] = (float)imageData[i, j];
-
-                    // create bitmap source from the float values
-                    var writableBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Gray32Float, null);
-                    writableBitmap.WritePixels(new Int32Rect(0, 0, width, height), floatPixelsArray, width * sizeof(float), 0);
-                    writableBitmap.Freeze();
-
-                    // display the image
-                    imageBrush.ImageSource = writableBitmap;
-                });
+            e.Match(() => viewModel.Polylines, () => AddPaths(polylinesCanvas, viewModel.Polylines, isClosed: false));
+            e.Match(() => viewModel.Polygons, () => AddPaths(polygonsCanvas, viewModel.Polygons, isClosed: true));
         }
 
-        private void ShowHide(bool flag, ScaleTransform3D visibilityTransform)
+        private static void AddPaths(Canvas canvas, IEnumerable<Infrastructure.Data.PointsSequence> sequences, bool isClosed)
+        {
+            canvas.Children.Clear();
+            if (sequences != null)
+            {
+                var paths = from pointsSequence in sequences
+                            select CreatePath(pointsSequence, isClosed);
+                foreach (var path in paths)
+                    canvas.Children.Add(path);
+            }
+        }
+
+        private static Path CreatePath(Infrastructure.Data.PointsSequence polylineData, bool isClosed)
+        {
+            var points = (from pnt in polylineData.Points
+                          select new Point { X = pnt.X, Y = pnt.Y }).ToArray();
+
+            var geometry = new StreamGeometry();
+            using (var context = geometry.Open())
+            {
+                context.BeginFigure(points[0], false, isClosed);
+                context.PolyLineTo(points.Skip(1).ToList(), true, false);
+            }
+            geometry.Transform = DEFAULT_GEOMETRY_TRANSFORM;
+            geometry.Freeze();
+
+            var path = new Path();
+            path.Data = geometry;
+            path.StrokeThickness = 2;
+
+            path.Bind(
+                Path.StrokeProperty,
+                () => path.IsMouseDirectlyOver,
+                converter: isMouseOver => isMouseOver ? SKETCH_STROKE_OVER : SKETCH_STROKE_NORMAL);
+ 
+            return path;
+        }
+
+        private void ShowHide(bool flag, params ScaleTransform3D[] visibilityTransform)
         {
             double value = flag ? 1.0 : 0;
-            visibilityTransform.ScaleX = visibilityTransform.ScaleY = visibilityTransform.ScaleZ = value;
+            foreach(var item in visibilityTransform)
+                item.ScaleX = item.ScaleY = item.ScaleZ = value;
         }
     }
 }

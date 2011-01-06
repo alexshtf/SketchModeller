@@ -37,22 +37,6 @@ namespace SketchModeller.Modelling.Views
             SetupSessionDataSync();
         }
 
-        #region ImageData property
-
-        private double[,] imageData;
-
-        public double[,] ImageData
-        {
-            get { return imageData; }
-            private set
-            {
-                imageData = value;
-                RaisePropertyChanged(() => ImageData);
-            }
-        }
-
-        #endregion
-
         #region Points property
 
         private Point[] points;
@@ -69,27 +53,33 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        public int ImageWidth
+        #region Polylines property
+
+        private Polyline[] polylines;
+
+        public Polyline[] Polylines
         {
-            get { return imageData.GetLength(0); }
-        }
-
-        public int ImageHeight
-        {
-            get { return imageData.GetLength(1); }
-        }
-
-        #region IsImageShown property
-
-        private bool isImageShown;
-
-        public bool IsImageShown
-        {
-            get { return isImageShown; }
-            private set
+            get { return polylines; }
+            set
             {
-                isImageShown = value;
-                RaisePropertyChanged(() => IsImageShown);
+                polylines = value;
+                RaisePropertyChanged(() => Polylines);
+            }
+        }
+
+        #endregion
+
+        #region Polygons property
+
+        private Polygon[] polygons;
+
+        public Polygon[] Polygons
+        {
+            get { return polygons; }
+            set
+            {
+                polygons = value;
+                RaisePropertyChanged(() => Polygons);
             }
         }
 
@@ -115,10 +105,8 @@ namespace SketchModeller.Modelling.Views
 
         private void SetupDisplayOptionsSync()
         {
-            displayOptions.AddListener(this, () => displayOptions.IsImageShown);
             displayOptions.AddListener(this, () => displayOptions.IsSketchShown);
 
-            IsImageShown = displayOptions.IsImageShown;
             IsSketchShown = displayOptions.IsSketchShown;
         }
 
@@ -138,16 +126,14 @@ namespace SketchModeller.Modelling.Views
             {
                 if (eventArgs.Match(() => displayOptions.IsSketchShown))
                     IsSketchShown = displayOptions.IsSketchShown;
-
-                if (eventArgs.Match(() => displayOptions.IsImageShown))
-                    IsImageShown = displayOptions.IsImageShown;
             }
             else if (sender == sessionData)
             {
                 if (eventArgs.Match(() => sessionData.SketchData))
                 {
-                    ImageData = sessionData.SketchData.Image;
                     Points = sessionData.SketchData.Points;
+                    Polylines = sessionData.SketchData.Polylines;
+                    Polygons = sessionData.SketchData.Polygons;
                 }
             }
 

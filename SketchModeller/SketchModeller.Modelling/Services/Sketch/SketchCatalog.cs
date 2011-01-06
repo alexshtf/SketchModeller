@@ -14,17 +14,14 @@ using System.Xml.Serialization;
 
 namespace SketchModeller.Modelling.Services.Sketch
 {
-    class SketchCatalog : ISketchCatalog
+    partial class SketchCatalog : ISketchCatalog
     {
         private const string CATALOG_PATH = @"Sketches";
         private static readonly string CATALOG_FILE = Path.Combine(CATALOG_PATH, "catalog.xml");
 
-        private ISketchProcessing sketchProcessing;
-        
         [InjectionConstructor]
-        public SketchCatalog(ISketchProcessing sketchProcessing)
+        public SketchCatalog()
         {
-            this.sketchProcessing = sketchProcessing;
         }
 
         public IObservable<string[]> GetSketchNamesAsync()
@@ -39,23 +36,53 @@ namespace SketchModeller.Modelling.Services.Sketch
         public IObservable<SketchData> LoadSketchAsync(string sketchName)
         {
             var result = from info in GetSketchMetadataAsync(sketchName)
-                         from image in sketchProcessing.LoadSketchImageAsync(info.File)
-                         from sketchData in LoadProcessedSketchAsync(info.InfoFile, image)
+                         from image in LoadVectorImageAsync(info.File)
+                         from sketchData in LoadModellingDataAsync(info.ModelFile, image)
                          select sketchData;
 
             return result;
+        }
+
+        private IObservable<VectorImageData> LoadVectorImageAsync(string fileName)
+        {
+            return Observable.ToAsync<VectorImageData>(() => LoadSvg(fileName))();
+        }
+
+        private IObservable<SketchData> LoadModellingDataAsync(string modelFile, VectorImageData vectorImage)
+        {
+            Func<SketchData> loadAction = () =>
+                {
+                    SketchData sketchData;
+                    if (File.Exists(modelFile))
+                    {
+                        using (var reader = new StreamReader(modelFile))
+                        {
+                            var serializer = new XmlSerializer(typeof(SketchData));
+                            sketchData = (SketchData)serializer.Deserialize(reader);
+                        }
+                    }
+                    else
+                        sketchData = new SketchData();
+
+                    sketchData.Points = vectorImage.Points;
+                    sketchData.Polygons = vectorImage.Polygons;
+                    sketchData.Polylines = vectorImage.PolyLines;
+                    return sketchData;
+                };
+
+            return Observable.ToAsync(loadAction)();
         }
 
         public IObservable<Unit> SaveSketchAsync(string sketchName, SketchData sketchData)
         {
             var result =
                 from info in GetSketchMetadataAsync(sketchName)
-                from _ in SaveSketchDataAsync(info.InfoFile, sketchData)
+                from _ in SaveModellingDataAsync(info.ModelFile, sketchData)
                 select default(Unit);
             return result;
         }
 
-        private IObservable<Unit> SaveSketchDataAsync(string fileName, SketchData sketchData)
+        private IObservable<Unit> SaveModellingDataAsync(string fileName, SketchData sketchData)
         {
             Action saveAction = () =>
                 {
@@ -88,7 +115,7 @@ namespace SketchModeller.Modelling.Services.Sketch
                                {
                                    Name = (string)el.Attribute("name"),
                                    File = Path.Combine(CATALOG_PATH, (string)el.Attribute("file")),
-                                   InfoFile = Path.Combine(CATALOG_PATH, (string)el.Attribute("info")),
+                                   ModelFile = Path.Combine(CATALOG_PATH, (string)el.Attribute("modelFile"))
                                };
                 return metadata.ToArray();
             };
@@ -96,27 +123,12 @@ namespace SketchModeller.Modelling.Services.Sketch
             return Observable.ToAsync(loadCatalog)();
         }
 
-        private IObservable<SketchData> LoadProcessedSketchAsync(string infoFile, double[,] image)
-        {
-            Func<SketchData> loadAction = () =>
-                {
-                    using (var reader = new StreamReader(infoFile))
-                    {
-                        var serializer = new XmlSerializer(typeof(SketchData));
-                        var sketchData = (SketchData)serializer.Deserialize(reader);
-                        sketchData.Image = image;
-                        return sketchData;
-                    }
-                };
-
-            return Observable.ToAsync(loadAction)();
-        }
 
         private class SketchMetadata
         {
             public string Name { get; set; }
             public string File { get; set; }
-            public string InfoFile { get; set; }
+            public string ModelFile { get; set; }
         }
     }
 }
