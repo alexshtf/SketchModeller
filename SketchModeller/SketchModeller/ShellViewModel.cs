@@ -30,15 +30,10 @@ namespace SketchModeller
             workingIds = new HashSet<Guid>();
         }
 
-        public ShellViewModel(IEventAggregator eventAggregator, UiState uiState, SessionData sessionData)
+        public ShellViewModel(IEventAggregator eventAggregator)
             : this()
         {
             this.eventAggregator = eventAggregator;
-            this.uiState = uiState;
-            this.sessionData = sessionData;
-
-            uiState.AddListener(this, () => uiState.SketchPlane);
-            sessionData.AddListener(this, () => sessionData.SketchName);
 
             eventAggregator.GetEvent<StartWorkingEvent>().Subscribe(OnStartWorking);
             eventAggregator.GetEvent<StopWorkingEvent>().Subscribe(OnStopWorking);
@@ -65,12 +60,6 @@ namespace SketchModeller
 
         #endregion
 
-        public void OnSketchClick(System.Windows.Media.Media3D.Point3D p1, System.Windows.Media.Media3D.Point3D p2)
-        {
-            var payload = new SketchClickInfo(p1, p2);
-            eventAggregator.GetEvent<SketchClickEvent>().Publish(payload);
-        }
-
         private void OnStartWorking(Guid workId)
         {
             Trace.Assert(!workingIds.Contains(workId), "Cannot notify startup of an already running work");
@@ -87,22 +76,6 @@ namespace SketchModeller
             RaisePropertyChanged(() => IsWorking);
         }
 
-        #region SketchPlane property
-
-        private SketchPlane sketchPlane;
-
-        public SketchPlane SketchPlane
-        {
-            get { return sketchPlane; }
-            set
-            {
-                sketchPlane = value;
-                RaisePropertyChanged(() => SketchPlane);
-            }
-        }
-
-        #endregion
-
         #region Event handling
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -111,8 +84,6 @@ namespace SketchModeller
                 return false;
 
             var eventArgs = (PropertyChangedEventArgs)e;
-            if (eventArgs.Match(() => uiState.SketchPlane))
-                OnSketchPlaneChanged();
 
             if (eventArgs.Match(() => sessionData.SketchName))
                 Title = string.Format(TITLE_FORMAT, sessionData.SketchName);
@@ -120,12 +91,6 @@ namespace SketchModeller
             return true;
         }
 
-        private void OnSketchPlaneChanged()
-        {
-            SketchPlane = uiState.SketchPlane;
-        }
-
         #endregion
-
     }
 }

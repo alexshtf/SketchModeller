@@ -41,8 +41,7 @@ namespace SketchModeller.Modelling
             container.RegisterInstance(container.Resolve<SketchSaver>(), new ContainerControlledLifetimeManager());
 
             // register views.
-            regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchImageView));
-            regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchModellingView));
+            regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchView));
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(OpenImageView));
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(DisplayOptionsView));
             regionManager.RegisterViewWithRegion(RegionNames.ToolBar, typeof(PrimitivesToolbar));

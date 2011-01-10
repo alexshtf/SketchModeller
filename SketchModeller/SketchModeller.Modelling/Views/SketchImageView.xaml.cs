@@ -17,6 +17,7 @@ using Utils;
 using System.Windows.Threading;
 using System.Windows.Media.Media3D;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -25,35 +26,22 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchImageView 
     {
-        private static readonly Brush SKETCH_STROKE_NORMAL = Brushes.Black;
-        private static readonly Brush SKETCH_STROKE_OVER = Brushes.Orange;
-
-        private static readonly Transform DEFAULT_GEOMETRY_TRANSFORM;
-
-        private SketchImageViewModel viewModel;
-        private DispatcherTimer timer;
+        private static readonly Brush SKETCH_STROKE_NORMAL;
+        private static readonly Brush SKETCH_STROKE_OVER;
+        private static readonly Brush SKETCH_STROKE_SELECTED;
 
         static SketchImageView()
         {
-            var tg = new TransformGroup();
-            tg.Children.Add(new TranslateTransform(1, 1));
-            tg.Children.Add(new ScaleTransform(256, 256));
-            tg.Freeze();
-
-            DEFAULT_GEOMETRY_TRANSFORM = tg;
+            SKETCH_STROKE_NORMAL = Brushes.Black;
+            SKETCH_STROKE_OVER = Brushes.Orange;
+            SKETCH_STROKE_SELECTED = Brushes.Navy;
         }
+
+        private SketchImageViewModel viewModel;
 
         public SketchImageView()
         {
             InitializeComponent();
-            timer = new DispatcherTimer(DispatcherPriority.Normal, Dispatcher);
-            timer.Interval = TimeSpan.FromSeconds(5);
-            timer.Tick += (sender, args) =>
-                {
-
-                    timer.Stop();
-                };
-            timer.Start();
         }
 
         [InjectionConstructor]
@@ -62,43 +50,41 @@ namespace SketchModeller.Modelling.Views
         {
             this.viewModel = viewModel;
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
-            //grid.DataContext = viewModel;
-            ViewModel3DHelper.InheritViewModel(this, viewModel);
+            DataContext = viewModel;
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            // when visibility flags get updated
-            e.Match(() => viewModel.IsSketchShown, () => 
-                ShowHide(viewModel.IsSketchShown, scatterVisibilityTransform, sketchVisibilityTransform));
-
-            // when points get updated
-            e.Match(() => viewModel.Points, () =>
-                {
-                    // IMPORTANT!!!! We assume that viewModel.ImageWidth and viewModel.ImageHeight have the correct
-                    // values at this stage. That is, when we notify about points update we already have the image data.
-                    var points3d = from pnt in viewModel.Points
-                                   select new Point3D(pnt.X, pnt.Y, 0);
-                    scatter.Points = new Point3DCollection(points3d);
-                });
-
-            e.Match(() => viewModel.Polylines, () => AddPaths(polylinesCanvas, viewModel.Polylines, isClosed: false));
-            e.Match(() => viewModel.Polygons, () => AddPaths(polygonsCanvas, viewModel.Polygons, isClosed: true));
+            e.Match(() => viewModel.Polylines, () => ReplacePaths(polyRoot, viewModel.Polylines, isClosed: false, vgKind: VGKind.Polyline));
+            e.Match(() => viewModel.Polygons, () => ReplacePaths(polyRoot, viewModel.Polygons, isClosed: true, vgKind: VGKind.Polygon));
         }
 
-        private static void AddPaths(Canvas canvas, IEnumerable<Infrastructure.Data.PointsSequence> sequences, bool isClosed)
+        private void ReplacePaths(Canvas canvas, IEnumerable<Infrastructure.Data.PointsSequence> sequences, bool isClosed, VGKind vgKind)
         {
-            canvas.Children.Clear();
+            // remove all old paths having the same VGKind
+            var indicesToRemove =
+                (from item in canvas.Children.Cast<object>().ZipIndex()
+                 where item.Value is Path
+                 let path = (Path)item.Value
+                 where GetVGKind(path) == vgKind
+                 select item.Index
+                ).ToArray();
+            Array.Reverse(indicesToRemove);
+
+            foreach (var index in indicesToRemove)
+                canvas.Children.RemoveAt(index);
+
+            // add new paths
             if (sequences != null)
             {
                 var paths = from pointsSequence in sequences
-                            select CreatePath(pointsSequence, isClosed);
+                            select CreatePath(pointsSequence, isClosed, vgKind);
                 foreach (var path in paths)
                     canvas.Children.Add(path);
             }
         }
 
-        private static Path CreatePath(Infrastructure.Data.PointsSequence polylineData, bool isClosed)
+        private Path CreatePath(Infrastructure.Data.PointsSequence polylineData, bool isClosed, VGKind vgKind)
         {
             var points = (from pnt in polylineData.Points
                           select new Point { X = pnt.X, Y = pnt.Y }).ToArray();
@@ -109,26 +95,161 @@ namespace SketchModeller.Modelling.Views
                 context.BeginFigure(points[0], false, isClosed);
                 context.PolyLineTo(points.Skip(1).ToList(), true, false);
             }
-            geometry.Transform = DEFAULT_GEOMETRY_TRANSFORM;
-            geometry.Freeze();
+
+            var scaleTransform = new ScaleTransform();
+            scaleTransform.Bind(ScaleTransform.ScaleXProperty, () => polyRoot.ActualWidth, width => width / 2);
+            scaleTransform.Bind(ScaleTransform.ScaleYProperty, () => polyRoot.ActualHeight, height => height / 2);
+
+            var translateTransform = new TranslateTransform();
+            translateTransform.Bind(TranslateTransform.XProperty, () => polyRoot.ActualWidth, width => width / 2);
+            translateTransform.Bind(TranslateTransform.YProperty, () => polyRoot.ActualHeight, height => height / 2);
+
+            var transformGroup = new TransformGroup { Children = { scaleTransform, translateTransform } };
+            geometry.Transform = transformGroup;
 
             var path = new Path();
             path.Data = geometry;
             path.StrokeThickness = 2;
+            path.Stroke = SKETCH_STROKE_NORMAL;
+            path.DataContext = polylineData;
 
-            path.Bind(
-                Path.StrokeProperty,
-                () => path.IsMouseDirectlyOver,
-                converter: isMouseOver => isMouseOver ? SKETCH_STROKE_OVER : SKETCH_STROKE_NORMAL);
- 
+            SetVGKind(path, vgKind);
             return path;
         }
 
-        private void ShowHide(bool flag, params ScaleTransform3D[] visibilityTransform)
+        #region VGKind attached property
+
+        private static readonly DependencyProperty VGKindProperty = DependencyProperty.RegisterAttached("VGKind", typeof(VGKind), typeof(SketchImageView));
+
+        private static VGKind GetVGKind(Path path)
         {
-            double value = flag ? 1.0 : 0;
-            foreach(var item in visibilityTransform)
-                item.ScaleX = item.ScaleY = item.ScaleZ = value;
+            return (VGKind)path.GetValue(VGKindProperty);
         }
+
+        private static void SetVGKind(Path path, VGKind value)
+        {
+            path.SetValue(VGKindProperty, value);
+        }
+
+        #endregion
+
+        #region VGKind enum
+        
+        private enum VGKind
+        {
+            Unknown,
+            Polyline,
+            Polygon,
+        }
+
+        #endregion
+
+        #region Selection mouse events
+
+        private Point startPoint;
+        private Point endPoint;
+        private ISet<Path> lastUnderRectPaths = EmptySet<Path>.Instance;
+
+        private void OnPolyRootMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                // clear the actual selection
+                foreach (var path in lastUnderRectPaths)
+                    path.Stroke = SKETCH_STROKE_NORMAL;
+
+                // when we start a selection process the last under-rect set is empty.
+                lastUnderRectPaths = EmptySet<Path>.Instance;
+
+                startPoint = e.GetPosition(polyRoot);
+                Canvas.SetLeft(selectionRectangle, startPoint.X);
+                Canvas.SetTop(selectionRectangle, startPoint.Y);
+                selectionRectangle.Width = 0;
+                selectionRectangle.Height = 0;
+                selectionRectangle.Visibility = Visibility.Visible;
+
+                polyRoot.CaptureMouse();
+            }
+        }
+
+        private void OnPolyRootMouseMove(object sender, MouseEventArgs e)
+        {
+            if (selectionRectangle.Visibility == Visibility.Visible)
+            {
+                endPoint = e.GetPosition(polyRoot);
+
+                var rect = new Rect(startPoint, endPoint);
+
+                Canvas.SetLeft(selectionRectangle, rect.Left);
+                Canvas.SetTop(selectionRectangle, rect.Top);
+                selectionRectangle.Width = rect.Width;
+                selectionRectangle.Height = rect.Height;
+
+                var currUnderRect = FindPaths();
+
+                var addedPaths = currUnderRect.Except(lastUnderRectPaths);
+                foreach (var path in addedPaths)
+                    path.Stroke = SKETCH_STROKE_OVER;
+
+                var removedPaths = lastUnderRectPaths.Except(currUnderRect);
+                foreach (var path in removedPaths)
+                    path.Stroke = SKETCH_STROKE_NORMAL;
+
+                lastUnderRectPaths = currUnderRect;
+            }
+        }
+
+        private void OnPolyRootMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                // hide selection visuals
+                polyRoot.ReleaseMouseCapture();
+                selectionRectangle.Visibility = Visibility.Collapsed;
+
+                // perform the actual selection
+                foreach (var path in lastUnderRectPaths)
+                {
+                    var pointsSequence = (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
+                    pointsSequence.IsSelected = true;
+                    path.Stroke = SKETCH_STROKE_SELECTED;
+                }
+            }
+        }
+
+        private ISet<Path> FindPaths()
+        {
+            var rect = new Rect(startPoint, endPoint);
+            var htParams = new GeometryHitTestParameters(new RectangleGeometry(rect));
+
+            var hitTestResults = new HashSet<Path>();
+            VisualTreeHelper.HitTest(
+                polyRoot,
+                filterCallback: null,
+                resultCallback: htResult =>
+                {
+                    var path = htResult.VisualHit as Path;
+                    if (path != null)
+                    {
+                        var geometryHtResult = (GeometryHitTestResult)htResult;
+                        if (geometryHtResult.IntersectionDetail.HasFlag(IntersectionDetail.FullyInside))
+                            hitTestResults.Add(path);
+                    }
+                    return HitTestResultBehavior.Continue;
+                },
+                hitTestParameters: htParams);
+
+            return hitTestResults;
+        }
+
+        private static IEnumerable<SketchModeller.Infrastructure.Data.PointsSequence> GetPointsSequences(IEnumerable<Path> paths)
+        {
+            Contract.Requires(paths != null);
+
+            return from path in paths
+                   select (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
+        }
+
+        #endregion
     }
 }

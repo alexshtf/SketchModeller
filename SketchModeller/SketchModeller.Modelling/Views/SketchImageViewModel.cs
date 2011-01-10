@@ -35,6 +35,7 @@ namespace SketchModeller.Modelling.Views
 
             SetupDisplayOptionsSync();
             SetupSessionDataSync();
+            SetupUIStateSync();
         }
 
         #region Points property
@@ -101,18 +102,39 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        #region IsSelectionToolActive property
+
+        private bool isSelectionToolActive;
+
+        public bool IsSelectionToolActive
+        {
+            get { return isSelectionToolActive; }
+            set
+            {
+                isSelectionToolActive = value;
+                RaisePropertyChanged(() => IsSelectionToolActive);
+            }
+        }
+
+        #endregion
+
         #region property sync related
 
         private void SetupDisplayOptionsSync()
         {
             displayOptions.AddListener(this, () => displayOptions.IsSketchShown);
-
             IsSketchShown = displayOptions.IsSketchShown;
         }
 
         private void SetupSessionDataSync()
         {
             sessionData.AddListener(this, () => sessionData.SketchData);
+        }
+
+        private void SetupUIStateSync()
+        {
+            uiState.AddListener(this, () => uiState.Tool);
+            IsSelectionToolActive = uiState.Tool == Tool.Manipulation;
         }
 
         bool System.Windows.IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

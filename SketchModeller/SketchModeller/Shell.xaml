@@ -33,8 +33,6 @@
             </Grid.ColumnDefinitions>
             <DockPanel LastChildFill="True"
                        Grid.Column="0"
-                       Background="DarkGray"
-                       MouseDown="OnSketchMouseDown"
                        skm:RoutedEvents.ContextMenuCommands="OnContextMenuCommands"
                        ContextMenuOpening="DockPanel_ContextMenuOpening">
                 <DockPanel.ContextMenu>
@@ -46,30 +44,7 @@
                            HorizontalAlignment="Stretch"
                            TextAlignment="Center"
                            Background="Gray">Sketch</TextBlock>
-                <Viewport3D x:Name="viewport3d">
-                    <Viewport3D.Camera>
-                        <PerspectiveCamera x:Name="camera"
-                                           NearPlaneDistance="0.1"
-                                           FarPlaneDistance="100"
-                                           Position="0,0,4"
-                                           LookDirection="0,0,-1"
-                                           UpDirection="0,1,0" />
-                    </Viewport3D.Camera>
-                    <Viewport3D.Children>
-                        <ModelVisual3D>
-                            <ModelVisual3D.Content>
-                                <AmbientLight Color="Gray" />
-                            </ModelVisual3D.Content>
-                        </ModelVisual3D>
-                        <Viewport2DVisual3D x:Name="sketchPlaneDummy">
-                            <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="sketchPlaneDummyCanvas" />
-                            </Viewport2DVisual3D.Visual>
-                        </Viewport2DVisual3D>
-                        <ModelVisual3D cal:RegionManager.RegionName="{x:Static skm:RegionNames.Sketch}">
-                        </ModelVisual3D>
-                    </Viewport3D.Children>
-                </Viewport3D>
+                <ContentControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.Sketch}" />
             </DockPanel>
             <DockPanel LastChildFill="True"
                        Grid.Column="1">

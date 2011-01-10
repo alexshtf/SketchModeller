@@ -37,45 +37,12 @@ namespace SketchModeller
         {
             viewModel = container.Resolve<ShellViewModel>();
             DataContext = viewModel;
-            viewModel.PropertyChanged += OnViewModelPropertyChanged;
-        }
-
-        void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.Match(() => viewModel.SketchPlane))
-            {
-                var sketchPlane = viewModel.SketchPlane;
-
-                var fovRadians = camera.FieldOfView * Math.PI / 180;
-                var height = sketchPlane.Height * 1.5; // add 50% height.
-                var distance = height / Math.Tan(fovRadians);
-
-                var normal = sketchPlane.Normal.Normalized();
-                var center = sketchPlane.Center;
-                var position = sketchPlane.Center - distance * normal;
-
-                camera.Position = position;
-                camera.LookDirection = normal;
-                camera.UpDirection = sketchPlane.YAxis.Normalized();
-            }
         }
 
         private void OnDebugClick(object sender, RoutedEventArgs e)
         {
             if (Debugger.IsAttached)
                 Debugger.Break();
-        }
-
-        private void OnSketchMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                var mousePos = e.GetPosition(viewport3d);
-                LineRange lineRange;
-                if (ViewportInfo.Point2DtoPoint3D(viewport3d, mousePos, out lineRange))
-                    viewModel.OnSketchClick(lineRange.Point1, lineRange.Point2);
-
-            }            
         }
 
         private void OnContextMenuCommands(object sender, MenuCommandsEventArgs e)

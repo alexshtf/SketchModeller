@@ -6,6 +6,7 @@ using Microsoft.Practices.Prism.ViewModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Diagnostics;
+using System.Xml.Serialization;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -33,6 +34,23 @@ namespace SketchModeller.Infrastructure.Data
 
             Points = new ObservableCollection<Point>(points);
         }
+
+        #region IsSelected property
+
+        private bool isSelecgted;
+
+        [XmlIgnore]
+        public bool IsSelected
+        {
+            get { return isSelecgted; }
+            set
+            {
+                isSelecgted = value;
+                RaisePropertyChanged(() => IsSelected);
+            }
+        }
+
+        #endregion
 
         internal class PointsSequenceDebugView
         {

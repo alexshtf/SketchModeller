@@ -156,6 +156,10 @@
       <DependentUpon>SketchPlanesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SketchPlanesViewModel.cs" />
+    <Compile Include="Views\SketchView.xaml.cs">
+      <DependentUpon>SketchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SketchViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="ModelViews\ModelViewerView.xaml">
@@ -191,6 +195,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SketchPlanesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SketchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
