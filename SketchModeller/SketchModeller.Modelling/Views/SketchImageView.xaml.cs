@@ -26,18 +26,12 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchImageView 
     {
-        private static readonly Brush SKETCH_STROKE_NORMAL;
-        private static readonly Brush SKETCH_STROKE_OVER;
-        private static readonly Brush SKETCH_STROKE_SELECTED;
+        private static readonly Brush SKETCH_STROKE_NORMAL = Brushes.Black;
+        private static readonly Brush SKETCH_STROKE_CANDIDATE = Brushes.Orange;
+        private static readonly Brush SKETCH_STROKE_SELECTED = Brushes.Navy;
 
-        static SketchImageView()
-        {
-            SKETCH_STROKE_NORMAL = Brushes.Black;
-            SKETCH_STROKE_OVER = Brushes.Orange;
-            SKETCH_STROKE_SELECTED = Brushes.Navy;
-        }
-
-        private SketchImageViewModel viewModel;
+        private readonly SketchImageViewModel viewModel;
+        private readonly PathsManager pathsManager;
 
         public SketchImageView()
         {
@@ -51,6 +45,8 @@ namespace SketchModeller.Modelling.Views
             this.viewModel = viewModel;
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
             DataContext = viewModel;
+
+            pathsManager = new PathsManager(polyRoot, selectionRectangle);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -110,8 +106,27 @@ namespace SketchModeller.Modelling.Views
             var path = new Path();
             path.Data = geometry;
             path.StrokeThickness = 2;
-            path.Stroke = SKETCH_STROKE_NORMAL;
             path.DataContext = polylineData;
+            BindingOperations.SetBinding(path, Path.StrokeProperty, new Binding
+                {
+                    Path = new PropertyPath(PathsManager.SelectionStateProperty),
+                    Source = path,
+                    Converter = new DelegateConverter<SelectionState>(selectionState =>
+                                {
+                                    switch (selectionState)
+                                    {
+                                        case SelectionState.Unselected:
+                                            return SKETCH_STROKE_NORMAL;
+                                        case SelectionState.Candidate:
+                                            return SKETCH_STROKE_CANDIDATE;
+                                        case SelectionState.Selected:
+                                            return SKETCH_STROKE_SELECTED;
+                                        default:
+                                            Debug.Fail("Invalid selection state");
+                                            return null;
+                                    }
+                                }),
+                });
 
             SetVGKind(path, vgKind);
             return path;
@@ -146,108 +161,19 @@ namespace SketchModeller.Modelling.Views
 
         #region Selection mouse events
 
-        private Point startPoint;
-        private Point endPoint;
-        private ISet<Path> lastUnderRectPaths = EmptySet<Path>.Instance;
-
         private void OnPolyRootMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                // clear the actual selection
-                foreach (var path in lastUnderRectPaths)
-                    path.Stroke = SKETCH_STROKE_NORMAL;
-
-                // when we start a selection process the last under-rect set is empty.
-                lastUnderRectPaths = EmptySet<Path>.Instance;
-
-                startPoint = e.GetPosition(polyRoot);
-                Canvas.SetLeft(selectionRectangle, startPoint.X);
-                Canvas.SetTop(selectionRectangle, startPoint.Y);
-                selectionRectangle.Width = 0;
-                selectionRectangle.Height = 0;
-                selectionRectangle.Visibility = Visibility.Visible;
-
-                polyRoot.CaptureMouse();
-            }
+            pathsManager.MouseDown(e);
         }
 
         private void OnPolyRootMouseMove(object sender, MouseEventArgs e)
         {
-            if (selectionRectangle.Visibility == Visibility.Visible)
-            {
-                endPoint = e.GetPosition(polyRoot);
-
-                var rect = new Rect(startPoint, endPoint);
-
-                Canvas.SetLeft(selectionRectangle, rect.Left);
-                Canvas.SetTop(selectionRectangle, rect.Top);
-                selectionRectangle.Width = rect.Width;
-                selectionRectangle.Height = rect.Height;
-
-                var currUnderRect = FindPaths();
-
-                var addedPaths = currUnderRect.Except(lastUnderRectPaths);
-                foreach (var path in addedPaths)
-                    path.Stroke = SKETCH_STROKE_OVER;
-
-                var removedPaths = lastUnderRectPaths.Except(currUnderRect);
-                foreach (var path in removedPaths)
-                    path.Stroke = SKETCH_STROKE_NORMAL;
-
-                lastUnderRectPaths = currUnderRect;
-            }
+            pathsManager.MouseMove(e);
         }
 
         private void OnPolyRootMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                // hide selection visuals
-                polyRoot.ReleaseMouseCapture();
-                selectionRectangle.Visibility = Visibility.Collapsed;
-
-                // perform the actual selection
-                foreach (var path in lastUnderRectPaths)
-                {
-                    var pointsSequence = (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
-                    pointsSequence.IsSelected = true;
-                    path.Stroke = SKETCH_STROKE_SELECTED;
-                }
-            }
-        }
-
-        private ISet<Path> FindPaths()
-        {
-            var rect = new Rect(startPoint, endPoint);
-            var htParams = new GeometryHitTestParameters(new RectangleGeometry(rect));
-
-            var hitTestResults = new HashSet<Path>();
-            VisualTreeHelper.HitTest(
-                polyRoot,
-                filterCallback: null,
-                resultCallback: htResult =>
-                {
-                    var path = htResult.VisualHit as Path;
-                    if (path != null)
-                    {
-                        var geometryHtResult = (GeometryHitTestResult)htResult;
-                        if (geometryHtResult.IntersectionDetail.HasFlag(IntersectionDetail.FullyInside))
-                            hitTestResults.Add(path);
-                    }
-                    return HitTestResultBehavior.Continue;
-                },
-                hitTestParameters: htParams);
-
-            return hitTestResults;
-        }
-
-        private static IEnumerable<SketchModeller.Infrastructure.Data.PointsSequence> GetPointsSequences(IEnumerable<Path> paths)
-        {
-            Contract.Requires(paths != null);
-
-            return from path in paths
-                   select (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
+            pathsManager.MouseUp(e);
         }
 
         #endregion

@@ -101,6 +101,7 @@
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="CsvReader.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="DelegateConverter.cs" />
     <Compile Include="EmptySet.cs" />
     <Compile Include="Enumerable.cs" />
     <Compile Include="ExpressionHelper.cs" />

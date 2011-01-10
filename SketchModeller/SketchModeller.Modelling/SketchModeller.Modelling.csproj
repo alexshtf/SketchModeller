@@ -144,6 +144,7 @@
       <DependentUpon>PrimitivesToolbar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PrimitivesToolbarViewModel.cs" />
+    <Compile Include="Views\SketchImageView.PathsManager.cs" />
     <Compile Include="Views\SketchImageView.xaml.cs">
       <DependentUpon>SketchImageView.xaml</DependentUpon>
     </Compile>
