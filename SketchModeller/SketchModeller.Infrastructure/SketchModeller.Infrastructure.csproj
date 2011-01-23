@@ -84,6 +84,8 @@
     <Compile Include="Data\Segment.cs" />
     <Compile Include="Data\SketchData.cs" />
     <Compile Include="Data\SketchPlane.cs" />
+    <Compile Include="Data\SnappedCylinder.cs" />
+    <Compile Include="Data\SnappedPrimitive.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />
     <Compile Include="Events\SaveSketchEvent.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="MenuCommandData.cs" />
     <Compile Include="MenuCommandsEventArgs.cs" />
     <Compile Include="RoutedEvents.cs" />
+    <Compile Include="Services\ISnapper.cs" />
     <Compile Include="Work.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegionNames.cs" />

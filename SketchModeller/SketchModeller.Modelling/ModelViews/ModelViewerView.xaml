@@ -89,6 +89,9 @@
                     <skm:CloningVisual3D x:Name="primitivesDisplay"
                                          Visual3DFactory="{x:Static local:ModelViewerFactory.Instance}"
                                          ItemsSource="{Binding Primitives}"/>
+                    <skm:CloningVisual3D x:Name="snappedPrimitivesDisplay"
+                                         Visual3DFactory="{x:Static local:ModelViewerSnappedFactory.Instance}"
+                                         ItemsSource="{Binding SnappedPrimitives}" />
                 </Viewport3D.Children>
             </Viewport3D>
         </Border>

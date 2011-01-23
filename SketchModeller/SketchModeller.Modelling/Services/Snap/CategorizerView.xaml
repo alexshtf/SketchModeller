@@ -1,0 +1,103 @@
+﻿<Window x:Class="SketchModeller.Modelling.Services.Snap.CategorizerView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:data="clr-namespace:SketchModeller.Infrastructure.Data;assembly=SketchModeller.Infrastructure"
+        xmlns:local="clr-namespace:SketchModeller.Modelling.Services.Snap"
+        mc:Ignorable="d" 
+        Width="600"
+        Height="400"
+        d:DesignHeight="600" d:DesignWidth="400"
+        ResizeMode="NoResize"
+        Title="Select categories">
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CloseExecuted"></CommandBinding>
+    </Window.CommandBindings>
+    <Window.Resources>
+        <local:PathBrushConverter x:Key="PathBrushConverter" />
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Right" Orientation="Vertical" MinWidth="200">
+            <Label HorizontalAlignment="Left" Target="{Binding ElementName=categories}">_Categories:</Label>
+            <ComboBox x:Name="categories"
+                      HorizontalAlignment="Stretch" 
+                      ItemsSource="{Binding Categories}"
+                      SelectedItem="{Binding SelectedCategory}"
+                      DisplayMemberPath="Name"
+                      TextSearch.TextPath="Name"
+                      IsTextSearchEnabled="True"
+                      IsTextSearchCaseSensitive="False"/>
+            <Button Command="{Binding Assign}" HorizontalAlignment="Center" Padding="5" Margin="5">Assign</Button>
+            <Button Command="{Binding Finish}" HorizontalAlignment="Center" Padding="5" Margin="5">Finish</Button>
+            <Button Command="Close" HorizontalAlignment="Center" Padding="5" Margin="5">Cancel</Button>
+        </StackPanel>
+        <Grid>
+            <ItemsControl x:Name="paths" 
+                          ItemsSource="{Binding Sequences}"
+                          MouseDown="paths_MouseDown"
+                          MouseUp="paths_MouseUp"
+                          MouseMove="paths_MouseMove">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Background="White" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type data:Polygon}">
+                        <Polygon StrokeThickness="2">
+                            <Polygon.Stroke>
+                                <MultiBinding Converter="{StaticResource PathBrushConverter}">
+                                    <Binding RelativeSource="{x:Static RelativeSource.Self}" Path="(local:CategorizerView.IsSelected)" />
+                                    <Binding RelativeSource="{x:Static RelativeSource.Self}" Path="(local:CategorizerView.Category)" />
+                                </MultiBinding>
+                            </Polygon.Stroke>
+                            <Polygon.Points>
+                                <MultiBinding Converter="{x:Static local:PointsConverter.Instance}">
+                                    <Binding Path="Points" />
+                                    <Binding ElementName="paths" Path="DataContext.MinX" />
+                                    <Binding ElementName="paths" Path="DataContext.MaxX" />
+                                    <Binding ElementName="paths" Path="DataContext.MinY" />
+                                    <Binding ElementName="paths" Path="DataContext.MaxY" />
+                                    <Binding ElementName="paths" Path="ActualWidth" />
+                                    <Binding ElementName="paths" Path="ActualHeight" />
+                                </MultiBinding>
+                            </Polygon.Points>
+                        </Polygon>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type data:Polyline}">
+                        <Polyline StrokeThickness="2">
+                            <Polyline.Stroke>
+                                <MultiBinding Converter="{StaticResource PathBrushConverter}">
+                                    <Binding RelativeSource="{x:Static RelativeSource.Self}" Path="(local:CategorizerView.IsSelected)" />
+                                    <Binding RelativeSource="{x:Static RelativeSource.Self}" Path="(local:CategorizerView.Category)" />
+                                </MultiBinding>
+                            </Polyline.Stroke>
+                            <Polyline.Points>
+                                <MultiBinding Converter="{x:Static local:PointsConverter.Instance}">
+                                    <Binding Path="Points" />
+                                    <Binding ElementName="paths" Path="DataContext.MinX" />
+                                    <Binding ElementName="paths" Path="DataContext.MaxX" />
+                                    <Binding ElementName="paths" Path="DataContext.MinY" />
+                                    <Binding ElementName="paths" Path="DataContext.MaxY" />
+                                    <Binding ElementName="paths" Path="ActualWidth" />
+                                    <Binding ElementName="paths" Path="ActualHeight" />
+                                </MultiBinding>
+                            </Polyline.Points>
+                        </Polyline>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+            </ItemsControl>
+            <Canvas x:Name="selectCanvas">
+                <Rectangle x:Name="selectRectangle" 
+                           Visibility="Hidden"
+                           Stroke="Blue"
+                           StrokeThickness="2">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="Blue" Opacity="0.25" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Canvas>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using System.Windows.Media.Media3D;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -29,13 +30,34 @@ namespace SketchModeller.Modelling.Views
         private static readonly Brush SKETCH_STROKE_NORMAL = Brushes.Black;
         private static readonly Brush SKETCH_STROKE_CANDIDATE = Brushes.Orange;
         private static readonly Brush SKETCH_STROKE_SELECTED = Brushes.Navy;
+        private static readonly Brush SKETCH_STROKE_SELECTED_CANDIDATE = Brushes.DodgerBlue;
+
+        private static readonly Cursor ADD_CURSOR;
+        private static readonly Cursor REMOVE_CURSOR;
+
+        static SketchImageView()
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowadd.cur"))
+            {
+                ADD_CURSOR = new Cursor(stream);
+            }
+            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowdel.cur"))
+            {
+                REMOVE_CURSOR = new Cursor(stream);
+            }
+        }
 
         private readonly SketchImageViewModel viewModel;
-        private readonly PathsManager pathsManager;
+        private readonly PathsSelectionManager pathsManager;
+        private readonly DispatcherTimer modifierKeysTimer;
 
         public SketchImageView()
         {
             InitializeComponent();
+            modifierKeysTimer = new DispatcherTimer();
+            modifierKeysTimer.Interval = TimeSpan.FromMilliseconds(50);
+            modifierKeysTimer.Tick += new EventHandler(OnModifierKeysTimerTick);
         }
 
         [InjectionConstructor]
@@ -46,7 +68,7 @@ namespace SketchModeller.Modelling.Views
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
             DataContext = viewModel;
 
-            pathsManager = new PathsManager(polyRoot, selectionRectangle);
+            pathsManager = new PathsSelectionManager(polyRoot, selectionRectangle);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -109,7 +131,7 @@ namespace SketchModeller.Modelling.Views
             path.DataContext = polylineData;
             BindingOperations.SetBinding(path, Path.StrokeProperty, new Binding
                 {
-                    Path = new PropertyPath(PathsManager.SelectionStateProperty),
+                    Path = new PropertyPath(PathsSelectionManager.SelectionStateProperty),
                     Source = path,
                     Converter = new DelegateConverter<SelectionState>(selectionState =>
                                 {
@@ -121,6 +143,8 @@ namespace SketchModeller.Modelling.Views
                                             return SKETCH_STROKE_CANDIDATE;
                                         case SelectionState.Selected:
                                             return SKETCH_STROKE_SELECTED;
+                                        case SelectionState.Selected | SelectionState.Candidate:
+                                            return SKETCH_STROKE_SELECTED_CANDIDATE;
                                         default:
                                             Debug.Fail("Invalid selection state");
                                             return null;
@@ -174,6 +198,38 @@ namespace SketchModeller.Modelling.Views
         private void OnPolyRootMouseUp(object sender, MouseButtonEventArgs e)
         {
             pathsManager.MouseUp(e);
+        }
+
+        #endregion
+
+        #region modifier keys cursor
+
+        protected override void OnMouseEnter(MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
+            modifierKeysTimer.Start();
+            UpdateCursorFromModifierKeys();
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            modifierKeysTimer.Stop();
+        }
+
+        private void OnModifierKeysTimerTick(object sender, EventArgs e)
+        {
+            UpdateCursorFromModifierKeys();
+        }
+
+        private void UpdateCursorFromModifierKeys()
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+                this.Cursor = ADD_CURSOR;
+            else if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+                this.Cursor = REMOVE_CURSOR;
+            else
+                this.Cursor = null;
         }
 
         #endregion

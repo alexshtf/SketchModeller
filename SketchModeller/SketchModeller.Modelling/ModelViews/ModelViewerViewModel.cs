@@ -10,6 +10,7 @@ using Microsoft.Practices.Prism.Commands;
 using System.Windows.Media.Media3D;
 using Utils;
 using System.Collections.ObjectModel;
+using SnappedPrimitive = SketchModeller.Infrastructure.Data.SnappedPrimitive;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -25,6 +26,7 @@ namespace SketchModeller.Modelling.ModelViews
             LookDirection = new Vector3D(0, 0, 1);
             UpDirection = new Vector3D(0, 1, 0);
             Primitives = new ReadOnlyObservableCollection<object>(new ObservableCollection<object>());
+            SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(new ObservableCollection<SnappedPrimitive>());
         }
 
         [InjectionConstructor]
@@ -39,6 +41,7 @@ namespace SketchModeller.Modelling.ModelViews
             MoveLeft = new DelegateCommand(() => Move(-MathUtils3D.UnitX));
             MoveRight = new DelegateCommand(() => Move(MathUtils3D.UnitX));
             Primitives = new ReadOnlyObservableCollection<object>(sessionData.NewPrimitives);
+            SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(sessionData.SnappedPrimitives);
         }
 
         public ICommand MoveForward { get; private set; }
@@ -52,6 +55,7 @@ namespace SketchModeller.Modelling.ModelViews
         public ICommand LookRight { get; private set; }
 
         public ReadOnlyObservableCollection<object> Primitives { get; private set; }
+        public ReadOnlyObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
 
         #region Position property
 

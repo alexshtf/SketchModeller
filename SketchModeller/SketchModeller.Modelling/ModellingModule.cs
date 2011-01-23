@@ -13,6 +13,7 @@ using SketchModeller.Infrastructure.Shared;
 using System.Windows.Markup;
 using System.Windows;
 using SketchModeller.Modelling.ModelViews;
+using SketchModeller.Modelling.Services.Snap;
 
 namespace SketchModeller.Modelling
 {
@@ -35,6 +36,7 @@ namespace SketchModeller.Modelling
 
             // register services
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());

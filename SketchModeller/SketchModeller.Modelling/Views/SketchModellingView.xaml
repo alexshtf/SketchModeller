@@ -4,11 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:skm="http://SketchModeller"
+             xmlns:modelviews="clr-namespace:SketchModeller.Modelling.ModelViews"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <ContainerUIElement3D KeyDown="OnKeyDown">
         <ContainerUIElement3D.Children>
             <skm:CloningVisual3D x:Name="cloningVisual3D"/>
+            <skm:CloningVisual3D x:Name="snappedCloningVisual3d" />
         </ContainerUIElement3D.Children>
     </ContainerUIElement3D>
 </ModelVisual3D>

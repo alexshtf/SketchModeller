@@ -41,8 +41,12 @@ namespace SketchModeller.Modelling.Views
             : this()
         {
             this.viewModel = viewModel;
+
             cloningVisual3D.ItemsSource = viewModel.NewPrimitiveViewModels;
             cloningVisual3D.Visual3DFactory = new Visual3DFactory(logger);
+
+            snappedCloningVisual3d.ItemsSource = viewModel.SnappedPrimitives;
+            snappedCloningVisual3d.Visual3DFactory = SketchModeller.Modelling.ModelViews.ModelViewerSnappedFactory.Instance;
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

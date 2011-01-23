@@ -16,6 +16,7 @@ using Petzold.Media3D;
 using System.ComponentModel;
 
 using Utils;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -74,9 +75,12 @@ namespace SketchModeller.Modelling.Views
                 var center = sketchPlane.Center;
                 var position = sketchPlane.Center - 50 * normal;
 
-                camera.Position = position;
-                camera.LookDirection = normal;
-                camera.UpDirection = sketchPlane.YAxis.Normalized();
+                var lookAt = MathUtils3D.LookAt(position, normal, sketchPlane.YAxis.Normalized());
+                camera.ViewMatrix = lookAt;
+
+                var projMatrix = Matrix3D.Identity;
+                projMatrix.OffsetZ = -lookAt.OffsetZ + 0.5;
+                camera.ProjectionMatrix = projMatrix;
             }
         }
     }

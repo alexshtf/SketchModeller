@@ -35,6 +35,7 @@ namespace SketchModeller.Modelling.Views
         public SketchModellingViewModel()
         {
             NewPrimitiveViewModels = new ObservableCollection<NewPrimitiveViewModel>();
+            SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(new ObservableCollection<SnappedPrimitive>());
             sketchPlane = SketchPlane.Default;
         }
 
@@ -63,9 +64,13 @@ namespace SketchModeller.Modelling.Views
                 NewPrimitiveViewModels, 
                 sessionData.NewPrimitives, 
                 NewPrimitiveDataToNewPrimitiveViewModel);
+
+            SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(sessionData.SnappedPrimitives);
         }
 
         public ObservableCollection<NewPrimitiveViewModel> NewPrimitiveViewModels { get; private set; }
+
+        public ReadOnlyObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
 
         #region SketchPlane property
 

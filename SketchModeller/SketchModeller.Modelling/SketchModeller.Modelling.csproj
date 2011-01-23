@@ -79,6 +79,9 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="3DTools">
+      <HintPath>..\..\..\..\..\..\3DTools-1.01-bin\3DTools.dll</HintPath>
+    </Reference>
     <Reference Include="AForge, Version=2.1.4.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL" />
     <Reference Include="AForge.Imaging, Version=2.1.4.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL" />
     <Reference Include="AForge.Imaging.Formats, Version=2.1.1.0, Culture=neutral, PublicKeyToken=8065ed5a639199a0, processorArchitecture=MSIL" />
@@ -112,6 +115,9 @@
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
     <Compile Include="ModellingModule.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.cs" />
+    <Compile Include="ModelViews\ModelViewerFactory.Cylinder.cs" />
+    <Compile Include="ModelViews\ModelViewerSnappedFactory.cs" />
+    <Compile Include="ModelViews\ModelViewerSnappedFactory.Cylinder.cs" />
     <Compile Include="ModelViews\ModelViewerView.xaml.cs">
       <DependentUpon>ModelViewerView.xaml</DependentUpon>
     </Compile>
@@ -122,6 +128,19 @@
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
+    <Compile Include="Services\Snap\CategorizerView.xaml.cs">
+      <DependentUpon>CategorizerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Snap\CategorizerViewModel.cs" />
+    <Compile Include="Services\Snap\CurveSampler.cs" />
+    <Compile Include="Services\Snap\GeometricTests.cs" />
+    <Compile Include="Services\Snap\Optimizer.cs" />
+    <Compile Include="Services\Snap\PathBrushConverter.cs" />
+    <Compile Include="Services\Snap\PointsConverter.cs" />
+    <Compile Include="Services\Snap\Snapper.cs" />
+    <Compile Include="Services\Snap\TermUtils.cs" />
+    <Compile Include="Services\Snap\TMatrix.cs" />
+    <Compile Include="Services\Snap\TVec.cs" />
     <Compile Include="SketchLoader.cs" />
     <Compile Include="SketchSaver.cs" />
     <Compile Include="ViewModel3DHelper.cs" />
@@ -167,6 +186,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Services\Snap\CategorizerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -205,6 +228,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AlgLib\AlgLib.csproj">
+      <Project>{2704B03D-E674-4086-93F9-F0D129514D31}</Project>
+      <Name>AlgLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AutoDiff\AutoDiff\AutoDiff.csproj">
+      <Project>{62551FD3-C21F-4E16-A7FC-6A017508809C}</Project>
+      <Name>AutoDiff</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SimpleCurveEdit\Utils\Utils.csproj">
       <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>
       <Name>Utils</Name>
@@ -217,6 +248,10 @@
       <Project>{BB3DF5E2-38F3-40DC-80C6-3158C894CB59}</Project>
       <Name>SketchModeller.Infrastructure</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="arrowadd.cur" />
+    <EmbeddedResource Include="arrowdel.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

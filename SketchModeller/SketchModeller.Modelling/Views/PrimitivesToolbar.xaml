@@ -4,7 +4,10 @@
          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
          mc:Ignorable="d" 
+         Focusable="False"
          d:DesignHeight="300" d:DesignWidth="300">
-    <ToggleButton IsChecked="{Binding IsManipulationMode}">Manipulation</ToggleButton>
-    <ToggleButton IsChecked="{Binding IsCylinderMode}">Cylinder</ToggleButton>
+    <ToggleButton Focusable="False" IsChecked="{Binding IsManipulationMode}">Manipulation</ToggleButton>
+    <ToggleButton Focusable="False" IsChecked="{Binding IsCylinderMode}">Cylinder</ToggleButton>
+    <ToggleButton Focusable="False" IsChecked="{Binding IsHalfSphereMode}">Half-sphere</ToggleButton>
+    <Button Focusable="False" Command="{Binding SnapCommand}">Snap</Button>
 </ToolBar>

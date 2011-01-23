@@ -268,5 +268,32 @@ namespace Utils
             var t = (plane.D - Vector3D.DotProduct((Vector3D)p1, plane.Normal)) / Vector3D.DotProduct(l, plane.Normal);
             return t;
         }
+
+        public static Matrix3D LookAt(Point3D eye, Vector3D lookDirection, Vector3D upVector)
+        {
+            /*
+            zaxis = normal(At - Eye)
+            xaxis = normal(cross(Up, zaxis))
+            yaxis = cross(zaxis, xaxis)
+
+             xaxis.x           yaxis.x           zaxis.x          0
+             xaxis.y           yaxis.y           zaxis.y          0
+             xaxis.z           yaxis.z           zaxis.z          0
+            -dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye)  l
+             * */
+
+            var zaxis = lookDirection.Normalized();
+            var xaxis = Vector3D.CrossProduct(upVector, zaxis).Normalized();
+            var yaxis = Vector3D.CrossProduct(zaxis, xaxis);
+
+            var vEye = (Vector3D)eye;
+
+            return new Matrix3D(
+                xaxis.X, yaxis.X, zaxis.X, 0, 
+                xaxis.Y, yaxis.Y, zaxis.Y, 0, 
+                xaxis.Z, yaxis.Z, zaxis.Z, 0, 
+                -Vector3D.DotProduct(xaxis, vEye), -Vector3D.DotProduct(yaxis, vEye), -Vector3D.DotProduct(zaxis, vEye), 1);
+
+        }
     }
 }

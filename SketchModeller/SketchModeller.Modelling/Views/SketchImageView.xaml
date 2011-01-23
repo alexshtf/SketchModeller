@@ -12,7 +12,8 @@
              MouseMove="OnPolyRootMouseMove"
              MouseUp="OnPolyRootMouseUp">
     <Canvas x:Name="polyRoot"
-            Margin="10">
+            Margin="10"
+            ForceCursor="True">
         <Rectangle x:Name="selectionRectangle"
                    Stroke="Yellow"
                    StrokeThickness="3"

@@ -211,6 +211,9 @@ namespace SketchModeller.Modelling.Views
                     frontDiffuseMaterial.Brush = FocusedBrush;
                 else
                     frontDiffuseMaterial.Brush = UnfocusedBrush;
+
+                var newCylinderData = (SketchModeller.Infrastructure.Data.NewCylinder)viewModel.Model;
+                newCylinderData.IsSelected = inputElement.IsKeyboardFocusWithin;
             }
         }
     }

@@ -9,5 +9,7 @@ namespace SketchModeller.Infrastructure.Shared
     {
         Manipulation,
         InsertCylinder,
+        InsertHalfSphere,
+        InsertCone,
     }
 }
