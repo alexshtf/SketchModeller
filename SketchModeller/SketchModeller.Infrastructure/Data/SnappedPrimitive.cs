@@ -6,7 +6,7 @@ using Microsoft.Practices.Prism.ViewModel;
 
 namespace SketchModeller.Infrastructure.Data
 {
-    public class SnappedPrimitive : NotificationObject
+    public abstract class SnappedPrimitive : NotificationObject
     {
         public PointsSequence[] SnappedTo { get; set; }
     }

@@ -17,5 +17,9 @@ namespace SketchModeller.Infrastructure.Data
 
         // modelling data
         public NewCylinder[] Cylinders { get; set; }
+
+        // snapped data
+        [XmlArrayItem(typeof(SnappedCylinder))]
+        public SnappedPrimitive[] SnappedPrimitives { get; set; }
     }
 }
