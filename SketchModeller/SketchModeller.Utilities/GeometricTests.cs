@@ -5,9 +5,9 @@ using System.Text;
 using AutoDiff;
 using System.Diagnostics.Contracts;
 
-namespace SketchModeller.Modelling.Services.Snap
+namespace SketchModeller.Utilities
 {
-    class GeometricTests
+    public static class GeometricTests
     {
         public static Term DiffSquared(TVec[] left, TVec[] right)
         {

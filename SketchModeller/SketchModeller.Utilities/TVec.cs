@@ -6,12 +6,12 @@ using AutoDiff;
 using System.Diagnostics.Contracts;
 using Utils;
 
-namespace SketchModeller.Modelling.Services.Snap
+namespace SketchModeller.Utilities
 {
     /// <summary>
     /// A column vector made of terms.
     /// </summary>
-    class TVec
+    public class TVec
     {
         private readonly Term[] terms;
 

@@ -6,12 +6,12 @@ using AutoDiff;
 using System.Diagnostics.Contracts;
 using Utils;
 
-namespace SketchModeller.Modelling.Services.Snap
+namespace SketchModeller.Utilities
 {
     /// <summary>
     /// A matrix made of terms
     /// </summary>
-    class TMatrix
+    public class TMatrix
     {
         private readonly TVec[] rows;
 

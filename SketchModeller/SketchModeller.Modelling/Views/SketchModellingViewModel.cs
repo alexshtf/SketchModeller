@@ -14,6 +14,7 @@ using Utils;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Diagnostics;
+using SketchModeller.Utilities;
 
 using IFPoint3D = SketchModeller.Infrastructure.Data.Point3D;
 using WPFPoint3D = System.Windows.Media.Media3D.Point3D;

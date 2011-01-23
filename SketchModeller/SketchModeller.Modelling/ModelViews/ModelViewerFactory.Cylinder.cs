@@ -7,6 +7,7 @@ using SketchModeller.Infrastructure.Data;
 using Petzold.Media3D;
 using System.Windows.Media;
 using Utils;
+using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.ModelViews
 {

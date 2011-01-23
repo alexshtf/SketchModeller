@@ -6,9 +6,9 @@ using AutoDiff;
 using System.Diagnostics.Contracts;
 using System.Diagnostics;
 
-namespace SketchModeller.Modelling.Services.Snap
+namespace SketchModeller.Utilities
 {
-    class Optimizer
+    public static class Optimizer
     {
         public static double[] Minimize(Term targetFunc, Variable[] vars)
         {

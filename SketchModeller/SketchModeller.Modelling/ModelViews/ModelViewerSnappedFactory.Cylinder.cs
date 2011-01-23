@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
-using DataExtensions = SketchModeller.Infrastructure.Data.DataExtensions;
 using System.Windows.Media;
 using System.Diagnostics.Contracts;
 using Utils;
+using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -17,8 +17,8 @@ namespace SketchModeller.Modelling.ModelViews
             Contract.Assume(cylinderData.TopCircle.Length == cylinderData.BottomCircle.Length);
             var m = cylinderData.TopCircle.Length;
 
-            var topPoints = cylinderData.TopCircle.Select(x => DataExtensions.ToWpfPoint(x));
-            var botPoints = cylinderData.BottomCircle.Select(x => DataExtensions.ToWpfPoint(x));
+            var topPoints = cylinderData.TopCircle.ToWpfPoints();
+            var botPoints = cylinderData.BottomCircle.ToWpfPoints();
 
             // top points indices [0 .. m-1]
             var topIdx = System.Linq.Enumerable.Range(0, m).ToArray(); 

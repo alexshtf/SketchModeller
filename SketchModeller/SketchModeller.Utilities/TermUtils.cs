@@ -5,9 +5,9 @@ using System.Text;
 using AutoDiff;
 using System.Diagnostics.Contracts;
 
-namespace SketchModeller.Modelling.Services.Snap
+namespace SketchModeller.Utilities
 {
-    class TermUtils
+    public static class TermUtils
     {
         public static Term SoftMin(Term[] terms, double exponent = 6)
         {

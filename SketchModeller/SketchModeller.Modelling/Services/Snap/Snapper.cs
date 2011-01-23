@@ -9,6 +9,7 @@ using SketchModeller.Infrastructure.Data;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Unity;
 using AutoDiff;
+using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.Services.Snap
 {

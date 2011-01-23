@@ -7,6 +7,7 @@ using System.Windows.Media.Media3D;
 using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Infrastructure.Data;
 using Microsoft.Practices.Unity;
+using SketchModeller.Utilities;
 
 using WpfPoint3D = System.Windows.Media.Media3D.Point3D;
 using SketchModeller.Infrastructure;
