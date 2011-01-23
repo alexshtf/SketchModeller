@@ -61,5 +61,10 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         #endregion
+
+        public Point3D Clone()
+        {
+            return new Point3D { X = x, Y = y, Z = z };
+        }
     }
 }

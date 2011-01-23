@@ -51,6 +51,7 @@ namespace SketchModeller.Modelling
             sessionData.SketchData = sketchData;
 
             sessionData.NewPrimitives.Clear();
+            sessionData.SnappedPrimitives.Clear();
             if (sketchData.Cylinders != null)
             {
                 foreach (var item in sketchData.Cylinders)
@@ -63,6 +64,8 @@ namespace SketchModeller.Modelling
                         Diameter = item.Diameter,
                     });
                 }
+                if (sketchData.SnappedPrimitives != null)
+                    sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives.Select(x => x.Clone()));
             }
             
             uiState.SketchPlane = uiState.SketchPlanes[0];

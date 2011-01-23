@@ -9,5 +9,7 @@ namespace SketchModeller.Infrastructure.Data
     public abstract class SnappedPrimitive : NotificationObject
     {
         public PointsSequence[] SnappedTo { get; set; }
+
+        public abstract SnappedPrimitive Clone();
     }
 }

@@ -14,7 +14,11 @@ namespace SketchModeller.Infrastructure.Data
     [DebuggerTypeProxy(typeof(PointsSequenceDebugView))]
     public class PointsSequence : NotificationObject
     {
-        public ObservableCollection<Point> Points { get; private set; }
+        /// <summary>
+        /// The collection of points. Please do NOT assign to this property. The assignment is only for
+        /// xml serialization support.
+        /// </summary>
+        public ObservableCollection<Point> Points { get; set; }
 
         [ContractInvariantMethod]
         private void InvariantsMethod()

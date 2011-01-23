@@ -40,6 +40,11 @@ namespace SketchModeller.Modelling
                      Diameter = cylinderVM.Diameter,
                      Length = cylinderVM.Length,
                  }).ToArray();
+            sessionData.SketchData.SnappedPrimitives = 
+                sessionData.SnappedPrimitives
+                .Select(x => x.Clone())
+                .ToArray();
+            
 
             // save the new SketchData to the relevant files
             Work.Execute(
