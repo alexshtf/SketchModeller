@@ -9,6 +9,14 @@ namespace SketchModeller.Utilities
 {
     public static class TermUtils
     {
+        public static TVec Normal3D(TVec p, TVec q, TVec r)
+        {
+            Contract.Requires(Contract.ForAll(new TVec[] { p, q, r }, x => x != null));
+            Contract.Requires(Contract.ForAll(new TVec[] { p, q, r }, x => x.Dimension == 3));
+
+            return TVec.CrossProduct(q - p, r - p);
+        }
+
         public static Term SoftMin(Term[] terms, double exponent = 6)
         {
             Contract.Requires(terms != null);

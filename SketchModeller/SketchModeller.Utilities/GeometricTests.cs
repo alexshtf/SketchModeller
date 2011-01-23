@@ -9,6 +9,40 @@ namespace SketchModeller.Utilities
 {
     public static class GeometricTests
     {
+        /// <summary>
+        /// Parallelism measure of planes represented by three point triples.
+        /// </summary>
+        /// <param name="left">Three points to represent the first plane</param>
+        /// <param name="right">Three points to represent the second plane.</param>
+        /// <returns>A term measuring parallelism of the two planes.</returns>
+        public static Term PlaneParallelism3D(TVec[] left, TVec[] right)
+        {
+            Contract.Requires(left != null);
+            Contract.Requires(right != null);
+            Contract.Requires(left.Length == 3);
+            Contract.Requires(right.Length == 3);
+            Contract.Requires(Contract.ForAll(left, item => item != null));
+            Contract.Requires(Contract.ForAll(right, item => item != null));
+            Contract.Requires(Contract.ForAll(left, item => item.Dimension == 3));
+            Contract.Requires(Contract.ForAll(right, item => item.Dimension == 3));
+
+            var leftNormal = TermUtils.Normal3D(left[0], left[1], left[2]);
+            var rightNormal = TermUtils.Normal3D(right[0], right[1], right[2]);
+
+            return VectorParallelism3D(leftNormal, rightNormal);
+        }
+
+        /// <summary>
+        /// Measures parallelism of two 3D vectors
+        /// </summary>
+        /// <param name="left">Left vector</param>
+        /// <param name="right">Right vector</param>
+        /// <returns></returns>
+        public static Term VectorParallelism3D(TVec left, TVec right)
+        {
+            return TVec.CrossProduct(left, right).NormSquared;
+        }
+
         public static Term DiffSquared(TVec[] left, TVec[] right)
         {
             Contract.Requires(left != null);

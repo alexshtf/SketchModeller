@@ -70,6 +70,29 @@ namespace SketchModeller.Utilities
             get { return terms.Length; }
         }
 
+        public Term X
+        {
+            get { return this[0]; }
+        }
+
+        public Term Y
+        {
+            get 
+            { 
+                Contract.Requires(Dimension >= 2);
+                return this[1];
+            }
+        }
+
+        public Term Z
+        {
+            get
+            {
+                Contract.Requires(Dimension >= 3);
+                return this[2];
+            }
+        }
+
         public Term[] GetTerms()
         {
             return (Term[])terms.Clone();
@@ -129,6 +152,25 @@ namespace SketchModeller.Utilities
                            select left.terms[i] * right.terms[i];
 
             return TermBuilder.Sum(products);
+        }
+
+        public static TVec CrossProduct(TVec left, TVec right)
+        {
+            Contract.Requires(left != null);
+            Contract.Requires(right != null);
+            Contract.Requires(left.Dimension == 3);
+            Contract.Requires(right.Dimension == 3);
+
+            return new TVec(
+                left.Y * right.Z - left.Z * right.Y,
+                left.Z * right.X - left.X * right.Z,
+                left.X * right.Y - left.Y * right.X
+                );
+            /*
+                result._x = (vector1._y * vector2._z) - (vector1._z * vector2._y);
+                result._y = (vector1._z * vector2._x) - (vector1._x * vector2._z);
+                result._z = (vector1._x * vector2._y) - (vector1._y * vector2._x);
+            */
         }
     }
 }

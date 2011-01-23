@@ -161,9 +161,10 @@ namespace SketchModeller.Modelling.Views
 
         private void UpdateTranslation()
         {
-            translation.OffsetX = viewModel.Center.X;
-            translation.OffsetY = viewModel.Center.Y;
-            translation.OffsetZ = viewModel.Center.Z;
+            var newPosition = viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis.Normalized();
+            translation.OffsetX = newPosition.X;
+            translation.OffsetY = newPosition.Y;
+            translation.OffsetZ = newPosition.Z;
         }
 
         private void UpdateRotation()

@@ -10,9 +10,11 @@ namespace SketchModeller.Utilities
 {
     public static class Optimizer
     {
-        public static double[] Minimize(Term targetFunc, Variable[] vars)
+        public static double[] Minimize(Term targetFunc, Variable[] vars, double[] startVector = null)
         {
-            double[] x = new double[vars.Length];
+            Contract.Requires(startVector == null || startVector.Length == vars.Length);
+
+            double[] x = startVector == null ? new double[vars.Length] : (double[])startVector.Clone();
             alglib.minlbfgsstate state;
             alglib.minlbfgscreate(1, x, out state);
 
