@@ -159,7 +159,11 @@ namespace SketchModeller.Modelling.Views
             private void UnselectAllPaths()
             {
                 foreach (var path in GetAllPaths())
+                {
+                    var pointsSequence = (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
+                    pointsSequence.IsSelected = false;
                     SetSelectionState(path, SelectionState.Unselected);
+                }
             }
 
             private ISet<Path> FindPathsInsideRectangle(Rect rect)

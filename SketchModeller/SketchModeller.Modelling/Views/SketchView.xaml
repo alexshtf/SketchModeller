@@ -14,13 +14,6 @@
             <Viewport3D.Camera>
                 <MatrixCamera x:Name="camera"
                               ProjectionMatrix="Identity"/>
-                <!--<OrthographicCamera x:Name="camera"
-                                    NearPlaneDistance="0.1"
-                                    FarPlaneDistance="100"
-                                    Position="0,0,4"
-                                    LookDirection="0,0,-1"
-                                    UpDirection="0,1,0"
-                                    Width="4"/>-->
             </Viewport3D.Camera>
             <Viewport3D.Children>
                 <ModelVisual3D>
