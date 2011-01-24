@@ -14,6 +14,8 @@ using Utils;
 
 using WpfVector3D = System.Windows.Media.Media3D.Vector3D;
 using WpfPoint3D = System.Windows.Media.Media3D.Point3D;
+using WpfPoint = System.Windows.Point;
+using WpfVector = System.Windows.Vector;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -53,10 +55,13 @@ namespace SketchModeller.Modelling.Services.Snap
             // TODO: Find selected primitives of other kinds
 
             if (selectedCylinder != null)
-                SnapCylinder(selectedPolylines, selectedPolygons, selectedCylinder);
+            {
+                SnapCylinder(selectedPolylines, selectedPolygons, selectedCylinder.ToWpf());
+                sessionData.NewPrimitives.Remove(selectedCylinder);
+            }
         }
 
-        private void SnapCylinder(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCylinder selectedCylinder)
+        private void SnapCylinder(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCylinderWpf selectedCylinder)
         {
             var allSequences = selectedPolylines.Cast<PointsSequence>().Concat(selectedPolygons).ToArray();
 
@@ -74,123 +79,141 @@ namespace SketchModeller.Modelling.Services.Snap
             }
 
             var circles = categories.Where(x => x.Value == circleCategory).Select(x => x.Key).ToArray();
+            PointsSequence topCircle;
+            PointsSequence bottomCircle;
+            SelectCircles(selectedCylinder, circles, out topCircle, out bottomCircle);
 
             // TODO: Perform snapping to silhouette in the future. Meanwhile we snap only feature lines
             const int CIRCLE_POINTS_COUNT = 50;
-            TVec[] topCircleVars = GenerateVarVectors(CIRCLE_POINTS_COUNT);
-            TVec[] botCircleVars = GenerateVarVectors(CIRCLE_POINTS_COUNT);
+            var axisNorm = selectedCylinder.Axis.Normalized();
+            var axis = new TVec(axisNorm.X, axisNorm.Y, axisNorm.Z);
 
-            var topSphericality = GeometricTests.MultiCosphericality3D(topCircleVars);
-            var botSphericality = GeometricTests.MultiCosphericality3D(botCircleVars);
-            var topPlanarity = GeometricTests.MultiCoplanarity3D(topCircleVars);
-            var botPlanarity = GeometricTests.MultiCoplanarity3D(botCircleVars);
-            var topProj = ProjectionConstraint(topCircleVars, circles[0]);
-            var botProj = ProjectionConstraint(botCircleVars, circles[1]);
-            var topBotProximity = GeometricTests.DiffSquared(topCircleVars, botCircleVars);
-            var topAxisParallelism = AxisParallelism(topCircleVars, selectedCylinder.Axis);
-            var botAxisParallelism = AxisParallelism(botCircleVars, selectedCylinder.Axis);
+            var t = new Variable();
 
-            const double PLANARITY_WEIGHT = 1.0;
-            const double SPHERICALITY_WEIGHT = 1.0;
-            const double PROJ_WEIGHT = 10.0;
-            const double PROX_WEIGHT = 0.1;
-            const double AXIS_PARALELLISM_WEIGHT = 10.0;
+            // bottom circle parameters
+            var c1 = GenerateVarVector();
+            var u1 = GenerateVarVector();
+            var v1 = TVec.CrossProduct(u1, axis);
+
+            // top circle parameters
+            var c2 = c1 + t * axis;
+            var u2 = u1;
+            var v2 = v1;
+
+            var ptsBottom = CirclePoints(c1, u1, v1, 0.5 * selectedCylinder.Diameter, CIRCLE_POINTS_COUNT);
+            var ptsTop = CirclePoints(c2, u2, v2, 0.5 * selectedCylinder.Diameter, CIRCLE_POINTS_COUNT);
+
+            var orthogonality = TermBuilder.Power(u1 * axis, 2) + TermBuilder.Power(u2 * axis, 2);
+            var proj1 = ProjectionConstraint(ptsBottom, bottomCircle);
+            var proj2 = ProjectionConstraint(ptsTop, topCircle);
+            var tSize = TermBuilder.Power(t - selectedCylinder.Length, 2);
+            var unitLen = TermBuilder.Power(u1.NormSquared - 1, 2);
 
             var finalTerm =
-                PLANARITY_WEIGHT * (topPlanarity + botPlanarity) +
-                SPHERICALITY_WEIGHT * (topSphericality + botSphericality) +
-                PROJ_WEIGHT * (topProj + botProj) +
-                PROX_WEIGHT * topBotProximity +
-                AXIS_PARALELLISM_WEIGHT * (topAxisParallelism + botAxisParallelism);
+                TermBuilder.Sum(
+                1 * orthogonality,
+                100 * proj1,
+                100 * proj2,
+                1 * tSize,
+                1 * unitLen,
+                0);
 
-            var snappedCylinder = OptimizeCylinder(finalTerm, topCircleVars, botCircleVars, selectedCylinder);
+            var snappedCylinder = OptimizeCylinder(finalTerm, selectedCylinder, CIRCLE_POINTS_COUNT, c1, u1, t);
             snappedCylinder.SnappedTo = allSequences;
 
-            sessionData.NewPrimitives.Remove(selectedCylinder);
             sessionData.SnappedPrimitives.Add(snappedCylinder);
         }
 
-        private Term AxisParallelism(TVec[] curveVars, Point3D axis)
+        private void SelectCircles(NewCylinderWpf selectedCylinder, PointsSequence[] circles, out PointsSequence topCircle, out PointsSequence bottomCircle)
         {
-            var axisTerm = new TVec(axis.X, axis.Y, axis.Z);
-            var sumTerms = from triple in curveVars.SeqTripples()
-                           let normal = TermUtils.Normal3D(triple.Item1, triple.Item2, triple.Item3)
-                           let term = GeometricTests.VectorParallelism3D(normal, axisTerm)
-                           select term;
-            return TermBuilder.Sum(sumTerms);
-        }
+            Contract.Requires(circles.Length >= 2);
+            Contract.Ensures(Contract.ValueAtReturn(out topCircle) != Contract.ValueAtReturn(out bottomCircle));
 
-        private SnappedPrimitive OptimizeCylinder(Term finalTerm, TVec[] topCircleVars, TVec[] botCircleVars, NewCylinder selectedCylinder)
-        {
-            var allVars = GetVars(topCircleVars.Concat(botCircleVars));
-            var startVector = CreateStartVector(selectedCylinder, topCircleVars.Length, botCircleVars.Length);
-            double[] minimizer = Optimizer.Minimize(finalTerm, allVars, startVector);
+            var top = new WpfPoint(selectedCylinder.Top.X, -selectedCylinder.Top.Y);
+            var bottom = new WpfPoint(selectedCylinder.Bottom.X, -selectedCylinder.Bottom.Y);
 
-            var topCircle = new Point3D[topCircleVars.Length];
-            var botCircle = new Point3D[botCircleVars.Length];
-
-            for (int i = 0; i < topCircleVars.Length; ++i)
-                topCircle[i] = new Point3D
+            Func<PointsSequence, WpfPoint, double> distance = (curve, pnt) =>
                 {
-                    X = minimizer[3 * i + 0],
-                    Y = minimizer[3 * i + 1],
-                    Z = minimizer[3 * i + 2],
+                    var sample = CurveSampler.UniformSample(curve, 50);
+                    var result = pnt.ProjectionOnCurve(sample.ToWpfPoints()).Item2;
+                    return result;
                 };
 
-            for (int i = 0, j = topCircleVars.Length; i < botCircleVars.Length; ++i, ++j)
-                botCircle[i] = new Point3D
-                {
-                    X = minimizer[3 * j + 0],
-                    Y = minimizer[3 * j + 1],
-                    Z = minimizer[3 * j + 2],
-                };
-
-            return new SnappedCylinder { TopCircle = topCircle, BottomCircle = botCircle };
+            topCircle = circles.Minimizer(circle => distance(circle, top));
+            bottomCircle = circles.Minimizer(circle => distance(circle, bottom));
         }
 
-        private double[] CreateStartVector(NewCylinder selectedCylinder, int topCircleSize, int botCircleSize)
+        private SnappedCylinder OptimizeCylinder(Term finalTerm, NewCylinderWpf selectedCylinder, int count, TVec vc1, TVec vu1, Variable vt)
         {
-            var axis = selectedCylinder.Axis.ToWpfVector();
-            var center = selectedCylinder.Center.ToWpfPoint();
-            var diameter = selectedCylinder.Diameter;
-            var length = selectedCylinder.Length;
+            var vars = GetVars(new TVec[] { vc1, vu1 }).Append(vt).ToArray();
+            double[] guess = CreateStartGuess(selectedCylinder);
+            double[] optimals = Optimizer.Minimize(finalTerm, vars, guess);
 
-            // find two basis vectors
-            var u = MathUtils3D.MostSimilarPerpendicular(axis + new WpfVector3D(1, 2, 3), axis);
-            var v = WpfVector3D.CrossProduct(axis, u);
-            u.Normalize();
-            v.Normalize();
+            var axis = selectedCylinder.Axis.Normalized();
 
-            var topCircle = GenerateCircle(center + 0.5 * length * axis, u, v, diameter, topCircleSize);
-            var botCircle = GenerateCircle(center - 0.5 * length * axis, u, v, diameter, botCircleSize);
+            // bottom circle params
+            var c1 = new WpfPoint3D(optimals[0], optimals[1], optimals[2]);
+            var u1 = new WpfVector3D(optimals[3], optimals[4], optimals[5]);
+            var v1 = WpfVector3D.CrossProduct(u1, axis);
+            var t = optimals[6];
 
-            var result = new double[3 * (topCircleSize + botCircleSize)];
-            for (int i = 0; i < topCircleSize; ++i)
-            {
-                result[3 * i + 0] = topCircle[i].X;
-                result[3 * i + 1] = topCircle[i].Y;
-                result[3 * i + 2] = topCircle[i].Z;
-            }
-            for (int i = 0; i < botCircleSize; ++i)
-            {
-                result[3 * topCircleSize + 3 * i + 0] = botCircle[i].X;
-                result[3 * topCircleSize + 3 * i + 1] = botCircle[i].Y;
-                result[3 * topCircleSize + 3 * i + 2] = botCircle[i].Z;
-            }
+            // top circle params
+            var c2 = c1 + t * axis;
+            var u2 = u1;
+            var v2 = v1;
 
-            return result;
+            var botCircle = CirclePoints(c1, u1, v1, selectedCylinder.Diameter / 2, count);
+            var topCircle = CirclePoints(c2, u2, v2, selectedCylinder.Diameter / 2, count);
+
+            return new SnappedCylinder 
+            { 
+                TopCircle = topCircle.ToDataPoints().ToArray(), 
+                BottomCircle = botCircle.ToDataPoints().ToArray(),
+            };
         }
 
-        private static WpfPoint3D[] GenerateCircle(WpfPoint3D center, WpfVector3D u, WpfVector3D v, double diameter, int topCircleSize)
+        private double[] CreateStartGuess(NewCylinderWpf selectedCylinder)
         {
-            var topCircle = new WpfPoint3D[topCircleSize];
-            for (int i = 0; i < topCircleSize; ++i)
+            var axisShifted = selectedCylinder.Axis;
+            axisShifted.X += 1;
+            axisShifted.Y += 2;
+            axisShifted.Z += 3;
+
+            var c = selectedCylinder.Bottom;
+            var u = MathUtils3D.MostSimilarPerpendicular(axisShifted, selectedCylinder.Axis).Normalized();
+            var t = selectedCylinder.Length;
+
+            return new double[] { c.X, c.Y, c.Z, u.X, u.Y, u.Z, t };
+        }
+
+        private Term ProjectionConstraint(TVec center, TVec u, TVec v, Term radius, PointsSequence pointsSequence, int count)
+        {
+            var circlePoints = CirclePoints(center, u, v, radius, count);
+            return ProjectionConstraint(circlePoints, pointsSequence);
+        }
+
+        private static TVec[] CirclePoints(TVec center, TVec u, TVec v, Term radius, int count)
+        {
+            var circlePoints = new TVec[count];
+            for (int i = 0; i < count; ++i)
             {
-                var fraction = i / (double)topCircleSize;
-                var angle = 2 * fraction * Math.PI;
-                topCircle[i] = center + 0.5 * diameter * (Math.Cos(angle) * u + Math.Sin(angle) * v);
+                var fraction = i / (double)count;
+                var angle = 2 * Math.PI * i;
+                circlePoints[i] = center + radius * (u * Math.Cos(angle) + v * Math.Sin(angle));
             }
-            return topCircle;
+            return circlePoints;
+        }
+
+        private static WpfPoint3D[] CirclePoints(WpfPoint3D center, WpfVector3D u, WpfVector3D v, double radius, int count)
+        {
+            var circlePoints = new WpfPoint3D[count];
+            for (int i = 0; i < count; ++i)
+            {
+                var fraction = i / (double)count;
+                var angle = 2 * Math.PI * fraction;
+                circlePoints[i] = center + radius * (u * Math.Cos(angle) + v * Math.Sin(angle));
+            }
+            return circlePoints;
         }
 
         private Term ProjectionConstraint(TVec[] curveVars, PointsSequence projCurve)
@@ -220,9 +243,14 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var result = new TVec[count];
             for (int i = 0; i < count; ++i)
-                result[i] = new TVec(new Variable(), new Variable(), new Variable());
+                result[i] = GenerateVarVector();
 
             return result;
+        }
+
+        private static TVec GenerateVarVector()
+        {
+            return new TVec(new Variable(), new Variable(), new Variable());
         }
 
         private Dictionary<PointsSequence, CurveCategory> Categorize(IEnumerable<PointsSequence> sequences, params CurveCategory[] categories)

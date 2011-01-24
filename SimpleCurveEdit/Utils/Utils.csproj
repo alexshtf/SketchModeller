@@ -100,6 +100,7 @@
     <Compile Include="Converters\EnumerableToPointsCollection.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="CsvReader.cs" />
+    <Compile Include="CurveProjectionResult2D.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="DelegateConverter.cs" />
     <Compile Include="EmptySet.cs" />

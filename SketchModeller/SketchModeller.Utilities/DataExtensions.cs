@@ -9,6 +9,17 @@ namespace SketchModeller.Utilities
 {
     public static class DataExtensions
     {
+        public static NewCylinderWpf ToWpf(this NewCylinder newCylinder)
+        {
+            return new NewCylinderWpf
+            {
+                Axis = newCylinder.Axis.ToWpfVector(),
+                Center = newCylinder.Center.ToWpfPoint(),
+                Length = newCylinder.Length,
+                Diameter = newCylinder.Diameter,
+            };
+        }
+
         [Pure]
         public static IEnumerable<System.Windows.Media.Media3D.Point3D> ToWpfPoints(this IEnumerable<Point3D> ps)
         {
@@ -45,13 +56,13 @@ namespace SketchModeller.Utilities
         }
 
         [Pure]
-        public static IEnumerable<Point3D> ToDataPoint(this IEnumerable<System.Windows.Media.Media3D.Point3D> ps)
+        public static IEnumerable<Point3D> ToDataPoints(this IEnumerable<System.Windows.Media.Media3D.Point3D> ps)
         {
             return ps.Select(p => p.ToDataPoint());
         }
 
         [Pure]
-        public static IEnumerable<Point3D> ToDataPoint(this IEnumerable<System.Windows.Media.Media3D.Vector3D> vs)
+        public static IEnumerable<Point3D> ToDataPoints(this IEnumerable<System.Windows.Media.Media3D.Vector3D> vs)
         {
             return vs.Select(v => v.ToDataPoint());
         }
