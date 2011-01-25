@@ -94,11 +94,14 @@
   <ItemGroup>
     <Compile Include="Blocker.cs" />
     <Compile Include="CheckedMenuCommandData.cs" />
+    <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\ComplexCurve.cs" />
+    <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\Joint.cs" />
     <Compile Include="Data\NewCylinder.cs" />
     <Compile Include="Data\NewHalfSphere.cs" />
     <Compile Include="Data\NewPrimitive.cs" />
+    <Compile Include="Data\Parallelism.cs" />
     <Compile Include="Data\Point.cs" />
     <Compile Include="Data\Point3D.cs" />
     <Compile Include="Data\PointsSequence.cs" />

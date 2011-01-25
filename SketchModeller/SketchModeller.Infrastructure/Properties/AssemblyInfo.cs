@@ -36,3 +36,4 @@ using System.Windows.Markup;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: XmlnsDefinition("http://SketchModeller", "SketchModeller.Infrastructure")]
+[assembly: XmlnsDefinition("http://SketchModeller", "SketchModeller.Infrastructure.Data")]

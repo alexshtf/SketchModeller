@@ -50,8 +50,10 @@ namespace SketchModeller.Modelling
             regionManager.RegisterViewWithRegion(RegionNames.Model, typeof(ModelViewerView));
 
             var sketchPlanesView = container.Resolve<SketchPlanesView>();
+            var annotationsView = container.Resolve<AnnotationsView>();
             var sidebar = regionManager.Regions[RegionNames.SideBar];
             sidebar.Add(sketchPlanesView);
+            sidebar.Add(annotationsView);
             sidebar.Activate(sketchPlanesView);
         }
     }

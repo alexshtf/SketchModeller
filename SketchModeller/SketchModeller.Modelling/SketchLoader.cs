@@ -52,11 +52,14 @@ namespace SketchModeller.Modelling
 
             sessionData.NewPrimitives.Clear();
             sessionData.SnappedPrimitives.Clear();
+            sessionData.Annotations.Clear();
 
             if (sketchData.NewPrimitives != null)
                 sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives.Select(x => x.Clone()));
             if (sketchData.SnappedPrimitives != null)
                 sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives.Select(x => x.Clone()));
+            if (sketchData.Annotations != null)
+                sessionData.Annotations.AddRange(sketchData.Annotations.Select(x => x.Clone()));
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)

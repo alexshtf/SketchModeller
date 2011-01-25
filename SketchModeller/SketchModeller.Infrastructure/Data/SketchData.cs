@@ -23,5 +23,10 @@ namespace SketchModeller.Infrastructure.Data
         [XmlArrayItem(typeof(SnappedCylinder))]
         [XmlArrayItem(typeof(SnappedHalfSphere))]
         public SnappedPrimitive[] SnappedPrimitives { get; set; }
+
+        // annotations on the curves.
+        [XmlArrayItem(typeof(Coplanarity))]
+        [XmlArrayItem(typeof(Parallelism))]
+        public Annotation[] Annotations { get; set; }
     }
 }
