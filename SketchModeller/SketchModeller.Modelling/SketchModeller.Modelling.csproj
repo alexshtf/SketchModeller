@@ -139,15 +139,16 @@
     <Compile Include="SketchSaver.cs" />
     <Compile Include="ViewModel3DHelper.cs" />
     <Compile Include="ViewModelCollectionGenerator.cs" />
+    <Compile Include="Views\BaseNewPrimitiveView.cs" />
     <Compile Include="Views\DisplayOptionsView.xaml.cs">
       <DependentUpon>DisplayOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DisplayOptionsViewModel.cs" />
     <Compile Include="Views\INewPrimitiveView.cs" />
-    <Compile Include="Views\NewCylinderView.xaml.cs">
-      <DependentUpon>NewCylinderView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Views\NewCylinderView.cs" />
     <Compile Include="Views\NewCylinderViewModel.cs" />
+    <Compile Include="Views\NewHalfSphereView.cs" />
+    <Compile Include="Views\NewHalfSphereViewModel.cs" />
     <Compile Include="Views\NewPrimitiveViewModel.cs" />
     <Compile Include="Views\OpenImageView.xaml.cs">
       <DependentUpon>OpenImageView.xaml</DependentUpon>
@@ -189,10 +190,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DisplayOptionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\NewCylinderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

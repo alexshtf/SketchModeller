@@ -31,15 +31,11 @@ namespace SketchModeller.Modelling
         private void OnSaveSketch(object dummy)
         {
             // synchronize modelling session changed back to SketchData
-            sessionData.SketchData.Cylinders =
-                (from cylinderVM in sessionData.NewPrimitives.OfType<NewCylinder>()
-                 select new NewCylinder
-                 {
-                     Axis = cylinderVM.Axis,
-                     Center = cylinderVM.Center,
-                     Diameter = cylinderVM.Diameter,
-                     Length = cylinderVM.Length,
-                 }).ToArray();
+            sessionData.SketchData.NewPrimitives =
+                sessionData.NewPrimitives
+                .Select(x => x.Clone())
+                .ToArray();
+            
             sessionData.SketchData.SnappedPrimitives = 
                 sessionData.SnappedPrimitives
                 .Select(x => x.Clone())

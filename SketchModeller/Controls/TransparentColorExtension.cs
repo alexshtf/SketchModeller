@@ -20,8 +20,12 @@ namespace Controls
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            var result = Color.FromArgb(Alpha, BaseColor.R, BaseColor.G, BaseColor.B);
-            return result;
+            return MakeTransparent(BaseColor, Alpha);
+        }
+
+        public static Color MakeTransparent(Color baseColor, byte alpha)
+        {
+            return Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B);
         }
     }
 }

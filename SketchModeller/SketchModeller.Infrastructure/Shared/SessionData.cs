@@ -14,7 +14,7 @@ namespace SketchModeller.Infrastructure.Shared
     {
         public SessionData()
         {
-            NewPrimitives = new ObservableCollection<object>();
+            NewPrimitives = new ObservableCollection<NewPrimitive>();
             SnappedPrimitives = new ObservableCollection<SnappedPrimitive>();
         }
 
@@ -56,7 +56,7 @@ namespace SketchModeller.Infrastructure.Shared
 
         #endregion
 
-        public ObservableCollection<object> NewPrimitives { get; private set; }
+        public ObservableCollection<NewPrimitive> NewPrimitives { get; private set; }
 
         public ObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
     }

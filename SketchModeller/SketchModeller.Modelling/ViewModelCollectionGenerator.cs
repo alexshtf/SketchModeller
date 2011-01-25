@@ -11,16 +11,16 @@ using System.Collections;
 
 namespace SketchModeller.Modelling
 {
-    class ViewModelCollectionGenerator<T> : IWeakEventListener
+    class ViewModelCollectionGenerator<TViewModel, TModel> : IWeakEventListener
     {
-        private IList<T> viewModels;
-        private ObservableCollection<object> models;
-        private Func<object, T> viewModelFactory;
+        private IList<TViewModel> viewModels;
+        private ObservableCollection<TModel> models;
+        private Func<TModel, TViewModel> viewModelFactory;
 
         public ViewModelCollectionGenerator(
-            IList<T> viewModels, 
-            ObservableCollection<object> models,
-            Func<object, T> viewModelFactory)
+            IList<TViewModel> viewModels,
+            ObservableCollection<TModel> models,
+            Func<TModel, TViewModel> viewModelFactory)
         {
             this.viewModels = viewModels;
             this.models = models;
@@ -60,7 +60,7 @@ namespace SketchModeller.Modelling
 
         private void Replace(int index, IList items)
         {
-            foreach (var item in items)
+            foreach (var item in items.Cast<TModel>())
             {
                 var viewModel = viewModelFactory(item);
                 viewModels[index] = viewModel;
@@ -86,7 +86,7 @@ namespace SketchModeller.Modelling
 
         private void Add(int index, IList items)
         {
-            foreach (var item in items)
+            foreach (var item in items.Cast<TModel>())
             {
                 var viewModel = viewModelFactory(item);
                 viewModels.Insert(index, viewModel);

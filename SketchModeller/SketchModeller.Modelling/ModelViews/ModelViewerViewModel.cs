@@ -11,13 +11,14 @@ using System.Windows.Media.Media3D;
 using Utils;
 using System.Collections.ObjectModel;
 using SnappedPrimitive = SketchModeller.Infrastructure.Data.SnappedPrimitive;
+using NewPrimitive = SketchModeller.Infrastructure.Data.NewPrimitive;
 
 namespace SketchModeller.Modelling.ModelViews
 {
     public class ModelViewerViewModel : NotificationObject
     {
         private const double MOVE_SPEED = 0.01;
-        private const double LOOK_SPEED = 0.1;
+        private const double LOOK_SPEED = 0.5;
         private readonly UiState uiState;
         private readonly SessionData sessionData;
 
@@ -26,7 +27,7 @@ namespace SketchModeller.Modelling.ModelViews
             Position = new Point3D(0, 0, -4);
             LookDirection = new Vector3D(0, 0, 1);
             UpDirection = new Vector3D(0, 1, 0);
-            Primitives = new ReadOnlyObservableCollection<object>(new ObservableCollection<object>());
+            Primitives = new ReadOnlyObservableCollection<NewPrimitive>(new ObservableCollection<NewPrimitive>());
             SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(new ObservableCollection<SnappedPrimitive>());
         }
 
@@ -45,7 +46,7 @@ namespace SketchModeller.Modelling.ModelViews
             LookDown = new DelegateCommand(() => Look(MathUtils3D.UnitX, -1));
             LookLeft = new DelegateCommand(() => Look(MathUtils3D.UnitY, +1));
             LookRight = new DelegateCommand(() => Look(MathUtils3D.UnitY, -1));
-            Primitives = new ReadOnlyObservableCollection<object>(sessionData.NewPrimitives);
+            Primitives = new ReadOnlyObservableCollection<NewPrimitive>(sessionData.NewPrimitives);
             SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(sessionData.SnappedPrimitives);
         }
 
@@ -59,7 +60,7 @@ namespace SketchModeller.Modelling.ModelViews
         public ICommand LookLeft { get; private set; }
         public ICommand LookRight { get; private set; }
 
-        public ReadOnlyObservableCollection<object> Primitives { get; private set; }
+        public ReadOnlyObservableCollection<NewPrimitive> Primitives { get; private set; }
         public ReadOnlyObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
 
         #region Position property

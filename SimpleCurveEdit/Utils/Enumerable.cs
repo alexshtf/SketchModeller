@@ -11,6 +11,20 @@ namespace Utils
     public static class Enumerable
     {
         /// <summary>
+        /// Flattens an enumeration of enumerations to a single long enumeration.
+        /// </summary>
+        /// <typeparam name="T">The type of the inner enumeration's items</typeparam>
+        /// <typeparam name="S">The type of the inner enumeration</typeparam>
+        /// <param name="enumerable">The enumeration to flatten</param>
+        /// <returns>The flattened enumeration</returns>
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable)
+        {
+            Contract.Requires(enumerable != null);
+
+            return enumerable.SelectMany(x => x);
+        }
+
+        /// <summary>
         /// Generates a possibly infinite sequence of value types using induction.
         /// </summary>
         /// <typeparam name="T">The type of the items in the enumeration.</typeparam>

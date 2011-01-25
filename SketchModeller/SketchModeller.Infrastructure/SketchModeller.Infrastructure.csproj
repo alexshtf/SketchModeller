@@ -97,6 +97,8 @@
     <Compile Include="Data\ComplexCurve.cs" />
     <Compile Include="Data\Joint.cs" />
     <Compile Include="Data\NewCylinder.cs" />
+    <Compile Include="Data\NewHalfSphere.cs" />
+    <Compile Include="Data\NewPrimitive.cs" />
     <Compile Include="Data\Point.cs" />
     <Compile Include="Data\Point3D.cs" />
     <Compile Include="Data\PointsSequence.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Data\SketchData.cs" />
     <Compile Include="Data\SketchPlane.cs" />
     <Compile Include="Data\SnappedCylinder.cs" />
+    <Compile Include="Data\SnappedHalfSphere.cs" />
     <Compile Include="Data\SnappedPrimitive.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />

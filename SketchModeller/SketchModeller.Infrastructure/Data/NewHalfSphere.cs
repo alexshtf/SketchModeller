@@ -3,12 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
-using System.Xml.Serialization;
 
 namespace SketchModeller.Infrastructure.Data
 {
-    public class NewCylinder : NewPrimitive
+    public class NewHalfSphere : NewPrimitive
     {
+        #region Radius property
+
+        private double radius;
+
+        public double Radius
+        {
+            get { return radius; }
+            set
+            {
+                radius = value;
+                RaisePropertyChanged(() => Radius);
+            }
+        }
+
+        #endregion
+
         #region Center property
 
         private Point3D center;
@@ -57,30 +72,14 @@ namespace SketchModeller.Infrastructure.Data
 
         #endregion
 
-        #region Diameter property
-
-        private double diameter;
-
-        public double Diameter
-        {
-            get { return diameter; }
-            set
-            {
-                diameter = value;
-                RaisePropertyChanged(() => Diameter);
-            }
-        }
-
-        #endregion
-
         public override NewPrimitive Clone()
         {
-            return new NewCylinder
+            return new NewHalfSphere
             {
+                Radius = radius,
                 Center = center.Clone(),
                 Axis = axis.Clone(),
                 Length = length,
-                Diameter = diameter,
             };
         }
     }

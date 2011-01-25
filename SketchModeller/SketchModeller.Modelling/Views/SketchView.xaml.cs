@@ -79,7 +79,9 @@ namespace SketchModeller.Modelling.Views
                 camera.ViewMatrix = lookAt;
 
                 var projMatrix = Matrix3D.Identity;
-                projMatrix.OffsetZ = -lookAt.OffsetZ + 0.5;
+                projMatrix.M33 = 0.0001;
+                //projMatrix.OffsetZ = -lookAt.OffsetZ + 0.5;
+                projMatrix.OffsetZ = 0.2;
                 camera.ProjectionMatrix = projMatrix;
             }
         }

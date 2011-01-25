@@ -23,14 +23,13 @@ namespace SketchModeller.Modelling.Views
         private const double MIN_LENGTH = 0.01;
         private const double MIN_DIAMETER = 0.01;
 
-        private readonly UiState uiState;
         private NewCylinder model;
         private Dictionary<KeyboardEditModes, CheckedMenuCommandData> editModeToCommand;
 
         public NewCylinderViewModel()
         {
-            diameter = 0.1;
-            length = 0.2;
+            diameter = 0.2;
+            length = 0.5;
             axis = MathUtils3D.UnitZ;
         }
 
@@ -135,11 +134,6 @@ namespace SketchModeller.Modelling.Views
             model = newCylinder;
         }
 
-        public SketchPlane SketchPlane
-        {
-            get { return uiState.SketchPlane; }
-        }
-
         #region KeyboardEditMode property
 
         private KeyboardEditModes keyboardEditMode;
@@ -238,21 +232,14 @@ namespace SketchModeller.Modelling.Views
                     Diameter = Math.Max(MIN_DIAMETER, Diameter + sign * 0.01);
                     break;
                 case KeyboardEditModes.Pitch:
-                    Axis = RotateVector(vector: Axis, rotateAxis: uiState.SketchPlane.XAxis, degrees: sign);
+                    Axis = RotationHelper.RotateVector(vector: Axis, rotateAxis: uiState.SketchPlane.XAxis, degrees: sign);
                     break;
                 case KeyboardEditModes.Roll:
-                    Axis = RotateVector(vector: Axis, rotateAxis: uiState.SketchPlane.Normal, degrees: sign);
+                    Axis = RotationHelper.RotateVector(vector: Axis, rotateAxis: uiState.SketchPlane.Normal, degrees: sign);
                     break;
                 default:
                     break;
             }
-        }
-
-        private Vector3D RotateVector(Vector3D vector, Vector3D rotateAxis, double degrees)
-        {
-            var transform = new RotateTransform3D(new AxisAngleRotation3D(rotateAxis, degrees));
-            var result = transform.Transform(vector);
-            return result;
         }
 
         public enum KeyboardEditModes

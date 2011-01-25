@@ -52,21 +52,11 @@ namespace SketchModeller.Modelling
 
             sessionData.NewPrimitives.Clear();
             sessionData.SnappedPrimitives.Clear();
-            if (sketchData.Cylinders != null)
-            {
-                foreach (var item in sketchData.Cylinders)
-                {
-                    sessionData.NewPrimitives.Add(new NewCylinder
-                    {
-                        Axis = item.Axis,
-                        Center = item.Center,
-                        Length = item.Length,
-                        Diameter = item.Diameter,
-                    });
-                }
-                if (sketchData.SnappedPrimitives != null)
-                    sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives.Select(x => x.Clone()));
-            }
+
+            if (sketchData.NewPrimitives != null)
+                sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives.Select(x => x.Clone()));
+            if (sketchData.SnappedPrimitives != null)
+                sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives.Select(x => x.Clone()));
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)

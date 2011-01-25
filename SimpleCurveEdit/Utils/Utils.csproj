@@ -112,6 +112,7 @@
     <Compile Include="ListSlice.cs" />
     <Compile Include="MathUtils.cs" />
     <Compile Include="MathUtils3D.cs" />
+    <Compile Include="NumericUtils.cs" />
     <Compile Include="Plane3D.cs" />
     <Compile Include="CurveProjectionResult3D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

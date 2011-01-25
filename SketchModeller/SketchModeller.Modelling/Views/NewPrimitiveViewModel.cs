@@ -5,17 +5,24 @@ using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using SketchModeller.Infrastructure;
 using System.Collections.ObjectModel;
+using SketchModeller.Infrastructure.Data;
+
+using UiState = SketchModeller.Infrastructure.Shared.UiState;
+using SketchPlane = SketchModeller.Infrastructure.Data.SketchPlane;
 
 namespace SketchModeller.Modelling.Views
 {
     public class NewPrimitiveViewModel : NotificationObject
     {
-        public NewPrimitiveViewModel()
+        protected UiState uiState;
+
+        public NewPrimitiveViewModel(UiState uiState = null)
         {
             ContextMenu = new ObservableCollection<MenuCommandData>();
         }
 
         public ObservableCollection<MenuCommandData> ContextMenu { get; private set; }
-        public object Model { get; set; }
+        public NewPrimitive Model { get; set; }
+        public SketchPlane SketchPlane { get { return uiState.SketchPlane; } }
     }
 }

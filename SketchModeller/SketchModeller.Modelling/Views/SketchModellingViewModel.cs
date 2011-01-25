@@ -31,7 +31,7 @@ namespace SketchModeller.Modelling.Views
         private IUnityContainer container;
         private ISketchCatalog sketchCatalog;
         private IEventAggregator eventAggregator;
-        private ViewModelCollectionGenerator<NewPrimitiveViewModel> viewModelGenerator;
+        private ViewModelCollectionGenerator<NewPrimitiveViewModel, NewPrimitive> viewModelGenerator;
 
         public SketchModellingViewModel()
         {
@@ -56,12 +56,11 @@ namespace SketchModeller.Modelling.Views
             this.eventAggregator = eventAggregator;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
-            sessionData.AddListener(this, () => sessionData.SketchData);
             eventAggregator.GetEvent<SketchClickEvent>().Subscribe(OnSketchClick);
 
             sketchPlane = uiState.SketchPlane;
 
-            viewModelGenerator = new ViewModelCollectionGenerator<NewPrimitiveViewModel>(
+            viewModelGenerator = new ViewModelCollectionGenerator<NewPrimitiveViewModel, NewPrimitive>(
                 NewPrimitiveViewModels, 
                 sessionData.NewPrimitives, 
                 NewPrimitiveDataToNewPrimitiveViewModel);
@@ -95,13 +94,19 @@ namespace SketchModeller.Modelling.Views
             sessionData.NewPrimitives.Remove(model);
         }
 
-        private NewPrimitiveViewModel NewPrimitiveDataToNewPrimitiveViewModel(object data)
+        private NewPrimitiveViewModel NewPrimitiveDataToNewPrimitiveViewModel(NewPrimitive data)
         {
             NewPrimitiveViewModel result = null;
             data.MatchClass<NewCylinder>(cylinder =>
                 {
                     var viewModel = container.Resolve<NewCylinderViewModel>();
                     viewModel.Initialize(cylinder);
+                    result = viewModel;
+                });
+            data.MatchClass<NewHalfSphere>(halfSphere =>
+                {
+                    var viewModel = container.Resolve<NewHalfSphereViewModel>();
+                    viewModel.Initialize(halfSphere);
                     result = viewModel;
                 });
 
@@ -119,27 +124,25 @@ namespace SketchModeller.Modelling.Views
                 {
                     Center = point3d.ToDataPoint(),
                     Axis = sketchPlane.YAxis.ToDataPoint(),
-                    Diameter = 0.1,
-                    Length = 0.2,
+                    Diameter = 0.4,
+                    Length = 0.6,
                 };
                 sessionData.NewPrimitives.Add(cylinderData);
             }
+            if (uiState.Tool == Tool.InsertHalfSphere)
+            {
+                var point3d = GetClickPoint(info);
+                var hsData = new NewHalfSphere
+                {
+                    Center = point3d.ToDataPoint(),
+                    Axis = sketchPlane.YAxis.ToDataPoint(),
+                    Radius = 0.2,
+                    Length = 0.6,
+                };
+                sessionData.NewPrimitives.Add(hsData);
+            }
             uiState.Tool = Tool.Manipulation;
 
-        }
-
-        private void ResetModellingObjects(SketchData sketchData)
-        {
-            NewPrimitiveViewModels.Clear();
-            if (sketchData.Cylinders != null)
-            {
-                foreach (var newCylinder in sketchData.Cylinders)
-                {
-                    var viewModel = container.Resolve<NewCylinderViewModel>();
-                    viewModel.Initialize(newCylinder);
-                    NewPrimitiveViewModels.Add(viewModel);
-                }
-            }
         }
 
         private System.Windows.Media.Media3D.Point3D GetClickPoint(SketchClickInfo info)
@@ -160,8 +163,6 @@ namespace SketchModeller.Modelling.Views
                 var eventArgs = (PropertyChangedEventArgs)e;
                 if (eventArgs.Match(() => uiState.SketchPlane))
                     SketchPlane = uiState.SketchPlane;
-                if (eventArgs.Match(() => sessionData.SketchData))
-                    ResetModellingObjects(sessionData.SketchData);
 
                 return true;
             }

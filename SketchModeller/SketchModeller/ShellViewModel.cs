@@ -13,6 +13,7 @@ using System.ComponentModel;
 using Utils;
 using SketchModeller.Infrastructure.Data;
 using System.Windows.Media.Media3D;
+using Microsoft.Practices.Unity;
 
 namespace SketchModeller
 {
@@ -21,7 +22,6 @@ namespace SketchModeller
         private const string TITLE_FORMAT = "Editing {0}";
 
         private HashSet<Guid> workingIds;
-        private UiState uiState;
         private SessionData sessionData;
         private IEventAggregator eventAggregator;
 
@@ -30,13 +30,16 @@ namespace SketchModeller
             workingIds = new HashSet<Guid>();
         }
 
-        public ShellViewModel(IEventAggregator eventAggregator)
+        [InjectionConstructor]
+        public ShellViewModel(IEventAggregator eventAggregator, SessionData sessionData)
             : this()
         {
             this.eventAggregator = eventAggregator;
+            this.sessionData = sessionData;
 
             eventAggregator.GetEvent<StartWorkingEvent>().Subscribe(OnStartWorking);
             eventAggregator.GetEvent<StopWorkingEvent>().Subscribe(OnStopWorking);
+            sessionData.AddListener(this, () => sessionData.SketchName);
         }
 
         public bool IsWorking

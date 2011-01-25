@@ -15,11 +15,13 @@ namespace SketchModeller.Infrastructure.Data
         [XmlIgnore]
         public Polygon[] Polygons { get; set; }
 
-        // modelling data
-        public NewCylinder[] Cylinders { get; set; }
-
+        [XmlArrayItem(typeof(NewCylinder))]
+        [XmlArrayItem(typeof(NewHalfSphere))]
+        public NewPrimitive[] NewPrimitives { get; set; }
+        
         // snapped data
         [XmlArrayItem(typeof(SnappedCylinder))]
+        [XmlArrayItem(typeof(SnappedHalfSphere))]
         public SnappedPrimitive[] SnappedPrimitives { get; set; }
     }
 }
