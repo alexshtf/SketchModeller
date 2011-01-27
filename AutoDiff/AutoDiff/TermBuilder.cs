@@ -19,13 +19,14 @@ namespace AutoDiff
         public static Sum Sum(IEnumerable<Term> terms)
         {
             Contract.Requires(terms.Count() > 1);
+            terms = terms.Where(term => !(term is Zero));
             return new Sum(terms);
         }
 
         public static Sum Sum(Term v1, Term v2, params Term[] rest)
         {
-            var result = new Sum(v1, v2, rest);
-            return result;
+            var allTerms = new Term[] { v1, v2 }.Concat(rest);
+            return Sum(allTerms);
         }
 
         public static Term Product(Term v1, Term v2, params Term[] rest)

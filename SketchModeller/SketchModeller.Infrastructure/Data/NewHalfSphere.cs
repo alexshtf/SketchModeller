@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class NewHalfSphere : NewPrimitive
     {
         #region Radius property
@@ -42,9 +44,9 @@ namespace SketchModeller.Infrastructure.Data
 
         #region Axis property
 
-        private Point3D axis;
+        private Vector3D axis;
 
-        public Point3D Axis
+        public Vector3D Axis
         {
             get { return axis; }
             set
@@ -72,15 +74,5 @@ namespace SketchModeller.Infrastructure.Data
 
         #endregion
 
-        public override NewPrimitive Clone()
-        {
-            return new NewHalfSphere
-            {
-                Radius = radius,
-                Center = center.Clone(),
-                Axis = axis.Clone(),
-                Length = length,
-            };
-        }
     }
 }

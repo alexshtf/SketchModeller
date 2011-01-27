@@ -7,43 +7,32 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Diagnostics;
 using System.Xml.Serialization;
+using System.Windows;
 
 namespace SketchModeller.Infrastructure.Data
 {
     [DebuggerDisplay("Count = {Points.Count}")]
     [DebuggerTypeProxy(typeof(PointsSequenceDebugView))]
+    [Serializable]
     public class PointsSequence : NotificationObject
     {
         /// <summary>
         /// The collection of points. Please do NOT assign to this property. The assignment is only for
         /// xml serialization support.
         /// </summary>
-        public ObservableCollection<Point> Points { get; set; }
+        public Point[] Points { get; set; }
 
-        [ContractInvariantMethod]
-        private void InvariantsMethod()
+        public PointsSequence(IEnumerable<Point> points = null)
         {
-            Contract.Invariant(Contract.ForAll(Points, pnt => pnt != null));
-        }
-
-        public PointsSequence()
-        {
-            Points = new ObservableCollection<Point>();
-        }
-
-        public PointsSequence(IEnumerable<Point> points)
-        {
-            Contract.Requires(points != null);
-            Contract.Requires(Contract.ForAll(points, pnt => pnt != null));
-
-            Points = new ObservableCollection<Point>(points);
+            if (points != null)
+                Points = points.ToArray();
         }
 
         #region IsSelected property
 
+        [NonSerialized]
         private bool isSelecgted;
 
-        [XmlIgnore]
         public bool IsSelected
         {
             get { return isSelecgted; }
@@ -68,7 +57,10 @@ namespace SketchModeller.Infrastructure.Data
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
             public Point[] Points
             {
-                get { return sequence.Points.ToArray(); }
+                get 
+                {
+                    return sequence.Points;
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Globalization;
 using SketchModeller.Infrastructure;
 using System.Diagnostics;
 using System.Windows.Media;
+using System.Windows;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -22,7 +23,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 return Binding.DoNothing;
             }
 
-            var pts = values[0] as IEnumerable<SketchModeller.Infrastructure.Data.Point>;
+            var pts = values[0] as IEnumerable<Point>;
             if (pts == null)
             {
                 Trace.TraceWarning("First input value must be a valid list of data points");
@@ -46,7 +47,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 from p in pts
                 let x = Scale(p.X, maxx, minx, width)
                 let y = Scale(p.Y, maxy, miny, height)
-                select new System.Windows.Point(x, y);
+                select new Point(x, y);
 
             return new PointCollection(result);
         }

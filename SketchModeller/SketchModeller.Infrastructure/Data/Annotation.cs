@@ -5,8 +5,8 @@ using System.Text;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public abstract class Annotation
     {
-        public abstract Annotation Clone();
     }
 }

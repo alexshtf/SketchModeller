@@ -9,6 +9,7 @@ namespace AutoDiff
     /// <summary>
     /// Represents an inequality of the form f(x) <= 0;
     /// </summary>
+    [Serializable]    
     public class Inequality
     {
         public Inequality(Term term)

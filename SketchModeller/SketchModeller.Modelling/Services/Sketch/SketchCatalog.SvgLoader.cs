@@ -7,6 +7,8 @@ using SketchModeller.Infrastructure.Data;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Windows;
+using Utils;
 
 namespace SketchModeller.Modelling.Services.Sketch
 {
@@ -39,7 +41,6 @@ namespace SketchModeller.Modelling.Services.Sketch
 
             var result = new VectorImageData
             {
-                Points = new Point[0],
                 PolyLines = polylines.ToArray(),
                 Polygons = polygons.ToArray(),
             };
@@ -51,15 +52,11 @@ namespace SketchModeller.Modelling.Services.Sketch
         private static void Normalize(VectorImageData vectorImageData)
         {
             var sequencesUnflattened = new List<IEnumerable<PointsSequence>>();
-            sequencesUnflattened.Add(vectorImageData.Polygons ?? Enumerable.Empty<PointsSequence>());
-            sequencesUnflattened.Add(vectorImageData.PolyLines ?? Enumerable.Empty<PointsSequence>());
-
-            var points = sequencesUnflattened
-                .SelectMany(sequences => sequences)
-                .SelectMany(sequence => sequence.Points)
-                .ToList();
-
-            points.AddRange(vectorImageData.Points ?? Enumerable.Empty<Point>());
+            sequencesUnflattened.Add(vectorImageData.Polygons ?? System.Linq.Enumerable.Empty<PointsSequence>());
+            sequencesUnflattened.Add(vectorImageData.PolyLines ?? System.Linq.Enumerable.Empty<PointsSequence>());
+            
+            var sequences = sequencesUnflattened.Flatten();
+            var points = sequences.SelectMany(sequence => sequence.Points).ToList();
 
             var xs = points.Select(pnt => pnt.X).ToArray();
             var ys = points.Select(pnt => pnt.Y).ToArray();
@@ -75,15 +72,25 @@ namespace SketchModeller.Modelling.Services.Sketch
             var ty = (maxY + minY) / 2;
             var sy = (maxY - minY) / 2;
 
-            foreach (var point in points)
+            foreach (var seq in sequences)
             {
-                point.X = point.X - tx;
-                point.Y = point.Y - ty;
+                foreach(var idx in System.Linq.Enumerable.Range(0, seq.Points.Length))
+                {
+                    // get the point
+                    var point = seq.Points[idx];
 
-                if (sx > 0)
-                    point.X = point.X / sx;
-                if (sy > 0)
-                    point.Y = point.Y / sy;
+                    // modify the point
+                    point.X = point.X - tx;
+                    point.Y = point.Y - ty;
+
+                    if (sx > 0)
+                        point.X = point.X / sx;
+                    if (sy > 0)
+                        point.Y = point.Y / sy;
+                    
+                    // put the modified point
+                    seq.Points[idx] = point;
+                }
             }
         }
 
@@ -184,7 +191,6 @@ namespace SketchModeller.Modelling.Services.Sketch
 
         private class VectorImageData
         {
-            public Point[] Points { get; set; }
             public Polygon[] Polygons { get; set; }
             public Polyline[] PolyLines { get; set; }
         }

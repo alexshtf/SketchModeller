@@ -17,6 +17,7 @@ namespace SketchModeller.Infrastructure.Shared
             NewPrimitives = new ObservableCollection<NewPrimitive>();
             SnappedPrimitives = new ObservableCollection<SnappedPrimitive>();
             Annotations = new ObservableCollection<Annotation>();
+            sketchObjects = new PointsSequence[0];
         }
 
         #region SketchData property
@@ -62,5 +63,21 @@ namespace SketchModeller.Infrastructure.Shared
         public ObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
 
         public ObservableCollection<Annotation> Annotations { get; private set; }
+
+        #region SketchObjects property
+
+        private PointsSequence[] sketchObjects;
+
+        public PointsSequence[] SketchObjects
+        {
+            get { return sketchObjects; }
+            set
+            {
+                sketchObjects = value;
+                RaisePropertyChanged(() => SketchObjects);
+            }
+        }
+
+        #endregion
     }
 }

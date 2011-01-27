@@ -66,12 +66,12 @@ namespace SketchModeller.Modelling.Views
         internal void Initialize(NewHalfSphere halfSphere)
         {
             Contract.Requires(halfSphere != null);
-            Contract.Requires(halfSphere.Axis.ToWpfVector() != MathUtils3D.ZeroVector);
+            Contract.Requires(halfSphere.Axis != MathUtils3D.ZeroVector);
             Contract.Requires(halfSphere.Length > 0);
             Contract.Requires(halfSphere.Radius > 0);
 
-            Center = halfSphere.Center.ToWpfPoint();
-            Axis = halfSphere.Axis.ToWpfVector();
+            Center = halfSphere.Center;
+            Axis = halfSphere.Axis;
             Length = halfSphere.Length;
             Radius = halfSphere.Radius;
             this.model = halfSphere;
@@ -122,7 +122,7 @@ namespace SketchModeller.Modelling.Views
             {
                 center = value;
                 RaisePropertyChanged(() => Center);
-                model.Center = value.ToDataPoint();
+                model.Center = value;
             }
         }
 
@@ -139,7 +139,7 @@ namespace SketchModeller.Modelling.Views
             {
                 axis = value;
                 RaisePropertyChanged(() => Axis);
-                model.Axis = value.ToDataPoint();
+                model.Axis = value;
             }
         }
 

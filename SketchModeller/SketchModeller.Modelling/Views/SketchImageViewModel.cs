@@ -12,6 +12,7 @@ using SketchModeller.Infrastructure.Data;
 using SketchModeller.Infrastructure.Shared;
 using System.ComponentModel;
 using Utils;
+using System.Windows;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -37,22 +38,6 @@ namespace SketchModeller.Modelling.Views
             SetupSessionDataSync();
             SetupUIStateSync();
         }
-
-        #region Points property
-
-        private Point[] points;
-
-        public Point[] Points
-        {
-            get { return points; }
-            private set
-            {
-                points = value;
-                RaisePropertyChanged(() => Points);
-            }
-        }
-
-        #endregion
 
         #region Polylines property
 
@@ -128,7 +113,7 @@ namespace SketchModeller.Modelling.Views
 
         private void SetupSessionDataSync()
         {
-            sessionData.AddListener(this, () => sessionData.SketchData);
+            sessionData.AddListener(this, () => sessionData.SketchObjects);
         }
 
         private void SetupUIStateSync()
@@ -151,11 +136,10 @@ namespace SketchModeller.Modelling.Views
             }
             else if (sender == sessionData)
             {
-                if (eventArgs.Match(() => sessionData.SketchData))
+                if (eventArgs.Match(() => sessionData.SketchObjects))
                 {
-                    Points = sessionData.SketchData.Points;
-                    Polylines = sessionData.SketchData.Polylines;
-                    Polygons = sessionData.SketchData.Polygons;
+                    Polylines = sessionData.SketchObjects.OfType<Polyline>().ToArray();
+                    Polygons = sessionData.SketchObjects.OfType<Polygon>().ToArray();
                 }
             }
 

@@ -27,13 +27,13 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchImageView 
     {
-        private static readonly Brush SKETCH_STROKE_NORMAL = Brushes.Black;
-        private static readonly Brush SKETCH_STROKE_CANDIDATE = Brushes.Orange;
-        private static readonly Brush SKETCH_STROKE_SELECTED = Brushes.Navy;
-        private static readonly Brush SKETCH_STROKE_SELECTED_CANDIDATE = Brushes.DodgerBlue;
+        private static readonly Brush SKETCH_STROKE = Brushes.Black;
 
         private static readonly Cursor ADD_CURSOR;
         private static readonly Cursor REMOVE_CURSOR;
+
+        private const ModifierKeys ADD_MODIFIER = ModifierKeys.Control;
+        private const ModifierKeys REMOVE_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
 
         static SketchImageView()
         {
@@ -127,29 +127,18 @@ namespace SketchModeller.Modelling.Views
 
             var path = new Path();
             path.Data = geometry;
-            path.StrokeThickness = 2;
             path.DataContext = polylineData;
-            BindingOperations.SetBinding(path, Path.StrokeProperty, new Binding
+            path.Stroke = SKETCH_STROKE;
+            BindingOperations.SetBinding(path, Path.StrokeThicknessProperty, new Binding
                 {
-                    Path = new PropertyPath(PathsSelectionManager.SelectionStateProperty),
-                    Source = path,
-                    Converter = new DelegateConverter<SelectionState>(selectionState =>
-                                {
-                                    switch (selectionState)
-                                    {
-                                        case SelectionState.Unselected:
-                                            return SKETCH_STROKE_NORMAL;
-                                        case SelectionState.Candidate:
-                                            return SKETCH_STROKE_CANDIDATE;
-                                        case SelectionState.Selected:
-                                            return SKETCH_STROKE_SELECTED;
-                                        case SelectionState.Selected | SelectionState.Candidate:
-                                            return SKETCH_STROKE_SELECTED_CANDIDATE;
-                                        default:
-                                            Debug.Fail("Invalid selection state");
-                                            return null;
-                                    }
-                                }),
+                    Path = new PropertyPath("IsSelected"),
+                    Converter = new DelegateConverter<bool>(isSelected =>
+                    { 
+                        if (isSelected)
+                            return 3;
+                        else
+                            return 1;
+                    }),
                 });
 
             SetVGKind(path, vgKind);
@@ -224,9 +213,9 @@ namespace SketchModeller.Modelling.Views
 
         private void UpdateCursorFromModifierKeys()
         {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
+            if (Keyboard.Modifiers == ADD_MODIFIER)
                 this.Cursor = ADD_CURSOR;
-            else if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            else if (Keyboard.Modifiers == REMOVE_MODIFIER)
                 this.Cursor = REMOVE_CURSOR;
             else
                 this.Cursor = null;

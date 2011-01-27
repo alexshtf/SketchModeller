@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Xml.Serialization;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class NewCylinder : NewPrimitive
     {
         #region Center property
@@ -27,9 +29,9 @@ namespace SketchModeller.Infrastructure.Data
 
         #region Axis property
 
-        private Point3D axis;
+        private Vector3D axis;
 
-        public Point3D Axis
+        public Vector3D Axis
         {
             get { return axis; }
             set
@@ -73,15 +75,19 @@ namespace SketchModeller.Infrastructure.Data
 
         #endregion
 
-        public override NewPrimitive Clone()
+        public double Radius
         {
-            return new NewCylinder
-            {
-                Center = center.Clone(),
-                Axis = axis.Clone(),
-                Length = length,
-                Diameter = diameter,
-            };
+            get { return Diameter / 2; }
+        }
+
+        public Point3D Top
+        {
+            get { return Center + 0.5 * Length * Axis; }
+        }
+
+        public Point3D Bottom
+        {
+            get { return Center - 0.5 * Length * Axis; }
         }
     }
 }

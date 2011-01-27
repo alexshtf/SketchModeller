@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows.Media;
 
-using ModelPoint = SketchModeller.Infrastructure.Data.Point;
 using System.Globalization;
 using SketchModeller.Infrastructure;
 using System.Diagnostics;
@@ -13,24 +12,24 @@ using System.Windows;
 
 namespace SketchModeller.Modelling.Converters
 {
-    [ValueConversion(typeof(IEnumerable<ModelPoint>), typeof(Geometry))]
+    [ValueConversion(typeof(IEnumerable<Point>), typeof(Geometry))]
     class ModelPointsToScatterConverter : IValueConverter
     {
         public static readonly ModelPointsToScatterConverter Instance = new ModelPointsToScatterConverter();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is IEnumerable<ModelPoint>))
+            if (!(value is IEnumerable<Point>))
             {
                 Trace.TraceError("value is not of the correct type");
                 return Binding.DoNothing;
             }
 
-            var enumerable = value as IEnumerable<ModelPoint>;
+            var enumerable = value as IEnumerable<Point>;
             var result = new GeometryGroup();
             foreach (var point in enumerable)
             {
-                var ellipseGeometry = new EllipseGeometry(new Point(point.X, point.Y), 0.5, 0.5);
+                var ellipseGeometry = new EllipseGeometry(point, 0.5, 0.5);
                 result.Children.Add(ellipseGeometry);
             }
 

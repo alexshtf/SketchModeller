@@ -33,12 +33,24 @@ namespace SketchModeller.Modelling
             // synchronize modelling session changed back to SketchData
             sessionData.SketchData.NewPrimitives =
                 sessionData.NewPrimitives
-                .Select(x => x.Clone())
                 .ToArray();
             
             sessionData.SketchData.SnappedPrimitives = 
                 sessionData.SnappedPrimitives
-                .Select(x => x.Clone())
+                .ToArray();
+
+            sessionData.SketchData.Annotations =
+                sessionData.Annotations
+                .ToArray();
+
+            sessionData.SketchData.Polygons =
+                sessionData.SketchObjects
+                .OfType<Polygon>()
+                .ToArray();
+
+            sessionData.SketchData.Polylines =
+                sessionData.SketchObjects
+                .OfType<Polyline>()
                 .ToArray();
             
 

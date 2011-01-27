@@ -5,6 +5,7 @@ using System.Text;
 
 namespace AutoDiff
 {
+    [Serializable]
     public class Constant : Term
     {
         public Constant(double value)

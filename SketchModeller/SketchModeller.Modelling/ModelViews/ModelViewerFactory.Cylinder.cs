@@ -23,12 +23,12 @@ namespace SketchModeller.Modelling.ModelViews
                 () => data.Center,
                 () => data.Axis,
                 () => data.Length,
-                (center, axis, length) => center.ToWpfPoint() + 0.5 * length * axis.ToWpfVector().Normalized());
+                (center, axis, length) => center + 0.5 * length * axis.Normalized());
             cylinder.Bind(Cylinder.Point2Property,
                 () => data.Center,
                 () => data.Axis,
                 () => data.Length,
-                (center, axis, length) => center.ToWpfPoint() - 0.5 * length * axis.ToWpfVector().Normalized());
+                (center, axis, length) => center - 0.5 * length * axis.Normalized());
 
             cylinder.Material = new DiffuseMaterial { Brush = Brushes.White };
 

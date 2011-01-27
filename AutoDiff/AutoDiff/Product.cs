@@ -5,6 +5,7 @@ using System.Text;
 
 namespace AutoDiff
 {
+    [Serializable]
     public class Product : Term
     {
         public Product(Term left, Term right)

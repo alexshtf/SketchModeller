@@ -123,12 +123,12 @@ namespace SketchModeller.Modelling.Views
         internal void Initialize(NewCylinder newCylinder)
         {
             Contract.Requires(newCylinder != null);
-            Contract.Requires(newCylinder.Axis.ToWpfVector() != MathUtils3D.ZeroVector);
+            Contract.Requires(newCylinder.Axis != MathUtils3D.ZeroVector);
             Contract.Requires(newCylinder.Length > 0);
             Contract.Requires(newCylinder.Diameter > 0);
 
-            Center = newCylinder.Center.ToWpfPoint();
-            Axis = newCylinder.Axis.ToWpfVector();
+            Center = newCylinder.Center;
+            Axis = newCylinder.Axis;
             Length = newCylinder.Length;
             Diameter = newCylinder.Diameter;
             model = newCylinder;
@@ -161,7 +161,7 @@ namespace SketchModeller.Modelling.Views
             {
                 axis = value;
                 RaisePropertyChanged(() => Axis);
-                model.Axis = value.ToDataPoint();
+                model.Axis = value;
             }
         }
 
@@ -195,7 +195,7 @@ namespace SketchModeller.Modelling.Views
             {
                 center = value;
                 RaisePropertyChanged(() => Center);
-                model.Center = value.ToDataPoint();
+                model.Center = value;
             }
         }
 

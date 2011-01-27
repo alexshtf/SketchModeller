@@ -7,13 +7,14 @@ using System.Xml.Serialization;
 
 namespace SketchModeller.Infrastructure.Data
 {
-    public abstract class NewPrimitive : NotificationObject, ICloneable
+    [Serializable]
+    public abstract class NewPrimitive : NotificationObject
     {
         #region IsSelected property
 
+        [NonSerialized]
         private bool isSelected;
 
-        [XmlIgnore]
         public bool IsSelected
         {
             get { return isSelected; }
@@ -25,12 +26,5 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         #endregion
-
-        public abstract NewPrimitive Clone();
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
     }
 }

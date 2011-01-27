@@ -6,10 +6,9 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
 using Utils;
 
-using WpfPoint3D = System.Windows.Media.Media3D.Point3D;
-
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class SketchPlane
     {
         public static readonly SketchPlane Default = 
@@ -22,7 +21,7 @@ namespace SketchModeller.Infrastructure.Data
                 width: 2,
                 height: 2);
 
-        public SketchPlane(string name, WpfPoint3D center, Vector3D xAxis, Vector3D yAxis, Vector3D normal, double width, double height)
+        public SketchPlane(string name, Point3D center, Vector3D xAxis, Vector3D yAxis, Vector3D normal, double width, double height)
         {
             Contract.Requires(!string.IsNullOrEmpty(name));
             Contract.Requires(width > 0);
@@ -45,7 +44,7 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         public string Name { get; private set; }
-        public WpfPoint3D Center { get; private set; }
+        public Point3D Center { get; private set; }
         public Vector3D XAxis { get; private set; }
         public Vector3D YAxis { get; private set; }
         public Vector3D Normal { get; private set; }

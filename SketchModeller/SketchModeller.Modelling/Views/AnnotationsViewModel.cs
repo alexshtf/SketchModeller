@@ -94,13 +94,8 @@ namespace SketchModeller.Modelling.Views
         {
             if (SelectedAnnotationIndex >= 0)
             {
-                var allSequences =
-                    sessionData.SketchData.Polygons
-                    .Cast<PointsSequence>()
-                    .Concat(sessionData.SketchData.Polylines);
-
                 // unselect all sequences
-                foreach (var item in allSequences)
+                foreach (var item in sessionData.SketchObjects)
                     item.IsSelected = false;
 
                 var currAnnotation = Annotations[SelectedAnnotationIndex];
@@ -127,13 +122,8 @@ namespace SketchModeller.Modelling.Views
 
         private PointsSequence[] GetSelectedElements()
         {
-            var allSequences = 
-                sessionData.SketchData.Polygons
-                .Cast<PointsSequence>()
-                .Concat(sessionData.SketchData.Polylines);
-
             var result =
-                from item in allSequences
+                from item in sessionData.SketchObjects
                 where item.IsSelected == true
                 select item;
 

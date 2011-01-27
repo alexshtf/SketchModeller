@@ -35,13 +35,13 @@ namespace SketchModeller.Modelling.Services.Snap
         public void Snap()
         {
             var selectedPolylines =
-                (from polyline in sessionData.SketchData.Polylines
+                (from polyline in sessionData.SketchObjects.OfType<Polyline>()
                  where polyline.IsSelected == true
                  select polyline
                 ).ToArray();
 
             var selectedPolygons =
-                (from polygon in sessionData.SketchData.Polygons
+                (from polygon in sessionData.SketchObjects.OfType<Polygon>()
                  where polygon.IsSelected == true
                  select polygon
                 ).ToArray();
@@ -56,12 +56,12 @@ namespace SketchModeller.Modelling.Services.Snap
 
             if (selectedCylinder != null)
             {
-                SnapCylinder(selectedPolylines, selectedPolygons, selectedCylinder.ToWpf());
+                SnapCylinder(selectedPolylines, selectedPolygons, selectedCylinder);
                 sessionData.NewPrimitives.Remove(selectedCylinder);
             }
         }
 
-        private void SnapCylinder(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCylinderWpf selectedCylinder)
+        private void SnapCylinder(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCylinder selectedCylinder)
         {
             var allSequences = selectedPolylines.Cast<PointsSequence>().Concat(selectedPolygons).ToArray();
 
@@ -124,7 +124,7 @@ namespace SketchModeller.Modelling.Services.Snap
             sessionData.SnappedPrimitives.Add(snappedCylinder);
         }
 
-        private void SelectCircles(NewCylinderWpf selectedCylinder, PointsSequence[] circles, out PointsSequence topCircle, out PointsSequence bottomCircle)
+        private void SelectCircles(NewCylinder selectedCylinder, PointsSequence[] circles, out PointsSequence topCircle, out PointsSequence bottomCircle)
         {
             Contract.Requires(circles.Length >= 2);
             Contract.Ensures(Contract.ValueAtReturn(out topCircle) != Contract.ValueAtReturn(out bottomCircle));
@@ -135,7 +135,7 @@ namespace SketchModeller.Modelling.Services.Snap
             Func<PointsSequence, WpfPoint, double> distance = (curve, pnt) =>
                 {
                     var sample = CurveSampler.UniformSample(curve, 50);
-                    var result = pnt.ProjectionOnCurve(sample.ToWpfPoints()).Item2;
+                    var result = pnt.ProjectionOnCurve(sample).Item2;
                     return result;
                 };
 
@@ -143,7 +143,7 @@ namespace SketchModeller.Modelling.Services.Snap
             bottomCircle = circles.Minimizer(circle => distance(circle, bottom));
         }
 
-        private SnappedCylinder OptimizeCylinder(Term finalTerm, NewCylinderWpf selectedCylinder, int count, TVec vc1, TVec vu1, Variable vt)
+        private SnappedCylinder OptimizeCylinder(Term finalTerm, NewCylinder selectedCylinder, int count, TVec vc1, TVec vu1, Variable vt)
         {
             var vars = GetVars(new TVec[] { vc1, vu1 }).Append(vt).ToArray();
             double[] guess = CreateStartGuess(selectedCylinder);
@@ -167,12 +167,12 @@ namespace SketchModeller.Modelling.Services.Snap
 
             return new SnappedCylinder 
             { 
-                TopCircle = topCircle.ToDataPoints().ToArray(), 
-                BottomCircle = botCircle.ToDataPoints().ToArray(),
+                TopCircle = topCircle.ToArray(), 
+                BottomCircle = botCircle.ToArray(),
             };
         }
 
-        private double[] CreateStartGuess(NewCylinderWpf selectedCylinder)
+        private double[] CreateStartGuess(NewCylinder selectedCylinder)
         {
             var axisShifted = selectedCylinder.Axis;
             axisShifted.X += 1;

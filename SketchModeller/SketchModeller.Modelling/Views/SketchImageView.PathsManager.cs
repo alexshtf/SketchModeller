@@ -9,6 +9,8 @@ using Utils;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using PointsSequence = SketchModeller.Infrastructure.Data.PointsSequence;
+
 namespace SketchModeller.Modelling.Views
 {
     public partial class SketchImageView
@@ -19,7 +21,6 @@ namespace SketchModeller.Modelling.Views
             private readonly Rectangle selectionRectangle;
 
             private bool isSelecting;
-            private ISet<Path> lastSelectionCandidates;
             private Point startPoint;
             private Point endPoint;
 
@@ -27,25 +28,7 @@ namespace SketchModeller.Modelling.Views
             {
                 this.polyRoot = root;
                 this.selectionRectangle = selectionRectangle;
-                lastSelectionCandidates = EmptySet<Path>.Instance;
             }
-
-            #region SelectionState attached property
-
-            public static readonly DependencyProperty SelectionStateProperty =
-                DependencyProperty.RegisterAttached("SelectionState", typeof(SelectionState), typeof(PathsSelectionManager));
-
-            public static SelectionState GetSelectionState(Path target)
-            {
-                return (SelectionState)target.GetValue(SelectionStateProperty);
-            }
-
-            public static void SetSelectionState(Path target, SelectionState value)
-            {
-                target.SetValue(SelectionStateProperty, value);
-            }
-
-            #endregion
 
             #region Mouse events handling
 
@@ -53,13 +36,8 @@ namespace SketchModeller.Modelling.Views
             {
                 if (e.ChangedButton == MouseButton.Left)
                 {
-                    // when we start a selection process the last under-rect set is empty.
-                    lastSelectionCandidates = EmptySet<Path>.Instance;
-
                     // set selection rectangle parameters to be the empty rectangle.
                     startPoint = e.GetPosition(polyRoot);
-                    Canvas.SetLeft(selectionRectangle, startPoint.X);
-                    Canvas.SetTop(selectionRectangle, startPoint.Y);
                     selectionRectangle.Width = 0;
                     selectionRectangle.Height = 0;
                     selectionRectangle.Visibility = Visibility.Visible;
@@ -73,15 +51,11 @@ namespace SketchModeller.Modelling.Views
                     isSelecting = false;
                     polyRoot.ReleaseMouseCapture();
                     selectionRectangle.Visibility = Visibility.Collapsed;
-                    foreach (var path in lastSelectionCandidates)
-                        ClearSelectionStateFlags(path, SelectionState.Candidate);
                 }
             }
 
             public void MouseMove(MouseEventArgs e)
             {
-                ISet<Path> currCandidates;
-
                 if (isSelecting)
                 {
                     endPoint = e.GetPosition(polyRoot);
@@ -91,65 +65,57 @@ namespace SketchModeller.Modelling.Views
                     Canvas.SetTop(selectionRectangle, rect.Top);
                     selectionRectangle.Width = rect.Width;
                     selectionRectangle.Height = rect.Height;
-
-                    currCandidates = FindPathsInsideRectangle(rect);
                 }
-                else // not isSelecting
-                {
-                    // rectangle around the current mouse position
-                    var rect = new Rect(e.GetPosition(polyRoot), new Size(5, 5));
-                    currCandidates = FindPathsOverlapRectangle(rect);
-                }
-
-                var addedPaths = currCandidates.Except(lastSelectionCandidates);
-                foreach (var path in addedPaths)
-                    SetSelectionStateFlag(path, SelectionState.Candidate);
-
-                var removedPaths = lastSelectionCandidates.Except(currCandidates);
-                foreach (var path in removedPaths)
-                    ClearSelectionStateFlags(path, SelectionState.Candidate);
-
-                lastSelectionCandidates = currCandidates;
             }
 
             public void MouseUp(MouseButtonEventArgs e)
             {
                 if (e.ChangedButton == MouseButton.Left && isSelecting)
                 {
-                    UnselectAllPaths();
-
                     // hide selection visuals
                     polyRoot.ReleaseMouseCapture();
                     isSelecting = false;
                     selectionRectangle.Visibility = Visibility.Collapsed;
 
-                    // perform the actual selection
-                    foreach (var path in lastSelectionCandidates)
-                    {
-                        var pointsSequence = (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
-                        pointsSequence.IsSelected = true;
-                        SetSelectionState(path, SelectionState.Selected);
-                    }
+                    endPoint = e.GetPosition(polyRoot);
+                    var rect = new Rect(startPoint, endPoint);
+                    var selection = FindPathsOverlapRectangle(rect);
+                    UpdateSelection(selection);
                 }
+            }
+
+            private void UpdateSelection(ISet<Path> selection)
+            {
+                if (Keyboard.Modifiers == ADD_MODIFIER)
+                    AddToSelection(selection);
+                else if (Keyboard.Modifiers == REMOVE_MODIFIER)
+                    RemoveFromSelection(selection);
+                else
+                    ReplaceSelection(selection);
+            }
+
+            private void ReplaceSelection(ISet<Path> selection)
+            {
+                UnselectAllPaths();
+                foreach (var ptsSequence in GetPointsSequences(selection))
+                    ptsSequence.IsSelected = true;
+            }
+
+            private void RemoveFromSelection(ISet<Path> selection)
+            {
+                foreach (var ptsSequence in GetPointsSequences(selection))
+                    ptsSequence.IsSelected = false;
+            }
+
+            private void AddToSelection(ISet<Path> selection)
+            {
+                foreach (var ptsSequence in GetPointsSequences(selection))
+                    ptsSequence.IsSelected = true;
             }
 
             #endregion
 
             #region Private utility methods
-
-            private static void ClearSelectionStateFlags(Path path, SelectionState flags)
-            {
-                var selectionState = GetSelectionState(path);
-                selectionState = selectionState & (~flags);
-                SetSelectionState(path, selectionState);
-            }
-
-            private static void SetSelectionStateFlag(Path path, SelectionState flags)
-            {
-                var selectionState = GetSelectionState(path);
-                selectionState = selectionState | flags;
-                SetSelectionState(path, selectionState);
-            }
 
             private IEnumerable<Path> GetAllPaths()
             {
@@ -158,17 +124,14 @@ namespace SketchModeller.Modelling.Views
 
             private void UnselectAllPaths()
             {
-                foreach (var path in GetAllPaths())
-                {
-                    var pointsSequence = (SketchModeller.Infrastructure.Data.PointsSequence)path.DataContext;
-                    pointsSequence.IsSelected = false;
-                    SetSelectionState(path, SelectionState.Unselected);
-                }
+                var pointsSequences = GetPointsSequences(GetAllPaths());
+                foreach (var ptsSequence in pointsSequences)
+                    ptsSequence.IsSelected = false;
             }
 
-            private ISet<Path> FindPathsInsideRectangle(Rect rect)
+            private IEnumerable<PointsSequence> GetPointsSequences(IEnumerable<Path> paths)
             {
-                return FindPathsInRectangle(rect, IntersectionDetail.FullyInside);
+                return paths.Select(x => x.DataContext).Cast<PointsSequence>();
             }
 
             private ISet<Path> FindPathsOverlapRectangle(Rect rect)
@@ -202,14 +165,6 @@ namespace SketchModeller.Modelling.Views
             }
 
             #endregion
-        }
-
-        [Flags]
-        private enum SelectionState
-        {
-            Unselected = 0,
-            Candidate = 1,
-            Selected = 2,
         }
     }
 }

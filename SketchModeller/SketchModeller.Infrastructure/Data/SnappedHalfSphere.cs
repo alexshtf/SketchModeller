@@ -5,11 +5,8 @@ using System.Text;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class SnappedHalfSphere : SnappedPrimitive
     {
-        public override SnappedPrimitive Clone()
-        {
-            return new SnappedHalfSphere();
-        }
     }
 }

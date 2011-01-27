@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Research.Science.Data;
 using System.Diagnostics;
 using System.Xml.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SketchModeller.Modelling.Services.Sketch
 {
@@ -55,18 +56,21 @@ namespace SketchModeller.Modelling.Services.Sketch
                     SketchData sketchData;
                     if (File.Exists(modelFile))
                     {
-                        using (var reader = new StreamReader(modelFile))
+                        using (var stream = File.OpenRead(modelFile))
                         {
-                            var serializer = new XmlSerializer(typeof(SketchData));
-                            sketchData = (SketchData)serializer.Deserialize(reader);
+                            var serializer = new BinaryFormatter();
+                            sketchData = (SketchData)serializer.Deserialize(stream);
                         }
                     }
                     else
                         sketchData = new SketchData();
 
-                    sketchData.Points = vectorImage.Points;
-                    sketchData.Polygons = vectorImage.Polygons;
-                    sketchData.Polylines = vectorImage.PolyLines;
+                    if (sketchData.Polylines == null)
+                        sketchData.Polylines = vectorImage.PolyLines;
+
+                    if (sketchData.Polygons == null)
+                        sketchData.Polygons = vectorImage.Polygons;
+
                     return sketchData;
                 };
 
@@ -86,10 +90,10 @@ namespace SketchModeller.Modelling.Services.Sketch
         {
             Action saveAction = () =>
                 {
-                    using (var writer = new StreamWriter(fileName))
+                    using (var stream = File.Create(fileName))
                     {
-                        var serializer = new XmlSerializer(typeof(SketchData));
-                        serializer.Serialize(writer, sketchData);
+                        var serializer = new BinaryFormatter();
+                        serializer.Serialize(stream, sketchData);
                     }
                 };
 

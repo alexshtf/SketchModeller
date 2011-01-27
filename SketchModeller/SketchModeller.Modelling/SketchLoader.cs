@@ -55,11 +55,15 @@ namespace SketchModeller.Modelling
             sessionData.Annotations.Clear();
 
             if (sketchData.NewPrimitives != null)
-                sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives.Select(x => x.Clone()));
+                sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives);
             if (sketchData.SnappedPrimitives != null)
-                sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives.Select(x => x.Clone()));
+                sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives);
             if (sketchData.Annotations != null)
-                sessionData.Annotations.AddRange(sketchData.Annotations.Select(x => x.Clone()));
+                sessionData.Annotations.AddRange(sketchData.Annotations);
+
+            var polygons = sketchData.Polygons ?? System.Linq.Enumerable.Empty<PointsSequence>();
+            var polylines = sketchData.Polylines ?? System.Linq.Enumerable.Empty<PointsSequence>();
+            sessionData.SketchObjects = polygons.Concat(polylines).ToArray();
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)

@@ -17,8 +17,8 @@ namespace SketchModeller.Modelling.ModelViews
             Contract.Assume(cylinderData.TopCircle.Length == cylinderData.BottomCircle.Length);
             var m = cylinderData.TopCircle.Length;
 
-            var topPoints = cylinderData.TopCircle.ToWpfPoints();
-            var botPoints = cylinderData.BottomCircle.ToWpfPoints();
+            var topPoints = cylinderData.TopCircle;
+            var botPoints = cylinderData.BottomCircle;
 
             // top points indices [0 .. m-1]
             var topIdx = System.Linq.Enumerable.Range(0, m).ToArray(); 

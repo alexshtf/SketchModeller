@@ -16,8 +16,6 @@ using SketchModeller.Infrastructure.Events;
 using System.Diagnostics;
 using SketchModeller.Utilities;
 
-using IFPoint3D = SketchModeller.Infrastructure.Data.Point3D;
-using WPFPoint3D = System.Windows.Media.Media3D.Point3D;
 using SketchModeller.Infrastructure.Services;
 using SketchModeller.Infrastructure;
 using System.Collections.Specialized;
@@ -122,8 +120,8 @@ namespace SketchModeller.Modelling.Views
                 var point3d = GetClickPoint(info);
                 var cylinderData = new NewCylinder
                 {
-                    Center = point3d.ToDataPoint(),
-                    Axis = sketchPlane.YAxis.ToDataPoint(),
+                    Center = point3d,
+                    Axis = sketchPlane.YAxis,
                     Diameter = 0.4,
                     Length = 0.6,
                 };
@@ -134,8 +132,8 @@ namespace SketchModeller.Modelling.Views
                 var point3d = GetClickPoint(info);
                 var hsData = new NewHalfSphere
                 {
-                    Center = point3d.ToDataPoint(),
-                    Axis = sketchPlane.YAxis.ToDataPoint(),
+                    Center = point3d,
+                    Axis = sketchPlane.YAxis,
                     Radius = 0.2,
                     Length = 0.6,
                 };

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace AutoDiff
 {
+    [Serializable]
     public class Log : Term
     {
         public Log(Term arg)

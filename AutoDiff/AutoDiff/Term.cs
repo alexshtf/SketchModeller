@@ -5,6 +5,7 @@ using System.Text;
 
 namespace AutoDiff
 {
+    [Serializable]
     public abstract class Term
     {
         public abstract void Accept(ITermVisitor visitor);

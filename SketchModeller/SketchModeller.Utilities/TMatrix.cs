@@ -11,6 +11,7 @@ namespace SketchModeller.Utilities
     /// <summary>
     /// A matrix made of terms
     /// </summary>
+    [Serializable]
     public class TMatrix
     {
         private readonly TVec[] rows;

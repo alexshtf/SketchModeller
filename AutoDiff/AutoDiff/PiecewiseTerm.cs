@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace AutoDiff
 {
+    [Serializable]
     public class PiecewiseTerm : Term
     {
         public PiecewiseTerm(IEnumerable<Tuple<Inequality, Term>> pieces)

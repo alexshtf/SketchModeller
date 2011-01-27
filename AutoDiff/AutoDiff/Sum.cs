@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace AutoDiff
 {
+    [Serializable]
     public class Sum : Term
     {
         public Sum(Term first, Term second, params Term[] rest)

@@ -11,6 +11,7 @@ namespace SketchModeller.Utilities
     /// <summary>
     /// A column vector made of terms.
     /// </summary>
+    [Serializable]
     public class TVec
     {
         private readonly Term[] terms;
