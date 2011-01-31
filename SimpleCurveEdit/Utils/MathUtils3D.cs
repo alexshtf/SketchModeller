@@ -295,5 +295,20 @@ namespace Utils
                 -Vector3D.DotProduct(xaxis, vEye), -Vector3D.DotProduct(yaxis, vEye), -Vector3D.DotProduct(zaxis, vEye), 1);
 
         }
+
+        public static Vector3D NormalVector(Vector3D v)
+        {   
+            var result = new Vector3D(-v.Z, 0, v.X);
+            if (result == ZeroVector)
+                result = new Vector3D(v.Y, -v.X, 0);
+
+            if (result == ZeroVector)
+                return result;
+            else
+            {
+                result.Normalize();
+                return result;
+            }
+        }
     }
 }

@@ -17,6 +17,8 @@ using System.Windows.Automation.Provider;
 using Microsoft.Practices.Unity;
 using System.Windows.Threading;
 using Microsoft.Practices.Prism.Logging;
+using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Events;
 
 namespace SketchModeller.Modelling.ModelViews
 {

@@ -12,6 +12,9 @@ using Utils;
 using System.Collections.ObjectModel;
 using SnappedPrimitive = SketchModeller.Infrastructure.Data.SnappedPrimitive;
 using NewPrimitive = SketchModeller.Infrastructure.Data.NewPrimitive;
+using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Events;
+using System.Collections.Specialized;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -32,7 +35,7 @@ namespace SketchModeller.Modelling.ModelViews
         }
 
         [InjectionConstructor]
-        public ModelViewerViewModel(UiState uiState, SessionData sessionData)
+        public ModelViewerViewModel(UiState uiState, SessionData sessionData, IEventAggregator eventAggregator)
             : this()
         {
             this.uiState = uiState;
@@ -47,7 +50,9 @@ namespace SketchModeller.Modelling.ModelViews
             LookLeft = new DelegateCommand(() => Look(MathUtils3D.UnitY, +1));
             LookRight = new DelegateCommand(() => Look(MathUtils3D.UnitY, -1));
             Primitives = new ReadOnlyObservableCollection<NewPrimitive>(sessionData.NewPrimitives);
-            SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(sessionData.SnappedPrimitives);
+            SnappedPrimitives = new SnappedPrimitivesCollection(sessionData.SnappedPrimitives);
+
+            eventAggregator.GetEvent<SnapCompleteEvent>().Subscribe(OnSnapComplete);
         }
 
         public ICommand MoveForward { get; private set; }
@@ -122,6 +127,11 @@ namespace SketchModeller.Modelling.ModelViews
 
         #endregion
 
+        private void OnSnapComplete(object payload)
+        {
+            ((SnappedPrimitivesCollection)SnappedPrimitives).RaiseReset();
+        }
+
         private void Move(Vector3D vec)
         {
             vec = GetWorldVector(ref vec);
@@ -150,6 +160,19 @@ namespace SketchModeller.Modelling.ModelViews
 
             var moveVector = vector3D.X * xAxis + vector3D.Y * yAxis + vector3D.Z * zAxis;
             return moveVector;
+        }
+
+        private class SnappedPrimitivesCollection : ReadOnlyObservableCollection<SnappedPrimitive>
+        {
+            public SnappedPrimitivesCollection(ObservableCollection<SnappedPrimitive> list)
+                : base(list)
+            {
+            }
+
+            public void RaiseReset()
+            {
+                base.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
         }
     }
 }
