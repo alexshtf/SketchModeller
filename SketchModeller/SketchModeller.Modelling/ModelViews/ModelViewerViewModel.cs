@@ -162,7 +162,7 @@ namespace SketchModeller.Modelling.ModelViews
             return moveVector;
         }
 
-        private class SnappedPrimitivesCollection : ReadOnlyObservableCollection<SnappedPrimitive>
+        public class SnappedPrimitivesCollection : ReadOnlyObservableCollection<SnappedPrimitive>
         {
             public SnappedPrimitivesCollection(ObservableCollection<SnappedPrimitive> list)
                 : base(list)

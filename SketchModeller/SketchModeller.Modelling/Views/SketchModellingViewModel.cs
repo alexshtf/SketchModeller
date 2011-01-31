@@ -20,6 +20,8 @@ using SketchModeller.Infrastructure.Services;
 using SketchModeller.Infrastructure;
 using System.Collections.Specialized;
 
+using SnappedPrimitivesCollection = SketchModeller.Modelling.ModelViews.ModelViewerViewModel.SnappedPrimitivesCollection;
+
 namespace SketchModeller.Modelling.Views
 {
     public class SketchModellingViewModel : NotificationObject, IWeakEventListener
@@ -55,6 +57,7 @@ namespace SketchModeller.Modelling.Views
 
             uiState.AddListener(this, () => uiState.SketchPlane);
             eventAggregator.GetEvent<SketchClickEvent>().Subscribe(OnSketchClick);
+            eventAggregator.GetEvent<SnapCompleteEvent>().Subscribe(OnSnapComplete);
 
             sketchPlane = uiState.SketchPlane;
 
@@ -63,7 +66,7 @@ namespace SketchModeller.Modelling.Views
                 sessionData.NewPrimitives, 
                 NewPrimitiveDataToNewPrimitiveViewModel);
 
-            SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(sessionData.SnappedPrimitives);
+            SnappedPrimitives = new SnappedPrimitivesCollection(sessionData.SnappedPrimitives);
         }
 
         public ObservableCollection<NewPrimitiveViewModel> NewPrimitiveViewModels { get; private set; }
@@ -111,6 +114,11 @@ namespace SketchModeller.Modelling.Views
             if (result != null)
                 result.Model = data;
             return result;
+        }
+
+        private void OnSnapComplete(object payload)
+        {
+            ((SnappedPrimitivesCollection)SnappedPrimitives).RaiseReset();
         }
 
         private void OnSketchClick(SketchClickInfo info)
