@@ -97,7 +97,6 @@
     <Compile Include="ShapeHelper.cs" />
     <Compile Include="TermUtils.cs" />
     <Compile Include="TMatrix.cs" />
-    <Compile Include="TVec.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AlgLib\AlgLib.csproj">

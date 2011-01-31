@@ -6,7 +6,7 @@ using AutoDiff;
 using System.Diagnostics.Contracts;
 using Utils;
 
-namespace SketchModeller.Utilities
+namespace AutoDiff
 {
     /// <summary>
     /// A column vector made of terms.

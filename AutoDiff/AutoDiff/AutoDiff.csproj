@@ -81,6 +81,7 @@
     <Compile Include="Sum.cs" />
     <Compile Include="Term.cs" />
     <Compile Include="TermBuilder.cs" />
+    <Compile Include="TVec.cs" />
     <Compile Include="Variable.cs" />
     <Compile Include="Zero.cs" />
   </ItemGroup>
