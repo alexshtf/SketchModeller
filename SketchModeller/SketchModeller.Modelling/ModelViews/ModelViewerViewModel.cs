@@ -27,8 +27,8 @@ namespace SketchModeller.Modelling.ModelViews
 
         public ModelViewerViewModel()
         {
-            Position = new Point3D(0, 0, -4);
-            LookDirection = new Vector3D(0, 0, 1);
+            Position = new Point3D(0, 0, 4);
+            LookDirection = new Vector3D(0, 0, -1);
             UpDirection = new Vector3D(0, 1, 0);
             Primitives = new ReadOnlyObservableCollection<NewPrimitive>(new ObservableCollection<NewPrimitive>());
             SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(new ObservableCollection<SnappedPrimitive>());

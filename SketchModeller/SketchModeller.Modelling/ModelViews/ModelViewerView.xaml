@@ -81,17 +81,19 @@
                                         Color="White" />
                         </ModelVisual3D.Content>
                     </ModelVisual3D>
-                    <cp:Axes Color="Blue"
-                             Extent="2"
-                             Thickness="0.01"
-                             LargeTick="0.02"
-                             SmallTick="0.01" />
-                    <skm:CloningVisual3D x:Name="primitivesDisplay"
-                                         Visual3DFactory="{x:Static local:ModelViewerFactory.Instance}"
-                                         ItemsSource="{Binding Primitives}"/>
-                    <skm:CloningVisual3D x:Name="snappedPrimitivesDisplay"
-                                         Visual3DFactory="{x:Static local:ModelViewerSnappedFactory.Instance}"
-                                         ItemsSource="{Binding SnappedPrimitives}" />
+                    <ModelVisual3D>
+                        <ModelVisual3D.Transform>
+                            <ScaleTransform3D ScaleZ="-1" />
+                        </ModelVisual3D.Transform>
+                        <ModelVisual3D.Children>
+                            <skm:CloningVisual3D x:Name="primitivesDisplay"
+                                                 Visual3DFactory="{x:Static local:ModelViewerFactory.Instance}"
+                                                 ItemsSource="{Binding Primitives}"/>
+                            <skm:CloningVisual3D x:Name="snappedPrimitivesDisplay"
+                                                 Visual3DFactory="{x:Static local:ModelViewerSnappedFactory.Instance}"
+                                                 ItemsSource="{Binding SnappedPrimitives}" />
+                        </ModelVisual3D.Children>
+                    </ModelVisual3D>
                 </Viewport3D.Children>
             </Viewport3D>
         </Border>
