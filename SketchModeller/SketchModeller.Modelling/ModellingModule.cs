@@ -47,6 +47,7 @@ namespace SketchModeller.Modelling
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(OpenImageView));
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(DisplayOptionsView));
             regionManager.RegisterViewWithRegion(RegionNames.ToolBar, typeof(PrimitivesToolbar));
+            regionManager.RegisterViewWithRegion(RegionNames.ToolBar, typeof(CurvesToolbarView));
             regionManager.RegisterViewWithRegion(RegionNames.Model, typeof(ModelViewerView));
 
             var sketchPlanesView = container.Resolve<SketchPlanesView>();

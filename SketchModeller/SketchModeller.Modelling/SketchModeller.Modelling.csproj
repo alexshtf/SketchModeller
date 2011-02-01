@@ -145,6 +145,10 @@
     </Compile>
     <Compile Include="Views\AnnotationsViewModel.cs" />
     <Compile Include="Views\BaseNewPrimitiveView.cs" />
+    <Compile Include="Views\CurvesToolbarView.xaml.cs">
+      <DependentUpon>CurvesToolbarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CurvesToolbarViewModel.cs" />
     <Compile Include="Views\DisplayOptionsView.xaml.cs">
       <DependentUpon>DisplayOptionsView.xaml</DependentUpon>
     </Compile>
@@ -195,6 +199,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AnnotationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CurvesToolbarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -19,6 +19,7 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
+using SketchModeller.Infrastructure.Data;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -27,7 +28,9 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchImageView 
     {
-        private static readonly Brush SKETCH_STROKE = Brushes.Black;
+        private static readonly Brush SKETCH_STROKE_UNCATEGORIZED = Brushes.Red;
+        private static readonly Brush SKETCH_STROKE_FEATURE = Brushes.Black;
+        private static readonly Brush SKETCH_STROKE_SILHOUETTE = Brushes.DarkGray;
 
         private static readonly Cursor ADD_CURSOR;
         private static readonly Cursor REMOVE_CURSOR;
@@ -128,7 +131,24 @@ namespace SketchModeller.Modelling.Views
             var path = new Path();
             path.Data = geometry;
             path.DataContext = polylineData;
-            path.Stroke = SKETCH_STROKE;
+            BindingOperations.SetBinding(path, Path.StrokeProperty, new Binding
+                {
+                    Path = new PropertyPath("CurveCategory"),
+                    Converter = new DelegateConverter<CurveCategories>(category =>
+                    {
+                        switch (category)
+                        {
+                            case CurveCategories.None:
+                                return SKETCH_STROKE_UNCATEGORIZED;
+                            case CurveCategories.Feature:
+                                return SKETCH_STROKE_FEATURE;
+                            case CurveCategories.Silhouette:
+                                return SKETCH_STROKE_SILHOUETTE;
+                            default:
+                                return Binding.DoNothing;
+                        }
+                    }),
+                });
             BindingOperations.SetBinding(path, Path.StrokeThicknessProperty, new Binding
                 {
                     Path = new PropertyPath("IsSelected"),

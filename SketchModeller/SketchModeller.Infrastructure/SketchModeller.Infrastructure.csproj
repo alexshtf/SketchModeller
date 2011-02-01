@@ -96,6 +96,7 @@
     <Compile Include="CheckedMenuCommandData.cs" />
     <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\Coplanarity.cs" />
+    <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\NewCylinder.cs" />
     <Compile Include="Data\NewHalfSphere.cs" />
     <Compile Include="Data\NewPrimitive.cs" />

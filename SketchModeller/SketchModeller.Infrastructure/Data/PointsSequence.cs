@@ -28,6 +28,22 @@ namespace SketchModeller.Infrastructure.Data
                 Points = points.ToArray();
         }
 
+        #region CurveCategory property
+
+        private CurveCategories curveCategory;
+
+        public CurveCategories CurveCategory
+        {
+            get { return curveCategory; }
+            set
+            {
+                curveCategory = value;
+                RaisePropertyChanged(() => CurveCategory);
+            }
+        }
+
+        #endregion
+
         #region IsSelected property
 
         [NonSerialized]
