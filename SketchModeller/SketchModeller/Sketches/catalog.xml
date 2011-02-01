@@ -3,4 +3,7 @@
   <sketch name="sketch1"
           file="sketch1.svg"
           modelFile="sketch1.model"/>
+  <sketch name="table"
+          file="table_plain.svg"
+          modelFile="table.model"/>
 </catalog>
