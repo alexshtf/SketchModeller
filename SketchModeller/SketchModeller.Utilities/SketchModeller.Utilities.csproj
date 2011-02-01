@@ -89,6 +89,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Optimizer.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="RotationHelper.cs" />
     <Compile Include="ShapeHelper.cs" />
     <Compile Include="TermUtils.cs" />
+    <Compile Include="VariableVectorsWriter.cs" />
     <Compile Include="TMatrix.cs" />
     <Compile Include="VectorsReader.cs" />
     <Compile Include="VectorsWriter.cs" />

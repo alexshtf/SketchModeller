@@ -15,5 +15,11 @@ namespace Utils
                 result[i] = new T();
             return result;
         }
+
+        public static void RotateRight<T>(T[] array)
+        {
+            Array.Reverse(array, 0, array.Length - 1);
+            Array.Reverse(array);
+        }
     }
 }

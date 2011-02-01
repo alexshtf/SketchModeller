@@ -17,7 +17,7 @@ namespace SketchModeller.Infrastructure.Data
         
         #endregion
 
-        #region Optimization data
+        #region Optimization variables
 
         public TVec BottomCenter { get; set; }
         public TVec Axis { get; set; }
@@ -34,6 +34,20 @@ namespace SketchModeller.Infrastructure.Data
         public Vector3D AxisNormalResult { get; set; }
         public double LengthResult { get; set; }
         public double RadiusResult { get; set; }
+        
+        #endregion
+
+        #region Helper properties
+
+        public Point3D TopCenterResult
+        {
+            get { return BottomCenterResult + LengthResult * AxisResult; }
+        }
+
+        public TVec GetTopCenter()
+        {
+            return BottomCenter + Length * Axis;
+        }
 
         #endregion
     }

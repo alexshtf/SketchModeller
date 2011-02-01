@@ -68,12 +68,14 @@ namespace SketchModeller.Utilities
         {
             Contract.Requires(Contract.ForAll(vecs, vec => vec != null));
             Contract.Requires(Contract.ForAll(vecs, vec => vec.Dimension == 3));
-            Contract.Requires(vecs.Length == 4);
 
-            var rows = vecs.Select(vec => new TVec(vec, 1));
-            var mat = new TMatrix(rows);
-
-            return mat.GetDeterminant();
+            var a = vecs[0];
+            var b = vecs[1];
+            var c = vecs[2];
+            var d = vecs[3];
+            
+            var dot = TVec.CrossProduct(b - a, c - a) * (d - a); // the normal to (b-a) and (c-a) is also normal of (d-a)
+            return dot;
         }
 
         /// <summary>
