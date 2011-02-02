@@ -227,14 +227,16 @@ namespace SketchModeller.Modelling.Services.Snap
             return new TVec(new Variable(), new Variable(), new Variable());
         }
 
-        private Dictionary<PointsSequence, CurveCategory> Categorize(IEnumerable<PointsSequence> sequences, params CurveCategory[] categories)
+        private Dictionary<PointsSequence, CurveCategory> Categorize(
+            Dictionary<PointsSequence, CurveCategory> inputWithInitialCategorization, 
+            params CurveCategory[] categories)
         {
             // create viewmode/view for the categorizer window
             var categorizerVM = container.Resolve<CategorizerViewModel>();
             var categorizerView = container.Resolve<CategorizerView>(new DependencyOverride<CategorizerViewModel>(categorizerVM));
 
             // display the categorizer window with the correct data
-            categorizerVM.Setup(sequences, categories);
+            categorizerVM.Setup(inputWithInitialCategorization, categories);
             categorizerView.ShowDialog();
 
             // extract data from the categorizer

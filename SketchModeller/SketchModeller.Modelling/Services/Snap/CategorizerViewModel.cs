@@ -25,14 +25,14 @@ namespace SketchModeller.Modelling.Services.Snap
             Sequences = new ObservableCollection<PointsSequence>();
         }
 
-        public void Setup(IEnumerable<PointsSequence> sequences, Snapper.CurveCategory[] categories)
+        public void Setup(Dictionary<PointsSequence, Snapper.CurveCategory> sequencesWithInitialCategories, Snapper.CurveCategory[] categories)
         {
-            Contract.Requires(sequences != null);
-            Contract.Requires(!sequences.IsEmpty());
+            Contract.Requires(sequencesWithInitialCategories != null);
+            Contract.Requires(!sequencesWithInitialCategories.IsEmpty());
             Contract.Requires(categories != null);
             Contract.Requires(categories.Length > 0);
 
-            var points = sequences.SelectMany(x => x.Points).ToArray();
+            var points = sequencesWithInitialCategories.Keys.SelectMany(x => x.Points).ToArray();
             MinX = points.Min(p => p.X);
             MaxX = points.Max(p => p.X);
             MinY = points.Min(p => p.Y);
@@ -45,12 +45,20 @@ namespace SketchModeller.Modelling.Services.Snap
                 CategoriesChanged(this, EventArgs.Empty);
 
             Sequences.Clear();
-            Sequences.AddRange(sequences);
+            Sequences.AddRange(sequencesWithInitialCategories.Keys);
 
             Result.Clear();
+            foreach (var pair in sequencesWithInitialCategories)
+            {
+                var sequence = pair.Key;
+                var category = pair.Value;
+                if (category != null)
+                    Result.Add(sequence, category);
+            }
             IsFinished = false;
 
             ((DelegateCommand)Finish).RaiseCanExecuteChanged();
+            RaiseAssignmentChanged();
         }
 
         #region Communication with client
@@ -221,9 +229,7 @@ namespace SketchModeller.Modelling.Services.Snap
             foreach (var seq in selectedSequences)
                 Result[seq] = SelectedCategory;
 
-            if (AssignmentChanged != null)
-                AssignmentChanged(this, EventArgs.Empty);
-
+            RaiseAssignmentChanged();
             ((DelegateCommand)Finish).RaiseCanExecuteChanged();
         }
 
@@ -236,5 +242,11 @@ namespace SketchModeller.Modelling.Services.Snap
         }
 
         #endregion
+        
+        private void RaiseAssignmentChanged()
+        {
+            if (AssignmentChanged != null)
+                AssignmentChanged(this, EventArgs.Empty);
+        }
     }
 }

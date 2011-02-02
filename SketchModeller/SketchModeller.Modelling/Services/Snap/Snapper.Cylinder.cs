@@ -64,7 +64,20 @@ namespace SketchModeller.Modelling.Services.Snap
             var circleCategory = new CurveCategory("Circle");
             var silhouetteCategory = new CurveCategory("Silhouette");
 
-            var categories = Categorize(allSequences, circleCategory, silhouetteCategory);
+            // compute initial categories
+            var seqDictionary = allSequences.ToDictionary(
+                seq => seq,
+                seq =>
+                {
+                    if (seq.CurveCategory == CurveCategories.Feature)
+                        return circleCategory;
+                    else if (seq.CurveCategory == CurveCategories.Silhouette)
+                        return silhouetteCategory;
+                    else
+                        return null;
+                });
+
+            var categories = Categorize(seqDictionary, circleCategory, silhouetteCategory);
             if (categories != null)
             {
                 var circles = categories.Where(x => x.Value == circleCategory).Select(x => x.Key).ToArray();

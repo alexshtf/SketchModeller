@@ -18,26 +18,9 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly Random random = new Random();
         private Dictionary<Snapper.CurveCategory, Brush> categoryBrushes = new Dictionary<Snapper.CurveCategory, Brush>();
 
-        public void UpdateCategories(IEnumerable<Snapper.CurveCategory> categories)
+        public void UpdateCategories(Dictionary<Snapper.CurveCategory, Brush> newCategoryBrushes)
         {
-            Contract.Requires(categories != null);
-            Contract.Requires(Contract.ForAll(categories, item => item != null));
-
-            categoryBrushes = new Dictionary<Snapper.CurveCategory, Brush>();
-            foreach (var category in categories)
-            {
-                // generate random RGB values
-                var rgb = new byte[3];
-                random.NextBytes(rgb);
-
-                // create a brush from the above values
-                var color = new Color { R = rgb[0], G = rgb[1], B = rgb[2], A = 255 };
-                var brush = new SolidColorBrush { Color = color };
-                brush.Freeze();
-
-                // specify this random-colored brush as the category's 
-                categoryBrushes[category] = brush;
-            }
+            categoryBrushes = newCategoryBrushes;
         }
 
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)

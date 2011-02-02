@@ -25,8 +25,23 @@ namespace SketchModeller.Modelling.Services.Snap
     /// </summary>
     public partial class CategorizerView
     {
+        private static readonly Brush[] CATEGORY_BRUSHES;
+
         private CategorizerViewModel viewModel;
         private PathBrushConverter pathBrushConverter;
+        private Dictionary<Snapper.CurveCategory, Brush> categoryBrushes;
+
+        static CategorizerView()
+        {
+            CATEGORY_BRUSHES = new Brush[]
+            {
+                Brushes.Orange,
+                Brushes.Purple,
+                Brushes.Green,
+                Brushes.SandyBrown,
+                Brushes.SandyBrown,
+            };
+        }
 
         public CategorizerView()
         {
@@ -56,31 +71,40 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void viewModel_AssignmentChanged(object sender, EventArgs e)
         {
-            foreach (var sequence in viewModel.Sequences)
-            {
-                // get the category assigned to this sequence
-                Snapper.CurveCategory category;
-                viewModel.Result.TryGetValue(sequence, out category);
+            Action setCategories = () =>
+                {
+                    foreach (var sequence in viewModel.Sequences)
+                    {
+                        // get the category assigned to this sequence
+                        Snapper.CurveCategory category;
+                        viewModel.Result.TryGetValue(sequence, out category);
 
-                // get the visual item assigned to this sequence.
-                var container = paths.ItemContainerGenerator.ContainerFromItem(sequence);
-                Debug.Assert(container != null); // we should have a visual object for each item. we do not use virtualization
+                        // get the visual item assigned to this sequence.
+                        var container = paths.ItemContainerGenerator.ContainerFromItem(sequence);
+                        Debug.Assert(container != null); // we should have a visual object for each item. we do not use virtualization
 
-                // find the polygon/polyline path under the above container
-                var polygon = container.VisualTree().OfType<Polygon>().FirstOrDefault();
-                var polyline = container.VisualTree().OfType<Polyline>().FirstOrDefault();
-                Contract.Assume(polyline != null || polygon != null); // we should have a polyline or a polygon for each item
+                        // find the polygon/polyline path under the above container
+                        var polygon = container.VisualTree().OfType<Polygon>().FirstOrDefault();
+                        var polyline = container.VisualTree().OfType<Polyline>().FirstOrDefault();
+                        Contract.Assume(polyline != null || polygon != null); // we should have a polyline or a polygon for each item
 
-                // set the category of the path so that the appropriate visual changed will be reflected.
-                var drawing = polygon != null ? (DependencyObject)polygon 
-                                              : (DependencyObject)polyline;
-                SetCategory(drawing, category);
-            }
+                        // set the category of the path so that the appropriate visual changed will be reflected.
+                        var drawing = polygon != null ? (DependencyObject)polygon
+                                                      : (DependencyObject)polyline;
+                        SetCategory(drawing, category);
+                    }
+                };
+            Dispatcher.BeginInvoke(setCategories);
         }
 
         private void viewModel_CategoriesChanged(object sender, EventArgs e)
         {
-            pathBrushConverter.UpdateCategories(viewModel.Categories);
+            categoryBrushes = new Dictionary<Snapper.CurveCategory, Brush>();
+            foreach (var i in System.Linq.Enumerable.Range(0, viewModel.Categories.Count))
+                categoryBrushes[viewModel.Categories[i]] = CATEGORY_BRUSHES[i];
+
+            categoriesLegend.ItemsSource = categoryBrushes;
+            pathBrushConverter.UpdateCategories(categoryBrushes);
         }
 
         #endregion
