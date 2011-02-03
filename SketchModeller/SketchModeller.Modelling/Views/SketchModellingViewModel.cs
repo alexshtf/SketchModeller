@@ -21,6 +21,7 @@ using SketchModeller.Infrastructure;
 using System.Collections.Specialized;
 
 using SnappedPrimitivesCollection = SketchModeller.Modelling.ModelViews.ModelViewerViewModel.SnappedPrimitivesCollection;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -147,8 +148,50 @@ namespace SketchModeller.Modelling.Views
                 };
                 sessionData.NewPrimitives.Add(hsData);
             }
+            if (uiState.Tool == Tool.Duplicate)
+            {
+                var selectedNewPrimitive = sessionData.SelectedNewPrimitives.FirstOrDefault();
+                if (selectedNewPrimitive != null)
+                {
+                    var point3d = GetClickPoint(info);
+                    var duplicate = Duplicate(selectedNewPrimitive, point3d);
+                    sessionData.NewPrimitives.Add(duplicate);
+                }
+            }
             uiState.Tool = Tool.Manipulation;
 
+        }
+
+        private NewPrimitive Duplicate(NewPrimitive selectedNewPrimitive, Point3D point3d)
+        {
+            Contract.Requires(selectedNewPrimitive != null);
+            Contract.Ensures(Contract.Result<NewPrimitive>() != null);
+            Contract.Ensures(Contract.Result<NewPrimitive>().GetType() == selectedNewPrimitive.GetType());
+
+            NewPrimitive duplicate = null;
+            selectedNewPrimitive.MatchClass<NewCylinder>(cylinder =>
+                {
+                    duplicate = new NewCylinder
+                    {
+                        Center = point3d,
+                        Axis = cylinder.Axis,
+                        Length = cylinder.Length,
+                        Diameter = cylinder.Diameter,
+                    };
+                });
+            selectedNewPrimitive.MatchClass<NewHalfSphere>(halfsphere =>
+                {
+                    duplicate = new NewHalfSphere
+                    {
+                        Center = point3d,
+                        Radius = halfsphere.Radius,
+                        Axis = halfsphere.Axis,
+                        Length = halfsphere.Length,
+                    };
+                });
+            
+            Contract.Assert(duplicate != null);
+            return duplicate;
         }
 
         private System.Windows.Media.Media3D.Point3D GetClickPoint(SketchClickInfo info)

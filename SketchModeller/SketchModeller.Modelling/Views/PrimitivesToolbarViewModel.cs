@@ -155,7 +155,7 @@ namespace SketchModeller.Modelling.Views
         {
             get
             {
-                bool[] flags = { IsManipulationMode, IsCylinderMode, IsHalfSphereMode };
+                bool[] flags = { IsManipulationMode, IsCylinderMode, IsHalfSphereMode, IsDuplicateMode };
                 return flags.Count(flag => flag == true);
             }
         }
