@@ -7,17 +7,29 @@ using SketchModeller.Infrastructure.Data;
 using System.Windows;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using Utils;
 
 namespace SketchModeller.Infrastructure.Shared
 {
     public class SessionData : NotificationObject
     {
+        private readonly SelectionListener<NewPrimitive> newPrimitivesSelectionListener;
+        private readonly SelectionListener<PointsSequence> sketchObjectsSelectionListener;
+
         public SessionData()
         {
             NewPrimitives = new ObservableCollection<NewPrimitive>();
             SnappedPrimitives = new ObservableCollection<SnappedPrimitive>();
             Annotations = new ObservableCollection<Annotation>();
             sketchObjects = new PointsSequence[0];
+
+            newPrimitivesSelectionListener = new SelectionListener<NewPrimitive>(NewPrimitives, p => p.IsSelected);
+            sketchObjectsSelectionListener = new SelectionListener<PointsSequence>(sketchObjects, o => o.IsSelected);
+
+            SelectedNewPrimitives = newPrimitivesSelectionListener.SelectedItems;
+            SelectedSketchObjects = sketchObjectsSelectionListener.SelectedItems;
         }
 
         #region SketchData property
@@ -75,9 +87,14 @@ namespace SketchModeller.Infrastructure.Shared
             {
                 sketchObjects = value;
                 RaisePropertyChanged(() => SketchObjects);
+                sketchObjectsSelectionListener.Reset(value);
             }
         }
 
         #endregion
+
+        public ReadOnlyObservableCollection<NewPrimitive> SelectedNewPrimitives { get; private set; }
+        public ReadOnlyObservableCollection<PointsSequence> SelectedSketchObjects { get; private set; }
+
     }
 }

@@ -11,5 +11,6 @@ namespace SketchModeller.Infrastructure.Shared
         InsertCylinder,
         InsertHalfSphere,
         InsertCone,
+        Duplicate,
     }
 }

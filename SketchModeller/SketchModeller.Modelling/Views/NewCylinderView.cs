@@ -9,6 +9,7 @@ using System.Windows;
 using System.Diagnostics.Contracts;
 using Utils;
 using System.ComponentModel;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {

@@ -11,6 +11,7 @@ using SketchModeller.Infrastructure.Data;
 using System.ComponentModel;
 using Utils;
 using SketchModeller.Infrastructure.Events;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {

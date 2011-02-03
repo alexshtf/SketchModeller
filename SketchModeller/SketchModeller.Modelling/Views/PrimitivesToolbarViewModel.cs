@@ -25,6 +25,7 @@ namespace SketchModeller.Modelling.Views
             manipulationBlocker = new Blocker();
             cylinderBlocker = new Blocker();
             halfSphereBlocker = new Blocker();
+            duplicateBlocker = new Blocker();
             isManipulationMode = true;
         }
 
@@ -112,6 +113,27 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        #region IsDuplicateMode property
+
+        private bool isDuplicateMode;
+        private Blocker duplicateBlocker;
+
+        public bool IsDuplicateMode
+        {
+            get { return isDuplicateMode; }
+            set
+            {
+                duplicateBlocker.Do(() =>
+                    {
+                        isDuplicateMode = value;
+                        RaisePropertyChanged(() => IsDuplicateMode);
+                        uiState.Tool = Tool.Duplicate;
+                    });
+            }
+        }
+
+        #endregion
+
         public ICommand SnapCommand { get; set; }
 
         #region snap command handlers
@@ -148,6 +170,7 @@ namespace SketchModeller.Modelling.Views
             manipulationBlocker.Do(() => RaisePropertyChanged(() => IsManipulationMode));
             cylinderBlocker.Do(() => RaisePropertyChanged(() => IsCylinderMode));
             halfSphereBlocker.Do(() => RaisePropertyChanged(() => IsHalfSphereMode));
+            duplicateBlocker.Do(() => RaisePropertyChanged(() => IsDuplicateMode));
 
             return true;
         }
@@ -157,6 +180,7 @@ namespace SketchModeller.Modelling.Views
             isManipulationMode = uiState.Tool == Tool.Manipulation;
             isCylinderMode = uiState.Tool == Tool.InsertCylinder;
             isHalfSphereMode = uiState.Tool == Tool.InsertHalfSphere;
+            isDuplicateMode = uiState.Tool == Tool.Duplicate;
         }
     }
 }

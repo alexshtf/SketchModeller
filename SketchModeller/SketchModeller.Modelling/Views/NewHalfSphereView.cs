@@ -9,6 +9,7 @@ using SketchModeller.Utilities;
 using System.Windows;
 using System.Windows.Media;
 using System.ComponentModel;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {

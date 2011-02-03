@@ -13,6 +13,7 @@ using SketchModeller.Infrastructure.Shared;
 using System.ComponentModel;
 using Utils;
 using System.Windows;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {

@@ -124,7 +124,6 @@
     <Compile Include="ModelViews\ModelViewerViewModel.cs" />
     <Compile Include="PCA.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyChangedEventManagerHelper.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />

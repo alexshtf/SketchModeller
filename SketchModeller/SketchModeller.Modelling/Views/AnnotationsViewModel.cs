@@ -111,23 +111,13 @@ namespace SketchModeller.Modelling.Views
 
         private void AddAnnotation(Func<PointsSequence[], Annotation> factory)
         {
-            var selectedElements = GetSelectedElements();
+            var selectedElements = sessionData.SelectedSketchObjects.ToArray();
             if (selectedElements.Length > 0)
             {
                 var annotation = factory(selectedElements);
                 Annotations.Add(annotation);
                 SelectedAnnotationIndex = Annotations.Count - 1;
             }
-        }
-
-        private PointsSequence[] GetSelectedElements()
-        {
-            var result =
-                from item in sessionData.SketchObjects
-                where item.IsSelected == true
-                select item;
-
-            return result.ToArray();
         }
 
         #endregion

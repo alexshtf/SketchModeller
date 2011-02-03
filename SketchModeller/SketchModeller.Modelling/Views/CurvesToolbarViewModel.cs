@@ -43,10 +43,7 @@ namespace SketchModeller.Modelling.Views
 
         private void MarkAs(CurveCategories newCategory)
         {
-            var selectedCurves = from curve in sessionData.SketchObjects
-                                 where curve.IsSelected == true
-                                 select curve;
-            foreach (var curve in selectedCurves)
+            foreach (var curve in sessionData.SelectedSketchObjects)
                 curve.CurveCategory = newCategory;
         }
 

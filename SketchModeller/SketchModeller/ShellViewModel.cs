@@ -14,6 +14,7 @@ using Utils;
 using SketchModeller.Infrastructure.Data;
 using System.Windows.Media.Media3D;
 using Microsoft.Practices.Unity;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller
 {
