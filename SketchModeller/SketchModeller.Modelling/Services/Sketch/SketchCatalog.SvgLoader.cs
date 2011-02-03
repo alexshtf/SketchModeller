@@ -24,19 +24,16 @@ namespace SketchModeller.Modelling.Services.Sketch
             {
                 Contract.Assume(figure.Segments.Cast<PolyLineSegment>().Count() == 1);
 
-                var wpfPoints = new List<System.Windows.Point>();
-                wpfPoints.Add(figure.StartPoint);
+                var points = new List<Point>();
+                points.Add(figure.StartPoint);
 
                 var segment = figure.Segments.Cast<PolyLineSegment>().First();
-                wpfPoints.AddRange(segment.Points);
-
-                var modelPoints = from pnt in wpfPoints
-                                  select new Point { X = pnt.X, Y = pnt.Y };
+                points.AddRange(segment.Points);
 
                 if (figure.IsClosed)
-                    polygons.Add(new Polygon(modelPoints));
+                    polygons.Add(new Polygon(points));
                 else
-                    polylines.Add(new Polyline(modelPoints));
+                    polylines.Add(new Polyline(points));
             }
 
             var result = new VectorImageData
@@ -72,6 +69,8 @@ namespace SketchModeller.Modelling.Services.Sketch
             var ty = (maxY + minY) / 2;
             var sy = (maxY - minY) / 2;
 
+            var scale = Math.Max(sx, sy);
+
             foreach (var seq in sequences)
             {
                 foreach(var idx in System.Linq.Enumerable.Range(0, seq.Points.Length))
@@ -84,9 +83,9 @@ namespace SketchModeller.Modelling.Services.Sketch
                     point.Y = point.Y - ty;
 
                     if (sx > 0)
-                        point.X = point.X / sx;
+                        point.X = point.X / scale;
                     if (sy > 0)
-                        point.Y = point.Y / sy;
+                        point.Y = point.Y / scale;
                     
                     // put the modified point
                     seq.Points[idx] = point;
