@@ -35,23 +35,9 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public void Snap()
         {
-            var selectedPolylines =
-                (from polyline in sessionData.SketchObjects.OfType<Polyline>()
-                 where polyline.IsSelected == true
-                 select polyline
-                ).ToArray();
-
-            var selectedPolygons =
-                (from polygon in sessionData.SketchObjects.OfType<Polygon>()
-                 where polygon.IsSelected == true
-                 select polygon
-                ).ToArray();
-
-            var selectedCylinder =
-                (from cylinder in sessionData.NewPrimitives.OfType<NewCylinder>()
-                 where cylinder.IsSelected == true
-                 select cylinder
-                ).FirstOrDefault();
+            var selectedPolylines = sessionData.SelectedSketchObjects.OfType<Polyline>().ToArray();
+            var selectedPolygons = sessionData.SelectedSketchObjects.OfType<Polygon>().ToArray();
+            var selectedCylinder = sessionData.SelectedNewPrimitives.OfType<NewCylinder>().FirstOrDefault();
 
             // TODO: Find selected primitives of other kinds
 
