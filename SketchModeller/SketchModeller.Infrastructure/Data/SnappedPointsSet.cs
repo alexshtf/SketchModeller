@@ -12,22 +12,22 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class SnappedPointsSet
     {
-        public SnappedPointsSet(IEnumerable<TVec> pointTerms, PointsSequence snappedTo)
+        public SnappedPointsSet(TVec center, TVec axis, Term radius, PointsSequence snappedTo)
         {
-            Contract.Requires(pointTerms != null);
-            Contract.Requires(!pointTerms.IsEmpty());
-            Contract.Requires(Contract.ForAll(pointTerms, t => t != null));
+            Contract.Requires(center != null);
+            Contract.Requires(axis != null);
+            Contract.Requires(radius != null);
             Contract.Requires(snappedTo != null);
 
-            Contract.Ensures(PointTerms.Count == pointTerms.Count());
-            Contract.Ensures(SnappedTo == snappedTo);
-            Contract.Ensures(Contract.ForAll(pointTerms, t => PointTerms.Contains(t)));
-
-            PointTerms = Array.AsReadOnly(pointTerms.ToArray());
+            Center = center;
+            Axis = axis;
+            Radius = radius;
             SnappedTo = snappedTo;
         }
 
-        public ReadOnlyCollection<TVec> PointTerms { get; private set; }
+        public TVec Center { get; private set; }
+        public TVec Axis { get; private set; }
+        public Term Radius { get; private set; }
         public PointsSequence SnappedTo { get; private set; }
     }
 }

@@ -61,13 +61,11 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 variablesWriter
                     .Write(snappedCylinder.Axis)
-                    .Write(snappedCylinder.AxisNormal)
                     .Write(snappedCylinder.BottomCenter)
                     .Write(snappedCylinder.Length)
                     .Write(snappedCylinder.Radius);
                 startVectorWriter
                     .Write(snappedCylinder.AxisResult)
-                    .Write(snappedCylinder.AxisNormalResult)
                     .Write(snappedCylinder.BottomCenterResult)
                     .Write(snappedCylinder.LengthResult)
                     .Write(snappedCylinder.RadiusResult);
@@ -82,25 +80,16 @@ namespace SketchModeller.Modelling.Services.Snap
             var startVector = startVectorWriter.ToArray();
             
             var minimizer = startVector;
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 minimizer = Optimizer.Minimize(annotationsObjective, variables, minimizer);
                 minimizer = Optimizer.Minimize(dataObjective, variables, minimizer);
             }
 
-            var finalTerm = TermUtils.SafeSum(dataTerms.Concat(annotationTerms));
-            minimizer = Optimizer.Minimize(finalTerm, variables, minimizer);
-            
-            var logMsg = string.Format("Value at start vector is {0}, value at minimizer is {1}",
-                Evaluator.Evaluate(finalTerm, variablesWriter.ToArray(), startVector),
-                Evaluator.Evaluate(finalTerm, variablesWriter.ToArray(), minimizer));
-            logger.Log(logMsg, Category.Info, Priority.None);
-
             var resultReader = new VectorsReader(minimizer);
             foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
             {
                 snappedCylinder.AxisResult = resultReader.ReadVector3D();
-                snappedCylinder.AxisNormalResult = resultReader.ReadVector3D();
                 snappedCylinder.BottomCenterResult = resultReader.ReadPoint3D();
                 snappedCylinder.LengthResult = resultReader.ReadValue();
                 snappedCylinder.RadiusResult = resultReader.ReadValue();
@@ -108,20 +97,21 @@ namespace SketchModeller.Modelling.Services.Snap
 
             foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
             {
-                var secondNormal = Vector3D.CrossProduct(snappedCylinder.AxisNormalResult, snappedCylinder.AxisResult);
+                var normal = MathUtils3D.NormalVector(snappedCylinder.AxisResult);
+                var secondNormal = Vector3D.CrossProduct(normal, snappedCylinder.AxisResult);
                 snappedCylinder.BottomCircle = CirclePoints(
                     snappedCylinder.BottomCenterResult,
-                    snappedCylinder.AxisNormalResult,
+                    normal,
                     secondNormal,
                     snappedCylinder.RadiusResult,
-                    20);
+                    50);
 
                 snappedCylinder.TopCircle = CirclePoints(
                     snappedCylinder.TopCenterResult,
-                    snappedCylinder.AxisNormalResult,
+                    normal,
                     secondNormal,
                     snappedCylinder.RadiusResult,
-                    20);
+                    50);
             }
         }
 
@@ -140,35 +130,29 @@ namespace SketchModeller.Modelling.Services.Snap
                 from snappedPrimitive in sessionData.SnappedPrimitives
                 from pointsSet in snappedPrimitive.SnappedPointsSets
                 where pointsSet.SnappedTo == curve
-                select pointsSet.PointTerms;
+                select pointsSet;
 
-            var pointsSets = new HashSet<ReadOnlyCollection<TVec>>(pointsSetsQuery);
-            if (pointsSets.Count < 2)
-                return 0;
-            else
+            var pointsSets = pointsSetsQuery.ToArray();
+
+            var terms = new List<Term>();
+            foreach (var pair in pointsSetsQuery.SeqPairs())
             {
-                var outerSumTerms = new List<Term>();
-                foreach (var pair in pointsSets.SeqPairs())
-                {
-                    var fstSet = pair.Item1;
-                    var sndSet = pair.Item2;
-                    var count = Math.Max(fstSet.Count, sndSet.Count);
-                    var innerSumTerms = new Term[count];
-                    for (int i = 0; i < count; ++i)
-                    {
-                        var p1 = fstSet[i % fstSet.Count];
-                        var p2 = fstSet[(i + 1) % fstSet.Count];
+                var fst = pair.Item1;
+                var snd = pair.Item2;
 
-                        var q1 = sndSet[i % sndSet.Count];
-                        var q2 = sndSet[(i + 1) % sndSet.Count];
+                var p1 = fst.Center;
+                var p2 = snd.Center;
 
-                        innerSumTerms[i] = TermBuilder.Power(GeometricTests.Coplanarity3D(p1, p2, q1, q2), 2);
-                    }
-                    var innerTerm = (1 / (double)count) * TermUtils.SafeSum(innerSumTerms);
-                    outerSumTerms.Add(innerTerm);
-                }
-                return TermUtils.SafeSum(outerSumTerms);
+                var n1 = fst.Axis;
+                var n2 = snd.Axis;
+
+                var diff = p1 - p2;
+                var numerator = TermBuilder.Power(diff * n1, 2) + TermBuilder.Power(diff * n2, 2);
+                var denominator = TermBuilder.Power(diff.NormSquared, -1);
+                terms.Add(numerator * denominator);
             }
+
+            return TermUtils.SafeSum(terms);
         }
 
         private Term GetConcreteAnnotationTerm(Parallelism parallelism)

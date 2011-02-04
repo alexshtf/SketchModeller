@@ -21,7 +21,6 @@ namespace SketchModeller.Infrastructure.Data
 
         public TVec BottomCenter { get; set; }
         public TVec Axis { get; set; }
-        public TVec AxisNormal { get; set; }
         public Variable Length { get; set; }
         public Variable Radius { get; set; }
 
@@ -31,7 +30,6 @@ namespace SketchModeller.Infrastructure.Data
 
         public Point3D BottomCenterResult { get; set; }
         public Vector3D AxisResult { get; set; }
-        public Vector3D AxisNormalResult { get; set; }
         public double LengthResult { get; set; }
         public double RadiusResult { get; set; }
         

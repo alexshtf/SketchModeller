@@ -30,32 +30,14 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var snappedCylinder = new SnappedCylinder();
             snappedCylinder.Axis = GenerateVarVector();
-            snappedCylinder.AxisNormal = GenerateVarVector();
             snappedCylinder.BottomCenter = GenerateVarVector();
             snappedCylinder.Length = new Variable();
             snappedCylinder.Radius = new Variable();
 
             snappedCylinder.AxisResult = selectedCylinder.Axis.Normalized();
-            snappedCylinder.AxisNormalResult = MathUtils3D.NormalVector(snappedCylinder.AxisResult);
             snappedCylinder.BottomCenterResult = selectedCylinder.Bottom;
             snappedCylinder.RadiusResult = selectedCylinder.Radius;
             snappedCylinder.LengthResult = selectedCylinder.Length;
-
-            var secondNormal = TVec.CrossProduct(snappedCylinder.Axis, snappedCylinder.AxisNormal);
-            var topCirclePoints =
-                CirclePoints(
-                    center: snappedCylinder.GetTopCenter(),
-                    u: snappedCylinder.AxisNormal,
-                    v: secondNormal,
-                    radius: snappedCylinder.Radius,
-                    count: CIRCLE_POINTS_COUNT);
-            var bottomCirclePoints =
-                CirclePoints(
-                    center: snappedCylinder.BottomCenter,
-                    u: snappedCylinder.AxisNormal,
-                    v: secondNormal,
-                    radius: snappedCylinder.Radius,
-                    count: CIRCLE_POINTS_COUNT);
 
             var allSequences = selectedPolylines.Cast<PointsSequence>().Concat(selectedPolygons).ToArray();
             snappedCylinder.SnappedTo = allSequences;
@@ -87,8 +69,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
                 snappedCylinder.SnappedPointsSets = new SnappedPointsSet[]
                 {
-                    new SnappedPointsSet(bottomCirclePoints, bottomCircle),
-                    new SnappedPointsSet(topCirclePoints, topCircle),
+                    new SnappedPointsSet(snappedCylinder.BottomCenter, snappedCylinder.Axis, snappedCylinder.Radius, bottomCircle),
+                    new SnappedPointsSet(snappedCylinder.GetTopCenter(), snappedCylinder.Axis, snappedCylinder.Radius, topCircle),
                 };
             }
             else
@@ -98,76 +80,55 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void UpdateDataTerm(SnappedCylinder snappedCylinder)
         {
-            var orthogonality =
-                TermBuilder.Power(snappedCylinder.Axis * snappedCylinder.AxisNormal, 2) *
-                TermBuilder.Power(snappedCylinder.Axis.NormSquared * snappedCylinder.AxisNormal.NormSquared, -1);
+            var terms =
+                from item in snappedCylinder.SnappedPointsSets
+                from term in ProjectionConstraint(item)
+                select term;
+            
+            var normalization = 10000 * TermBuilder.Power(snappedCylinder.Axis.NormSquared - 1, 2);
+            terms = terms.Append(normalization);
 
-            // TODO: Perform snapping to silhouette in the future. Meanwhile we snap only feature lines
-            var orthonormality =
-                orthogonality +
-                TermBuilder.Power(snappedCylinder.Axis.NormSquared - 1, 2) +
-                TermBuilder.Power(snappedCylinder.AxisNormal.NormSquared - 1, 2);
-
-            var variables =
-                new VariableVectorsWriter()
-                .Write(snappedCylinder.Axis)
-                .Write(snappedCylinder.AxisNormal)
-                .Write(snappedCylinder.BottomCenter)
-                .Write(snappedCylinder.Radius)
-                .Write(snappedCylinder.Length)
-                .ToArray();
-
-            var values =
-                new VectorsWriter()
-                .Write(snappedCylinder.AxisResult)
-                .Write(snappedCylinder.AxisNormalResult)
-                .Write(snappedCylinder.BottomCenterResult)
-                .Write(snappedCylinder.RadiusResult)
-                .Write(snappedCylinder.LengthResult)
-                .ToArray();
-
-            var projConstraints = new Term[snappedCylinder.SnappedPointsSets.Length];
-            for (int i = 0; i < projConstraints.Length; ++i)
-            {
-                var snappedPointsSet = snappedCylinder.SnappedPointsSets[i];
-                var terms = snappedPointsSet.PointTerms;
-                var curve = snappedPointsSet.SnappedTo;
-                var constraint = ProjectionConstraint(snappedCylinder, terms, curve, variables, values);
-                projConstraints[i] = constraint;
-            }
-
-            var finalTerm = TermBuilder.Sum(projConstraints.Append(orthonormality));
-            snappedCylinder.DataTerm = finalTerm;
+            snappedCylinder.DataTerm = TermUtils.SafeSum(terms);
         }
 
-        private Term ProjectionConstraint(
-            SnappedCylinder cylinder, 
-            ReadOnlyCollection<TVec> terms, 
-            PointsSequence curve,
-            Variable[] variables,
-            double[] values)
+        private IEnumerable<Term> ProjectionConstraint(SnappedPointsSet item)
         {
-            var sample = CurveSampler.UniformSample(curve, terms.Count);
-            var sampleTerms = sample.Select(pnt => new TVec(pnt.X, -pnt.Y)).ToArray();
-            var projTerms = terms.Select(vec => new TVec(vec[0], vec[1])).ToArray();
+            const int SAMPLE_SIZE = 3;
+            var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);
+            var terms =
+                from point in sample
+                from term in ProjectionConstraint(item, point)
+                select term;
 
-            var bestTerm = GeometricTests.DiffSquared(sampleTerms, projTerms);
-            var bestValue = Evaluator.Evaluate(bestTerm, variables, values);
-            int bestTermIndex = 0;
-            for (int i = 0; i < terms.Count - 1; ++i)
-            {
-                ArrayUtils.RotateRight(sampleTerms);
-                var term = GeometricTests.DiffSquared(sampleTerms, projTerms);
-                var value = Evaluator.Evaluate(term, variables, values);
-                if (value < bestValue)
-                {
-                    bestTerm = term;
-                    bestTermIndex = i + 1;
-                }
-            }
+            return terms;
+        }
 
-            var normalizationFactor = 1 / (double)terms.Count;
-            return normalizationFactor * bestTerm;
+        private IEnumerable<Term> ProjectionConstraint(SnappedPointsSet item, Point point)
+        {
+            // here we explicitly assume that the view vector is (0, 0, 1) or (0, 0, -1)
+            var x_ = point.X;
+            var y_ = point.Y;
+
+            var cx = item.Center.X;
+            var cy = item.Center.Y;
+            var cz = item.Center.Z;
+            
+            var nx = item.Axis.X;
+            var ny = item.Axis.Y;
+            var nz = item.Axis.Z;
+            
+            var r = item.Radius;
+
+            var dx = cx - x_;
+            var dy = cy + y_;
+
+            var lhs = TermBuilder.Sum(
+                TermBuilder.Power(dx * nz, 2),
+                TermBuilder.Power(dy * nz, 2),
+                TermBuilder.Power(dx * nx + dy * ny, 2));
+            var rhs = TermBuilder.Power(r * nz, 2);
+
+            yield return TermBuilder.Power(lhs - rhs, 2);
         }
 
         private void SelectCircles(NewCylinder selectedCylinder, PointsSequence[] circles, out PointsSequence topCircle, out PointsSequence bottomCircle)
@@ -187,18 +148,6 @@ namespace SketchModeller.Modelling.Services.Snap
 
             topCircle = circles.Minimizer(circle => distance(circle, top));
             bottomCircle = circles.Minimizer(circle => distance(circle, bottom));
-        }
-
-        private static TVec[] CirclePoints(TVec center, TVec u, TVec v, Term radius, int count)
-        {
-            var circlePoints = new TVec[count];
-            for (int i = 0; i < count; ++i)
-            {
-                var fraction = i / (double)count;
-                var angle = 2 * Math.PI * fraction;
-                circlePoints[i] = center + radius * (u * Math.Cos(angle) + v * Math.Sin(angle));
-            }
-            return circlePoints;
         }
 
         private static Point3D[] CirclePoints(Point3D center, Vector3D u, Vector3D v, double radius, int count)
