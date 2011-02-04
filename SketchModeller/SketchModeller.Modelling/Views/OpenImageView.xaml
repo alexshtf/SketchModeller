@@ -16,4 +16,5 @@
     </MenuItem.Resources>
     <MenuItem Header="Save" Command="{Binding SaveSketchCommand}" />
     <MenuItem Header="Load" ItemsSource="{Binding SketchNames}" ItemContainerStyle="{StaticResource itemContainerStyle}" />
+    <MenuItem Header="TestCase" Command="{Binding TestCase}" />
 </MenuItem>

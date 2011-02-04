@@ -113,6 +113,7 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
+    <Compile Include="Events\TestCaseEvent.cs" />
     <Compile Include="ModellingModule.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Cylinder.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Services\Snap\Snapper.Cylinder.cs" />
     <Compile Include="SketchLoader.cs" />
     <Compile Include="SketchSaver.cs" />
+    <Compile Include="TestCaseCreator.cs" />
     <Compile Include="ViewModel3DHelper.cs" />
     <Compile Include="ViewModelCollectionGenerator.cs" />
     <Compile Include="Views\AnnotationsView.xaml.cs">

@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Concurrency;
 using System.Diagnostics;
+using SketchModeller.Modelling.Events;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -26,6 +27,7 @@ namespace SketchModeller.Modelling.Views
             SketchNames = new ObservableCollection<string>();
             LoadSketchCommand = new DelegateCommand<string>(LoadSketchExecute);
             SaveSketchCommand = new DelegateCommand(SaveSketchExecute, SaveSketchCanExecute);
+            TestCase = new DelegateCommand(TestCaseExecute);
         }
 
         [InjectionConstructor]
@@ -49,6 +51,7 @@ namespace SketchModeller.Modelling.Views
 
         public ICommand LoadSketchCommand { get; private set; }
         public ICommand SaveSketchCommand { get; private set; }
+        public ICommand TestCase { get; private set; }
 
         private void LoadSketchExecute(string sketch)
         {
@@ -58,6 +61,11 @@ namespace SketchModeller.Modelling.Views
         private void SaveSketchExecute()
         {
             eventAggregator.GetEvent<SaveSketchEvent>().Publish(null);
+        }
+
+        private void TestCaseExecute()
+        {
+            eventAggregator.GetEvent<TestCaseEvent>().Publish(null);
         }
 
         private bool SaveSketchCanExecute()

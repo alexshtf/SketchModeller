@@ -114,7 +114,7 @@ namespace Utils
 
             var dot = Vector3D.DotProduct(v1, v2);
 
-            return Math.Abs(dot) < EPSILON;
+            return Math.Abs(dot) < 3 * NumericUtils.DBL_MACHINE_EPSILON;
         }
 
         /// <summary>

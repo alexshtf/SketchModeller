@@ -98,9 +98,13 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void UpdateDataTerm(SnappedCylinder snappedCylinder)
         {
+            var orthogonality =
+                TermBuilder.Power(snappedCylinder.Axis * snappedCylinder.AxisNormal, 2) *
+                TermBuilder.Power(snappedCylinder.Axis.NormSquared * snappedCylinder.AxisNormal.NormSquared, -1);
+
             // TODO: Perform snapping to silhouette in the future. Meanwhile we snap only feature lines
             var orthonormality =
-                TermBuilder.Power(snappedCylinder.Axis * snappedCylinder.AxisNormal, 2) +
+                orthogonality +
                 TermBuilder.Power(snappedCylinder.Axis.NormSquared - 1, 2) +
                 TermBuilder.Power(snappedCylinder.AxisNormal.NormSquared - 1, 2);
 

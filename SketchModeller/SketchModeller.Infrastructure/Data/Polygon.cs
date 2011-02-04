@@ -9,12 +9,7 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class Polygon : PointsSequence
     {
-        public Polygon()
-            : base()
-        {
-        }
-
-        public Polygon(IEnumerable<Point> points)
+        public Polygon(IEnumerable<Point> points = null)
             : base(points)
         {
         }

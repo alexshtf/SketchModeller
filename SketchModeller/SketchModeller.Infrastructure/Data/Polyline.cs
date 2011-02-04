@@ -9,7 +9,7 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class Polyline : PointsSequence
     {
-        public Polyline(IEnumerable<Point> points)
+        public Polyline(IEnumerable<Point> points = null)
             : base(points)
         {
         }

@@ -93,6 +93,7 @@
     <Compile Include="CurveSampler.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Optimizer.cs" />
+    <Compile Include="PolarPointsGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RotationHelper.cs" />
     <Compile Include="ShapeHelper.cs" />
