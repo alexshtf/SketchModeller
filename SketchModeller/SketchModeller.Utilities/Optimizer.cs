@@ -5,12 +5,14 @@ using System.Text;
 using AutoDiff;
 using System.Diagnostics.Contracts;
 using System.Diagnostics;
+using Utils;
+using Enumerable = System.Linq.Enumerable;
 
 namespace SketchModeller.Utilities
 {
     public static class Optimizer
     {
-        public static double[] Minimize(Term targetFunc, Variable[] vars, double[] startVector = null)
+        public static double[] MinimizeBFGS(Term targetFunc, Variable[] vars, double[] startVector = null)
         {
             Contract.Requires(startVector == null || startVector.Length == vars.Length);
 
@@ -18,7 +20,7 @@ namespace SketchModeller.Utilities
             alglib.minlbfgsstate state;
             alglib.minlbfgscreate(1, x, out state);
 
-            var gradProvider = new GradProvider(targetFunc, vars);
+            var gradProvider = new BFGSProvider(targetFunc, vars);
             alglib.minlbfgsoptimize(state, gradProvider.Grad, null, null);
 
             alglib.minlbfgsreport rep;
@@ -27,6 +29,118 @@ namespace SketchModeller.Utilities
             Trace.WriteLine("Termination type is " + TranslateTerminationType(rep.terminationtype));
             Trace.WriteLine("Number of function evals is " + rep.nfev);
             Trace.WriteLine("Iterations count is " + rep.iterationscount);
+
+            if (rep.terminationtype > 0) // good. no errors
+                return x;
+            else
+                throw new InvalidOperationException("Iteration did not converge!");
+        }
+
+        #region GetLMFuncs implementation
+
+        public static Term[] GetLMFuncs(Term targetFunc)
+        {
+            var resultsWithConstants = RecursiveGetLMFuncs(targetFunc);
+            var results =
+                from item in resultsWithConstants
+                let term = item.Item1
+                let factor = Math.Sqrt(item.Item2)
+                select factor == 1 ? term : factor * term;
+            return results.ToArray();
+        }
+
+        private static IEnumerable<Tuple<Term, double>> RecursiveGetLMFuncs(Term term)
+        {
+            IEnumerable<Tuple<Term, double>> result = null;
+            term.MatchClass<Constant>(constant =>
+                {
+                    var value = constant.Value;
+                    result = Utils.Enumerable.Singleton(Tuple.Create((Term)Math.Sqrt(value), 1.0));
+                });
+            term.MatchClass<Zero>(zero =>
+                {
+                    result = Utils.Enumerable.Singleton(Tuple.Create((Term)zero, 1.0));
+                });
+            term.MatchClass<Product>(product =>
+                {
+                    double constant;
+                    Term other;
+                    if (GetConstant(product.Left, out constant))
+                        other = product.Right;
+                    else if (GetConstant(product.Right, out constant))
+                        other = product.Left;
+                    else
+                        throw new InvalidOperationException("The term is not a valid sum-of-squares term");
+
+                    result =
+                        from item in RecursiveGetLMFuncs(other)
+                        let itemTerm = item.Item1
+                        let factor = item.Item2
+                        select Tuple.Create(itemTerm, factor * constant);
+                });
+            term.MatchClass<Sum>(sum =>
+                {
+                    result =
+                        from sumChild in sum.Terms
+                        from item in RecursiveGetLMFuncs(sumChild)
+                        select item;
+                });
+            term.MatchClass<IntPower>(power =>
+                {
+                    if (power.Exponent == 2)
+                        result = Utils.Enumerable.Singleton(Tuple.Create(power.Base, 1.0));
+                    else
+                        throw new InvalidOperationException("The term is not a valid sum-of-squares");
+                });
+            if (result == null)
+                return Utils.Enumerable.Singleton(Tuple.Create(term, 1.0));
+            else
+                return result;
+        }
+
+        private static bool GetConstant(Term term, out double constant)
+        {
+            constant = 0;
+            if (term is Constant)
+            {
+                constant = ((Constant)term).Value;
+                return true;
+            }
+            if (term is Zero)
+                return true;
+
+            return false;
+        }
+
+        #endregion
+
+        public static double[] MinimizeLM(Term[] targetFuncs, Variable[] vars, double[] startVector = null, double diffStep = 0.01)
+        {
+            Contract.Requires(startVector == null || startVector.Length == vars.Length);
+            Contract.Requires(targetFuncs != null);
+            Contract.Requires(Contract.ForAll(targetFuncs, f => f != null));
+
+            double[] x = startVector == null ? new double[vars.Length] : (double[])startVector.Clone();
+            alglib.minlmstate state;
+            alglib.minlmcreatevj(targetFuncs.Length, x, out state);
+
+            var lmProvider = new LMProvider(targetFuncs, vars);
+            alglib.minlmoptimize(
+                state, 
+                lmProvider.Eval, 
+                lmProvider.Jacobian, 
+                (arg, f, obj) => Trace.WriteLine("LM Optimizing. Value is " + f), 
+                null);
+
+            alglib.minlmreport rep;
+            alglib.minlmresults(state, out x, out rep);
+
+            Trace.WriteLine("Termination type is " + TranslateTerminationType(rep.terminationtype));
+            Trace.WriteLine("Iterations count is " + rep.iterationscount);
+            Trace.WriteLine("Jacobian evaluations " + rep.njac);
+            Trace.WriteLine("Gradient evaluations " + rep.ngrad);
+            Trace.WriteLine("Hessian evaluations " + rep.nhess);
+            Trace.WriteLine("Cholesky factorizations " + rep.ncholesky);
 
             if (rep.terminationtype > 0) // good. no errors
                 return x;
@@ -57,12 +171,51 @@ namespace SketchModeller.Utilities
             }
         }
 
-        private class GradProvider
+        private class LMProvider
+        {
+            private readonly Term[] targetFuncs;
+            private readonly Variable[] vars;
+
+            public LMProvider(Term[] targetFuncs, Variable[] vars)
+            {
+                this.targetFuncs = targetFuncs;
+                this.vars = vars;
+            }
+
+            public void Eval(double[] arg, double[] fi, object obj)
+            {
+                Contract.Assert(arg.Length == vars.Length);
+                Contract.Assert(fi.Length == targetFuncs.Length);
+
+                foreach(var i in Enumerable.Range(0, fi.Length))
+                    fi[i] = Evaluator.Evaluate(targetFuncs[i], vars, arg);
+            }
+
+            public void Jacobian(double[] arg, double[] fi, double[,] jac, object obj)
+            {
+                Contract.Assert(arg.Length == vars.Length);
+                Contract.Assert(fi.Length == targetFuncs.Length);
+
+                Contract.Assert(jac.GetLength(0) == fi.Length);
+                Contract.Assert(jac.GetLength(1) == arg.Length);
+
+                Eval(arg, fi, obj);
+                foreach (var i in Enumerable.Range(0, jac.GetLength(0)))
+                {
+                    var grad = Differentiator.Differentiate(targetFuncs[i], vars, arg);
+                    foreach (var j in Enumerable.Range(0, jac.GetLength(1)))
+                        jac[i, j] = grad[j];
+                }
+            }
+
+        }
+
+        private class BFGSProvider
         {
             private readonly Term targetFunc;
             private readonly Variable[] vars;
 
-            public GradProvider(Term targetFunc, Variable[] vars)
+            public BFGSProvider(Term targetFunc, Variable[] vars)
             {
                 this.targetFunc = targetFunc;
                 this.vars = vars;

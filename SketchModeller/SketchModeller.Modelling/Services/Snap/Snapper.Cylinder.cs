@@ -93,7 +93,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private IEnumerable<Term> ProjectionConstraint(SnappedPointsSet item)
         {
-            const int SAMPLE_SIZE = 3;
+            const int SAMPLE_SIZE = 10;
             var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);
             var terms =
                 from point in sample

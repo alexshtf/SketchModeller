@@ -310,5 +310,10 @@ namespace Utils
                 return result;
             }
         }
+
+        public static Vector3D NextVector3D(this Random random)
+        {
+            return new Vector3D(random.NextDouble() - 0.5, random.NextDouble() - 0.5, random.NextDouble() - 0.5);
+        }
     }
 }

@@ -116,7 +116,7 @@ namespace AutoDiff
             Contract.Requires(left.Dimension == right.Dimension);
             Contract.Ensures(Contract.Result<TVec>().Dimension == left.Dimension);
 
-            return new TVec(left.terms, right.terms, (x, y) => x + y);
+            return new TVec(left.terms, right.terms, (x, y) => x - y);
         }
 
         public static TVec operator-(TVec vector)

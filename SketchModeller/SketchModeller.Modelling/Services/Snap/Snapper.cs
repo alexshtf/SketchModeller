@@ -24,6 +24,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly ILoggerFacade logger;
         private readonly IUnityContainer container;
         private readonly IEventAggregator eventAggregator;
+        private readonly Random random;
 
         public Snapper(SessionData sessionData, ILoggerFacade logger, IEventAggregator eventAggregator, IUnityContainer container)
         {
@@ -31,6 +32,7 @@ namespace SketchModeller.Modelling.Services.Snap
             this.logger = logger;
             this.container = container;
             this.eventAggregator = eventAggregator;
+            this.random = new Random(100);
         }
 
         public void Snap()
@@ -75,15 +77,18 @@ namespace SketchModeller.Modelling.Services.Snap
             var annotationTerms = sessionData.Annotations.Select(x => GetAnnotationTerm(x));
             var dataObjective = TermUtils.SafeSum(dataTerms);
             var annotationsObjective = TermUtils.SafeSum(annotationTerms);
+            var totalObjective = dataObjective + 0.001 * annotationsObjective;
 
             var variables = variablesWriter.ToArray();
             var startVector = startVectorWriter.ToArray();
-            
+
             var minimizer = startVector;
-            for (int i = 0; i < 10; ++i)
+            var dataLM = Optimizer.GetLMFuncs(dataObjective);
+            var totalLM = Optimizer.GetLMFuncs(totalObjective);
+            for (int i = 0; i < 40; ++i)
             {
-                minimizer = Optimizer.Minimize(annotationsObjective, variables, minimizer);
-                minimizer = Optimizer.Minimize(dataObjective, variables, minimizer);
+                minimizer = Optimizer.MinimizeLM(dataLM, variables, minimizer);
+                minimizer = Optimizer.MinimizeLM(totalLM, variables, minimizer);
             }
 
             var resultReader = new VectorsReader(minimizer);
@@ -134,25 +139,58 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var pointsSets = pointsSetsQuery.ToArray();
 
-            var terms = new List<Term>();
-            foreach (var pair in pointsSetsQuery.SeqPairs())
+            if (pointsSets.Length >= 2)
             {
-                var fst = pair.Item1;
-                var snd = pair.Item2;
+                var terms = new List<Term>();
+                foreach (var pair in pointsSets.SeqPairs())
+                {
+                    var fst = pair.Item1;
+                    var snd = pair.Item2;
 
-                var p1 = fst.Center;
-                var p2 = snd.Center;
+                    var p1 = fst.Center;
+                    var p2 = snd.Center;
 
-                var n1 = fst.Axis;
-                var n2 = snd.Axis;
+                    var n1 = fst.Axis;
+                    var n2 = snd.Axis;
 
-                var diff = p1 - p2;
-                var numerator = TermBuilder.Power(diff * n1, 2) + TermBuilder.Power(diff * n2, 2);
-                var denominator = TermBuilder.Power(diff.NormSquared, -1);
-                terms.Add(numerator * denominator);
+                    var pts1 = GetPointsOnPlane(p1, n1);
+                    var pts2 = GetPointsOnPlane(p2, n2);
+
+                    var planarity1 = PointsOnPlane(p1, n1, pts2);
+                    var planarity2 = PointsOnPlane(p2, n2, pts1);
+
+                    terms.Add(planarity1 + planarity2);
+                }
+
+                return TermUtils.SafeSum(terms);
             }
+            else
+                return 0;
+        }
+
+        private Term PointsOnPlane(TVec p, TVec n, IEnumerable<TVec> pts)
+        {
+            var terms =
+                from x in pts
+                let diff = p - x
+                let numerator = diff * n
+                let denominator = TermBuilder.Power(diff.NormSquared, -0.5)
+                select TermBuilder.Power(numerator * denominator, 2);
 
             return TermUtils.SafeSum(terms);
+        }
+
+        private IEnumerable<TVec> GetPointsOnPlane(TVec p, TVec n)
+        {
+            var vec3d = random.NextVector3D().Normalized();
+            var tvec = new TVec(vec3d.X, vec3d.Y, vec3d.Z);
+            var t = TVec.CrossProduct(n, tvec);
+            var u = TVec.CrossProduct(n, t);
+
+            yield return p + t;
+            yield return p + u;
+            yield return p - t;
+            yield return p - u;
         }
 
         private Term GetConcreteAnnotationTerm(Parallelism parallelism)
