@@ -6,4 +6,7 @@
   <sketch name="table"
           file="table_plain.svg"
           modelFile="table.model"/>
+  <sketch name="lamp"
+          file="lamp_plain.svg"
+          modelFile="lamp.model" />
 </catalog>
