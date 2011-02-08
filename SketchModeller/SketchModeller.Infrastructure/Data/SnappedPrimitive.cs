@@ -24,5 +24,22 @@ namespace SketchModeller.Infrastructure.Data
         /// The optimization term that snaps this primitive to the sketch, regardless of the annotations.
         /// </summary>
         public Term DataTerm { get; set; }
+
+        #region IsMarked property
+
+        [NonSerialized]
+        private bool isMarked;
+
+        public bool IsMarked
+        {
+            get { return isMarked; }
+            set
+            {
+                isMarked = value;
+                RaisePropertyChanged(() => IsMarked);
+            }
+        }
+
+        #endregion
     }
 }

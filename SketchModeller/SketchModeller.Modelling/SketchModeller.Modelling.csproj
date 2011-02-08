@@ -186,6 +186,10 @@
       <DependentUpon>SketchView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SketchViewModel.cs" />
+    <Compile Include="Views\SnappedPanelView.xaml.cs">
+      <DependentUpon>SnappedPanelView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SnappedPanelViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="ModelViews\ModelViewerView.xaml">
@@ -233,6 +237,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SketchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SnappedPanelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

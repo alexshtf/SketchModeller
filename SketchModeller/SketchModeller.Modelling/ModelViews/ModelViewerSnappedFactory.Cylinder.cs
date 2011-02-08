@@ -50,7 +50,7 @@ namespace SketchModeller.Modelling.ModelViews
                     geometry.TriangleIndices.AddMany(qc, qn, pn);
                 }
 
-                return CreateVisual(geometry);
+                return CreateVisual(geometry, cylinderData);
             }
         }
     }

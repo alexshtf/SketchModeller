@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="SketchModeller.Modelling.Views.SnappedPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:skm="http://SketchModeller"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="200">
+    <Grid>
+        <Grid.InputBindings>
+            <KeyBinding Gesture="Delete" Command="{Binding Delete}" />
+            <KeyBinding Gesture="Ctrl+D" Command="{Binding Duplicate}" />
+        </Grid.InputBindings>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ListBox Grid.Row="0" 
+                 ItemsSource="{Binding SnappedPrimitives}"
+                 SelectedItem="{Binding SelectedSnappedPrimitive}">
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+                <DataTemplate DataType="{x:Type skm:SnappedCylinder}">
+                    <TextBlock>Cylinder</TextBlock>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="Padding" Value="5" />
+                </Style>
+            </StackPanel.Resources>
+            <Button Command="{Binding Delete}">Delete (Del)</Button>
+            <Button Command="{Binding Duplicate}">Duplicate unsapped (Ctrl+D)</Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

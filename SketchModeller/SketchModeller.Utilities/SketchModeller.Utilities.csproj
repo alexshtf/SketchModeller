@@ -95,6 +95,7 @@
     <Compile Include="Optimizer.cs" />
     <Compile Include="PolarPointsGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadOnlyObservableCollection.cs" />
     <Compile Include="RotationHelper.cs" />
     <Compile Include="ShapeHelper.cs" />
     <Compile Include="TermUtils.cs" />
