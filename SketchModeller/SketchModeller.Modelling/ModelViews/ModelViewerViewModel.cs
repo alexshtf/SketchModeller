@@ -15,21 +15,28 @@ using NewPrimitive = SketchModeller.Infrastructure.Data.NewPrimitive;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Collections.Specialized;
+using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.ModelViews
 {
     public class ModelViewerViewModel : NotificationObject
     {
+        private static readonly Point3D DEFAULT_POSITION = new Point3D(0, 0, 4);
+        private static readonly Vector3D DEFAULT_LOOK_DIRECTION = new Vector3D(0, 0, -1);
+        private static readonly Vector3D DEFAULT_UP_DIRECTION = new Vector3D(0, 1, 0);
+
         private const double MOVE_SPEED = 0.01;
         private const double LOOK_SPEED = 0.5;
+        private const double TRACKBALL_SPEED = 0.5;
+        private const double TRACKBALL_ZOOM_SPEED = 0.05;
         private readonly UiState uiState;
         private readonly SessionData sessionData;
 
         public ModelViewerViewModel()
         {
-            Position = new Point3D(0, 0, 4);
-            LookDirection = new Vector3D(0, 0, -1);
-            UpDirection = new Vector3D(0, 1, 0);
+            isFlightMode = true;
+
+            ResetCamera();
             Primitives = new ReadOnlyObservableCollection<NewPrimitive>(new ObservableCollection<NewPrimitive>());
             SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(new ObservableCollection<SnappedPrimitive>());
         }
@@ -67,6 +74,39 @@ namespace SketchModeller.Modelling.ModelViews
 
         public ReadOnlyObservableCollection<NewPrimitive> Primitives { get; private set; }
         public ReadOnlyObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
+
+        #region IsFlightMode property
+
+        private bool isFlightMode;
+
+        public bool IsFlightMode
+        {
+            get { return isFlightMode; }
+            set
+            {
+                isFlightMode = value;
+                RaisePropertyChanged(() => IsFlightMode);
+            }
+        }
+
+        #endregion
+
+        #region IsTrackBallMode property
+
+        private bool isTrackBallMode;
+
+        public bool IsTrackBallMode
+        {
+            get { return isTrackBallMode; }
+            set
+            {
+                isTrackBallMode = value;
+                RaisePropertyChanged(() => IsTrackBallMode);
+                ResetCamera();
+            }
+        }
+
+        #endregion
 
         #region Position property
 
@@ -127,9 +167,51 @@ namespace SketchModeller.Modelling.ModelViews
 
         #endregion
 
+        public void TrackballTrack(double trackX, double trackY)
+        {
+            if (!IsTrackBallMode)
+                return;
+
+            var xDegrees = trackX * TRACKBALL_SPEED;
+            var yDegrees = trackY * TRACKBALL_SPEED;
+
+            var tempRightDirection = Vector3D.CrossProduct(LookDirection, UpDirection).Normalized();
+            var tempUpDirection = UpDirection;
+            var tempPosition = (Vector3D)Position;
+
+            // perform rotation of xDegrees around "up" axis
+            tempPosition = RotationHelper.RotateVector(tempPosition, tempUpDirection, xDegrees);
+            tempRightDirection = RotationHelper.RotateVector(tempRightDirection, tempUpDirection, xDegrees);
+
+            // perform rotation of yDegrees around left/right axis
+            tempPosition = RotationHelper.RotateVector(tempPosition, tempRightDirection, yDegrees);
+            tempUpDirection = RotationHelper.RotateVector(tempUpDirection, tempRightDirection, yDegrees);
+
+            UpDirection = tempUpDirection;
+            Position = (Point3D)tempPosition;
+            LookDirection = -tempPosition.Normalized();
+        }
+
+        public void TrackBallZoom(int amount)
+        {
+            if (!IsTrackBallMode)
+                return;
+
+            var position = (Vector3D)Position;
+            Position = (Point3D)(Math.Pow(1 + TRACKBALL_ZOOM_SPEED, amount) * position);
+        }
+
+
         private void OnSnapComplete(object payload)
         {
             ((SnappedPrimitivesCollection)SnappedPrimitives).RaiseReset();
+        }
+
+        private void ResetCamera()
+        {
+            Position = DEFAULT_POSITION;
+            LookDirection = DEFAULT_LOOK_DIRECTION;
+            UpDirection = DEFAULT_UP_DIRECTION;
         }
 
         private void Move(Vector3D vec)

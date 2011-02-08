@@ -12,27 +12,36 @@
             <Grid x:Name="controlPanel">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" x:Name="controls">
+                <StackPanel Orientation="Vertical" Grid.Column="0">
+                    <RadioButton Margin="3" IsChecked="{Binding IsFlightMode}">Flight</RadioButton>
+                    <RadioButton Margin="3" IsChecked="{Binding IsTrackBallMode}">Track ball</RadioButton>
+                </StackPanel>
+                <Grid Grid.Column="1" x:Name="flightControls">
                     <Rectangle Width="100" 
                                Height="100" 
                                RadiusX="5" 
                                RadiusY="5" 
                                StrokeThickness="2" 
-                               Focusable="True"
+                               Focusable="{Binding IsFlightMode}"
                                MouseDown="OnRectangleMouseDown"
                                PreviewKeyDown="OnNavigationPanelKeyDown"
                                GotKeyboardFocus="OnNavigationPanelGotFocus"
                                LostKeyboardFocus="OnNavigationPanelLostFocus">
+                        <Rectangle.Fill>
+                            <MultiBinding Converter="{x:Static local:NavigationRectangleFillConverter.Instance}">
+                                <Binding RelativeSource="{x:Static RelativeSource.Self}" Path="IsKeyboardFocusWithin" />
+                                <Binding Path="IsFlightMode" />
+                            </MultiBinding>
+                        </Rectangle.Fill>
                         <Rectangle.Style>
                             <Style TargetType="Rectangle">
                                 <Setter Property="Stroke" Value="LightBlue" />
-                                <Setter Property="Fill" Value="Blue" />
                                 <Style.Triggers>
                                     <Trigger Property="IsKeyboardFocusWithin" Value="True">
                                         <Setter Property="Stroke" Value="Green" />
-                                        <Setter Property="Fill" Value="LightBlue" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -44,7 +53,7 @@
                                TextWrapping="Wrap" 
                                Text="Navigation panel. Use W,S,A,D to move, arrows to look." />
                 </Grid>
-                <Grid Grid.Column="1" VerticalAlignment="Top">
+                <Grid Grid.Column="2" VerticalAlignment="Top">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -63,9 +72,17 @@
                 </Grid>
             </Grid>
         </Border>
-        <Border BorderBrush="Black" BorderThickness="1">
+        <Border x:Name="modelViewerRoot"
+                BorderBrush="Black" 
+                BorderThickness="1"
+                Background="White"
+                MouseDown="OnModelViewerMouseDown"
+                MouseUp="OnModelViewerMouseUp"
+                MouseMove="OnModelViewerMouseMove"
+                MouseWheel="OnModelViewerMouseWheel">
             <Viewport3D xmlns:cp="http://schemas.charlespetzold.com/2007/xaml"
-                        x:Name="viewport">
+                        x:Name="viewport"
+                        IsHitTestVisible="False">
                 <Viewport3D.Camera>
                     <PerspectiveCamera x:Name="camera"
                                        Position="{Binding Position}"

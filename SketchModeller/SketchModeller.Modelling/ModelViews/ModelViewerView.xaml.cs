@@ -97,5 +97,49 @@ namespace SketchModeller.Modelling.ModelViews
         {
             navigationTimer.Stop();
         }
+
+        #region Trackball events handling
+
+        private bool isDragging;
+        private Point lastPosition;
+
+        private void OnModelViewerMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left && !isDragging)
+            {
+                modelViewerRoot.CaptureMouse();
+                isDragging = true;
+                lastPosition = e.GetPosition(modelViewerRoot);
+            }
+        }
+
+        private void OnModelViewerMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left && isDragging)
+            {
+                modelViewerRoot.ReleaseMouseCapture();
+                isDragging = false;
+            }
+        }
+
+        private void OnModelViewerMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                var position = e.GetPosition(modelViewerRoot);
+                var dragVector = lastPosition - position;
+                lastPosition = position;
+
+                viewModel.TrackballTrack(dragVector.X, dragVector.Y);
+            }
+        }
+
+        private void OnModelViewerMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var amount = e.Delta / Mouse.MouseWheelDeltaForOneLine;
+            viewModel.TrackBallZoom(-amount);
+        }
+
+        #endregion
     }
 }
