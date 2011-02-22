@@ -22,8 +22,8 @@ namespace SketchModeller.Utilities
         public static Point3D[] GenerateCircle(Point3D center, Vector3D u, Vector3D v, double radius, int count)
         {
             Contract.Requires(MathUtils3D.AreOrthogonal(u, v));
-            Contract.Requires(Math.Abs(u.LengthSquared - 1) < 10 * NumericUtils.DBL_MACHINE_EPSILON);
-            Contract.Requires(Math.Abs(v.LengthSquared - 1) < 10 * NumericUtils.DBL_MACHINE_EPSILON);
+            Contract.Requires(NumericUtils.AlmostEqual(u.LengthSquared, 1, 10));
+            Contract.Requires(NumericUtils.AlmostEqual(v.LengthSquared, 1, 10));
             Contract.Requires(radius > 0);
             Contract.Requires(count >= 3);
             Contract.Ensures(Contract.Result<Point3D[]>() != null);

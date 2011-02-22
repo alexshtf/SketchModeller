@@ -115,8 +115,10 @@
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
     <Compile Include="Events\TestCaseEvent.cs" />
     <Compile Include="ModellingModule.cs" />
+    <Compile Include="ModelViews\ModelViewerFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Cylinder.cs" />
+    <Compile Include="ModelViews\ModelViewerSnappedFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cylinder.cs" />
     <Compile Include="ModelViews\ModelViewerView.xaml.cs">
@@ -156,6 +158,8 @@
     </Compile>
     <Compile Include="Views\DisplayOptionsViewModel.cs" />
     <Compile Include="Views\INewPrimitiveView.cs" />
+    <Compile Include="Views\NewConeView.cs" />
+    <Compile Include="Views\NewConeViewModel.cs" />
     <Compile Include="Views\NewCylinderView.cs" />
     <Compile Include="Views\NewCylinderViewModel.cs" />
     <Compile Include="Views\NewHalfSphereView.cs" />

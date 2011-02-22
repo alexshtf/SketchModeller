@@ -31,6 +31,7 @@ namespace SketchModeller.Modelling.Views
             diameter = 0.2;
             length = 0.5;
             axis = MathUtils3D.UnitZ;
+            model = new NewCylinder();
         }
 
         [InjectionConstructor]
@@ -40,7 +41,6 @@ namespace SketchModeller.Modelling.Views
             Contract.Requires(uiState != null);
 
             this.uiState = uiState;
-            model = new NewCylinder();
             
             var editLength = 
                 new CheckedMenuCommandData(new DelegateCommand(EditLengthExecute), title: "Edit length", isChecked: true);
@@ -111,14 +111,6 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
-
-        public void Initialize(WpfPoint3D center, Vector3D axis)
-        {
-            Contract.Requires(axis != MathUtils3D.ZeroVector);
-
-            Center = center;
-            Axis = axis;
-        }
 
         internal void Initialize(NewCylinder newCylinder)
         {

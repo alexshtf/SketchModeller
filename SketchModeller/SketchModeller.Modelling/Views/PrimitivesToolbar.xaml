@@ -9,6 +9,7 @@
     <ToggleButton Focusable="False" IsChecked="{Binding IsManipulationMode}">Manipulation</ToggleButton>
     <ToggleButton Focusable="False" IsChecked="{Binding IsCylinderMode}">Cylinder</ToggleButton>
     <ToggleButton Focusable="False" IsChecked="{Binding IsHalfSphereMode}">Half-sphere</ToggleButton>
+    <ToggleButton Focusable="False" IsChecked="{Binding IsConeMode}">Cone</ToggleButton>
     <ToggleButton Focusable="False" IsChecked="{Binding IsDuplicateMode}">Duplicate</ToggleButton>
     <Button Focusable="False" Command="{Binding SnapCommand}">Snap</Button>
 </ToolBar>

@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
+    <Compile Include="FloatUtils.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Optimizer.cs" />
     <Compile Include="PolarPointsGenerator.cs" />

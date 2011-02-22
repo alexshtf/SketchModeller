@@ -26,6 +26,7 @@ namespace SketchModeller.Modelling.Views
             cylinderBlocker = new Blocker();
             halfSphereBlocker = new Blocker();
             duplicateBlocker = new Blocker();
+            isConeBlocker = new Blocker();
             isManipulationMode = true;
         }
 
@@ -113,6 +114,27 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        #region IsConeMode property
+
+        private bool isConeMode;
+        private Blocker isConeBlocker;
+
+        public bool IsConeMode
+        {
+            get { return isConeMode; }
+            set
+            {
+                isConeBlocker.Do(() =>
+                {
+                    isConeMode = value;
+                    RaisePropertyChanged(() => IsConeMode);
+                    uiState.Tool = Tool.InsertCone;
+                });
+            }
+        }
+
+        #endregion
+
         #region IsDuplicateMode property
 
         private bool isDuplicateMode;
@@ -171,6 +193,7 @@ namespace SketchModeller.Modelling.Views
             cylinderBlocker.Do(() => RaisePropertyChanged(() => IsCylinderMode));
             halfSphereBlocker.Do(() => RaisePropertyChanged(() => IsHalfSphereMode));
             duplicateBlocker.Do(() => RaisePropertyChanged(() => IsDuplicateMode));
+            isConeBlocker.Do(() => RaisePropertyChanged(() => IsConeMode));
 
             return true;
         }
@@ -181,6 +204,7 @@ namespace SketchModeller.Modelling.Views
             isCylinderMode = uiState.Tool == Tool.InsertCylinder;
             isHalfSphereMode = uiState.Tool == Tool.InsertHalfSphere;
             isDuplicateMode = uiState.Tool == Tool.Duplicate;
+            isConeMode = uiState.Tool == Tool.InsertCone;
         }
     }
 }

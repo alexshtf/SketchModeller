@@ -43,6 +43,10 @@ namespace Utils
             Contract.Requires(prop != null);
             Contract.Requires(expr != null);
 
+            // a null converter means identity converter
+            if (converter == null)
+                converter = x => x;
+
             var targetAndMember = expr.GetTargetAndMember();
             var bindingSource = targetAndMember.Item1;
             var member = targetAndMember.Item2;

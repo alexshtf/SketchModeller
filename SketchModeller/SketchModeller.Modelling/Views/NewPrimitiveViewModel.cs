@@ -19,6 +19,7 @@ namespace SketchModeller.Modelling.Views
         public NewPrimitiveViewModel(UiState uiState = null)
         {
             ContextMenu = new ObservableCollection<MenuCommandData>();
+            this.uiState = uiState;
         }
 
         public ObservableCollection<MenuCommandData> ContextMenu { get; private set; }

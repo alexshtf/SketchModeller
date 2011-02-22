@@ -111,6 +111,12 @@ namespace SketchModeller.Modelling.Views
                     viewModel.Initialize(halfSphere);
                     result = viewModel;
                 });
+            data.MatchClass<NewCone>(newCone =>
+                {
+                    var viewModel = container.Resolve<NewConeViewModel>();
+                    viewModel.Init(newCone);
+                    result = viewModel;
+                });
 
             if (result != null)
                 result.Model = data;
@@ -147,6 +153,19 @@ namespace SketchModeller.Modelling.Views
                     Length = 0.6,
                 };
                 sessionData.NewPrimitives.Add(hsData);
+            }
+            if (uiState.Tool == Tool.InsertCone)
+            {
+                var points3d = GetClickPoint(info);
+                var coneData = new NewCone
+                {
+                    Center = points3d,
+                    Axis = sketchPlane.YAxis,
+                    BottomRadius = 0.2,
+                    TopRadius = 0.2,
+                    Length = 0.6,
+                };
+                sessionData.NewPrimitives.Add(coneData);
             }
             if (uiState.Tool == Tool.Duplicate)
             {

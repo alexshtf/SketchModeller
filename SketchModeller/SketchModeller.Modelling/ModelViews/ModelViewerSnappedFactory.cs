@@ -7,6 +7,7 @@ using System.Windows.Media.Media3D;
 using Utils;
 using SketchModeller.Infrastructure.Data;
 using System.Windows.Media;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -48,6 +49,39 @@ namespace SketchModeller.Modelling.ModelViews
             var visual = new ModelVisual3D();
             visual.Content = model3d;
             return visual;
+        }
+
+        private static Visual3D CreateCylinderView(Point3D[] topPoints, Point3D[] botPoints, SnappedPrimitive snappedPrimitive)
+        {
+            Contract.Requires(topPoints.Length == botPoints.Length);
+            Contract.Requires(snappedPrimitive != null);
+
+            var m = topPoints.Length;
+
+            // top points indices [0 .. m-1]
+            var topIdx = System.Linq.Enumerable.Range(0, m).ToArray();
+
+            // bottom points indices [m .. 2*m - 1]
+            var bottomIdx = System.Linq.Enumerable.Range(m, m).ToArray();
+            Contract.Assume(topIdx.Length == bottomIdx.Length);
+
+            // create cylinder geometry
+            var geometry = new MeshGeometry3D();
+            geometry.Positions = new Point3DCollection(topPoints.Concat(botPoints));
+            geometry.TriangleIndices = new Int32Collection();
+            for (int i = 0; i < m; ++i)
+            {
+                var j = (i + 1) % m;
+                var pc = topIdx[i];
+                var pn = topIdx[j];
+                var qc = bottomIdx[i];
+                var qn = bottomIdx[j];
+
+                geometry.TriangleIndices.AddMany(pc, qc, pn);
+                geometry.TriangleIndices.AddMany(qc, qn, pn);
+            }
+
+            return CreateVisual(geometry, snappedPrimitive);
         }
     }
 }

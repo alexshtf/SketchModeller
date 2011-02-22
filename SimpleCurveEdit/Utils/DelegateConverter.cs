@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace Utils
 {
     public class DelegateConverter<T> : IValueConverter
     {
         private readonly Func<T, object> converter;
+        private readonly StackTrace creationTrace;
 
         public DelegateConverter(Func<T, object> converter)
         {
             this.converter = converter;
+            creationTrace = new StackTrace(true); // for debugging purposes
         }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

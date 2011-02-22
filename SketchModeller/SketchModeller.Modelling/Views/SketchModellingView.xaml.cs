@@ -80,6 +80,8 @@ namespace SketchModeller.Modelling.Views
                     viewModel => result = new NewCylinderView(viewModel, logger));
                 item.MatchClass<NewHalfSphereViewModel>(
                     viewModel => result = new NewHalfSphereView(viewModel, logger));
+                item.MatchClass<NewConeViewModel>(
+                    viewModel => result = new NewConeView(viewModel, logger));
 
                 Contract.Assume(result != null);
                 return result;

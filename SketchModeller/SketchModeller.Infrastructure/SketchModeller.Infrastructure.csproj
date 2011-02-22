@@ -97,6 +97,7 @@
     <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\CurveCategories.cs" />
+    <Compile Include="Data\NewCone.cs" />
     <Compile Include="Data\NewCylinder.cs" />
     <Compile Include="Data\NewHalfSphere.cs" />
     <Compile Include="Data\NewPrimitive.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Data\Polyline.cs" />
     <Compile Include="Data\SketchData.cs" />
     <Compile Include="Data\SketchPlane.cs" />
+    <Compile Include="Data\SnappedCone.cs" />
     <Compile Include="Data\SnappedCylinder.cs" />
     <Compile Include="Data\SnappedHalfSphere.cs" />
     <Compile Include="Data\SnappedPointsSet.cs" />
