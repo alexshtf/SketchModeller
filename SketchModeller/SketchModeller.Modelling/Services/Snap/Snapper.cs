@@ -40,6 +40,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var selectedPolylines = sessionData.SelectedSketchObjects.OfType<Polyline>().ToArray();
             var selectedPolygons = sessionData.SelectedSketchObjects.OfType<Polygon>().ToArray();
             var selectedCylinder = sessionData.SelectedNewPrimitives.OfType<NewCylinder>().FirstOrDefault();
+            var selectedCone = sessionData.SelectedNewPrimitives.OfType<NewCone>().FirstOrDefault();
 
             // TODO: Find selected primitives of other kinds
 
@@ -49,6 +50,12 @@ namespace SketchModeller.Modelling.Services.Snap
                 sessionData.SnappedPrimitives.Add(snappedCylinder);
                 sessionData.NewPrimitives.Remove(selectedCylinder);
             }
+            if (selectedCone != null)
+            {
+                var snappedCone = SnapCone(selectedPolylines, selectedPolygons, selectedCone);
+                sessionData.SnappedPrimitives.Add(snappedCone);
+                sessionData.NewPrimitives.Remove(selectedCone);
+            }
             OptimizeAll();
 
             eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
@@ -56,9 +63,11 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void OptimizeAll()
         {
+            #region Write data to variables / value vector
+
             var variablesWriter = new VariableVectorsWriter();
             var startVectorWriter = new VectorsWriter();
-
+            // write cylinders
             foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
             {
                 variablesWriter
@@ -72,6 +81,27 @@ namespace SketchModeller.Modelling.Services.Snap
                     .Write(snappedCylinder.LengthResult)
                     .Write(snappedCylinder.RadiusResult);
             }
+
+            // write cones
+            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
+            {
+                variablesWriter
+                    .Write(snappedCone.Axis)
+                    .Write(snappedCone.BottomCenter)
+                    .Write(snappedCone.Length)
+                    .Write(snappedCone.TopRadius)
+                    .Write(snappedCone.BottomRadius);
+                startVectorWriter
+                    .Write(snappedCone.AxisResult)
+                    .Write(snappedCone.BottomCenterResult)
+                    .Write(snappedCone.LengthResult)
+                    .Write(snappedCone.TopRadiusResult)
+                    .Write(snappedCone.BottomRadiusResult);
+            }
+
+            #endregion
+
+            #region perform optimization
 
             var dataTerms = sessionData.SnappedPrimitives.Select(p => p.DataTerm);
             var annotationTerms = sessionData.Annotations.Select(x => GetAnnotationTerm(x));
@@ -91,6 +121,10 @@ namespace SketchModeller.Modelling.Services.Snap
                 minimizer = Optimizer.MinimizeLM(totalLM, variables, minimizer);
             }
 
+            #endregion
+           
+            #region read data back from the optimized vector
+
             var resultReader = new VectorsReader(minimizer);
             foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
             {
@@ -99,6 +133,18 @@ namespace SketchModeller.Modelling.Services.Snap
                 snappedCylinder.LengthResult = resultReader.ReadValue();
                 snappedCylinder.RadiusResult = resultReader.ReadValue();
             }
+            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
+            {
+                snappedCone.AxisResult = resultReader.ReadVector3D();
+                snappedCone.BottomCenterResult = resultReader.ReadPoint3D();
+                snappedCone.LengthResult = resultReader.ReadValue();
+                snappedCone.TopRadiusResult = resultReader.ReadValue();
+                snappedCone.BottomRadiusResult = resultReader.ReadValue();
+            }
+
+            #endregion
+
+            #region Reconstruct geometry data from the optimized parameters
 
             foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
             {
@@ -118,6 +164,27 @@ namespace SketchModeller.Modelling.Services.Snap
                     snappedCylinder.RadiusResult,
                     50);
             }
+
+            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
+            {
+                var normal = MathUtils3D.NormalVector(snappedCone.AxisResult);
+                var secondNormal = Vector3D.CrossProduct(normal, snappedCone.AxisResult);
+                snappedCone.BottomCircle = CirclePoints(
+                    snappedCone.BottomCenterResult,
+                    normal,
+                    secondNormal,
+                    snappedCone.BottomRadiusResult,
+                    50);
+                snappedCone.TopCircle = CirclePoints(
+                    snappedCone.TopCenterResult,
+                    normal,
+                    secondNormal,
+                    snappedCone.TopRadiusResult,
+                    50);
+            }
+
+
+            #endregion
         }
 
         private Term GetAnnotationTerm(Annotation x)
@@ -233,35 +300,6 @@ namespace SketchModeller.Modelling.Services.Snap
         private static TVec GenerateVarVector()
         {
             return new TVec(new Variable(), new Variable(), new Variable());
-        }
-
-        private Dictionary<PointsSequence, CurveCategory> Categorize(
-            Dictionary<PointsSequence, CurveCategory> inputWithInitialCategorization, 
-            params CurveCategory[] categories)
-        {
-            // create viewmode/view for the categorizer window
-            var categorizerVM = container.Resolve<CategorizerViewModel>();
-            var categorizerView = container.Resolve<CategorizerView>(new DependencyOverride<CategorizerViewModel>(categorizerVM));
-
-            // display the categorizer window with the correct data
-            categorizerVM.Setup(inputWithInitialCategorization, categories);
-            categorizerView.ShowDialog();
-
-            // extract data from the categorizer
-            if (categorizerVM.IsFinished)
-                return categorizerVM.Result;
-            else
-                return null;
-        }
-
-        public class CurveCategory
-        {
-            public CurveCategory(string name)
-            {
-                Name = name;
-            }
-
-            public string Name { get; private set; }
         }
     }
 }

@@ -131,12 +131,7 @@
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
-    <Compile Include="Services\Snap\CategorizerView.xaml.cs">
-      <DependentUpon>CategorizerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Services\Snap\CategorizerViewModel.cs" />
-    <Compile Include="Services\Snap\PathBrushConverter.cs" />
-    <Compile Include="Services\Snap\PointsConverter.cs" />
+    <Compile Include="Services\Snap\Snapper.Cone.cs" />
     <Compile Include="Services\Snap\Snapper.cs" />
     <Compile Include="Services\Snap\Snapper.Cylinder.cs" />
     <Compile Include="SketchLoader.cs" />
@@ -197,10 +192,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="ModelViews\ModelViewerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Services\Snap\CategorizerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

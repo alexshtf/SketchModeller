@@ -42,27 +42,9 @@ namespace SketchModeller.Modelling.Services.Snap
             var allSequences = selectedPolylines.Cast<PointsSequence>().Concat(selectedPolygons).ToArray();
             snappedCylinder.SnappedTo = allSequences;
 
-            // create some parametric representation of the selected cylinder
-            var circleCategory = new CurveCategory("Circle");
-            var silhouetteCategory = new CurveCategory("Silhouette");
-
-            // compute initial categories
-            var seqDictionary = allSequences.ToDictionary(
-                seq => seq,
-                seq =>
-                {
-                    if (seq.CurveCategory == CurveCategories.Feature)
-                        return circleCategory;
-                    else if (seq.CurveCategory == CurveCategories.Silhouette)
-                        return silhouetteCategory;
-                    else
-                        return null;
-                });
-
-            var categories = Categorize(seqDictionary, circleCategory, silhouetteCategory);
-            if (categories != null)
+            var circles = allSequences.Where(x => x.CurveCategory == CurveCategories.Feature).ToArray();
+            if (circles.Length == 2)
             {
-                var circles = categories.Where(x => x.Value == circleCategory).Select(x => x.Key).ToArray();
                 PointsSequence topCircle;
                 PointsSequence bottomCircle;
                 SelectCircles(selectedCylinder, circles, out topCircle, out bottomCircle);

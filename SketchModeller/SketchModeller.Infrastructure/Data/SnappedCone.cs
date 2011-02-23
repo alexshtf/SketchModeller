@@ -35,5 +35,19 @@ namespace SketchModeller.Infrastructure.Data
         public double TopRadiusResult { get; set; }
 
         #endregion
+
+        #region Helper properties
+
+        public Point3D TopCenterResult
+        {
+            get { return BottomCenterResult + LengthResult * AxisResult; }
+        }
+
+        public TVec GetTopCenter()
+        {
+            return BottomCenter + Length * Axis;
+        }
+
+        #endregion
     }
 }

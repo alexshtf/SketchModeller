@@ -23,6 +23,7 @@ namespace SketchModeller.Modelling.ModelViews
         {
             Visual3D result = new ModelVisual3D();
             item.MatchClass<SnappedCylinder>(cylinderData => result = CreateCylinderView(cylinderData));
+            item.MatchClass<SnappedCone>(coneData => result = CreateConeView(coneData));
             return result;
         }
 
