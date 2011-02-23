@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using Microsoft.Practices.Prism.Commands;
 using Utils;
 using System.Diagnostics.Contracts;
+using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -19,6 +20,7 @@ namespace SketchModeller.Modelling.Views
     {
         private readonly SessionData sessionData;
         private readonly ILoggerFacade logger;
+        private readonly ISnapper snapper;
 
         public AnnotationsViewModel()
         {
@@ -32,11 +34,12 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public AnnotationsViewModel(SessionData sessionData, ILoggerFacade logger)
+        public AnnotationsViewModel(SessionData sessionData, ILoggerFacade logger, ISnapper snapper)
             : this()
         {
             this.sessionData = sessionData;
             this.logger = logger;
+            this.snapper = snapper;
             Annotations = sessionData.Annotations;
         }
 
@@ -117,6 +120,7 @@ namespace SketchModeller.Modelling.Views
                 var annotation = factory(selectedElements);
                 Annotations.Add(annotation);
                 SelectedAnnotationIndex = Annotations.Count - 1;
+                snapper.Recalculate();
             }
         }
 

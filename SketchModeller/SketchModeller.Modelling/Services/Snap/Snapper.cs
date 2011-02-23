@@ -61,6 +61,15 @@ namespace SketchModeller.Modelling.Services.Snap
             eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
         }
 
+        public void Recalculate()
+        {
+            if (sessionData.SnappedPrimitives.Count > 0)
+            {
+                OptimizeAll();
+                eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
+            }
+        }
+
         private void OptimizeAll()
         {
             #region Write data to variables / value vector
