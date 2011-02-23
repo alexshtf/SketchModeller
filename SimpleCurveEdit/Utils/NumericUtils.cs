@@ -18,6 +18,7 @@ namespace Utils
         /// <param name="epsilonScale">The machine-epsilon multiplier</param>
         /// <returns><c>true</c> if the relative error of <paramref name="value"/> against <paramref name="reference"/>
         /// is less than <paramref name="epsilonScale"/> times the machine epsilon.</returns>
+        [Pure]
         public static bool AlmostEqual(double value, double reference, double epsilonScale)
         {
             Contract.Requires(epsilonScale >= 1);

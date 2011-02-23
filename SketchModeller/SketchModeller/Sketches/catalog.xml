@@ -9,4 +9,7 @@
   <sketch name="lamp"
           file="lamp_plain.svg"
           modelFile="lamp.model" />
+  <sketch name="lamp_hidden"
+          file="lamp_hidden_plain.svg"
+          modelFile="lamp_hidden.model" />
 </catalog>
