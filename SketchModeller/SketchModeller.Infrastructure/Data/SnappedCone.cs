@@ -7,6 +7,7 @@ using AutoDiff;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class SnappedCone : SnappedPrimitive
     {
         #region Snapped cpne results
