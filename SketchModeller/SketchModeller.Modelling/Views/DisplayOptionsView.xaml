@@ -6,4 +6,6 @@
           mc:Ignorable="d" 
           Header="Display">
     <MenuItem Header="Show sketch" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsSketchShown}" />
+    <MenuItem Header="Show temporaries" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsTemporaryPrimitivesShown}" />
+    <MenuItem Header="Show snapped" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsSnappedPrimitivesShown}"/>
 </MenuItem>

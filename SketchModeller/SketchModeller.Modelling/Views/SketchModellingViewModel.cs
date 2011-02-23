@@ -45,6 +45,7 @@ namespace SketchModeller.Modelling.Views
         public SketchModellingViewModel(
             UiState uiState, 
             SessionData sessionData, 
+            DisplayOptions displayOptions,
             IEventAggregator eventAggregator, 
             IUnityContainer container,
             ISketchCatalog sketchCatalog)
@@ -52,6 +53,7 @@ namespace SketchModeller.Modelling.Views
         {
             this.uiState = uiState;
             this.sessionData = sessionData;
+            this.DisplayOptions = displayOptions;
             this.container = container;
             this.sketchCatalog = sketchCatalog;
             this.eventAggregator = eventAggregator;
@@ -69,6 +71,8 @@ namespace SketchModeller.Modelling.Views
 
             SnappedPrimitives = new SnappedPrimitivesCollection(sessionData.SnappedPrimitives);
         }
+
+        public DisplayOptions DisplayOptions { get; private set; }
 
         public ObservableCollection<NewPrimitiveViewModel> NewPrimitiveViewModels { get; private set; }
 

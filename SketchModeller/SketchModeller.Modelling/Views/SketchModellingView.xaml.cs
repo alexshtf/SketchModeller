@@ -42,11 +42,15 @@ namespace SketchModeller.Modelling.Views
         {
             this.viewModel = viewModel;
 
+            var displayOptions = viewModel.DisplayOptions;
+
             cloningVisual3D.ItemsSource = viewModel.NewPrimitiveViewModels;
             cloningVisual3D.Visual3DFactory = new Visual3DFactory(logger);
+            cloningVisual3D.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsTemporaryPrimitivesShown);
 
             snappedCloningVisual3d.ItemsSource = viewModel.SnappedPrimitives;
             snappedCloningVisual3d.Visual3DFactory = SketchModeller.Modelling.ModelViews.ModelViewerSnappedFactory.Instance;
+            snappedCloningVisual3d.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsSnappedPrimitivesShown);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

@@ -11,6 +11,8 @@ namespace SketchModeller.Infrastructure.Shared
         public DisplayOptions()
         {
             IsSketchShown = true;
+            IsSnappedPrimitivesShown = true;
+            IsTemporaryPrimitivesShown = true;
         }
 
         #region IsSketchShown property
@@ -24,6 +26,38 @@ namespace SketchModeller.Infrastructure.Shared
             {
                 isSketchShown = value;
                 RaisePropertyChanged(() => IsSketchShown);
+            }
+        }
+
+        #endregion
+
+        #region IsSnappedPrimitivesShown property
+
+        private bool isSnappedPrimitivesShown;
+
+        public bool IsSnappedPrimitivesShown
+        {
+            get { return isSnappedPrimitivesShown; }
+            set
+            {
+                isSnappedPrimitivesShown = value;
+                RaisePropertyChanged(() => IsSnappedPrimitivesShown);
+            }
+        }
+
+        #endregion
+
+        #region IsTemporaryPrimitivesShown property
+
+        private bool isTemporaryPrimitivesShown;
+
+        public bool IsTemporaryPrimitivesShown
+        {
+            get { return isTemporaryPrimitivesShown; }
+            set
+            {
+                isTemporaryPrimitivesShown = value;
+                RaisePropertyChanged(() => IsTemporaryPrimitivesShown);
             }
         }
 

@@ -34,6 +34,11 @@ namespace Controls
             Contract.Invariant(childrenRoot != null);
             Contract.Invariant(dataToVisual != null);
 
+            // only two options - visible and single child (childrenRoot) or invisible and no children.
+            Contract.Invariant(
+                (IsVisible && Children.Count == 1 && Children[0] == childrenRoot) ^ 
+                (!IsVisible && Children.Count == 0));
+
             // itemsView != null ==> the count of items and models is the same.
             Contract.Invariant(itemsView == null || itemsView.Cast<object>().Count() == childrenRoot.Children.Count);
 
@@ -46,6 +51,25 @@ namespace Controls
             // itemsView == null ==> both data-model mapping and group children have no items.
             Contract.Invariant(itemsView != null || (dataToVisual.Count == 0 && childrenRoot.Children.Count == 0));
         }
+
+        #region IsVisibile property
+
+        public static readonly DependencyProperty IsVisibleProperty =
+            DependencyProperty.Register("IsVisible", typeof(bool), typeof(CloningVisual3D), new PropertyMetadata(true, OnIsVisibleChanged));
+
+        public bool IsVisible
+        {
+            get { return (bool)GetValue(IsVisibleProperty); }
+            set { SetValue(IsVisibleProperty, value); }
+        }
+
+        private static void OnIsVisibleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var concrete = (CloningVisual3D)sender;
+            concrete.OnVisibilityChanged(e);
+        }
+
+        #endregion
 
         #region Visual3DFactory property
 
@@ -178,6 +202,19 @@ namespace Controls
                 dataToVisual.Remove(item);
                 childrenRoot.Children.Remove(model);
             }
+        }
+
+        #endregion
+
+        #region Visibility change handling
+
+        protected virtual void OnVisibilityChanged(DependencyPropertyChangedEventArgs e)
+        {
+            var isVisible = (bool)e.NewValue;
+            if (isVisible)
+                Children.Add(childrenRoot);
+            if (!isVisible)
+                Children.Remove(childrenRoot);
         }
 
         #endregion
