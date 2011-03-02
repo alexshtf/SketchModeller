@@ -100,6 +100,23 @@ namespace SketchModeller.Modelling.Views
             sessionData.NewPrimitives.Remove(model);
         }
 
+        public void SelectPrimitive(NewPrimitiveViewModel newPrimitiveViewModel)
+        {
+            var toUnSelect = sessionData.SelectedNewPrimitives.ToArray();
+            foreach (var item in toUnSelect)
+                if (item != newPrimitiveViewModel.Model)
+                    item.IsSelected = false;
+
+            newPrimitiveViewModel.Model.IsSelected = true;
+        }
+
+        public void UnselectAllPrimitives()
+        {
+            var toUnSelect = sessionData.SelectedNewPrimitives.ToArray();
+            foreach (var item in toUnSelect)
+                item.IsSelected = false;
+        }
+
         private NewPrimitiveViewModel NewPrimitiveDataToNewPrimitiveViewModel(NewPrimitive data)
         {
             NewPrimitiveViewModel result = null;
@@ -134,43 +151,6 @@ namespace SketchModeller.Modelling.Views
 
         private void OnSketchClick(SketchClickInfo info)
         {
-            if (uiState.Tool == Tool.InsertCylinder)
-            {
-                var point3d = GetClickPoint(info);
-                var cylinderData = new NewCylinder
-                {
-                    Center = point3d,
-                    Axis = sketchPlane.YAxis,
-                    Diameter = 0.4,
-                    Length = 0.6,
-                };
-                sessionData.NewPrimitives.Add(cylinderData);
-            }
-            if (uiState.Tool == Tool.InsertHalfSphere)
-            {
-                var point3d = GetClickPoint(info);
-                var hsData = new NewHalfSphere
-                {
-                    Center = point3d,
-                    Axis = sketchPlane.YAxis,
-                    Radius = 0.2,
-                    Length = 0.6,
-                };
-                sessionData.NewPrimitives.Add(hsData);
-            }
-            if (uiState.Tool == Tool.InsertCone)
-            {
-                var points3d = GetClickPoint(info);
-                var coneData = new NewCone
-                {
-                    Center = points3d,
-                    Axis = sketchPlane.YAxis,
-                    BottomRadius = 0.2,
-                    TopRadius = 0.2,
-                    Length = 0.6,
-                };
-                sessionData.NewPrimitives.Add(coneData);
-            }
             if (uiState.Tool == Tool.Duplicate)
             {
                 var selectedNewPrimitive = sessionData.SelectedNewPrimitives.FirstOrDefault();
@@ -182,7 +162,6 @@ namespace SketchModeller.Modelling.Views
                 }
             }
             uiState.Tool = Tool.Manipulation;
-
         }
 
         private NewPrimitive Duplicate(NewPrimitive selectedNewPrimitive, Point3D point3d)

@@ -122,6 +122,7 @@
     <Compile Include="IHeaderedView.cs" />
     <Compile Include="MenuCommandData.cs" />
     <Compile Include="MenuCommandsEventArgs.cs" />
+    <Compile Include="PrimitiveKinds.cs" />
     <Compile Include="PropertyChangedEventManagerHelper.cs" />
     <Compile Include="RoutedEvents.cs" />
     <Compile Include="Services\ISnapper.cs" />

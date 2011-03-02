@@ -7,7 +7,7 @@
              xmlns:modelviews="clr-namespace:SketchModeller.Modelling.ModelViews"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <ContainerUIElement3D KeyDown="OnKeyDown">
+    <ContainerUIElement3D>
         <ContainerUIElement3D.Children>
             <skm:CloningVisual3D x:Name="cloningVisual3D"/>
             <skm:CloningVisual3D x:Name="snappedCloningVisual3d" />

@@ -21,6 +21,8 @@ using Controls;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Logging;
+using Petzold.Media3D;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -30,6 +32,7 @@ namespace SketchModeller.Modelling.Views
     public partial class SketchModellingView
     {
         private SketchModellingViewModel viewModel;
+        private BaseNewPrimitiveView draggedPrimitive;
 
         public SketchModellingView()
         {
@@ -51,20 +54,6 @@ namespace SketchModeller.Modelling.Views
             snappedCloningVisual3d.ItemsSource = viewModel.SnappedPrimitives;
             snappedCloningVisual3d.Visual3DFactory = SketchModeller.Modelling.ModelViews.ModelViewerSnappedFactory.Instance;
             snappedCloningVisual3d.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsSnappedPrimitivesShown);
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete)
-            {
-                var source = e.Source as DependencyObject;
-                var newPrimitveView = source.PrimitiveViewParent();
-                if (newPrimitveView != null)
-                {
-                    var newPrimitiveViewModel = newPrimitveView.ViewModel;
-                    viewModel.Delete(newPrimitiveViewModel);
-                }
-            }
         }
 
         class Visual3DFactory : IVisual3DFactory
@@ -90,6 +79,50 @@ namespace SketchModeller.Modelling.Views
                 Contract.Assume(result != null);
                 return result;
             }
+        }
+
+        public void SelectPrimitive(LineRange lineRange)
+        {
+            var htParameters = new RayHitTestParameters(lineRange.Point1, lineRange.Point2 - lineRange.Point1);
+            bool success = false;
+            VisualTreeHelper.HitTest(this, 
+                null, 
+                htResult => 
+                {
+                    var primitiveHit = 
+                        htResult.VisualHit
+                        .VisualPathUp()
+                        .OfType<BaseNewPrimitiveView>()
+                        .FirstOrDefault();
+
+                    if (primitiveHit != null)
+                    {
+                        draggedPrimitive = primitiveHit;
+                        draggedPrimitive.DragStart(lineRange);
+                        viewModel.SelectPrimitive(((INewPrimitiveView)draggedPrimitive).ViewModel);
+                        success = true;
+                        return HitTestResultBehavior.Stop;
+                    }
+                    else
+                        return HitTestResultBehavior.Continue;
+                }, 
+                htParameters);
+
+            if (!success)
+                viewModel.UnselectAllPrimitives();
+        }
+
+        public void DragPrimitive(LineRange lineRange)
+        {
+            if (draggedPrimitive != null)
+                draggedPrimitive.Drag(lineRange);
+        }
+
+        public void EndDrag()
+        {
+            if (draggedPrimitive != null)
+                draggedPrimitive.DragEnd();
+            draggedPrimitive = null;
         }
     }
 }

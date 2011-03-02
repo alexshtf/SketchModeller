@@ -48,10 +48,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SimpleCurveEdit\Utils\Utils.csproj">
-      <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>
-      <Name>Utils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AutoDiff\AutoDiff.csproj">
       <Project>{62551FD3-C21F-4E16-A7FC-6A017508809C}</Project>
       <Name>AutoDiff</Name>

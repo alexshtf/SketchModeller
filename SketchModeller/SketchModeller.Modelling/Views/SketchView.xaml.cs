@@ -17,6 +17,10 @@ using System.ComponentModel;
 
 using Utils;
 using System.Windows.Media.Media3D;
+using System.Reflection;
+using System.Diagnostics;
+using SketchModeller.Infrastructure;
+using Microsoft.Practices.Prism.Logging;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -25,45 +29,59 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchView : UserControl
     {
+        private static readonly Cursor ADD_CURSOR;
+        private static readonly Cursor REMOVE_CURSOR;
+
+        static SketchView()
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowadd.cur"))
+            {
+                ADD_CURSOR = new Cursor(stream);
+            }
+            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowdel.cur"))
+            {
+                REMOVE_CURSOR = new Cursor(stream);
+            }
+        }
+
+        private readonly ILoggerFacade logger;
         private readonly SketchViewModel viewModel;
+        private MouseInterationModes mouseInteractionMode;
+        private MousePosInfo3D dragStartLocation;
+        bool isDragging;
+
+        private readonly SketchModellingView sketchModellingView;
+        private readonly SketchImageView sketchImageView;
 
         public SketchView()
         {
             InitializeComponent();
+            mouseInteractionMode = MouseInterationModes.CurveSelection;
         }
 
         [InjectionConstructor]
-        public SketchView(SketchViewModel viewModel, IUnityContainer container)
+        public SketchView(SketchViewModel viewModel, IUnityContainer container, ILoggerFacade logger = null)
             : this()
         {
+            this.logger = logger ?? new EmptyLogger();
+
             DataContext = viewModel;
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
             this.viewModel = viewModel;
 
-            var sketchModellingView = 
+            sketchModellingView = 
                 container.Resolve<SketchModellingView>(
                     new DependencyOverride<SketchModellingViewModel>(viewModel.SketchModellingViewModel));
             root3d.Children.Add(sketchModellingView);
 
-            var sketchImageView =
+            sketchImageView =
                 container.Resolve<SketchImageView>(
                     new DependencyOverride<SketchImageViewModel>(viewModel.SketchImageViewModel));
-            root.Children.Insert(0, sketchImageView);
+            sketchImageView.Margin = vpRoot.Margin;
+            root.Children.Insert(1, sketchImageView);
         }
 
-        protected override void OnMouseDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                var mousePos = e.GetPosition(viewport3d);
-                LineRange lineRange;
-                if (ViewportInfo.Point2DtoPoint3D(viewport3d, mousePos, out lineRange))
-                    viewModel.OnSketchClick(lineRange.Point1, lineRange.Point2);
-
-            }  
-        }
 
         void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -84,6 +102,147 @@ namespace SketchModeller.Modelling.Views
                 projMatrix.OffsetZ = 0.2;
                 camera.ProjectionMatrix = projMatrix;
             }
+        }
+
+        private void StackPanel_Checked(object sender, RoutedEventArgs e)
+        {
+            if (e.Source == curveSelection)
+                mouseInteractionMode = MouseInterationModes.CurveSelection;
+            else if (e.Source == primitiveManipulation)
+                mouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
+            else
+                logger.Log("This should not happen", Category.Exception, Priority.High);
+        }
+
+        #region Selection + primitive events
+
+        private void vpRoot_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!isDragging && e.ChangedButton == MouseButton.Left)
+            {
+                dragStartLocation = GetPosition3D(e);
+                vpRoot.CaptureMouse();
+                isDragging = true;
+
+                if (mouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
+                    SelectPrimitive(dragStartLocation);
+            }
+        }
+
+        private void vpRoot_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (isDragging && e.ChangedButton == MouseButton.Left)
+            {
+                if (mouseInteractionMode == MouseInterationModes.CurveSelection)
+                {
+                    SelectCurves(GetPosition3D(e));
+                    selectionRectangle.Visibility = Visibility.Collapsed;
+                }
+                else
+                    StopPrimitiveDragging();
+                vpRoot.ReleaseMouseCapture();
+                isDragging = false;
+            }
+        }
+
+        private void vpRoot_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                var position = GetPosition3D(e);
+                if (mouseInteractionMode == MouseInterationModes.CurveSelection)
+                    UpdateSelectionRectangle(position.Pos2D);
+                else if (mouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
+                    DragPrimitive(position);
+            }
+        }
+
+        private void SelectCurves(MousePosInfo3D positionInfo)
+        {
+            var rect = new Rect(positionInfo.Pos2D, dragStartLocation.Pos2D);
+            sketchImageView.SelectCurves(rect);
+        }
+
+        private void DragPrimitive(MousePosInfo3D positionInfo)
+        {
+            if (positionInfo.Ray3D != null)
+                sketchModellingView.DragPrimitive(positionInfo.Ray3D.Value);
+        }
+
+        private void StopPrimitiveDragging()
+        {
+            sketchModellingView.EndDrag();
+        }
+
+        private void UpdateSelectionRectangle(Point point)
+        {
+            var rect = new Rect(point, dragStartLocation.Pos2D);
+            selectionRectangle.Width = rect.Width;
+            selectionRectangle.Height = rect.Height;
+            Canvas.SetTop(selectionRectangle, rect.Top);
+            Canvas.SetLeft(selectionRectangle, rect.Left);
+            selectionRectangle.Visibility = Visibility.Visible;
+        }
+
+        private void SelectPrimitive(MousePosInfo3D positionInfo)
+        {
+            if (positionInfo.Ray3D != null)
+                sketchModellingView.SelectPrimitive(positionInfo.Ray3D.Value);
+        }
+
+        #endregion
+
+        private MousePosInfo3D GetPosition3D(MouseEventArgs e)
+        {
+            var pos2d = e.GetPosition(viewport3d);
+            return GetPosition3D(pos2d);
+        }
+
+        private MousePosInfo3D GetPosition3D(Point pos2d)
+        {
+            LineRange lineRange;
+            if (ViewportInfo.Point2DtoPoint3D(viewport3d, pos2d, out lineRange))
+                return new MousePosInfo3D { Pos2D = pos2d, Ray3D = lineRange };
+            else
+                return new MousePosInfo3D { Pos2D = pos2d, Ray3D = null };
+        }
+
+        private void OnThumbDragStarted(object sender, RoutedEventArgs e)
+        {
+            PrimitiveKinds primitiveKind = default(PrimitiveKinds);
+            if (sender == cylinderThumb)
+                primitiveKind = PrimitiveKinds.Cylinder;
+            else if (sender == coneThumb)
+                primitiveKind = PrimitiveKinds.Cone;
+            else
+                logger.Log("Invalid event sender", Category.Exception, Priority.High);
+
+            var dataObject = new DataObject(DataFormats.Serializable, primitiveKind);
+            DragDrop.DoDragDrop((DependencyObject)sender, dataObject, DragDropEffects.Copy);
+        }
+
+        private void vpRoot_Drop(object sender, DragEventArgs e)
+        {
+            var mousePos2d = e.GetPosition(viewport3d);
+            var pos3d = GetPosition3D(mousePos2d);
+
+            if (pos3d.Ray3D != null)
+            {
+                var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
+                viewModel.AddNewPrimitive(primitiveKind, pos3d.Ray3D.Value);
+            }
+        }
+
+        private struct MousePosInfo3D
+        {
+            public Point Pos2D;
+            public LineRange? Ray3D;
+        }
+
+        private enum MouseInterationModes
+        {
+            CurveSelection,
+            PrimitiveManipulation,
         }
     }
 }

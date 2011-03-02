@@ -6,23 +6,10 @@
              xmlns:skm="http://SketchModeller"
              xmlns:conv="clr-namespace:SketchModeller.Modelling.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             Background="LightGray"
-             MouseDown="OnPolyRootMouseDown"
-             MouseMove="OnPolyRootMouseMove"
-             MouseUp="OnPolyRootMouseUp">
+             d:DesignHeight="300" d:DesignWidth="300">
     <Canvas x:Name="polyRoot"
             Margin="10"
             ForceCursor="True"
             Visibility="{Binding IsSketchShown, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}">
-        <Rectangle x:Name="selectionRectangle"
-                   Stroke="Yellow"
-                   StrokeThickness="3"
-                   Fill="Orange"
-                   Opacity="0.2"
-                   RadiusX="3"
-                   RadiusY="3"
-                   Visibility="Hidden"
-                   IsHitTestVisible="False"/>
     </Canvas>
 </UserControl>

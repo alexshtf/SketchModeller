@@ -13,7 +13,7 @@ using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {
-    class NewHalfSphereView : BaseNewPrimitiveView, IWeakEventListener
+    class NewHalfSphereView : BaseNewPrimitiveView
     {
         private readonly NewHalfSphereViewModel viewModel;
 
@@ -21,117 +21,133 @@ namespace SketchModeller.Modelling.Views
             : base(viewModel, logger)
         {
             this.viewModel = viewModel;
-
-            viewModel.AddListener(this, () => viewModel.Center);
-            viewModel.AddListener(this, () => viewModel.Radius);
-            viewModel.AddListener(this, () => viewModel.Length);
-            viewModel.AddListener(this, () => viewModel.Axis);
-
-            UpdateTranslation();
-            UpdateHalfSphereAxis();
-            RegenerateGeometry();
         }
 
-        protected override void MovePosition(Vector3D moveVector)
+
+        public override void DragStart(Petzold.Media3D.LineRange startRay)
         {
-            viewModel.Center = viewModel.Center + moveVector;
+            throw new NotImplementedException();
         }
 
-        protected override void Edit(int sign)
+        public override void Drag(Petzold.Media3D.LineRange currRay)
         {
-            viewModel.Edit(sign);
+            throw new NotImplementedException();
         }
 
-        private void UpdateTranslation()
+        public override void DragEnd()
         {
-            UpdateTranslation(viewModel.Center);
+            throw new NotImplementedException();
         }
 
-        private void UpdateHalfSphereAxis()
+        public override bool IsDragging
         {
-            var rotationAxis = Vector3D.CrossProduct(MathUtils3D.UnitY, viewModel.Axis);
-            var degrees = Vector3D.AngleBetween(MathUtils3D.UnitY, viewModel.Axis);
-            UpdateRotation(rotationAxis, degrees);
+            get { throw new NotImplementedException(); }
         }
 
-        private void UpdateHalfSphereRadius()
-        {
-            RegenerateGeometry();
-        }
+        #region old code
 
-        private void UpdateHalfSphereLength()
-        {
-            RegenerateGeometry();
-        }
+        //protected override void MovePosition(Vector3D moveVector)
+        //{
+        //    viewModel.Center = viewModel.Center + moveVector;
+        //}
 
-        private void RegenerateGeometry()
-        {
-            const int RADIUS_SUBDIVISION = 50;
-            const int LENGTH_SUBDIVISION = 20;
+        //protected override void Edit(int sign)
+        //{
+        //    viewModel.Edit(sign);
+        //}
 
-            // generate circles
-            var circles = new List<Point3D[]>();
-            for (int i = 0; i < LENGTH_SUBDIVISION; ++i)
-            {
-                var lsFraction = i / (double)LENGTH_SUBDIVISION;
-                var lsAngle = 0.5 * Math.PI * lsFraction;
-                var curRadius = viewModel.Radius * Math.Cos(lsAngle);
-                var curCenter = MathUtils3D.Origin - lsFraction * viewModel.Length * viewModel.Axis;
-                var circle = GenerateCircle(curCenter, curRadius, RADIUS_SUBDIVISION);
-                circles.Add(circle);
-            }
+        //private void UpdateTranslation()
+        //{
+        //    UpdateTranslation(viewModel.Center);
+        //}
 
-            // calculate the vertex (the last empty circle)
-            var vertex = MathUtils3D.Origin - viewModel.Length * viewModel.Axis;
+        //private void UpdateHalfSphereAxis()
+        //{
+        //    var rotationAxis = Vector3D.CrossProduct(MathUtils3D.UnitY, viewModel.Axis);
+        //    var degrees = Vector3D.AngleBetween(MathUtils3D.UnitY, viewModel.Axis);
+        //    UpdateRotation(rotationAxis, degrees);
+        //}
 
-            var meshGeometry = new MeshGeometry3D();
-            meshGeometry.Positions = new Point3DCollection(circles.Flatten().Append(vertex));
-            meshGeometry.TriangleIndices = new Int32Collection();
+        //private void UpdateHalfSphereRadius()
+        //{
+        //    RegenerateGeometry();
+        //}
 
-            // generate triangle indices between circles
-            for (var i = 0; i < circles.Count - 1; ++i)
-            {
-                int[] prevIdx = System.Linq.Enumerable.Range(RADIUS_SUBDIVISION * i, RADIUS_SUBDIVISION).ToArray();
-                int[] nextIdx = System.Linq.Enumerable.Range(RADIUS_SUBDIVISION * (i + 1), RADIUS_SUBDIVISION).ToArray();
-                for (var j = 0; j < RADIUS_SUBDIVISION; ++j)
-                {
-                    var k = (j + 1) % RADIUS_SUBDIVISION;
-                    meshGeometry.TriangleIndices.AddMany(prevIdx[j], prevIdx[k], nextIdx[k]);
-                    meshGeometry.TriangleIndices.AddMany(prevIdx[j], nextIdx[k], nextIdx[j]);
-                }
-            }
+        //private void UpdateHalfSphereLength()
+        //{
+        //    RegenerateGeometry();
+        //}
 
-            // generate triangles between last circle and vertex
-            var lastIdx = System.Linq.Enumerable.Range(circles.Count * RADIUS_SUBDIVISION, RADIUS_SUBDIVISION).ToArray();
-            var vertexIdx = meshGeometry.Positions.Count - 1;
-            for (int j = 0; j < RADIUS_SUBDIVISION; ++j)
-            {
-                var k = (j + 1) % RADIUS_SUBDIVISION;
-                meshGeometry.TriangleIndices.AddMany(lastIdx[j], lastIdx[k], vertexIdx);
-            }
+        //private void RegenerateGeometry()
+        //{
+        //    const int RADIUS_SUBDIVISION = 50;
+        //    const int LENGTH_SUBDIVISION = 20;
 
-            meshGeometry.Freeze();
-            UpdateGeometry(meshGeometry);
-        }
+        //    // generate circles
+        //    var circles = new List<Point3D[]>();
+        //    for (int i = 0; i < LENGTH_SUBDIVISION; ++i)
+        //    {
+        //        var lsFraction = i / (double)LENGTH_SUBDIVISION;
+        //        var lsAngle = 0.5 * Math.PI * lsFraction;
+        //        var curRadius = viewModel.Radius * Math.Cos(lsAngle);
+        //        var curCenter = MathUtils3D.Origin - lsFraction * viewModel.Length * viewModel.Axis;
+        //        var circle = GenerateCircle(curCenter, curRadius, RADIUS_SUBDIVISION);
+        //        circles.Add(circle);
+        //    }
 
-        private Point3D[] GenerateCircle(Point3D center, double radius, int count)
-        {
-            return ShapeHelper.GenerateCircle(center, MathUtils3D.UnitX, MathUtils3D.UnitZ, radius, count);
-        }
+        //    // calculate the vertex (the last empty circle)
+        //    var vertex = MathUtils3D.Origin - viewModel.Length * viewModel.Axis;
 
-        bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType != typeof(PropertyChangedEventManager))
-                return false;
+        //    var meshGeometry = new MeshGeometry3D();
+        //    meshGeometry.Positions = new Point3DCollection(circles.Flatten().Append(vertex));
+        //    meshGeometry.TriangleIndices = new Int32Collection();
 
-            var eventArgs = (PropertyChangedEventArgs)e;
+        //    // generate triangle indices between circles
+        //    for (var i = 0; i < circles.Count - 1; ++i)
+        //    {
+        //        int[] prevIdx = System.Linq.Enumerable.Range(RADIUS_SUBDIVISION * i, RADIUS_SUBDIVISION).ToArray();
+        //        int[] nextIdx = System.Linq.Enumerable.Range(RADIUS_SUBDIVISION * (i + 1), RADIUS_SUBDIVISION).ToArray();
+        //        for (var j = 0; j < RADIUS_SUBDIVISION; ++j)
+        //        {
+        //            var k = (j + 1) % RADIUS_SUBDIVISION;
+        //            meshGeometry.TriangleIndices.AddMany(prevIdx[j], prevIdx[k], nextIdx[k]);
+        //            meshGeometry.TriangleIndices.AddMany(prevIdx[j], nextIdx[k], nextIdx[j]);
+        //        }
+        //    }
 
-            eventArgs.Match(() => viewModel.Center, UpdateTranslation);
-            eventArgs.Match(() => viewModel.Length, UpdateHalfSphereLength);
-            eventArgs.Match(() => viewModel.Axis, UpdateHalfSphereAxis);
-            eventArgs.Match(() => viewModel.Radius, UpdateHalfSphereRadius);
+        //    // generate triangles between last circle and vertex
+        //    var lastIdx = System.Linq.Enumerable.Range(circles.Count * RADIUS_SUBDIVISION, RADIUS_SUBDIVISION).ToArray();
+        //    var vertexIdx = meshGeometry.Positions.Count - 1;
+        //    for (int j = 0; j < RADIUS_SUBDIVISION; ++j)
+        //    {
+        //        var k = (j + 1) % RADIUS_SUBDIVISION;
+        //        meshGeometry.TriangleIndices.AddMany(lastIdx[j], lastIdx[k], vertexIdx);
+        //    }
 
-            return true;
-        }
+        //    meshGeometry.Freeze();
+        //    UpdateGeometry(meshGeometry);
+        //}
+
+        //private Point3D[] GenerateCircle(Point3D center, double radius, int count)
+        //{
+        //    return ShapeHelper.GenerateCircle(center, MathUtils3D.UnitX, MathUtils3D.UnitZ, radius, count);
+        //}
+
+        //bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+        //{
+        //    if (managerType != typeof(PropertyChangedEventManager))
+        //        return false;
+
+        //    var eventArgs = (PropertyChangedEventArgs)e;
+
+        //    eventArgs.Match(() => viewModel.Center, UpdateTranslation);
+        //    eventArgs.Match(() => viewModel.Length, UpdateHalfSphereLength);
+        //    eventArgs.Match(() => viewModel.Axis, UpdateHalfSphereAxis);
+        //    eventArgs.Match(() => viewModel.Radius, UpdateHalfSphereRadius);
+
+        //    return true;
+        //}
+
+        #endregion
     }
 }

@@ -10,88 +10,90 @@ using System.Diagnostics.Contracts;
 using Utils;
 using System.ComponentModel;
 using SketchModeller.Infrastructure;
+using SketchModeller.Utilities;
+using System.Windows.Media;
 
 namespace SketchModeller.Modelling.Views
 {
-    class NewCylinderView : BaseNewPrimitiveView, IWeakEventListener
+    class NewCylinderView : BaseNewPrimitiveView
     {
-        private NewCylinderViewModel viewModel;
-        private HollowCylinderMesh cylinderMesh;
+        private readonly NewCylinderViewModel viewModel;
+        private readonly Cylinder cylinder;
+        private bool isDragging;
+
+        private Point3D? lastDragPosition;
 
         public NewCylinderView(NewCylinderViewModel viewModel, ILoggerFacade logger)
             : base(viewModel, logger)
         {
             this.viewModel = viewModel;
-            cylinderMesh = new HollowCylinderMesh();
 
-            viewModel.AddListener(this, () => viewModel.Center);
-            viewModel.AddListener(this, () => viewModel.Diameter);
-            viewModel.AddListener(this, () => viewModel.Length);
-            viewModel.AddListener(this, () => viewModel.Axis);
+            this.cylinder = new Cylinder();
+            Children.Add(cylinder);
 
-            cylinderMesh.Radius = viewModel.Diameter * 0.5;
-            cylinderMesh.Length = viewModel.Length;
-            UpdateMeshGeometry();
-            UpdateTranslation();
-            UpdateRotation();
+            cylinder.Bind(Cylinder.Radius1Property, () => viewModel.Diameter, diameter => diameter / 2);
+            cylinder.Bind(Cylinder.Radius2Property, () => viewModel.Diameter, diameter => diameter / 2);
+            cylinder.Bind(Cylinder.Point1Property,
+                () => viewModel.Center,
+                () => viewModel.Axis,
+                () => viewModel.Length,
+                (center, axis, length) => center + 0.5 * length * axis);
+            cylinder.Bind(Cylinder.Point2Property,
+                () => viewModel.Center,
+                () => viewModel.Axis,
+                () => viewModel.Length,
+                (center, axis, length) => center - 0.5 * length * axis);
+
+            var material = new DiffuseMaterial();
+            material.Bind(
+                DiffuseMaterial.BrushProperty, 
+                "Model.IsSelected", 
+                viewModel, 
+                new DelegateConverter<bool>(
+                    isSelected =>
+                    {
+                        if (isSelected)
+                            return SELECTED_BRUSH;
+                        else
+                            return UNSELECTED_BRUSH;
+                    }));
+            cylinder.Material = material;
+            cylinder.BackMaterial = new DiffuseMaterial { Brush = Brushes.Red };
         }
 
-
-        protected override void MovePosition(Vector3D moveVector)
+        public override void DragStart(LineRange startRay)
         {
-            viewModel.Center = viewModel.Center + moveVector;
+            lastDragPosition = PointOnSketchPlane(startRay);
+            isDragging = true;
         }
 
-        protected override void Edit(int sign)
+        public override void Drag(LineRange currRay)
         {
-            viewModel.Edit(sign);
+            var currDragPosition = PointOnSketchPlane(currRay);
+            var moveVector = currDragPosition - lastDragPosition;
+
+            if (moveVector != null)
+                viewModel.Center = viewModel.Center + moveVector.Value;
+
+            if (currDragPosition != null)
+                lastDragPosition = currDragPosition;
         }
 
-        private void UpdateMeshGeometry()
+        public override void DragEnd()
         {
-            var geometry = cylinderMesh.Geometry.Clone() as MeshGeometry3D;
-            Contract.Assume(geometry != null, "Geometry must be a MeshGeometry3D");
-            UpdateGeometry(geometry);
+            isDragging = false;
+            // TODO: We do nothing here.
         }
 
-        private void UpdateCylinderRadius()
+        public override bool IsDragging
         {
-            cylinderMesh.Radius = viewModel.Diameter * 0.5;
-            UpdateMeshGeometry();
+            get { return isDragging; }
         }
 
-        private void UpdateCylinderLength()
+        private Point3D? PointOnSketchPlane(LineRange lineRange)
         {
-            cylinderMesh.Length = viewModel.Length;
-            UpdateMeshGeometry();
-        }
-
-        private void UpdateTranslation()
-        {
-            var newPosition = viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis.Normalized();
-            UpdateTranslation(newPosition);
-        }
-
-        private void UpdateRotation()
-        {
-            var rotationAxis = Vector3D.CrossProduct(MathUtils3D.UnitY, viewModel.Axis);
-            var degrees = Vector3D.AngleBetween(MathUtils3D.UnitY, viewModel.Axis);
-            UpdateRotation(rotationAxis, degrees);
-        }
-
-        bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType != typeof(PropertyChangedEventManager))
-                return false;
-
-            var eventArgs = (PropertyChangedEventArgs)e;
-
-            eventArgs.Match(() => viewModel.Center, UpdateTranslation);
-            eventArgs.Match(() => viewModel.Length, UpdateCylinderLength);
-            eventArgs.Match(() => viewModel.Axis, UpdateRotation);
-            eventArgs.Match(() => viewModel.Diameter, UpdateCylinderRadius);
-
-            return true;
+            var sketchPlane = viewModel.SketchPlane;
+            return sketchPlane.PointFromRay(lineRange);
         }
     }
 }

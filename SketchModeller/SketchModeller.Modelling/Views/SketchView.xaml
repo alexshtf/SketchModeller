@@ -5,25 +5,83 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cal="http://www.codeplex.com/CompositeWPF"
              mc:Ignorable="d" 
-             Background="LightGray"
              d:DesignHeight="300" d:DesignWidth="300"
              ClipToBounds="True">
     <Grid x:Name="root">
-        <Viewport3D x:Name="viewport3d"
-                    Margin="10">
-            <Viewport3D.Camera>
-                <MatrixCamera x:Name="camera"
-                              ProjectionMatrix="Identity"/>
-            </Viewport3D.Camera>
-            <Viewport3D.Children>
-                <ModelVisual3D>
-                    <ModelVisual3D.Content>
-                        <AmbientLight Color="Gray" />
-                    </ModelVisual3D.Content>
-                </ModelVisual3D>
-                <ModelVisual3D x:Name="root3d">
-                </ModelVisual3D>
-            </Viewport3D.Children>
-        </Viewport3D>
+        <Grid.RowDefinitions>
+            <RowDefinition  />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Border x:Name="vpRoot"
+                Margin="10"
+                Background="LightGray" 
+                Grid.Row="0"
+                MouseDown="vpRoot_MouseDown"
+                MouseUp="vpRoot_MouseUp"
+                MouseMove="vpRoot_MouseMove"
+                AllowDrop="True"
+                Drop="vpRoot_Drop">
+            <Viewport3D x:Name="viewport3d">
+                <Viewport3D.Camera>
+                    <MatrixCamera x:Name="camera"
+                                  ProjectionMatrix="Identity"/>
+                </Viewport3D.Camera>
+                <Viewport3D.Children>
+                    <ModelVisual3D>
+                        <ModelVisual3D.Content>
+                            <AmbientLight Color="Gray" />
+                        </ModelVisual3D.Content>
+                    </ModelVisual3D>
+                    <ModelVisual3D x:Name="root3d">
+                    </ModelVisual3D>
+                </Viewport3D.Children>
+            </Viewport3D>
+        </Border>
+
+        <Canvas Grid.Row="0"
+                Margin="{Binding ElementName=vpRoot, Path=Margin}">
+            <Border BorderBrush="Blue"
+                    BorderThickness="2"
+                    CornerRadius="3"
+                    Visibility="Collapsed"
+                    x:Name="selectionRectangle">
+                <Rectangle RadiusX="2"
+                           RadiusY="2"
+                           Fill="LightBlue"
+                           Opacity="0.5"/>
+            </Border>
+        </Canvas>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <GroupBox Header="Mouse mode">
+                <StackPanel ToggleButton.Checked="StackPanel_Checked">
+                    <RadioButton IsChecked="True" x:Name="curveSelection">Curve selection</RadioButton>
+                    <RadioButton x:Name="primitiveManipulation">Primitive manipulation</RadioButton>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Basic primitives">
+                <UniformGrid>
+                    <UniformGrid.Resources>
+                        <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
+                            <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
+                            <Setter Property="Margin" Value="2" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Border Background="LightGray"
+                                                BorderBrush="DarkGray"
+                                                BorderThickness="1">
+                                            <TextBlock Text="{TemplateBinding Tag}" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <Thumb x:Name="cylinderThumb" Tag="Cylinder" />
+                    <Thumb x:Name="coneThumb" Tag="Cone" />
+                </UniformGrid>
+            </GroupBox>
+        </StackPanel>
     </Grid>
 </UserControl>
