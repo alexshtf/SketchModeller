@@ -13,6 +13,10 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Constant.cs" />
     <Compile Include="Differentiator.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="EvaluationCache.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="Exp.cs" />
@@ -84,12 +89,6 @@
     <Compile Include="TVec.cs" />
     <Compile Include="Variable.cs" />
     <Compile Include="Zero.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\SimpleCurveEdit\Utils\Utils.csproj">
-      <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>
-      <Name>Utils</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

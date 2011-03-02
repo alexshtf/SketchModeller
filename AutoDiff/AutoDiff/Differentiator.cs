@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Utils;
 using System.Diagnostics.Contracts;
 
 namespace AutoDiff

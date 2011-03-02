@@ -10,88 +10,141 @@ using System.Diagnostics.Contracts;
 using Utils;
 using System.ComponentModel;
 using SketchModeller.Infrastructure;
+using SketchModeller.Utilities;
+using System.Windows.Media;
+using System.Windows.Input;
 
 namespace SketchModeller.Modelling.Views
 {
-    class NewCylinderView : BaseNewPrimitiveView, IWeakEventListener
+    class NewCylinderView : BaseNewPrimitiveView
     {
-        private NewCylinderViewModel viewModel;
-        private HollowCylinderMesh cylinderMesh;
+        private const ModifierKeys TRACKBALL_MODIFIERS = ModifierKeys.Alt;
+        private const ModifierKeys LENGTH_MODIFIER = ModifierKeys.Control;
+        private const ModifierKeys DIAMETER_MODIFIER = ModifierKeys.Shift;
+
+        private readonly NewCylinderViewModel viewModel;
+        private readonly Cylinder cylinder;
+        private bool isDragging;
+
+        private Point3D? lastDragPosition3d;
+        private Point lastDragPosition2d;
 
         public NewCylinderView(NewCylinderViewModel viewModel, ILoggerFacade logger)
             : base(viewModel, logger)
         {
             this.viewModel = viewModel;
-            cylinderMesh = new HollowCylinderMesh();
 
-            viewModel.AddListener(this, () => viewModel.Center);
-            viewModel.AddListener(this, () => viewModel.Diameter);
-            viewModel.AddListener(this, () => viewModel.Length);
-            viewModel.AddListener(this, () => viewModel.Axis);
+            this.cylinder = new Cylinder();
+            Children.Add(cylinder);
 
-            cylinderMesh.Radius = viewModel.Diameter * 0.5;
-            cylinderMesh.Length = viewModel.Length;
-            UpdateMeshGeometry();
-            UpdateTranslation();
-            UpdateRotation();
+            cylinder.Bind(Cylinder.Radius1Property, () => viewModel.Diameter, diameter => diameter / 2);
+            cylinder.Bind(Cylinder.Radius2Property, () => viewModel.Diameter, diameter => diameter / 2);
+            cylinder.Bind(Cylinder.Point1Property,
+                () => viewModel.Center,
+                () => viewModel.Axis,
+                () => viewModel.Length,
+                (center, axis, length) => center + 0.5 * length * axis);
+            cylinder.Bind(Cylinder.Point2Property,
+                () => viewModel.Center,
+                () => viewModel.Axis,
+                () => viewModel.Length,
+                (center, axis, length) => center - 0.5 * length * axis);
+
+            var material = new DiffuseMaterial();
+            material.Bind(
+                DiffuseMaterial.BrushProperty, 
+                "Model.IsSelected", 
+                viewModel, 
+                new DelegateConverter<bool>(
+                    isSelected =>
+                    {
+                        if (isSelected)
+                            return SELECTED_BRUSH;
+                        else
+                            return UNSELECTED_BRUSH;
+                    }));
+            cylinder.Material = material;
+
+            cylinder.BackMaterial = new DiffuseMaterial { Brush = Brushes.Red };
+            cylinder.BackMaterial.Freeze();
         }
 
-
-        protected override void MovePosition(Vector3D moveVector)
+        public override void DragStart(Point startPos, LineRange startRay)
         {
-            viewModel.Center = viewModel.Center + moveVector;
+            lastDragPosition3d = PointOnSketchPlane(startRay);
+            lastDragPosition2d = startPos;
+            isDragging = true;
         }
 
-        protected override void Edit(int sign)
+        public override void Drag(Point currPos, LineRange currRay)
         {
-            viewModel.Edit(sign);
+            var currDragPosition = PointOnSketchPlane(currRay);
+            var dragVector3d = currDragPosition - lastDragPosition3d;
+            var dragVector2d = currPos - lastDragPosition2d;
+
+            if (dragVector3d != null)
+                PerformDrag(dragVector2d, dragVector3d.Value);
+
+            if (currDragPosition != null)
+                lastDragPosition3d = currDragPosition;
+            lastDragPosition2d = currPos;
         }
 
-        private void UpdateMeshGeometry()
+        public override void DragEnd()
         {
-            var geometry = cylinderMesh.Geometry.Clone() as MeshGeometry3D;
-            Contract.Assume(geometry != null, "Geometry must be a MeshGeometry3D");
-            UpdateGeometry(geometry);
+            isDragging = false;
         }
 
-        private void UpdateCylinderRadius()
+        public override bool IsDragging
         {
-            cylinderMesh.Radius = viewModel.Diameter * 0.5;
-            UpdateMeshGeometry();
+            get { return isDragging; }
         }
 
-        private void UpdateCylinderLength()
+        private void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)
         {
-            cylinderMesh.Length = viewModel.Length;
-            UpdateMeshGeometry();
+            if (Keyboard.Modifiers == ModifierKeys.None)
+                viewModel.Center = viewModel.Center + dragVector3d;
+            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+            {
+                viewModel.Axis = TrackballRotate(viewModel.Axis, dragVector2d);
+            }
+            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+            {
+                var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
+                if (axis != default(Vector3D))
+                {
+                    axis.Normalize();
+                    var diameterDelta = Vector3D.DotProduct(axis, dragVector3d);
+                    viewModel.Diameter = Math.Max(NewCylinderViewModel.MIN_DIAMETER, viewModel.Diameter + diameterDelta);
+                }
+            }
+            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
+            {
+                var axis = viewModel.Axis.Normalized();
+                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
+                viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
+            }
         }
 
-        private void UpdateTranslation()
+        private Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)
         {
-            var newPosition = viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis.Normalized();
-            UpdateTranslation(newPosition);
+            const double TRACKBALL_ROTATE_SPEED = 1.0;
+
+            var horzDegrees = -dragVector2d.X * TRACKBALL_ROTATE_SPEED;
+            var vertDegrees = -dragVector2d.Y * TRACKBALL_ROTATE_SPEED;
+
+            var horzAxis = viewModel.SketchPlane.Normal;
+            var vertAxis = viewModel.SketchPlane.XAxis;
+
+            toRotate = RotationHelper.RotateVector(toRotate, horzAxis, horzDegrees);
+            toRotate = RotationHelper.RotateVector(toRotate, vertAxis, vertDegrees);
+            return toRotate;
         }
 
-        private void UpdateRotation()
+        private Point3D? PointOnSketchPlane(LineRange lineRange)
         {
-            var rotationAxis = Vector3D.CrossProduct(MathUtils3D.UnitY, viewModel.Axis);
-            var degrees = Vector3D.AngleBetween(MathUtils3D.UnitY, viewModel.Axis);
-            UpdateRotation(rotationAxis, degrees);
-        }
-
-        bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType != typeof(PropertyChangedEventManager))
-                return false;
-
-            var eventArgs = (PropertyChangedEventArgs)e;
-
-            eventArgs.Match(() => viewModel.Center, UpdateTranslation);
-            eventArgs.Match(() => viewModel.Length, UpdateCylinderLength);
-            eventArgs.Match(() => viewModel.Axis, UpdateRotation);
-            eventArgs.Match(() => viewModel.Diameter, UpdateCylinderRadius);
-
-            return true;
+            var sketchPlane = viewModel.SketchPlane;
+            return sketchPlane.PointFromRay(lineRange);
         }
     }
 }

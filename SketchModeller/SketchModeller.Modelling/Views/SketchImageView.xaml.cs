@@ -26,41 +26,20 @@ namespace SketchModeller.Modelling.Views
     /// <summary>
     /// Interaction logic for SketchImageView.xaml
     /// </summary>
-    public partial class SketchImageView 
+    public partial class SketchImageView
     {
+        public const ModifierKeys ADD_SELECT_MODIFIER = ModifierKeys.Control;
+        public const ModifierKeys REMOVE_SELECT_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
+
         private static readonly Brush SKETCH_STROKE_UNCATEGORIZED = Brushes.Red;
         private static readonly Brush SKETCH_STROKE_FEATURE = Brushes.Black;
         private static readonly Brush SKETCH_STROKE_SILHOUETTE = Brushes.DarkGray;
 
-        private static readonly Cursor ADD_CURSOR;
-        private static readonly Cursor REMOVE_CURSOR;
-
-        private const ModifierKeys ADD_MODIFIER = ModifierKeys.Control;
-        private const ModifierKeys REMOVE_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
-
-        static SketchImageView()
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowadd.cur"))
-            {
-                ADD_CURSOR = new Cursor(stream);
-            }
-            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowdel.cur"))
-            {
-                REMOVE_CURSOR = new Cursor(stream);
-            }
-        }
-
         private readonly SketchImageViewModel viewModel;
-        private readonly PathsSelectionManager pathsManager;
-        private readonly DispatcherTimer modifierKeysTimer;
 
         public SketchImageView()
         {
             InitializeComponent();
-            modifierKeysTimer = new DispatcherTimer();
-            modifierKeysTimer.Interval = TimeSpan.FromMilliseconds(50);
-            modifierKeysTimer.Tick += new EventHandler(OnModifierKeysTimerTick);
         }
 
         [InjectionConstructor]
@@ -70,8 +49,6 @@ namespace SketchModeller.Modelling.Views
             this.viewModel = viewModel;
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
             DataContext = viewModel;
-
-            pathsManager = new PathsSelectionManager(polyRoot, selectionRectangle);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -192,55 +169,57 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        #region Selection mouse events
-
-        private void OnPolyRootMouseDown(object sender, MouseButtonEventArgs e)
+        public void SelectCurves(Rect rect)
         {
-            pathsManager.MouseDown(e);
-        }
+            var htParams = new GeometryHitTestParameters(new RectangleGeometry(rect));
+            var results = new HashSet<Path>();
+            VisualTreeHelper.HitTest(
+                polyRoot,
+                null, // filter callback
+                htResult => // result callback
+                {
+                    var path = htResult.VisualHit as Path;
+                    if (path != null)
+                        results.Add(path);
+                    return HitTestResultBehavior.Continue;
+                },
+                htParams);
 
-        private void OnPolyRootMouseMove(object sender, MouseEventArgs e)
-        {
-            pathsManager.MouseMove(e);
-        }
+            var selectedSequences = results.Select(x => x.DataContext).OfType<PointsSequence>();
 
-        private void OnPolyRootMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            pathsManager.MouseUp(e);
-        }
-
-        #endregion
-
-        #region modifier keys cursor
-
-        protected override void OnMouseEnter(MouseEventArgs e)
-        {
-            base.OnMouseEnter(e);
-            modifierKeysTimer.Start();
-            UpdateCursorFromModifierKeys();
-        }
-
-        protected override void OnMouseLeave(MouseEventArgs e)
-        {
-            base.OnMouseLeave(e);
-            modifierKeysTimer.Stop();
-        }
-
-        private void OnModifierKeysTimerTick(object sender, EventArgs e)
-        {
-            UpdateCursorFromModifierKeys();
-        }
-
-        private void UpdateCursorFromModifierKeys()
-        {
-            if (Keyboard.Modifiers == ADD_MODIFIER)
-                this.Cursor = ADD_CURSOR;
-            else if (Keyboard.Modifiers == REMOVE_MODIFIER)
-                this.Cursor = REMOVE_CURSOR;
+            var currModifiers = Keyboard.Modifiers;
+            if (currModifiers == ADD_SELECT_MODIFIER)
+                AddToSelection(selectedSequences);
+            else if (currModifiers == REMOVE_SELECT_MODIFIER)
+                RemoveFromSelection(selectedSequences);
             else
-                this.Cursor = null;
+                ReplaceSelection(selectedSequences);
         }
 
-        #endregion
+        private void AddToSelection(IEnumerable<PointsSequence> selectedSequences)
+        {
+            foreach (var seq in selectedSequences)
+                seq.IsSelected = true;
+        }
+
+        private void RemoveFromSelection(IEnumerable<PointsSequence> selectedSequences)
+        {
+            foreach (var seq in selectedSequences)
+                seq.IsSelected = false;
+        }
+
+        private void ReplaceSelection(IEnumerable<PointsSequence> selectedSequences)
+        {
+            var allSequences = viewModel.Polygons.Cast<PointsSequence>().Concat(viewModel.Polylines);
+            var oldSelectedSequences = allSequences.Where(seq => seq.IsSelected).ToArray();
+            
+            var toUnSelect = oldSelectedSequences.Except(selectedSequences);
+            var toSelect = selectedSequences.Except(oldSelectedSequences);
+
+            foreach (var seq in toUnSelect)
+                seq.IsSelected = false;
+            foreach (var seq in toSelect)
+                seq.IsSelected = true;
+        }
     }
 }
