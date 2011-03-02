@@ -25,27 +25,6 @@ namespace SketchModeller.Modelling.Views
             this.viewModel = viewModel;
         }
 
-
-        public override void DragStart(Point startPos, LineRange startRay)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Drag(Point currPos, LineRange currRay)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DragEnd()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsDragging
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         #region old code
 
 

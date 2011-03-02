@@ -24,10 +24,7 @@ namespace SketchModeller.Modelling.Views
 
         private readonly NewCylinderViewModel viewModel;
         private readonly Cylinder cylinder;
-        private bool isDragging;
 
-        private Point3D? lastDragPosition3d;
-        private Point lastDragPosition2d;
 
         public NewCylinderView(NewCylinderViewModel viewModel, ILoggerFacade logger)
             : base(viewModel, logger)
@@ -69,38 +66,7 @@ namespace SketchModeller.Modelling.Views
             cylinder.BackMaterial.Freeze();
         }
 
-        public override void DragStart(Point startPos, LineRange startRay)
-        {
-            lastDragPosition3d = PointOnSketchPlane(startRay);
-            lastDragPosition2d = startPos;
-            isDragging = true;
-        }
-
-        public override void Drag(Point currPos, LineRange currRay)
-        {
-            var currDragPosition = PointOnSketchPlane(currRay);
-            var dragVector3d = currDragPosition - lastDragPosition3d;
-            var dragVector2d = currPos - lastDragPosition2d;
-
-            if (dragVector3d != null)
-                PerformDrag(dragVector2d, dragVector3d.Value);
-
-            if (currDragPosition != null)
-                lastDragPosition3d = currDragPosition;
-            lastDragPosition2d = currPos;
-        }
-
-        public override void DragEnd()
-        {
-            isDragging = false;
-        }
-
-        public override bool IsDragging
-        {
-            get { return isDragging; }
-        }
-
-        private void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)
+        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)
         {
             if (Keyboard.Modifiers == ModifierKeys.None)
                 viewModel.Center = viewModel.Center + dragVector3d;
@@ -124,27 +90,6 @@ namespace SketchModeller.Modelling.Views
                 var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
                 viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
             }
-        }
-
-        private Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)
-        {
-            const double TRACKBALL_ROTATE_SPEED = 1.0;
-
-            var horzDegrees = -dragVector2d.X * TRACKBALL_ROTATE_SPEED;
-            var vertDegrees = -dragVector2d.Y * TRACKBALL_ROTATE_SPEED;
-
-            var horzAxis = viewModel.SketchPlane.Normal;
-            var vertAxis = viewModel.SketchPlane.XAxis;
-
-            toRotate = RotationHelper.RotateVector(toRotate, horzAxis, horzDegrees);
-            toRotate = RotationHelper.RotateVector(toRotate, vertAxis, vertDegrees);
-            return toRotate;
-        }
-
-        private Point3D? PointOnSketchPlane(LineRange lineRange)
-        {
-            var sketchPlane = viewModel.SketchPlane;
-            return sketchPlane.PointFromRay(lineRange);
         }
     }
 }
