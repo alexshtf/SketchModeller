@@ -8,7 +8,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Canvas x:Name="polyRoot"
-            Margin="10"
             ForceCursor="True"
             Visibility="{Binding IsSketchShown, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}">
     </Canvas>

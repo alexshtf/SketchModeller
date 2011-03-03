@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cal="http://www.codeplex.com/CompositeWPF"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="481"
              ClipToBounds="True">
     <Grid x:Name="root">
         <Grid.RowDefinitions>
@@ -61,9 +61,9 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <GroupBox Header="Mouse mode">
-                <StackPanel ToggleButton.Checked="StackPanel_Checked">
-                    <RadioButton IsChecked="True" x:Name="curveSelection">Curve selection</RadioButton>
-                    <RadioButton x:Name="primitiveManipulation">Primitive manipulation</RadioButton>
+                <StackPanel ToggleButton.Checked="StackPanel_Checked" VerticalAlignment="Center">
+                    <RadioButton Margin="3" IsChecked="True" x:Name="curveSelection">Curve selection</RadioButton>
+                    <RadioButton Margin="3" x:Name="primitiveManipulation">Primitive manipulation</RadioButton>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">
@@ -73,7 +73,8 @@
                             <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
                             <Setter Property="Margin" Value="2" />
                             <Setter Property="Width" Value="50" />
-                            <Setter Property="Height" Value="50" />
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="Margin" Value="2" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Thumb">
@@ -92,6 +93,12 @@
                     <Thumb x:Name="cylinderThumb" Tag="Cylinder" />
                     <Thumb x:Name="coneThumb" Tag="Cone" />
                 </UniformGrid>
+            </GroupBox>
+            <GroupBox Header="Primive operations">
+                <StackPanel Orientation="Vertical">
+                    <Button Margin="3" Command="{Binding DeletePrimitive}">Delete</Button>
+                    <Button Margin="3" Command="{Binding SnapPrimitive}">Snap</Button>
+                </StackPanel>
             </GroupBox>
         </StackPanel>
     </Grid>

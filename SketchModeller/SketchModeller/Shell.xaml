@@ -19,7 +19,7 @@
                      DockPanel.Dock="Top" />
         <TabControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.SideBar}"
                     DockPanel.Dock="Left"
-                    Width="300">
+                    Width="200">
             <TabControl.Resources>
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Header" Value="{Binding ViewName}" />

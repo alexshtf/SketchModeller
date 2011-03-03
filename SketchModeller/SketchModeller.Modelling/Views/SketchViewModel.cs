@@ -15,6 +15,9 @@ using SketchModeller.Infrastructure;
 using Petzold.Media3D;
 using SketchModeller.Utilities;
 using System.Diagnostics;
+using System.Windows.Input;
+using Microsoft.Practices.Prism.Commands;
+using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -23,24 +26,37 @@ namespace SketchModeller.Modelling.Views
         private readonly IEventAggregator eventAggregator;
         private readonly UiState uiState;
         private readonly SessionData sessionData;
+        private readonly ISnapper snapper;
 
         [InjectionConstructor]
-        public SketchViewModel(IUnityContainer container, IEventAggregator eventAggregator, UiState uiState, SessionData sessionData)
+        public SketchViewModel(
+            IUnityContainer container, 
+            IEventAggregator eventAggregator, 
+            UiState uiState, 
+            SessionData sessionData,
+            ISnapper snapper)
         {
             this.uiState = uiState;
             this.sessionData = sessionData;
             this.eventAggregator = eventAggregator;
+            this.snapper = snapper;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
             sessionData.AddListener(this, () => sessionData.SketchName);
 
             SketchModellingViewModel = container.Resolve<SketchModellingViewModel>();
             SketchImageViewModel = container.Resolve<SketchImageViewModel>();
+
+            DeletePrimitive = new DelegateCommand(DeletePrimitiveExecute, DeletePrimitiveCanExecute);
+            SnapPrimitive = new DelegateCommand(SnapPrimitiveExecute, SnapPrimitiveCanExecute);
         }
 
         public SketchModellingViewModel SketchModellingViewModel { get; private set; }
 
         public SketchImageViewModel SketchImageViewModel { get; private set; }
+
+        public ICommand DeletePrimitive { get; private set; }
+        public ICommand SnapPrimitive { get; private set; }
 
         #region SketchPlane property
 
@@ -57,18 +73,6 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
-
-        bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType != typeof(PropertyChangedEventManager))
-                return false;
-
-            var eventArgs = (PropertyChangedEventArgs)e;
-            if (eventArgs.Match(() => uiState.SketchPlane))
-                SketchPlane = uiState.SketchPlane;
-
-            return true;
-        }
 
         public void AddNewPrimitive(PrimitiveKinds primitiveKind, LineRange lineRange)
         {
@@ -108,6 +112,42 @@ namespace SketchModeller.Modelling.Views
             var selectedPrimitives = sessionData.SelectedNewPrimitives.ToArray();
             foreach (var item in selectedPrimitives)
                 sessionData.NewPrimitives.Remove(item);
+        }
+
+        #region Commands execute
+
+        private void DeletePrimitiveExecute()
+        {
+            DeleteNewPrimitives();
+        }
+
+        private bool DeletePrimitiveCanExecute()
+        {
+            return true;
+        }
+
+        private void SnapPrimitiveExecute()
+        {
+            snapper.Snap();
+        }
+
+        private bool SnapPrimitiveCanExecute()
+        {
+            return true;
+        }
+
+        #endregion
+
+        bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+        {
+            if (managerType != typeof(PropertyChangedEventManager))
+                return false;
+
+            var eventArgs = (PropertyChangedEventArgs)e;
+            if (eventArgs.Match(() => uiState.SketchPlane))
+                SketchPlane = uiState.SketchPlane;
+
+            return true;
         }
     }
 }
