@@ -71,8 +71,6 @@ namespace SketchModeller.Modelling.Views
                 
                 item.MatchClass<NewCylinderViewModel>(
                     viewModel => result = new NewCylinderView(viewModel, logger));
-                item.MatchClass<NewHalfSphereViewModel>(
-                    viewModel => result = new NewHalfSphereView(viewModel, logger));
                 item.MatchClass<NewConeViewModel>(
                     viewModel => result = new NewConeView(viewModel, logger));
 

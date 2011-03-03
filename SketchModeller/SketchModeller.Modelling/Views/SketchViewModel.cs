@@ -58,12 +58,6 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        public void OnSketchClick(System.Windows.Media.Media3D.Point3D p1, System.Windows.Media.Media3D.Point3D p2)
-        {
-            var payload = new SketchClickInfo(p1, p2);
-            eventAggregator.GetEvent<SketchClickEvent>().Publish(payload);
-        }
-
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
             if (managerType != typeof(PropertyChangedEventManager))

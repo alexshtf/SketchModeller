@@ -269,6 +269,19 @@ namespace Utils
             return t;
         }
 
+        /// <summary>
+        /// Returns the distance of a point from a plane.
+        /// </summary>
+        /// <param name="plane">The plane</param>
+        /// <param name="p">The point</param>
+        /// <returns>The distance of the point from the plane</returns>
+        public static double DistanceFromPoint(this Plane3D plane, Point3D p)
+        {
+            var dominator = Vector3D.DotProduct(p - Origin, plane.Normal) - plane.D;
+            var denominator = plane.Normal.Length;
+            return Math.Abs(dominator / denominator);
+        }
+
         public static Matrix3D LookAt(Point3D eye, Vector3D lookDirection, Vector3D upVector)
         {
             /*

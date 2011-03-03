@@ -37,6 +37,34 @@ namespace Utils
             BindingOperations.SetBinding(target, prop, binding);
         }
 
+        /// <summary>
+        /// Binds a dependency property of a dependency object to a source object and property specified using type-safe lambda syntax.
+        /// </summary>
+        /// <typeparam name="T">Type of the source property</typeparam>
+        /// <param name="target">The binding target</param>
+        /// <param name="prop">The target property</param>
+        /// <param name="expr">Lambda expression specifying the binding source and property.</param>
+        /// <param name="converter">A converter delegate from the source value to the target value.</param>
+        /// <remarks>The expression <paramref name="expr"/> must be of the form <c>() => source.Property</c></remarks>
+        /// <example>
+        /// <para>
+        /// The following code will bind the <c>Text</c> property of a <c>TextBlock</c>.
+        /// <code>
+        /// TextBlock textBlock;
+        /// textBlock.Bind(
+        ///     TextBlock.TextProperty, 
+        ///     () => viewModel.SomeText); // viewModel is the binding source. SomeText is the path
+        /// </code>
+        /// The following code will bind the <c>Text</c> property of a <c>TextBlock</c> with a converter.
+        /// <code>
+        /// Textblock textBlock;
+        /// textBlock.Bind(
+        ///     TextBlock.TextProperty, 
+        ///     () => viewModel.SomeData, // viewModel is the binding source. SomeData is the path.
+        ///     data => data.ToString()); // The binding converter will convert the data to a string.
+        /// </code>
+        /// </para>
+        /// </example>
         public static void Bind<T>(this DependencyObject target, DependencyProperty prop, Expression<Func<T>> expr, Func<T, object> converter = null)
         {
             Contract.Requires(target != null);
@@ -53,7 +81,19 @@ namespace Utils
 
             target.Bind(prop, member.Name, bindingSource, CreateConverter(converter));
         }
-
+        
+        /// <summary>
+        /// Binds a dependency property of a dependency object to two sources using type-safe lambda syntax.
+        /// </summary>
+        /// <typeparam name="T1">Type of the first source property</typeparam>
+        /// <typeparam name="T2">Type of the second source property</typeparam>
+        /// <param name="target">The binding target</param>
+        /// <param name="prop">The target property</param>
+        /// <param name="expr1">Lambda expression specifying the first binding source.</param>
+        /// <param name="expr2">Lambda expression specifying the second binding source.</param>
+        /// <param name="converter">A converter delegate to convert two source values to the target value.</param>
+        /// <remarks>The expressions <paramref name="expr1"/> and <paramref name="expr2"/> must be of the form <c>() => source.Property</c></remarks>
+        /// <seealso cref="Bind{T}"/>
         public static void Bind<T1, T2>(this DependencyObject target, DependencyProperty prop, Expression<Func<T1>> expr1, Expression<Func<T1>> expr2, Func<T1, T2, object> converter)
         {
             Contract.Requires(target != null);
@@ -65,6 +105,20 @@ namespace Utils
             Bind(target, prop, CreateConverter(converter), expr1, expr2);
         }
 
+        /// <summary>
+        /// Binds a dependency property of a dependency object to three source using type-safe lambda syntax.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first source property</typeparam>
+        /// <typeparam name="T2">The type of the second source property</typeparam>
+        /// <typeparam name="T3">The type of the third source property</typeparam>
+        /// <param name="target">The binding target</param>
+        /// <param name="prop">The target property</param>
+        /// <param name="expr1">Lambda expression specifying the first binding source</param>
+        /// <param name="expr2">Lambda expression specifying the second binding source</param>
+        /// <param name="expr3">Lambda expression specifying the third binding source</param>
+        /// <param name="converter">A converter delegate to convert the three source values to the target value</param>
+        /// <remarks>The expressions <paramref name="expr1"/>, <paramref name="expr2"/> and <paramref name="expr3"/> must be of the form <c>() => source.Property</c></remarks>
+        /// <seealso cref="Bind{T}"/>
         public static void Bind<T1, T2, T3>(
             this DependencyObject target,
             DependencyProperty prop, 

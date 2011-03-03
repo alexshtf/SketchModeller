@@ -12,26 +12,9 @@ namespace SketchModeller.Infrastructure.Shared
     {
         public UiState()
         {
-            Tool = Shared.Tool.Manipulation;
             SketchPlane = SketchPlane.Default;
             SketchPlanes = new ObservableCollection<SketchPlane>() { SketchPlane };
         }
-
-        #region Tool property
-
-        private Tool tool;
-
-        public Tool Tool
-        {
-            get { return tool; }
-            set
-            {
-                tool = value;
-                RaisePropertyChanged(() => Tool);
-            }
-        }
-
-        #endregion
 
         #region SketchPlane property
 

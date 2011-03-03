@@ -47,23 +47,7 @@ namespace SketchModeller.Modelling.Views
                 () => viewModel.Length,
                 (center, axis, length) => center - 0.5 * length * axis);
 
-            var material = new DiffuseMaterial();
-            material.Bind(
-                DiffuseMaterial.BrushProperty, 
-                "Model.IsSelected", 
-                viewModel, 
-                new DelegateConverter<bool>(
-                    isSelected =>
-                    {
-                        if (isSelected)
-                            return SELECTED_BRUSH;
-                        else
-                            return UNSELECTED_BRUSH;
-                    }));
-            cylinder.Material = material;
-
-            cylinder.BackMaterial = new DiffuseMaterial { Brush = Brushes.Red };
-            cylinder.BackMaterial.Freeze();
+            SetDefaultMaterial(cylinder, viewModel);
         }
 
         protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)

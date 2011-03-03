@@ -99,7 +99,6 @@
     <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\NewCone.cs" />
     <Compile Include="Data\NewCylinder.cs" />
-    <Compile Include="Data\NewHalfSphere.cs" />
     <Compile Include="Data\NewPrimitive.cs" />
     <Compile Include="Data\Parallelism.cs" />
     <Compile Include="Data\PointsSequence.cs" />
@@ -115,7 +114,6 @@
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />
     <Compile Include="Events\SaveSketchEvent.cs" />
-    <Compile Include="Events\SketchClickEvent.cs" />
     <Compile Include="Events\SnapCompleteEvent.cs" />
     <Compile Include="Events\StartWorkingEvent.cs" />
     <Compile Include="Events\StopWorkingEvent.cs" />
@@ -130,7 +128,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegionNames.cs" />
     <Compile Include="Services\ISketchCatalog.cs" />
-    <Compile Include="Shared\Tool.cs" />
     <Compile Include="Shared\DisplayOptions.cs" />
     <Compile Include="Shared\SessionData.cs" />
     <Compile Include="Shared\UiState.cs" />

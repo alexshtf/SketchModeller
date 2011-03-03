@@ -7,7 +7,7 @@ using System.Windows.Media.Media3D;
 namespace Utils
 {
     /// <summary>
-    /// Represents a plane in the 3D space with a plane equation &lt;N, x&gt; + D = 0 where N is a normal vector, 
+    /// Represents a plane in the 3D space with a plane equation &lt;N, x&gt; - D = 0 where N is a normal vector, 
     /// x is a point on the plane and D is a real number.
     /// </summary>
     public struct Plane3D

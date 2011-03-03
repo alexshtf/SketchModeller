@@ -11,128 +11,128 @@ using SketchModeller.Utilities;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Unity;
 using Petzold.Media3D;
+using System.Windows.Input;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
     public class NewConeView : BaseNewPrimitiveView
     {
+        private const ModifierKeys TRACKBALL_MODIFIERS = ModifierKeys.Alt;
+        private const ModifierKeys LENGTH_MODIFIER = ModifierKeys.Control;
+        private const ModifierKeys DIAMETER_MODIFIER = ModifierKeys.Shift;
+
         private readonly NewConeViewModel viewModel;
+        private readonly Cylinder cylinder;
+        private DragStartProximity dragStartProximity;
 
         [InjectionConstructor]
         public NewConeView(NewConeViewModel viewModel, ILoggerFacade logger)
             : base(viewModel, logger)
         {
             this.viewModel = viewModel;
+
+            cylinder = new Cylinder();
+            Children.Add(cylinder);
+
+            cylinder.Bind(Cylinder.Radius1Property, () => viewModel.TopRadius);
+            cylinder.Bind(Cylinder.Radius2Property, () => viewModel.BottomRadius);
+            cylinder.Bind(Cylinder.Point1Property,
+                () => viewModel.Center,
+                () => viewModel.Axis,
+                () => viewModel.Length,
+                (center, axis, length) => center + 0.5 * length * axis);
+            cylinder.Bind(Cylinder.Point2Property,
+                () => viewModel.Center,
+                () => viewModel.Axis,
+                () => viewModel.Length,
+                (center, axis, length) => center - 0.5 * length * axis);
+
+            SetDefaultMaterial(cylinder, viewModel);
         }
 
-        #region old code
+        public override void DragStart(Point startPos, LineRange startRay)
+        {
+            base.DragStart(startPos, startRay);
+            dragStartProximity = GetDragStartProximity(startRay);
+        }
 
+        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)
+        {
+            base.PerformDrag(dragVector2d, dragVector3d);
+            if (Keyboard.Modifiers == ModifierKeys.None)
+                viewModel.Center = viewModel.Center + dragVector3d;
+            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+            {
+                viewModel.Axis = TrackballRotate(viewModel.Axis, dragVector2d);
+            }
+            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+            {
+                var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
+                if (axis != default(Vector3D))
+                {
+                    axis.Normalize();
+                    var radiusDelta = 0.5 * Vector3D.DotProduct(axis, dragVector3d);
+                    if (dragStartProximity == DragStartProximity.Top)
+                        viewModel.TopRadius = Math.Max(NewConeViewModel.MIN_DIAMETER, viewModel.TopRadius + radiusDelta);
+                    else if (dragStartProximity == DragStartProximity.Bottom)
+                        viewModel.BottomRadius = Math.Max(NewConeViewModel.MIN_DIAMETER, viewModel.BottomRadius + radiusDelta);
+                }
+            }
+            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
+            {
+                var axis = viewModel.Axis.Normalized();
+                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
+                viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
+            }
+        }
 
-        //protected override void MovePosition(Vector3D moveVector)
-        //{
-        //    viewModel.Center = viewModel.Center + moveVector;
-        //}
+        private DragStartProximity GetDragStartProximity(LineRange startRay)
+        {
+            DragStartProximity result = default(DragStartProximity);
+            bool success = false;
 
-        //protected override void Edit(int sign)
-        //{
-        //    viewModel.Edit(sign);
-        //}
+            var htParams = new RayHitTestParameters(startRay.Point1, startRay.Point2 - startRay.Point1);
+            var topNode = this.VisualPathUp().TakeWhile(x => x is Visual3D).OfType<Visual3D>().Last();
 
-        //private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        //{
-        //    e.Match(() => viewModel.Center, UpdateTranslation);
-        //    e.Match(() => viewModel.Length, UpdateLength);
-        //    e.Match(() => viewModel.TopRadius, UpdateTopRadius);
-        //    e.Match(() => viewModel.BottomRadius, UpdateBottomRadius);
-        //    e.Match(() => viewModel.Axis, UpdateAxis);
-        //}
+            VisualTreeHelper.HitTest(
+                topNode,
+                null,
+                htResult =>
+                {
+                    if (htResult.VisualHit.VisualPathUp().Contains(cylinder))
+                    {
+                        var htResult3d = htResult as RayMeshGeometry3DHitTestResult;
+                        var topPlane = Plane3D.FromPointAndNormal(viewModel.Center + 0.5 * viewModel.Length * viewModel.Axis, viewModel.Axis);
+                        var botPlane = Plane3D.FromPointAndNormal(viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis, viewModel.Axis);
 
-        //#region view model change response methods
+                        var topDist = topPlane.DistanceFromPoint(htResult3d.PointHit);
+                        var botDist = botPlane.DistanceFromPoint(htResult3d.PointHit);
 
-        //private void UpdateTranslation()
-        //{
-        //    UpdateTranslation(viewModel.Center);
-        //}
+                        if (topDist < botDist)
+                            result = DragStartProximity.Top;
+                        else
+                            result = DragStartProximity.Bottom;
 
-        //private void UpdateLength()
-        //{
-        //    UpdateMeshGeometry();
-        //}
+                        success = true;
+                        return HitTestResultBehavior.Stop;
+                    }
+                    else
+                        return HitTestResultBehavior.Continue;
+                },
+                htParams);
 
-        //private void UpdateTopRadius()
-        //{
-        //    UpdateMeshGeometry();
-        //}
+            Debug.Assert(success == true);
+            return result;
+        }
 
-        //private void UpdateBottomRadius()
-        //{
-        //    UpdateMeshGeometry();
-        //}
+        private enum DragStartProximity
+        {
+            Top,
+            Bottom,
+        }
 
-        //private void UpdateAxis()
-        //{
-        //    var rotationAxis = Vector3D.CrossProduct(MathUtils3D.UnitY, viewModel.Axis);
-        //    var degrees = Vector3D.AngleBetween(MathUtils3D.UnitY, viewModel.Axis);
-        //    UpdateRotation(rotationAxis, degrees);
-        //}
-
-        //#endregion
-
-        //private void UpdateMeshGeometry()
-        //{
-        //    var topCenter = new Point3D(0, 0.5 * viewModel.Length, 0);
-        //    var bottomCenter = new Point3D(0, -0.5 * viewModel.Length, 0);
-
-        //    var topCircle = GenerateCircle(topCenter, viewModel.TopRadius);
-        //    var bottomCircle = GenerateCircle(bottomCenter, viewModel.BottomRadius);
-
-        //    Contract.Assume(topCircle.Length == bottomCircle.Length);
-        //    var circlePtsCount = topCircle.Length;
-
-        //    var meshGeometry = new MeshGeometry3D();
-        //    meshGeometry.Positions.AddMany(topCircle);
-        //    meshGeometry.Positions.AddMany(bottomCircle);
-        //    meshGeometry.Positions.AddMany(topCenter, bottomCenter);
-
-        //    var tcIndex = meshGeometry.Positions.Count - 2;
-        //    var bcIndex = meshGeometry.Positions.Count - 1;
-
-        //    // generate bottom circle triangles
-        //    for (int i = 0; i < circlePtsCount; ++i)
-        //    {
-        //        var idx1 = i;
-        //        var idx2 = (i + 1) % circlePtsCount;
-        //        meshGeometry.TriangleIndices.AddMany(idx1, idx2, tcIndex);
-        //    }
-
-        //    // generate top circle triangles
-        //    for (int i = 0; i < circlePtsCount; ++i)
-        //    {
-        //        var idx1 = circlePtsCount + i;
-        //        var idx2 = circlePtsCount + (i + 1) % circlePtsCount;
-        //        meshGeometry.TriangleIndices.AddMany(idx1, idx2, bcIndex);
-        //    }
-
-        //    // generate intermediate triangles
-        //    for(int i = 0; i < circlePtsCount; ++i)
-        //    {
-        //        var topIdx1 = i;
-        //        var topIdx2 = (i + 1) % circlePtsCount;
-        //        var botIdx1 = circlePtsCount + i;
-        //        var botIdx2 = circlePtsCount + (i + 1) % circlePtsCount;
-        //        meshGeometry.TriangleIndices.AddMany(topIdx2, topIdx1, botIdx1);
-        //        meshGeometry.TriangleIndices.AddMany(botIdx1, botIdx2, topIdx2);
-        //    }
-
-        //    meshGeometry.Freeze();
-        //    UpdateGeometry(meshGeometry);
-        //}
-
-        //private Point3D[] GenerateCircle(Point3D center, double radius)
-        //{
-        //    return ShapeHelper.GenerateCircle(center, MathUtils3D.UnitX, MathUtils3D.UnitZ, radius, 50);
-        //}
-
-        #endregion
     }
 }

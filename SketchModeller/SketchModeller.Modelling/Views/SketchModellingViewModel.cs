@@ -59,7 +59,6 @@ namespace SketchModeller.Modelling.Views
             this.eventAggregator = eventAggregator;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
-            eventAggregator.GetEvent<SketchClickEvent>().Subscribe(OnSketchClick);
             eventAggregator.GetEvent<SnapCompleteEvent>().Subscribe(OnSnapComplete);
 
             sketchPlane = uiState.SketchPlane;
@@ -126,12 +125,6 @@ namespace SketchModeller.Modelling.Views
                     viewModel.Initialize(cylinder);
                     result = viewModel;
                 });
-            data.MatchClass<NewHalfSphere>(halfSphere =>
-                {
-                    var viewModel = container.Resolve<NewHalfSphereViewModel>();
-                    viewModel.Initialize(halfSphere);
-                    result = viewModel;
-                });
             data.MatchClass<NewCone>(newCone =>
                 {
                     var viewModel = container.Resolve<NewConeViewModel>();
@@ -147,64 +140,6 @@ namespace SketchModeller.Modelling.Views
         private void OnSnapComplete(object payload)
         {
             ((SnappedPrimitivesCollection)SnappedPrimitives).RaiseReset();
-        }
-
-        private void OnSketchClick(SketchClickInfo info)
-        {
-            if (uiState.Tool == Tool.Duplicate)
-            {
-                var selectedNewPrimitive = sessionData.SelectedNewPrimitives.FirstOrDefault();
-                if (selectedNewPrimitive != null)
-                {
-                    var point3d = GetClickPoint(info);
-                    var duplicate = Duplicate(selectedNewPrimitive, point3d);
-                    sessionData.NewPrimitives.Add(duplicate);
-                }
-            }
-            uiState.Tool = Tool.Manipulation;
-        }
-
-        private NewPrimitive Duplicate(NewPrimitive selectedNewPrimitive, Point3D point3d)
-        {
-            Contract.Requires(selectedNewPrimitive != null);
-            Contract.Ensures(Contract.Result<NewPrimitive>() != null);
-            Contract.Ensures(Contract.Result<NewPrimitive>().GetType() == selectedNewPrimitive.GetType());
-
-            NewPrimitive duplicate = null;
-            selectedNewPrimitive.MatchClass<NewCylinder>(cylinder =>
-                {
-                    duplicate = new NewCylinder
-                    {
-                        Center = point3d,
-                        Axis = cylinder.Axis,
-                        Length = cylinder.Length,
-                        Diameter = cylinder.Diameter,
-                    };
-                });
-            selectedNewPrimitive.MatchClass<NewHalfSphere>(halfsphere =>
-                {
-                    duplicate = new NewHalfSphere
-                    {
-                        Center = point3d,
-                        Radius = halfsphere.Radius,
-                        Axis = halfsphere.Axis,
-                        Length = halfsphere.Length,
-                    };
-                });
-            
-            Contract.Assert(duplicate != null);
-            return duplicate;
-        }
-
-        private System.Windows.Media.Media3D.Point3D GetClickPoint(SketchClickInfo info)
-        {
-            var plane = Plane3D.FromPointAndNormal(uiState.SketchPlane.Center, uiState.SketchPlane.Normal);
-            var t = plane.IntersectLine(info.RayStart, info.RayEnd);
-            
-            Debug.Assert(!double.IsNaN(t) && !double.IsInfinity(t), "Intersection point must exist. We on purpose orient the camera towards the sketch plane");
-            Debug.Assert(t >= 0, "Intersection point must be on the ray, because we on purpose orient the camera towards the sketch plane");
-
-            return MathUtils3D.Lerp(info.RayStart, info.RayEnd, t);
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

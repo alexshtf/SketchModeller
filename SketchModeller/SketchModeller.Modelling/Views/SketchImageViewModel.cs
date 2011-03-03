@@ -37,7 +37,6 @@ namespace SketchModeller.Modelling.Views
 
             SetupDisplayOptionsSync();
             SetupSessionDataSync();
-            SetupUIStateSync();
         }
 
         #region Polylines property
@@ -88,22 +87,6 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        #region IsSelectionToolActive property
-
-        private bool isSelectionToolActive;
-
-        public bool IsSelectionToolActive
-        {
-            get { return isSelectionToolActive; }
-            set
-            {
-                isSelectionToolActive = value;
-                RaisePropertyChanged(() => IsSelectionToolActive);
-            }
-        }
-
-        #endregion
-
         #region property sync related
 
         private void SetupDisplayOptionsSync()
@@ -115,12 +98,6 @@ namespace SketchModeller.Modelling.Views
         private void SetupSessionDataSync()
         {
             sessionData.AddListener(this, () => sessionData.SketchObjects);
-        }
-
-        private void SetupUIStateSync()
-        {
-            uiState.AddListener(this, () => uiState.Tool);
-            IsSelectionToolActive = uiState.Tool == Tool.Manipulation;
         }
 
         bool System.Windows.IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

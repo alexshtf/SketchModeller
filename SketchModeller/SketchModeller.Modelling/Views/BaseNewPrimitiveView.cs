@@ -90,6 +90,29 @@ namespace SketchModeller.Modelling.Views
             get { return isDragging; }
         }
 
+        protected void SetDefaultMaterial(ModelVisualBase mv3d, NewPrimitiveViewModel viewModel)
+        {
+            var material = new DiffuseMaterial();
+            material.Bind(
+                DiffuseMaterial.BrushProperty,
+                "Model.IsSelected",
+                viewModel,
+                new DelegateConverter<bool>(
+                    isSelected =>
+                    {
+                        if (isSelected)
+                            return SELECTED_BRUSH;
+                        else
+                            return UNSELECTED_BRUSH;
+                    }));
+
+            var backMaterial = new DiffuseMaterial { Brush = Brushes.Red };
+            backMaterial.Freeze();
+
+            mv3d.Material = material;
+            mv3d.BackMaterial = backMaterial;
+        }
+
         protected Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)
         {
             const double TRACKBALL_ROTATE_SPEED = 0.5;
