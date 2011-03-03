@@ -9,13 +9,13 @@
              ClipToBounds="True">
     <Grid x:Name="root">
         <Grid.RowDefinitions>
-            <RowDefinition  />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"  />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <Border x:Name="vpRoot"
                 Margin="10"
                 Background="LightGray" 
-                Grid.Row="0"
+                Grid.Row="1"
                 MouseDown="vpRoot_MouseDown"
                 MouseUp="vpRoot_MouseUp"
                 MouseMove="vpRoot_MouseMove"
@@ -43,7 +43,7 @@
             </Viewport3D>
         </Border>
 
-        <Canvas Grid.Row="0"
+        <Canvas Grid.Row="1"
                 Margin="{Binding ElementName=vpRoot, Path=Margin}">
             <Border BorderBrush="Blue"
                     BorderThickness="2"
@@ -57,7 +57,7 @@
             </Border>
         </Canvas>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
             <GroupBox Header="Mouse mode">
                 <StackPanel ToggleButton.Checked="StackPanel_Checked">
                     <RadioButton IsChecked="True" x:Name="curveSelection">Curve selection</RadioButton>
@@ -65,18 +65,22 @@
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">
-                <UniformGrid>
+                <UniformGrid Rows="1" Columns="2">
                     <UniformGrid.Resources>
                         <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
                             <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
                             <Setter Property="Margin" Value="2" />
+                            <Setter Property="Width" Value="50" />
+                            <Setter Property="Height" Value="50" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Thumb">
                                         <Border Background="LightGray"
                                                 BorderBrush="DarkGray"
                                                 BorderThickness="1">
-                                            <TextBlock Text="{TemplateBinding Tag}" />
+                                            <TextBlock Text="{TemplateBinding Tag}" 
+                                                       VerticalAlignment="Center" 
+                                                       HorizontalAlignment="Center" />
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>

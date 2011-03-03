@@ -174,7 +174,7 @@ namespace SketchModeller.Modelling.Views
             var htParams = new GeometryHitTestParameters(new RectangleGeometry(rect));
             var results = new HashSet<Path>();
             VisualTreeHelper.HitTest(
-                polyRoot,
+                this,
                 null, // filter callback
                 htResult => // result callback
                 {

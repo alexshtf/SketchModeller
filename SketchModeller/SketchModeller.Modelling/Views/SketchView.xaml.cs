@@ -78,6 +78,7 @@ namespace SketchModeller.Modelling.Views
             sketchImageView =
                 container.Resolve<SketchImageView>(
                     new DependencyOverride<SketchImageViewModel>(viewModel.SketchImageViewModel));
+            Grid.SetRow(sketchImageView, 1);
             sketchImageView.Margin = vpRoot.Margin;
             root.Children.Insert(1, sketchImageView);
         }
@@ -138,7 +139,12 @@ namespace SketchModeller.Modelling.Views
                 if (mouseInteractionMode == MouseInterationModes.CurveSelection)
                 {
                     SelectCurves(GetPosition3D(e));
-                    selectionRectangle.Visibility = Visibility.Collapsed;
+                    Action collapse = () =>
+                        {
+                            logger.Log("Hiding selection rectangle", Category.Debug, Priority.High);
+                            selectionRectangle.Visibility = Visibility.Collapsed;
+                        };
+                    Dispatcher.BeginInvoke(collapse);
                 }
                 else
                     StopPrimitiveDragging();
