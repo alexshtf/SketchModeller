@@ -16,11 +16,13 @@
                 Margin="10"
                 Background="LightGray" 
                 Grid.Row="1"
+                AllowDrop="True"
+                Drop="vpRoot_Drop"
+                Focusable="True"
                 MouseDown="vpRoot_MouseDown"
                 MouseUp="vpRoot_MouseUp"
                 MouseMove="vpRoot_MouseMove"
-                AllowDrop="True"
-                Drop="vpRoot_Drop">
+                KeyDown="vpRoot_KeyDown">
             <Viewport3D x:Name="viewport3d">
                 <Viewport3D.Camera>
                     <MatrixCamera x:Name="camera"

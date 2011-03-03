@@ -102,5 +102,12 @@ namespace SketchModeller.Modelling.Views
                 }
             }
         }
+
+        public void DeleteNewPrimitives()
+        {
+            var selectedPrimitives = sessionData.SelectedNewPrimitives.ToArray();
+            foreach (var item in selectedPrimitives)
+                sessionData.NewPrimitives.Remove(item);
+        }
     }
 }

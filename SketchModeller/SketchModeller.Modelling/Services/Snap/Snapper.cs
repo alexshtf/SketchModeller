@@ -42,8 +42,6 @@ namespace SketchModeller.Modelling.Services.Snap
             var selectedCylinder = sessionData.SelectedNewPrimitives.OfType<NewCylinder>().FirstOrDefault();
             var selectedCone = sessionData.SelectedNewPrimitives.OfType<NewCone>().FirstOrDefault();
 
-            // TODO: Find selected primitives of other kinds
-
             if (selectedCylinder != null)
             {
                 var snappedCylinder = SnapCylinder(selectedPolylines, selectedPolygons, selectedCylinder);

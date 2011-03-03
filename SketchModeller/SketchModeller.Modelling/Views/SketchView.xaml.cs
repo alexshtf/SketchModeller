@@ -121,6 +121,7 @@ namespace SketchModeller.Modelling.Views
 
         private void vpRoot_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            vpRoot.Focus();
             if (!isDragging && e.ChangedButton == MouseButton.Left)
             {
                 dragStartLocation = GetPosition3D(e);
@@ -251,6 +252,12 @@ namespace SketchModeller.Modelling.Views
         {
             CurveSelection,
             PrimitiveManipulation,
+        }
+
+        private void vpRoot_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete && mouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
+                viewModel.DeleteNewPrimitives();
         }
     }
 }
