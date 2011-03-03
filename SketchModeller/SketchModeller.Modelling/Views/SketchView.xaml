@@ -60,10 +60,10 @@
         </Canvas>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <GroupBox Header="Mouse mode">
+            <GroupBox Header="Mouse">
                 <StackPanel ToggleButton.Checked="StackPanel_Checked" VerticalAlignment="Center">
-                    <RadioButton Margin="3" IsChecked="True" x:Name="curveSelection">Curve selection</RadioButton>
-                    <RadioButton Margin="3" x:Name="primitiveManipulation">Primitive manipulation</RadioButton>
+                    <RadioButton Margin="3" IsChecked="True" x:Name="curveSelection">Curve</RadioButton>
+                    <RadioButton Margin="3" x:Name="primitiveManipulation">Primitive</RadioButton>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">
@@ -98,6 +98,12 @@
                 <StackPanel Orientation="Vertical">
                     <Button Margin="3" Command="{Binding DeletePrimitive}">Delete</Button>
                     <Button Margin="3" Command="{Binding SnapPrimitive}">Snap</Button>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Curve types">
+                <StackPanel>
+                    <Button Margin="3" Command="{Binding MarkFeature}">Feature</Button>
+                    <Button Margin="3" Command="{Binding MarkSilhouette}">Silhouette</Button>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

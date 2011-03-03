@@ -20,6 +20,7 @@ namespace SketchModeller.Modelling.Views
         public const double MIN_DIAMETER = 0.01;
 
         private NewCone model;
+        private bool initializing;
 
         [InjectionConstructor]
         public NewConeViewModel(UiState uiState = null)
@@ -38,11 +39,19 @@ namespace SketchModeller.Modelling.Views
         public void Init(NewCone newModel)
         {
             this.model = newModel;
-            Axis = model.Axis;
-            Center = model.Center;
-            Length = model.Length;
-            TopRadius = model.TopRadius;
-            BottomRadius = model.BottomRadius;
+            initializing = true;
+            try
+            {
+                Axis = model.Axis;
+                Center = model.Center;
+                Length = model.Length;
+                TopRadius = model.TopRadius;
+                BottomRadius = model.BottomRadius;
+            }
+            finally
+            {
+                initializing = false;
+            }
         }
 
         #region Axis property
@@ -133,11 +142,14 @@ namespace SketchModeller.Modelling.Views
 
         private void UpdateModel()
         {
-            model.Axis = axis;
-            model.Center = center;
-            model.Length = length;
-            model.TopRadius = topRadius;
-            model.BottomRadius = bottomRadius;
+            if (!initializing)
+            {
+                model.Axis = axis;
+                model.Center = center;
+                model.Length = length;
+                model.TopRadius = topRadius;
+                model.BottomRadius = bottomRadius;
+            }
         }
     }
 }

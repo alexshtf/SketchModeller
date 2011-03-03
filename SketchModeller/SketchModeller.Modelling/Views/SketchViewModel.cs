@@ -49,6 +49,8 @@ namespace SketchModeller.Modelling.Views
 
             DeletePrimitive = new DelegateCommand(DeletePrimitiveExecute, DeletePrimitiveCanExecute);
             SnapPrimitive = new DelegateCommand(SnapPrimitiveExecute, SnapPrimitiveCanExecute);
+            MarkFeature = new DelegateCommand(MarkFeatureExecute, MarkFeatureCanExecute);
+            MarkSilhouette = new DelegateCommand(MarkSilhouetteExecute, MarkSilhouetteCanExecute);
         }
 
         public SketchModellingViewModel SketchModellingViewModel { get; private set; }
@@ -57,6 +59,9 @@ namespace SketchModeller.Modelling.Views
 
         public ICommand DeletePrimitive { get; private set; }
         public ICommand SnapPrimitive { get; private set; }
+
+        public ICommand MarkFeature { get; private set; }
+        public ICommand MarkSilhouette { get; private set; }
 
         #region SketchPlane property
 
@@ -73,6 +78,8 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+
+        #region Primitive add/delete
 
         public void AddNewPrimitive(PrimitiveKinds primitiveKind, LineRange lineRange)
         {
@@ -113,6 +120,8 @@ namespace SketchModeller.Modelling.Views
             foreach (var item in selectedPrimitives)
                 sessionData.NewPrimitives.Remove(item);
         }
+        
+        #endregion
 
         #region Commands execute
 
@@ -136,7 +145,34 @@ namespace SketchModeller.Modelling.Views
             return true;
         }
 
+
+        private void MarkFeatureExecute()
+        {
+            MarkAs(CurveCategories.Feature);
+        }
+
+        private bool MarkFeatureCanExecute()
+        {
+            return true;
+        }
+
+        private void MarkSilhouetteExecute()
+        {
+            MarkAs(CurveCategories.Silhouette);
+        }
+
+        private bool MarkSilhouetteCanExecute()
+        {
+            return true;
+        }
+
         #endregion
+
+        private void MarkAs(CurveCategories newCategory)
+        {
+            foreach (var curve in sessionData.SelectedSketchObjects)
+                curve.CurveCategory = newCategory;
+        }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
