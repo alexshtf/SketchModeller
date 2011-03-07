@@ -76,6 +76,8 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord.Math, Version=2.1.5.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL" />
+    <Reference Include="AForge.Math, Version=2.1.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
@@ -95,6 +97,7 @@
   <ItemGroup>
     <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
+    <Compile Include="EllipseFitter.cs" />
     <Compile Include="FloatUtils.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Optimizer.cs" />
