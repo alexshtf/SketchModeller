@@ -17,8 +17,8 @@ namespace SketchModeller.Utilities
             Term[] constraints, 
             Variable[] vars, 
             double[] x = null, 
-            double mu = 0.1,
-            double tolerance = 1E-5,
+            double mu = 1,
+            double tolerance = 1E-6,
             Func<Term, Variable[], double[], double[]> minimizer = null)
         {
             Contract.Requires(target != null);
@@ -42,7 +42,7 @@ namespace SketchModeller.Utilities
             double[] lambda = new double[constraints.Length];
 
             // penalty is sigma of [c_i(x)]²
-            var penalty = (0.5 * mu) * TermUtils.SafeSum(constraints.Select(c => TermBuilder.Power(c, 2)));
+            var penalty = (0.5 / mu) * TermUtils.SafeSum(constraints.Select(c => TermBuilder.Power(c, 2)));
             var augmentedTarget = target + penalty;
 
             // a function we will use to constuct the augmented lagrangian A(x; lambda, mu).

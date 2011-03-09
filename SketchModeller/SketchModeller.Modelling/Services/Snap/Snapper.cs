@@ -324,6 +324,8 @@ namespace SketchModeller.Modelling.Services.Snap
         #endregion
     }
 
+    #region old code
+    /*
     public partial class Snapper : ISnapper
     {
         private readonly SessionData sessionData;
@@ -615,4 +617,6 @@ namespace SketchModeller.Modelling.Services.Snap
             return new TVec(new Variable(), new Variable(), new Variable());
         }
     }
+    */
+    #endregion
 }

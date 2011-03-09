@@ -69,27 +69,28 @@ namespace SketchModeller.Modelling.Services.Snap
                 var vals = new VectorsWriter().Write(cylinder).ToArray();
                 var vars = new VariableVectorsWriter().Write(cylinder).ToArray();
 
-                // optimize a best-fitting objective
-                var objective = FullInfoObjective(cylinder) + 0.00001 * MeanSquaredError(vars, vals);
-                var lmFuncs = Optimizer.GetLMFuncs(objective);
-                var optimum = Optimizer.MinimizeLM(lmFuncs, vars, vals);
+                // get and optimize objective function
+                var tuple = FullInfoObjective(cylinder);
+                var objective = tuple.Item1;
+                var constraints = tuple.Item2;
+                var optimum = Optimizer.MinAugmentedLagrangian(objective, constraints, vars, vals);
 
                 // read data from the array back to the cylinder
                 new VectorsReader(optimum).Read(cylinder);
             }
         }
 
-        private Term FullInfoObjective(SnappedCylinder cylinder)
+        private Tuple<Term, Term[]> FullInfoObjective(SnappedCylinder cylinder)
         {
             var terms =
                 from item in cylinder.SnappedPointsSets
-                from term in ProjectionConstraint(item)
+                from term in ProjectionConstraints(item)
                 select term;
 
-            var normalization = 10000 * TermBuilder.Power(cylinder.Axis.NormSquared - 1, 2);
-            //terms = terms.Append(normalization);
+            var objective = TermUtils.SafeAvg(terms);
+            var constraints = new Term[] { cylinder.Axis.NormSquared - 1 };
 
-            return TermUtils.SafeAvg(terms) + normalization;
+            return Tuple.Create(objective, constraints);
         }
 
         private static SnappedCylinder InitNewSnapped(NewCylinder selectedCylinder)
@@ -133,6 +134,8 @@ namespace SketchModeller.Modelling.Services.Snap
         }
     }
 
+    #region old code
+    /*
     public partial class Snapper
     {
         const int CIRCLE_POINTS_COUNT = 20;
@@ -263,4 +266,6 @@ namespace SketchModeller.Modelling.Services.Snap
             return circlePoints;
         }
     }
+    */
+    #endregion
 }

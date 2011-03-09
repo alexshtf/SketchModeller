@@ -30,7 +30,7 @@ namespace SketchModeller.Modelling.Services.Snap
 			return (1 / (double)terms.Length) * TermUtils.SafeSum(errorTerms);
 		}
 
-		private IEnumerable<Term> ProjectionConstraint(SnappedPointsSet item)
+		private IEnumerable<Term> ProjectionConstraints(SnappedPointsSet item)
 		{
 			const int SAMPLE_SIZE = 10;
 			var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);

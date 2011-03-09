@@ -86,29 +86,31 @@ namespace SketchModeller.Modelling.Services.Snap
                 var vals = new VectorsWriter().Write(cone).ToArray();
 
                 // get and optimize objective function
-                var objective = FullInfoObjective(cone) + 10 * MeanSquaredError(vars, vals);
-                var lmFuncs = Optimizer.GetLMFuncs(objective);
-                var optimum = Optimizer.MinimizeLM(lmFuncs, vars, vals);
+                var tuple = FullInfoObjective(cone);
+                var objective = tuple.Item1;
+                var constraints = tuple.Item2;
+                var optimum = Optimizer.MinAugmentedLagrangian(objective, constraints, vars, vals);
 
                 // read the data back to the cone
                 new VectorsReader(optimum).Read(cone);
             }
         }
 
-        private Term FullInfoObjective(SnappedCone cone)
+        private Tuple<Term, Term[]> FullInfoObjective(SnappedCone cone)
         {
             var terms =
                 from item in cone.SnappedPointsSets
-                from term in ProjectionConstraint(item)
+                from term in ProjectionConstraints(item)
                 select term;
+            var objective = TermUtils.SafeAvg(terms);
+            var constraints = new Term[] { cone.Axis.NormSquared - 1 };
 
-            var normalization = 10000 * TermBuilder.Power(cone.Axis.NormSquared - 1, 2);
-            terms = terms.Append(normalization);
-
-            return TermUtils.SafeSum(terms);
+            return Tuple.Create(objective, constraints);
         }
     }
 
+    #region old code
+    /*
     public partial class Snapper
     {
         public SnappedCone SnapCone(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCone selectedCone)
@@ -187,4 +189,7 @@ namespace SketchModeller.Modelling.Services.Snap
             snappedCone.DataTerm = TermUtils.SafeSum(terms);
         }
     }
+    */
+    #endregion
+
 }
