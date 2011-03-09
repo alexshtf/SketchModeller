@@ -154,6 +154,18 @@ namespace Utils
         }
 
         /// <summary>
+        /// Calculates linear interpolation between two vectors (1 - t) * v1 + t * v2
+        /// </summary>
+        /// <param name="v1">First vector</param>
+        /// <param name="v2">Second vector</param>
+        /// <param name="t">Interpolation factor</param>
+        /// <returns>The resulting interpolated point</returns>
+        public static Vector3D Lerp(Vector3D v1, Vector3D v2, double t)
+        {
+            return (1 - t) * v1 + t * v2;
+        }
+
+        /// <summary>
         /// Projects a point on a segment.
         /// </summary>
         /// <param name="pnt">The point to project</param>
@@ -280,6 +292,21 @@ namespace Utils
             var dominator = Vector3D.DotProduct(p - Origin, plane.Normal) - plane.D;
             var denominator = plane.Normal.Length;
             return Math.Abs(dominator / denominator);
+        }
+
+        /// <summary>
+        /// Projects a point on the given plane.
+        /// </summary>
+        /// <param name="plane">The plane to project on</param>
+        /// <param name="p">The point to project</param>
+        /// <returns>The projection of the point on the plane.</returns>
+        public static Point3D ProjectPoint(this Plane3D plane, Point3D p)
+        {
+            var dominator = Vector3D.DotProduct(p - Origin, plane.Normal) - plane.D;
+            var denumerator = plane.Normal.LengthSquared;
+            var t = -dominator / denumerator;
+
+            return p - t * plane.Normal;
         }
 
         public static Matrix3D LookAt(Point3D eye, Vector3D lookDirection, Vector3D upVector)
