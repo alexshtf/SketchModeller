@@ -57,27 +57,16 @@ namespace SketchModeller.Modelling.Services.Snap
             return snappedCylinder;
         }
 
-        private void Reconstruct(SnappedCylinder cylinder)
+        private Tuple<Term, Term[]> Reconstruct(SnappedCylinder cylinder)
         {
             var topCurve = cylinder.TopCurve;
             var botCurve = cylinder.BottomCurve;
 
             // simple case - we use the two curves to reconstruct the cylinder
             if (topCurve != null && botCurve != null)
-            {
-                // get variables and start vector
-                var vals = new VectorsWriter().Write(cylinder).ToArray();
-                var vars = new VariableVectorsWriter().Write(cylinder).ToArray();
+                return FullInfoObjective(cylinder);
 
-                // get and optimize objective function
-                var tuple = FullInfoObjective(cylinder);
-                var objective = tuple.Item1;
-                var constraints = tuple.Item2;
-                var optimum = Optimizer.MinAugmentedLagrangian(objective, constraints, vars, vals);
-
-                // read data from the array back to the cylinder
-                new VectorsReader(optimum).Read(cylinder);
-            }
+            throw new NotImplementedException("Not implemented all missing info yet");
         }
 
         private Tuple<Term, Term[]> FullInfoObjective(SnappedCylinder cylinder)

@@ -15,6 +15,7 @@ using System.Windows.Media.Media3D;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -81,17 +82,79 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void OptimizeAll()
         {
-            bool stop = false; // will be set to true by some stopping criterion
-            int count = 0;
-            while (!stop)
-            {
-                ReconstructSnappedPrimitives();
-                EnforceConstraints();
+            #region Write all variables and their current values to a vector
 
-                // meanwhile a stupid stopping criterion
-                if (++count == 100)
-                    stop = true;
+            var variablesWriter = new VariableVectorsWriter();
+            var startVectorWriter = new VectorsWriter();
+
+            // write cylinders
+            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
+            {
+                variablesWriter.Write(snappedCylinder);
+                startVectorWriter.Write(snappedCylinder);
             }
+
+            // write cones
+            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
+            {
+                variablesWriter.Write(snappedCone);
+                startVectorWriter.Write(snappedCone);
+            }
+
+            #endregion
+
+            // all objective functions. Will be summed eventually to form one big objective.
+            var objectives = new List<Term>();
+
+            // all equality constraints.
+            var constraints = new List<Term>();
+
+            #region get objectives and constraints for primitives
+
+            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
+            {
+                Tuple<Term, Term[]> oc = null;
+
+                snappedPrimitive.MatchClass<SnappedCylinder>(cyl => oc = Reconstruct(cyl));
+                snappedPrimitive.MatchClass<SnappedCone>(cone => oc = Reconstruct(cone));
+                Debug.Assert(oc != null);
+
+                objectives.Add(oc.Item1);
+                constraints.AddRange(oc.Item2);
+            }
+            
+            #endregion
+
+            #region get objectives and constraints for annotations
+
+            foreach (var annotation in sessionData.Annotations)
+            {
+                var constraintTerms = GetAnnotationConstraints(annotation);
+                constraints.AddRange(constraintTerms);
+            }
+
+            #endregion
+
+            #region perform optimization
+
+            var finalObjective = TermUtils.SafeSum(objectives);
+            var vars = variablesWriter.ToArray();
+            var vals = startVectorWriter.ToArray();
+
+            var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10);
+
+            #endregion
+
+            #region read data back from the optimized vector
+
+            var resultReader = new VectorsReader(optimum);
+            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
+                resultReader.Read(snappedCylinder);
+
+            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
+                resultReader.Read(snappedCone);
+
+            #endregion
 
             #region Reconstruct geometry data from the optimized parameters
 
@@ -136,75 +199,6 @@ namespace SketchModeller.Modelling.Services.Snap
             #endregion
         }
 
-        private void EnforceConstraints()
-        {
-            // we do nothing if we have no annotations
-            if (sessionData.Annotations.Count == 0)
-                return;
-
-            #region Write all variables and their current values to a vector
-
-            var variablesWriter = new VariableVectorsWriter();
-            var startVectorWriter = new VectorsWriter();
-
-            // write cylinders
-            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
-            {
-                variablesWriter.Write(snappedCylinder);
-                startVectorWriter.Write(snappedCylinder);
-            }
-
-            // write cones
-            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
-            {
-                variablesWriter.Write(snappedCone);
-                startVectorWriter.Write(snappedCone);
-            }
-
-            #endregion
-
-            #region Perform optimization
-
-            var variables = variablesWriter.ToArray();
-            var values = startVectorWriter.ToArray();
-
-            // mean squared error from current state is the similarity objective
-            var similarityObjective = (1 / (double)values.Length) * TermUtils.SafeSum(
-                from pair in variables.Zip(values)
-                select TermBuilder.Power(pair.Item1 + (-pair.Item2), 2));
-
-            // we assume feature curves of our primitives know which which curves they are snapped to!
-            // we use that info to build annotations terms
-            var annotationTerms = sessionData.Annotations.Select(x => GetAnnotationTerm(x));
-            var annotationsObjective = (1 / (double)sessionData.Annotations.Count) * TermUtils.SafeSum(annotationTerms);
-
-            var totalObjective = 1000 * similarityObjective + annotationsObjective;
-
-            var dataLM = Optimizer.GetLMFuncs(totalObjective);
-            var optimum = Optimizer.MinimizeLM(dataLM, variables, values);
-
-            #endregion
-
-            #region read data back from the optimized vector
-
-            var resultReader = new VectorsReader(optimum);
-            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
-                resultReader.Read(snappedCylinder);
-
-            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
-                resultReader.Read(snappedCone);
-
-            #endregion
-        }
-
-        private void ReconstructSnappedPrimitives()
-        {
-            foreach (var snappedPrim in sessionData.SnappedPrimitives)
-            {
-                snappedPrim.MatchClass<SnappedCylinder>(cyl => Reconstruct(cyl));
-            }
-        }
-
         #region supporting code
 
 
@@ -220,15 +214,15 @@ namespace SketchModeller.Modelling.Services.Snap
             return circlePoints;
         }
 
-        private Term GetAnnotationTerm(Annotation x)
+        private Term[] GetAnnotationConstraints(Annotation x)
         {
-            Term term = 0;
-            x.MatchClass<Parallelism>(parallelism => term = GetConcreteAnnotationTerm(parallelism));
-            x.MatchClass<Coplanarity>(coplanarity => term = GetConcreteAnnotationTerm(coplanarity));
-            return term;
+            var constraints = new Term[0];
+            x.MatchClass<Parallelism>(parallelism => constraints = GetConcreteAnnotationTerm(parallelism));
+            x.MatchClass<Coplanarity>(coplanarity => constraints = GetConcreteAnnotationTerm(coplanarity));
+            return constraints;
         }
 
-        private Term GetConcreteAnnotationTerm(Coplanarity coplanarity)
+        private Term[] GetConcreteAnnotationTerm(Coplanarity coplanarity)
         {
             var pointsSetsQuery =
                 from curve in coplanarity.Elements
@@ -238,6 +232,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 select pointsSet;
 
             var pointsSets = pointsSetsQuery.ToArray();
+            var constraints = new List<Term>();
 
             if (pointsSets.Length >= 2)
             {
@@ -256,28 +251,31 @@ namespace SketchModeller.Modelling.Services.Snap
                     var pts1 = GetPointsOnPlane(p1, n1);
                     var pts2 = GetPointsOnPlane(p2, n2);
 
-                    var planarity1 = PointsOnPlane(p1, n1, pts2);
-                    var planarity2 = PointsOnPlane(p2, n2, pts1);
-
-                    terms.Add(planarity1 + planarity2);
+                    var planarity1 = PointsOnPlaneConstraint(p1, n1, pts2);
+                    var planarity2 = PointsOnPlaneConstraint(p2, n2, pts1);
+                    constraints.AddRange(planarity1);
+                    constraints.AddRange(planarity2);
                 }
-
-                return TermUtils.SafeSum(terms);
             }
-            else
-                return 0;
+            return constraints.ToArray();
         }
 
-        private Term PointsOnPlane(TVec p, TVec n, IEnumerable<TVec> pts)
+        private Term[] PointsOnPlaneConstraint(TVec p, TVec n, IEnumerable<TVec> pts)
         {
-            var terms =
+            var constraints =
                 from x in pts
                 let diff = p - x
-                let numerator = diff * n
-                let denominator = TermBuilder.Power(diff.NormSquared, -0.5)
-                select TermBuilder.Power(numerator * denominator, 2);
+                select diff * n;
+            return constraints.ToArray();
 
-            return TermUtils.SafeSum(terms);
+            //var terms =
+            //    from x in pts
+            //    let diff = p - x
+            //    let numerator = diff * n
+            //    let denominator = TermBuilder.Power(diff.NormSquared, -0.5)
+            //    select TermBuilder.Power(numerator * denominator, 2);
+
+            //return TermUtils.SafeSum(terms);
         }
 
         private IEnumerable<TVec> GetPointsOnPlane(TVec p, TVec n)
@@ -293,7 +291,7 @@ namespace SketchModeller.Modelling.Services.Snap
             yield return p - u;
         }
 
-        private Term GetConcreteAnnotationTerm(Parallelism parallelism)
+        private Term[] GetConcreteAnnotationTerm(Parallelism parallelism)
         {
             throw new NotImplementedException();// we still don't handle parallelism
         }

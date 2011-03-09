@@ -62,9 +62,14 @@ namespace SketchModeller.Utilities
                 // x <- argmin A(x; lambda, mu);
                 x = minimizer(currentLagrangian, vars, x);
 
+                // calculate constraint violations
+                var violations = new double[constraints.Length];
+                for (int i = 0; i < constraints.Length; ++i)
+                    violations[i] = Evaluator.Evaluate(constraints[i], vars, x);
+
                 // lambda <- lambda + c(x) / mu
                 for (int i = 0; i < constraints.Length; ++i)
-                    lambda[i] = lambda[i] + Evaluator.Evaluate(constraints[i], vars, x) / mu;
+                    lambda[i] = lambda[i] + violations[i] / mu;
 
                 // update the current Lagrangian using the new lambdas
                 currentLagrangian = augmentedLagrangian();
