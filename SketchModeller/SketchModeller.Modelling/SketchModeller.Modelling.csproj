@@ -131,6 +131,7 @@
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
+    <Compile Include="Services\Snap\ReadWriteUtils.cs" />
     <Compile Include="Services\Snap\Snapper.Cone.cs" />
     <Compile Include="Services\Snap\Snapper.cs" />
     <Compile Include="Services\Snap\Snapper.Cylinder.cs" />
@@ -250,6 +251,10 @@
   <ItemGroup>
     <EmbeddedResource Include="arrowadd.cur" />
     <EmbeddedResource Include="arrowdel.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <Compile Include="Services\Snap\Snapper.Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

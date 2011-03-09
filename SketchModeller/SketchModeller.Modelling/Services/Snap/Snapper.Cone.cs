@@ -9,9 +9,106 @@ using Microsoft.Practices.Prism.Logging;
 using System.Diagnostics.Contracts;
 using System.Windows;
 using SketchModeller.Utilities;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
+    public partial class NewSnapper
+    {
+        private SnappedCone CreateSnappedCone(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCone selectedCone)
+        {
+            var snappedCone = InitNewSnapped(selectedCone);
+
+            var allSequences = selectedPolylines.Cast<PointsSequence>().Concat(selectedPolygons).ToArray();
+            snappedCone.SnappedTo = allSequences;
+
+            var features = allSequences.Where(x => x.CurveCategory == CurveCategories.Feature).ToArray();
+            var silhouettes = allSequences.Except(features).ToArray();
+
+            var topPts = features.Where(x => CylinderHelper.IsTop(x, snappedCone)).ToArray();
+            var botPts = features.Except(topPts).ToArray();
+
+            Debug.Assert(topPts.Length <= 1, "The algorithm cannot handle more than one top curve");
+            Debug.Assert(botPts.Length <= 1, "The algorithm cannot handle more than one bottom curve");
+
+            snappedCone.TopCurve = topPts.FirstOrDefault();
+            snappedCone.BottomCurve = botPts.FirstOrDefault();
+            snappedCone.Silhouettes = silhouettes;
+
+            var pointsSets = new List<SnappedPointsSet>();
+            if (topPts.Length > 0)
+                pointsSets.Add(
+                    new SnappedPointsSet(
+                        snappedCone.GetTopCenter(),
+                        snappedCone.Axis,
+                        snappedCone.TopRadius,
+                        topPts[0]));
+            if (botPts.Length > 0)
+                pointsSets.Add(
+                    new SnappedPointsSet(
+                        snappedCone.BottomCenter,
+                        snappedCone.Axis,
+                        snappedCone.BottomRadius,
+                        botPts[0]));
+            snappedCone.SnappedPointsSets = pointsSets.ToArray();
+
+            return snappedCone;
+        }
+
+        private SnappedCone InitNewSnapped(NewCone selectedCone)
+        {
+            var snappedCone = new SnappedCone();
+            snappedCone.Axis = GenerateVarVector();
+            snappedCone.BottomCenter = GenerateVarVector();
+            snappedCone.Length = new Variable();
+            snappedCone.TopRadius = new Variable();
+            snappedCone.BottomRadius = new Variable();
+
+            snappedCone.AxisResult = selectedCone.Axis.Normalized();
+            snappedCone.BottomCenterResult = selectedCone.Bottom;
+            snappedCone.BottomRadiusResult = selectedCone.BottomRadius;
+            snappedCone.TopRadiusResult = selectedCone.TopRadius;
+            snappedCone.LengthResult = selectedCone.Length;
+
+            return snappedCone;
+        }
+
+        private void Reconstruct(SnappedCone cone)
+        {
+            var topCurve = cone.TopCurve;
+            var botCurve = cone.BottomCurve;
+
+            // simple case - we use the two curves to reconstruct the cylinder
+            if (topCurve != null && botCurve != null)
+            {
+                // get variables and start vector
+                var vars = new VariableVectorsWriter().Write(cone).ToArray();
+                var vals = new VectorsWriter().Write(cone).ToArray();
+
+                // get and optimize objective function
+                var objective = FullInfoObjective(cone) + 10 * MeanSquaredError(vars, vals);
+                var lmFuncs = Optimizer.GetLMFuncs(objective);
+                var optimum = Optimizer.MinimizeLM(lmFuncs, vars, vals);
+
+                // read the data back to the cone
+                new VectorsReader(optimum).Read(cone);
+            }
+        }
+
+        private Term FullInfoObjective(SnappedCone cone)
+        {
+            var terms =
+                from item in cone.SnappedPointsSets
+                from term in ProjectionConstraint(item)
+                select term;
+
+            var normalization = 10000 * TermBuilder.Power(cone.Axis.NormSquared - 1, 2);
+            terms = terms.Append(normalization);
+
+            return TermUtils.SafeSum(terms);
+        }
+    }
+
     public partial class Snapper
     {
         public SnappedCone SnapCone(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCone selectedCone)

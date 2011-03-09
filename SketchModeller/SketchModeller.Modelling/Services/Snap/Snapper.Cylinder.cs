@@ -11,9 +11,128 @@ using System.Windows;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Logging;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
+    public partial class NewSnapper
+    {
+        private SnappedCylinder CreateSnappedCylinder(Polyline[] selectedPolylines, Polygon[] selectedPolygons, NewCylinder selectedCylinder)
+        {
+            var snappedCylinder = InitNewSnapped(selectedCylinder);
+
+            var allSequences = selectedPolylines.Cast<PointsSequence>().Concat(selectedPolygons).ToArray();
+            snappedCylinder.SnappedTo = allSequences;
+
+            var features = allSequences.Where(x => x.CurveCategory == CurveCategories.Feature).ToArray();
+            var silhouettes = allSequences.Except(features).ToArray();
+
+            var topPts = features.Where(x => CylinderHelper.IsTop(x, snappedCylinder)).ToArray();
+            var botPts = features.Except(topPts).ToArray();
+
+            Debug.Assert(topPts.Length <= 1, "The algorithm cannot handle more than one top curve");
+            Debug.Assert(botPts.Length <= 1, "The algorithm cannot handle more than one bottom curve");
+
+            snappedCylinder.TopCurve = topPts.FirstOrDefault();
+            snappedCylinder.BottomCurve = botPts.FirstOrDefault();
+            snappedCylinder.Silhouettes = silhouettes;
+
+            var pointsSets = new List<SnappedPointsSet>();
+            if (topPts.Length > 0)
+                pointsSets.Add(
+                    new SnappedPointsSet(
+                        snappedCylinder.GetTopCenter(), 
+                        snappedCylinder.Axis, 
+                        snappedCylinder.Radius, 
+                        topPts[0]));
+            if (botPts.Length > 0)
+                pointsSets.Add(
+                    new SnappedPointsSet(
+                        snappedCylinder.BottomCenter,
+                        snappedCylinder.Axis,
+                        snappedCylinder.Radius,
+                        botPts[0]));
+            snappedCylinder.SnappedPointsSets = pointsSets.ToArray();
+
+            return snappedCylinder;
+        }
+
+        private void Reconstruct(SnappedCylinder cylinder)
+        {
+            var topCurve = cylinder.TopCurve;
+            var botCurve = cylinder.BottomCurve;
+
+            // simple case - we use the two curves to reconstruct the cylinder
+            if (topCurve != null && botCurve != null)
+            {
+                // get variables and start vector
+                var vals = new VectorsWriter().Write(cylinder).ToArray();
+                var vars = new VariableVectorsWriter().Write(cylinder).ToArray();
+
+                // optimize a best-fitting objective
+                var objective = FullInfoObjective(cylinder) + 0.00001 * MeanSquaredError(vars, vals);
+                var lmFuncs = Optimizer.GetLMFuncs(objective);
+                var optimum = Optimizer.MinimizeLM(lmFuncs, vars, vals);
+
+                // read data from the array back to the cylinder
+                new VectorsReader(optimum).Read(cylinder);
+            }
+        }
+
+        private Term FullInfoObjective(SnappedCylinder cylinder)
+        {
+            var terms =
+                from item in cylinder.SnappedPointsSets
+                from term in ProjectionConstraint(item)
+                select term;
+
+            var normalization = 10000 * TermBuilder.Power(cylinder.Axis.NormSquared - 1, 2);
+            //terms = terms.Append(normalization);
+
+            return TermUtils.SafeAvg(terms) + normalization;
+        }
+
+        private static SnappedCylinder InitNewSnapped(NewCylinder selectedCylinder)
+        {
+            var snappedCylinder = new SnappedCylinder();
+            snappedCylinder.Axis = GenerateVarVector();
+            snappedCylinder.BottomCenter = GenerateVarVector();
+            snappedCylinder.Length = new Variable();
+            snappedCylinder.Radius = new Variable();
+
+            snappedCylinder.AxisResult = selectedCylinder.Axis.Normalized();
+            snappedCylinder.BottomCenterResult = selectedCylinder.Bottom;
+            snappedCylinder.RadiusResult = selectedCylinder.Radius;
+            snappedCylinder.LengthResult = selectedCylinder.Length;
+            return snappedCylinder;
+        }
+
+        private static class CylinderHelper
+        {
+            /// <summary>
+            /// Checks weather a points sequence is the top-part of a cylinder, by comparing the center of the ellipse that best fits the points
+            /// sequence to the actual top center and bottom centers.
+            /// </summary>
+            /// <param name="points">The points sequence</param>
+            /// <param name="cylinder">The cylinder data</param>
+            /// <returns><c>true</c> if the best-fit-ellipse's center is closer to the top cylinder point than to the bottom.</returns>
+            public static bool IsTop(PointsSequence points, dynamic cylinder)
+            {
+                var top = new Point(cylinder.TopCenterResult.X, -cylinder.TopCenterResult.Y);
+                var bottom = new Point(cylinder.BottomCenterResult.X, -cylinder.BottomCenterResult.Y);
+
+                var samples = CurveSampler.UniformSample(points, 50);
+                var ellipse = EllipseFitter.Fit(samples);
+
+                // the points sequence is "top" if it is closer to the top center then it is to the bottom center.
+                if ((top - ellipse.Center).Length < (bottom - ellipse.Center).Length)
+                    return true;
+                else
+                    return false;
+            }
+        }
+    }
+
     public partial class Snapper
     {
         const int CIRCLE_POINTS_COUNT = 20;

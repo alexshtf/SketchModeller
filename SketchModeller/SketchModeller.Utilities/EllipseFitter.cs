@@ -7,6 +7,7 @@ using Accord.Math;
 using Accord.Math.Decompositions;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Windows.Media;
 
 namespace SketchModeller.Utilities
 {
@@ -15,6 +16,32 @@ namespace SketchModeller.Utilities
     /// </summary>
     public static class EllipseFitter
     {
+        /// <summary>
+        /// Samples points along the ellipse that best fits the given points.
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static Point[] Sample(IList<Point> points, int count = 20)
+        {
+            Contract.Requires(points != null);
+            Contract.Requires(points.Count > 6);
+            Contract.Requires(count > 0);
+            Contract.Ensures(Contract.Result<Point[]>() != null);
+            Contract.Ensures(Contract.Result<Point[]>().Length == count);
+            
+            var ellipse = Fit(points);
+            var result = new Point[count];
+            var rotMatrix = new RotateTransform(ellipse.Degrees).Value;
+            for (int i = 0; i < count; ++i)
+            {
+                var t = 2 * Math.PI * i / (double)(count - 1);
+                var vec = new Vector(ellipse.XRadius * Math.Cos(t), ellipse.YRadius * Math.Sin(t));
+                result[i] = ellipse.Center + rotMatrix.Transform(vec);
+            }
+            return result;
+        }
+
         /// <summary>
         /// Performs ellipse fitting according to the method described in "Direct Least-Squares Fitting of Ellipses"
         /// by Fitzgibbon et al. 
@@ -25,6 +52,8 @@ namespace SketchModeller.Utilities
         {
             Contract.Requires(points != null);
             Contract.Requires(points.Count >= 6);
+            Contract.Ensures(Contract.Result<EllipseParams>().XRadius >= 0);
+            Contract.Ensures(Contract.Result<EllipseParams>().YRadius >= 0);
 
             // we have a constant constraints matrix describing the constraint 4ac-b² = 1
             var constraintMatrix = new double[6, 6];
@@ -54,7 +83,7 @@ namespace SketchModeller.Utilities
             var eigen = new GeneralizedEigenvalueDecomposition(scatterMatrix, constraintMatrix);
             int positiveEigIndex = -1;
             for (int i = 0; i < 6; ++i)
-                if (eigen.RealEigenvalues[i] > 0)
+                if (eigen.RealEigenvalues[i] > 0 && !double.IsInfinity(eigen.RealEigenvalues[i]))
                 {
                     Debug.Assert(positiveEigIndex == -1);
                     positiveEigIndex = i;

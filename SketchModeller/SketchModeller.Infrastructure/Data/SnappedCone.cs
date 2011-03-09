@@ -50,5 +50,15 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         #endregion
+
+        #region Other data
+
+        public PointsSequence TopCurve { get; set; }
+
+        public PointsSequence BottomCurve { get; set; }
+
+        public PointsSequence[] Silhouettes { get; set; }
+
+        #endregion
     }
 }

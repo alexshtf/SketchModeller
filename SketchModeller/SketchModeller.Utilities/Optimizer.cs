@@ -12,6 +12,68 @@ namespace SketchModeller.Utilities
 {
     public static class Optimizer
     {
+        public static double[] MinAugmentedLagrangian(
+            Term target, 
+            Term[] constraints, 
+            Variable[] vars, 
+            double[] x = null, 
+            double mu = 0.1,
+            double tolerance = 1E-5,
+            Func<Term, Variable[], double[], double[]> minimizer = null)
+        {
+            Contract.Requires(target != null);
+            Contract.Requires(constraints != null);
+            Contract.Requires(Contract.ForAll(constraints, c => c != null));
+            Contract.Requires(vars != null);
+            Contract.Requires(Contract.ForAll(vars, v => v != null));
+            Contract.Requires(x == null || x.Length == vars.Length);
+            Contract.Requires(mu > 0);
+            Contract.Requires(tolerance > 0);
+            Contract.Ensures(Contract.Result<double[]>() != null);
+            Contract.Ensures(Contract.Result<double[]>().Length == vars.Length);
+
+            if (x == null)
+                x = new double[vars.Length];
+
+            if (minimizer == null)
+                minimizer = MinimizeBFGS;
+
+            // lagrange multipliers. initialized to zero.
+            double[] lambda = new double[constraints.Length];
+
+            // penalty is sigma of [c_i(x)]²
+            var penalty = (0.5 * mu) * TermUtils.SafeSum(constraints.Select(c => TermBuilder.Power(c, 2)));
+            var augmentedTarget = target + penalty;
+
+            // a function we will use to constuct the augmented lagrangian A(x; lambda, mu).
+            Func<Term> augmentedLagrangian = () =>
+                {
+                    var lagrangeTerms =
+                        from i in Enumerable.Range(0, constraints.Length)
+                        select lambda[i] * constraints[i];
+                    return augmentedTarget + TermUtils.SafeSum(lagrangeTerms);
+                };
+
+            // perform augmented lagrangian iterations.
+            Term currentLagrangian = augmentedLagrangian();
+            var lagrangianGrad = Differentiator.Differentiate(currentLagrangian, vars, x);
+            while (Norm2(lagrangianGrad) >= tolerance)
+            {
+                // x <- argmin A(x; lambda, mu);
+                x = minimizer(currentLagrangian, vars, x);
+
+                // lambda <- lambda + c(x) / mu
+                for (int i = 0; i < constraints.Length; ++i)
+                    lambda[i] = lambda[i] + Evaluator.Evaluate(constraints[i], vars, x) / mu;
+
+                // update the current Lagrangian using the new lambdas
+                currentLagrangian = augmentedLagrangian();
+                lagrangianGrad = Differentiator.Differentiate(currentLagrangian, vars, x);
+            }
+
+            return x;
+        }
+
         public static double[] MinimizeBFGS(Term targetFunc, Variable[] vars, double[] startVector = null)
         {
             Contract.Requires(startVector == null || startVector.Length == vars.Length);
@@ -169,6 +231,11 @@ namespace SketchModeller.Utilities
                 default:
                     return "unknown";
             }
+        }
+
+        private static double Norm2(double[] values)
+        {
+            return Math.Sqrt(values.Select(x => x * x).Sum());
         }
 
         private class LMProvider

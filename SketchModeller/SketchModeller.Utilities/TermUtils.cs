@@ -10,6 +10,15 @@ namespace SketchModeller.Utilities
 {
     public static class TermUtils
     {
+        public static Term SafeAvg(IEnumerable<Term> terms)
+        {
+            var count = (double)terms.Count();
+            if (count > 1)
+                return (1 / count) * SafeSum(terms);
+            else
+                return SafeSum(terms);
+        }
+
         public static Term SafeSum(IEnumerable<Term> terms)
         {
             Contract.Requires(terms != null);

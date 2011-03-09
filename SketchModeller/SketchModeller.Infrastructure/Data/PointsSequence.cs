@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace SketchModeller.Infrastructure.Data
 {
-    [DebuggerDisplay("Count = {Points.Count}")]
+    [DebuggerDisplay("Count = {Points.Length}")]
     [DebuggerTypeProxy(typeof(PointsSequenceDebugView))]
     [Serializable]
     public class PointsSequence : NotificationObject
