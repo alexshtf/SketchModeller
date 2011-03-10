@@ -86,7 +86,7 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var terms =
                 from item in cone.SnappedPointsSets
-                from term in ProjectionConstraints(item)
+                from term in ProjectionFit(item)
                 select term;
             var objective = TermUtils.SafeAvg(terms);
             var constraints = new Term[] { cone.Axis.NormSquared - 1 };

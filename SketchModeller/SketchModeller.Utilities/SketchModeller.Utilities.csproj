@@ -101,10 +101,12 @@
     <Compile Include="FloatUtils.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Optimizer.cs" />
+    <Compile Include="PCA2D.cs" />
     <Compile Include="PolarPointsGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadOnlyObservableCollection.cs" />
     <Compile Include="RotationHelper.cs" />
+    <Compile Include="SegmentApproximator.cs" />
     <Compile Include="ShapeHelper.cs" />
     <Compile Include="TermUtils.cs" />
     <Compile Include="UiStateExtensions.cs" />

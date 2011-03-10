@@ -41,7 +41,7 @@ namespace SketchModeller.Modelling
         }
     }
 
-    static class PCA
+    static class PCA3D
     {
         public static PCAResult Compute(params Point3D[] points)
         {

@@ -7,6 +7,7 @@ using AutoDiff;
 using Utils;
 using System.Diagnostics;
 using SketchModeller.Utilities;
+using System.Windows;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -56,19 +57,58 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var topCurve = snappedPrimitive.TopCurve;
             var botCurve = snappedPrimitive.BottomCurve;
+            var silhouettes = snappedPrimitive.Silhouettes;
 
             // simple case - we use the two curves to reconstruct the cylinder
             if (topCurve != null && botCurve != null)
-                return FullInfoObjective(snappedPrimitive);
+                return FullInfo(snappedPrimitive);
+            if (topCurve == null && botCurve != null && silhouettes.Length == 2)
+                return TwoSilhouettesBottomCurve(snappedPrimitive);
 
             throw new NotImplementedException("Not implemented all missing info yet");
         }
 
-        private Tuple<Term, Term[]> FullInfoObjective(SnappedCylinder cylinder)
+        private Tuple<Term, Term[]> TwoSilhouettesBottomCurve(SnappedCylinder snappedPrimitive)
+        {
+
+            var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
+            var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
+
+            var sil0Far = GetFarPoint(sil0, snappedPrimitive.BottomCurve);
+            var sil1Far = GetFarPoint(sil1, snappedPrimitive.BottomCurve);
+
+            // we have only the bottom curve - so it's the only projection fit
+            var bottomProj = ProjectionFit(snappedPrimitive.SnappedPointsSets[0]);
+
+            // create an imaginary snapped points set with the top curve's data
+            var topPointSet = new SnappedPointsSet(
+                snappedPrimitive.GetTopCenter(),
+                snappedPrimitive.Axis,
+                snappedPrimitive.Radius, 
+                new Polyline());
+            var topProj = ProjectionFit(topPointSet, new Point[] { sil0Far, sil1Far });
+
+            var objective = TermUtils.SafeSum(topProj.Concat(bottomProj));
+            var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
+            return Tuple.Create(objective, constraints);
+        }
+
+        private Point GetFarPoint(Tuple<Point, Point> segment, PointsSequence curve)
+        {
+            var p1Dist = curve.Points.Min(p => (p - segment.Item1).LengthSquared);
+            var p2Dist = curve.Points.Min(p => (p - segment.Item2).LengthSquared);
+
+            if (p1Dist > p2Dist)
+                return segment.Item1;
+            else
+                return segment.Item2;
+        }
+
+        private Tuple<Term, Term[]> FullInfo(SnappedCylinder cylinder)
         {
             var terms =
                 from item in cylinder.SnappedPointsSets
-                from term in ProjectionConstraints(item)
+                from term in ProjectionFit(item)
                 select term;
 
             var objective = TermUtils.SafeAvg(terms);

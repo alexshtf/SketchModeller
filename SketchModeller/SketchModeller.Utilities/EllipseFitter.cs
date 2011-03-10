@@ -19,9 +19,9 @@ namespace SketchModeller.Utilities
         /// <summary>
         /// Samples points along the ellipse that best fits the given points.
         /// </summary>
-        /// <param name="points"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
+        /// <param name="points">The points that approximate an ellipse</param>
+        /// <param name="count">The number of sample points on the best-fit ellipse to create</param>
+        /// <returns>An array of <paramref name="count"/> poins sampled on the ellipse that best fits <paramref name="points"/>,</returns>
         public static Point[] Sample(IList<Point> points, int count = 20)
         {
             Contract.Requires(points != null);

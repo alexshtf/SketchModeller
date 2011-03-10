@@ -50,11 +50,15 @@ namespace SketchModeller.Modelling.Services.Snap
         protected abstract TSnapped Create(PointsSequence[] selectedCurves, TNew newPrimitive);
         protected abstract Tuple<Term, Term[]> Reconstruct(TSnapped snappedPrimitive);
 
-
-        protected IEnumerable<Term> ProjectionConstraints(SnappedPointsSet item)
+        protected IEnumerable<Term> ProjectionFit(SnappedPointsSet item)
         {
             const int SAMPLE_SIZE = 10;
             var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);
+            return ProjectionFit(item, sample);
+        }
+
+        protected IEnumerable<Term> ProjectionFit(SnappedPointsSet item, Point[] sample)
+        {
             var terms =
                 from point in sample
                 from term in ProjectionConstraint(item, point)
