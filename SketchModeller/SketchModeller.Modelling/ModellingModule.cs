@@ -37,7 +37,7 @@ namespace SketchModeller.Modelling
             // register services
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
             //container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
-            container.RegisterType<ISnapper, NewSnapper>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());
