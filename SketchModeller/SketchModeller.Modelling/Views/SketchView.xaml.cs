@@ -21,6 +21,8 @@ using System.Reflection;
 using System.Diagnostics;
 using SketchModeller.Infrastructure;
 using Microsoft.Practices.Prism.Logging;
+using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Events;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -61,7 +63,7 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public SketchView(SketchViewModel viewModel, IUnityContainer container, ILoggerFacade logger = null)
+        public SketchView(SketchViewModel viewModel, IEventAggregator eventAggregator, IUnityContainer container, ILoggerFacade logger = null)
             : this()
         {
             this.logger = logger ?? new EmptyLogger();
@@ -81,10 +83,12 @@ namespace SketchModeller.Modelling.Views
             Grid.SetRow(sketchImageView, 1);
             sketchImageView.Margin = vpRoot.Margin;
             root.Children.Insert(1, sketchImageView);
+
+            eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
         }
 
 
-        void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.Match(() => viewModel.SketchPlane))
             {
@@ -115,6 +119,21 @@ namespace SketchModeller.Modelling.Views
                 mouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
             else
                 logger.Log("This should not happen", Category.Exception, Priority.High);
+        }
+
+        private void OnGlobalShortcut(KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.C:
+                    curveSelection.IsChecked = true;
+                    break;
+                case Key.P:
+                    primitiveManipulation.IsChecked = true;
+                    break;
+                default:
+                    break;
+            }
         }
 
         #region Selection + primitive events

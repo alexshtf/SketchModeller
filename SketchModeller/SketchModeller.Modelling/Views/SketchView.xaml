@@ -60,10 +60,15 @@
         </Canvas>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
+        	<StackPanel.Resources>
+        		<Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+        			<Setter Property="Margin" Value="5,2,0,2" />    		
+				</Style>     	
+			</StackPanel.Resources>
             <GroupBox Header="Mouse">
                 <StackPanel ToggleButton.Checked="StackPanel_Checked" VerticalAlignment="Center">
-                    <RadioButton Margin="3" IsChecked="True" x:Name="curveSelection">Curve</RadioButton>
-                    <RadioButton Margin="3" x:Name="primitiveManipulation">Primitive</RadioButton>
+                    <RadioButton Margin="3" IsChecked="True" x:Name="curveSelection" Content="Curve (C)"/>
+                    <RadioButton Margin="3" x:Name="primitiveManipulation" Content="Primitive (P)"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">

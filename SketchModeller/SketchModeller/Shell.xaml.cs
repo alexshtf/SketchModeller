@@ -17,6 +17,8 @@ using Utils;
 using System.Diagnostics;
 using Petzold.Media3D;
 using SketchModeller.Infrastructure;
+using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Events;
 
 namespace SketchModeller
 {
@@ -26,6 +28,7 @@ namespace SketchModeller
     public partial class Shell : Window
     {
         private ShellViewModel viewModel;
+        private IEventAggregator eventAggregator;
 
         public Shell()
         {
@@ -36,7 +39,14 @@ namespace SketchModeller
             : this()
         {
             viewModel = container.Resolve<ShellViewModel>();
+            eventAggregator = container.Resolve<IEventAggregator>();
             DataContext = viewModel;
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
         }
 
         private void OnDebugClick(object sender, RoutedEventArgs e)

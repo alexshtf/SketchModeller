@@ -8,6 +8,7 @@ using Utils;
 using System.Diagnostics;
 using SketchModeller.Utilities;
 using System.Windows;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -59,37 +60,101 @@ namespace SketchModeller.Modelling.Services.Snap
             var botCurve = snappedPrimitive.BottomCurve;
             var silhouettes = snappedPrimitive.Silhouettes;
 
-            // simple case - we use the two curves to reconstruct the cylinder
             if (topCurve != null && botCurve != null)
+                // simple case - we use the two curves to reconstruct the cylinder
                 return FullInfo(snappedPrimitive);
-            if (topCurve == null && botCurve != null && silhouettes.Length == 2)
-                return TwoSilhouettesBottomCurve(snappedPrimitive);
+            else if (silhouettes.Length == 2)
+            {
+                if (!(topCurve == null && botCurve == null))
+                    return TwoSilhouettesSingleFeature(snappedPrimitive);
+                else
+                    return TwoSilhouettesNoFeatures(snappedPrimitive);
+            }
 
             throw new NotImplementedException("Not implemented all missing info yet");
         }
 
-        private Tuple<Term, Term[]> TwoSilhouettesBottomCurve(SnappedCylinder snappedPrimitive)
+        private Tuple<Term, Term[]> TwoSilhouettesNoFeatures(SnappedCylinder snappedPrimitive)
         {
+            var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
+            var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
+            var axis2d = Get2DVector(snappedPrimitive.AxisResult);
 
+            var sil0Top = GetForwardPoint(sil0, axis2d);
+            var sil0Bot = GetForwardPoint(sil0, -axis2d);
+            var sil1Top = GetForwardPoint(sil1, axis2d);
+            var sil1Bot = GetForwardPoint(sil1, -axis2d);
+
+            var topPointsSet = new SnappedPointsSet(
+                snappedPrimitive.GetTopCenter(),
+                snappedPrimitive.Axis,
+                snappedPrimitive.Radius,
+                new Polyline());
+            var botPointsSet = new SnappedPointsSet(
+                snappedPrimitive.BottomCenter,
+                snappedPrimitive.Axis,
+                snappedPrimitive.Radius,
+                new Polyline());
+
+            var topFit = ProjectionFit(topPointsSet, new Point[] { sil0Top, sil1Top });
+            var botFit = ProjectionFit(botPointsSet, new Point[] { sil0Bot, sil1Bot });
+
+            var objective = TermUtils.SafeSum(topFit.Concat(botFit));
+            var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
+
+            return Tuple.Create(objective, constraints);
+        }
+
+        private Point GetForwardPoint(Tuple<Point, Point> silPoints, Vector axis)
+        {
+            var silVec = silPoints.Item2 - silPoints.Item1;
+            if (axis * silVec > 0)
+                return silPoints.Item2;
+            else
+                return silPoints.Item1;
+        }
+
+        private Vector Get2DVector(Vector3D vector3D)
+        {
+            var p = UiState.SketchPlane.Center;
+            var q = p + vector3D;
+
+            var pp = UiState.SketchPlane.Project(p);
+            var qq = UiState.SketchPlane.Project(q);
+            return qq - pp;
+        }
+
+        private Tuple<Term, Term[]> TwoSilhouettesSingleFeature(SnappedCylinder snappedPrimitive)
+        {
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
             var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
 
-            var sil0Far = GetFarPoint(sil0, snappedPrimitive.BottomCurve);
-            var sil1Far = GetFarPoint(sil1, snappedPrimitive.BottomCurve);
+            var featureCurve = snappedPrimitive.SnappedPointsSets[0].SnappedTo;
+            var sil0Far = GetFarPoint(sil0, featureCurve);
+            var sil1Far = GetFarPoint(sil1, featureCurve);
 
-            // we have only the bottom curve - so it's the only projection fit
-            var bottomProj = ProjectionFit(snappedPrimitive.SnappedPointsSets[0]);
+            // we have only one feature curve - so it's the only feature projection fit
+            var featureProj = ProjectionFit(snappedPrimitive.SnappedPointsSets[0]);
 
-            // create an imaginary snapped points set with the top curve's data
-            var topPointSet = new SnappedPointsSet(
-                snappedPrimitive.GetTopCenter(),
+            // create an imaginary points set for the missing feature curve
+            // we will fit it to the two far silhouette points
+            TVec center = null;
+            if (snappedPrimitive.TopCurve == null)
+                center = snappedPrimitive.GetTopCenter();
+            else if (snappedPrimitive.BottomCurve == null)
+                center = snappedPrimitive.BottomCenter;
+            Debug.Assert(center != null);
+         
+            var farPointsSet = new SnappedPointsSet(
+                center,
                 snappedPrimitive.Axis,
-                snappedPrimitive.Radius, 
+                snappedPrimitive.Radius,
                 new Polyline());
-            var topProj = ProjectionFit(topPointSet, new Point[] { sil0Far, sil1Far });
+            var farProj = ProjectionFit(farPointsSet, new Point[] { sil0Far, sil1Far });
 
-            var objective = TermUtils.SafeSum(topProj.Concat(bottomProj));
+            var objective = TermUtils.SafeSum(featureProj.Concat(farProj));
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
+
             return Tuple.Create(objective, constraints);
         }
 
