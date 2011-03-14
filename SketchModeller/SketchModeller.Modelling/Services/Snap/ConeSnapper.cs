@@ -10,88 +10,24 @@ using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
-    class ConeSnapper : BasePrimitivesSnapper<NewCone, SnappedCone>
+    class ConeSnapper : CylindricalSnapper<NewCone, SnappedCone>
     {
-        protected override SnappedCone Create(PointsSequence[] selectedCurves, NewCone newPrimitive)
+        protected override void SpecificInit(NewCone newPrimitive, SnappedCone snapped)
         {
-            var snappedCone = InitNewSnapped(newPrimitive);
-
-            var allSequences = selectedCurves;
-            snappedCone.SnappedTo = selectedCurves;
-
-            var features = allSequences.Where(x => x.CurveCategory == CurveCategories.Feature).ToArray();
-            var silhouettes = allSequences.Except(features).ToArray();
-
-            var topPts = features.Where(x => SnapperHelper.IsTop(x, snappedCone)).ToArray();
-            var botPts = features.Except(topPts).ToArray();
-
-            Debug.Assert(topPts.Length <= 1, "The algorithm cannot handle more than one top curve");
-            Debug.Assert(botPts.Length <= 1, "The algorithm cannot handle more than one bottom curve");
-
-            snappedCone.TopCurve = topPts.FirstOrDefault();
-            snappedCone.BottomCurve = botPts.FirstOrDefault();
-            snappedCone.Silhouettes = silhouettes;
-
-            var pointsSets = new List<SnappedPointsSet>();
-            if (topPts.Length > 0)
-                pointsSets.Add(
-                    new SnappedPointsSet(
-                        snappedCone.GetTopCenter(),
-                        snappedCone.Axis,
-                        snappedCone.TopRadius,
-                        topPts[0]));
-            if (botPts.Length > 0)
-                pointsSets.Add(
-                    new SnappedPointsSet(
-                        snappedCone.BottomCenter,
-                        snappedCone.Axis,
-                        snappedCone.BottomRadius,
-                        botPts[0]));
-            snappedCone.SnappedPointsSets = pointsSets.ToArray();
-
-            return snappedCone;
+            snapped.TopRadius = new Variable();
+            snapped.BottomRadius = new Variable();
+            snapped.TopRadiusResult = newPrimitive.TopRadius;
+            snapped.BottomRadiusResult = newPrimitive.BottomRadius;
         }
 
-        protected override Tuple<Term, Term[]> Reconstruct(SnappedCone snappedPrimitive)
+        protected override Term GetTopRadius(SnappedCone snapped)
         {
-            var topCurve = snappedPrimitive.TopCurve;
-            var botCurve = snappedPrimitive.BottomCurve;
-
-            // simple case - we use the two curves to reconstruct the cylinder
-            if (topCurve != null && botCurve != null)
-                return FullInfoObjective(snappedPrimitive);
-
-            throw new NotImplementedException("Not implemented all missing info yet");
+            return snapped.TopRadius;
         }
 
-        private SnappedCone InitNewSnapped(NewCone selectedCone)
+        protected override Term GetBottomRadius(SnappedCone snapped)
         {
-            var snappedCone = new SnappedCone();
-            snappedCone.Axis = SnapperHelper.GenerateVarVector();
-            snappedCone.BottomCenter = SnapperHelper.GenerateVarVector();
-            snappedCone.Length = new Variable();
-            snappedCone.TopRadius = new Variable();
-            snappedCone.BottomRadius = new Variable();
-
-            snappedCone.AxisResult = selectedCone.Axis.Normalized();
-            snappedCone.BottomCenterResult = selectedCone.Bottom;
-            snappedCone.BottomRadiusResult = selectedCone.BottomRadius;
-            snappedCone.TopRadiusResult = selectedCone.TopRadius;
-            snappedCone.LengthResult = selectedCone.Length;
-
-            return snappedCone;
-        }
-
-        private Tuple<Term, Term[]> FullInfoObjective(SnappedCone cone)
-        {
-            var terms =
-                from item in cone.SnappedPointsSets
-                from term in ProjectionFit(item)
-                select term;
-            var objective = TermUtils.SafeAvg(terms);
-            var constraints = new Term[] { cone.Axis.NormSquared - 1 };
-
-            return Tuple.Create(objective, constraints);
+            return snapped.BottomRadius;
         }
     }
 }

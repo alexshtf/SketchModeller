@@ -57,7 +57,7 @@ namespace SketchModeller.Modelling.Services.Snap
         /// <param name="points">The points sequence</param>
         /// <param name="cylinder">The cylinder data</param>
         /// <returns><c>true</c> if the best-fit-ellipse's center is closer to the top cylinder point than to the bottom.</returns>
-        public static bool IsTop(PointsSequence points, dynamic cylinder)
+        public static bool IsTop(PointsSequence points, SnappedCylindricalPrimitive cylinder)
         {
             var top = new Point(cylinder.TopCenterResult.X, -cylinder.TopCenterResult.Y);
             var bottom = new Point(cylinder.BottomCenterResult.X, -cylinder.BottomCenterResult.Y);

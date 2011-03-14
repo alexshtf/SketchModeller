@@ -61,7 +61,7 @@ namespace Utils
         public static Point3D Centroid(this IEnumerable<Point3D> points)
         {
             Contract.Requires(points != null);
-            Contract.Requires(points.IsEmpty() == false);
+            Contract.Requires(points.Any() == true);
 
             var vectors = from pnt in points
                           select pnt - Origin;

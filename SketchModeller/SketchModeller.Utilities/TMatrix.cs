@@ -38,7 +38,7 @@ namespace SketchModeller.Utilities
         public TMatrix(IEnumerable<TVec> rows)
         {
             Contract.Requires(rows != null);
-            Contract.Requires(!rows.IsEmpty()); // we have rows
+            Contract.Requires(rows.Any()); // we have rows
             Contract.Requires(Contract.ForAll(rows, row => row.Dimension == rows.First().Dimension)); // all rows have the same size
 
             this.rows = rows.ToArray();

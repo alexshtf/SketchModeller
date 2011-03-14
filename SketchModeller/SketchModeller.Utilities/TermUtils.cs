@@ -27,9 +27,9 @@ namespace SketchModeller.Utilities
 
             terms = terms.Where(term => !(term is Zero));
 
-            if (terms.IsEmpty())
+            if (!terms.Any())
                 return 0;
-            else if (terms.Skip(1).IsEmpty())
+            else if (!terms.Skip(1).Any())
                 return terms.First();
             else
                 return TermBuilder.Sum(terms);

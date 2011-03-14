@@ -23,7 +23,7 @@ namespace SketchModeller.Modelling.ModelViews
                 return Binding.DoNothing;
             }
 
-            if (values.OfType<bool>().IsEmpty())
+            if (!values.OfType<bool>().Any())
             {
                 Trace.TraceError("values items must be of type boolean");
                 return Binding.DoNothing;

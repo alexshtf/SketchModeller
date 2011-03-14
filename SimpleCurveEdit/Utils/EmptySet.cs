@@ -26,10 +26,10 @@ namespace Utils
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            if (other.IsEmpty())
-                return false;
-            else
+            if (other.Any())
                 return true;
+            else
+                return false;
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
@@ -44,7 +44,7 @@ namespace Utils
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            if (other.IsEmpty())
+            if (!other.Any())
                 return true;
             else
                 return false;
@@ -57,7 +57,7 @@ namespace Utils
 
         public bool SetEquals(IEnumerable<T> other)
         {
-            if (other.IsEmpty())
+            if (!other.Any())
                 return true;
             else
                 return false;

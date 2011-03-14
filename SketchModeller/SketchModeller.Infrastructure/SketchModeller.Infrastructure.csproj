@@ -97,6 +97,8 @@
     <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\CurveCategories.cs" />
+    <Compile Include="Data\NewCylindricalPrimitive.cs" />
+    <Compile Include="Data\SnappedCylindricalPrimitive.cs" />
     <Compile Include="Data\NewCone.cs" />
     <Compile Include="Data\NewCylinder.cs" />
     <Compile Include="Data\NewPrimitive.cs" />

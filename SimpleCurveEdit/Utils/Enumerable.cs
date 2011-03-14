@@ -78,36 +78,17 @@ namespace Utils
         /// <returns>An enumeration of the resulting splitted enumeration.</returns>
         public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> items, Func<T, bool> seperator)
         {
-            while (!items.IsEmpty())
+            while (items.Any())
             {
                 var head = items.TakeWhile(seperator);
                 yield return head;
 
                 var tail = items.SkipWhile(seperator);
-                if (!tail.IsEmpty())
+                if (tail.Any())
                     tail = tail.Skip(1);
 
                 items = tail;
             }
-        }
-
-        /// <summary>
-        /// Checks if the given enumeration is empty
-        /// </summary>
-        /// <typeparam name="T">Type of elements in the enumeration</typeparam>
-        /// <param name="toCheck">The enumeration to check</param>
-        /// <returns><c>true</c> if and only if the enumeration <paramref name="toCheck"/> is empty.</returns>
-        [Pure]
-        public static bool IsEmpty<T>(this IEnumerable<T> toCheck)
-        {
-            bool isEmpty = true;
-            foreach (var item in toCheck)
-            {
-                isEmpty = false;
-                break;
-            }
-
-            return isEmpty;
         }
 
         /// <summary>
@@ -240,7 +221,7 @@ namespace Utils
         {
             Contract.Requires(source != null);
             Contract.Requires(itemValue != null);
-            Contract.Requires(source.IsEmpty() == false);
+            Contract.Requires(source.Any() == true);
 
             Contract.Ensures(source.Contains(Contract.Result<T>())); // the source collection contains the minimizer
             Contract.Ensures(Contract.ForAll(source, item => 

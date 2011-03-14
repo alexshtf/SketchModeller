@@ -40,7 +40,7 @@ namespace Utils
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
             // contains item and has at-least two items
-            if (other.Contains(item) && !other.Skip(1).IsEmpty()) 
+            if (other.Contains(item) && other.Skip(1).Any()) 
                 return true;
             else
                 return false;
@@ -49,7 +49,7 @@ namespace Utils
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
             // a singleton is a proper superset ONLY of the empty set
-            if (other.IsEmpty())
+            if (!other.Any())
                 return true;
             else
                 return false;
@@ -67,7 +67,7 @@ namespace Utils
         public bool IsSupersetOf(IEnumerable<T> other)
         {
             // we are a superset of the empty set
-            if (other.IsEmpty())
+            if (!other.Any())
                 return true;
 
             // otherwise, we are a superset of another singleton with the same item.
@@ -84,9 +84,9 @@ namespace Utils
         {
             // the other set equals us if it contains a single item that is equal to our item
             return
-                !other.IsEmpty() &&          // other is not empty
-                other.Skip(1).IsEmpty() &&   // other contains at most one item
-                item.Equals(other.First());  // other's item is equal to our item.
+                other.Any() &&              // other is not empty
+                !other.Skip(1).Any() &&     // other contains at most one item
+                item.Equals(other.First()); // other's item is equal to our item.
         }
 
         public void SymmetricExceptWith(IEnumerable<T> other)
