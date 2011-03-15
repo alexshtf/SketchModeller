@@ -1,0 +1,5 @@
+bin/
+obj/
+*.csproj.user
+*.csproj.vs10x
+*.csproj.vspscc
