@@ -25,6 +25,8 @@ namespace SketchModeller.Modelling.Views
 
         public SketchImageViewModel()
         {
+            polygons = new Polygon[0];
+            polylines = new Polyline[0];
         }
 
         [InjectionConstructor]

@@ -21,6 +21,12 @@ using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Modelling.Views
 {
+    public enum MouseInterationModes
+    {
+        CurveSelection,
+        PrimitiveManipulation,
+    }
+
     public class SketchViewModel : NotificationObject, IWeakEventListener
     {
         private readonly IEventAggregator eventAggregator;
@@ -51,6 +57,7 @@ namespace SketchModeller.Modelling.Views
             SnapPrimitive = new DelegateCommand(SnapPrimitiveExecute, SnapPrimitiveCanExecute);
             MarkFeature = new DelegateCommand(MarkFeatureExecute, MarkFeatureCanExecute);
             MarkSilhouette = new DelegateCommand(MarkSilhouetteExecute, MarkSilhouetteCanExecute);
+            CycleMouseInteractionMode = new DelegateCommand(CycleMouseInteractionModeExecute);
         }
 
         public SketchModellingViewModel SketchModellingViewModel { get; private set; }
@@ -63,6 +70,8 @@ namespace SketchModeller.Modelling.Views
         public ICommand MarkFeature { get; private set; }
         public ICommand MarkSilhouette { get; private set; }
 
+        public ICommand CycleMouseInteractionMode { get; private set; }
+
         #region SketchPlane property
 
         private SketchPlane sketchPlane;
@@ -74,6 +83,22 @@ namespace SketchModeller.Modelling.Views
             {
                 sketchPlane = value;
                 RaisePropertyChanged(() => SketchPlane);
+            }
+        }
+
+        #endregion
+
+        #region MouseInteractionMode property
+
+        private MouseInterationModes mouseInteractionMode;
+
+        public MouseInterationModes MouseInteractionMode
+        {
+            get { return mouseInteractionMode; }
+            set
+            {
+                mouseInteractionMode = value;
+                RaisePropertyChanged(() => MouseInteractionMode);
             }
         }
 
@@ -145,7 +170,6 @@ namespace SketchModeller.Modelling.Views
             return true;
         }
 
-
         private void MarkFeatureExecute()
         {
             MarkAs(CurveCategories.Feature);
@@ -164,6 +188,14 @@ namespace SketchModeller.Modelling.Views
         private bool MarkSilhouetteCanExecute()
         {
             return true;
+        }
+
+        private void CycleMouseInteractionModeExecute()
+        {
+            int modesCount = Enum.GetValues(typeof(MouseInterationModes)).Length;
+            int modeNumber = (int)MouseInteractionMode;
+            modeNumber = (modeNumber + 1) % modesCount;
+            MouseInteractionMode = (MouseInterationModes)modeNumber;
         }
 
         #endregion

@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Media.Media3D;
+using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.Logging;
 using Microsoft.Practices.Unity;
 using Petzold.Media3D;
-using System.ComponentModel;
-
-using Utils;
-using System.Windows.Media.Media3D;
-using System.Reflection;
-using System.Diagnostics;
 using SketchModeller.Infrastructure;
-using Microsoft.Practices.Prism.Logging;
-using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
+using Utils;
+using System.Diagnostics.Contracts;
+using SketchModeller.Infrastructure.Shared;
+using SketchModeller.Utilities;
+using System.Collections.Generic;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -39,19 +32,20 @@ namespace SketchModeller.Modelling.Views
             var assembly = Assembly.GetCallingAssembly();
             using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowadd.cur"))
             {
-                ADD_CURSOR = new Cursor(stream);
+                if (stream != null)
+                    ADD_CURSOR = new Cursor(stream);
             }
             using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowdel.cur"))
             {
-                REMOVE_CURSOR = new Cursor(stream);
+                if (stream != null)
+                    REMOVE_CURSOR = new Cursor(stream);
             }
         }
 
         private readonly ILoggerFacade logger;
         private readonly SketchViewModel viewModel;
-        private MouseInterationModes mouseInteractionMode;
-        private MousePosInfo3D dragStartLocation;
-        bool isDragging;
+        private readonly Dictionary<MouseInterationModes, IDragStrategy> dragStrategies;
+        private IDragStrategy currentDragStrategy;
 
         private readonly SketchModellingView sketchModellingView;
         private readonly SketchImageView sketchImageView;
@@ -59,11 +53,11 @@ namespace SketchModeller.Modelling.Views
         public SketchView()
         {
             InitializeComponent();
-            mouseInteractionMode = MouseInterationModes.CurveSelection;
+            dragStrategies = new Dictionary<MouseInterationModes, IDragStrategy>();
         }
 
         [InjectionConstructor]
-        public SketchView(SketchViewModel viewModel, IEventAggregator eventAggregator, IUnityContainer container, ILoggerFacade logger = null)
+        public SketchView(SketchViewModel viewModel, UiState uiState, IEventAggregator eventAggregator, IUnityContainer container, ILoggerFacade logger = null)
             : this()
         {
             this.logger = logger ?? new EmptyLogger();
@@ -85,8 +79,12 @@ namespace SketchModeller.Modelling.Views
             root.Children.Insert(1, sketchImageView);
 
             eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
-        }
 
+            dragStrategies[MouseInterationModes.CurveSelection] = 
+                new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
+            dragStrategies[MouseInterationModes.PrimitiveManipulation] =
+                new PrimitiveDragStrategy(uiState, sketchModellingView);
+        }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -111,114 +109,46 @@ namespace SketchModeller.Modelling.Views
             }
         }
 
-        private void StackPanel_Checked(object sender, RoutedEventArgs e)
-        {
-            if (e.Source == curveSelection)
-                mouseInteractionMode = MouseInterationModes.CurveSelection;
-            else if (e.Source == primitiveManipulation)
-                mouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
-            else
-                logger.Log("This should not happen", Category.Exception, Priority.High);
-        }
-
         private void OnGlobalShortcut(KeyEventArgs e)
         {
-            switch (e.Key)
-            {
-                case Key.C:
-                    curveSelection.IsChecked = true;
-                    break;
-                case Key.P:
-                    primitiveManipulation.IsChecked = true;
-                    break;
-                default:
-                    break;
-            }
+            if (e.Key == Key.Z)
+                viewModel.CycleMouseInteractionMode.Execute(null);
         }
 
-        #region Selection + primitive events
+        private void vpRoot_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete && viewModel.MouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
+                viewModel.DeleteNewPrimitives();
+        }
+
+        #region Sketch viewport mouse events
 
         private void vpRoot_MouseDown(object sender, MouseButtonEventArgs e)
         {
             vpRoot.Focus();
-            if (!isDragging && e.ChangedButton == MouseButton.Left)
+            if (currentDragStrategy == null && e.ChangedButton == MouseButton.Left)
             {
-                dragStartLocation = GetPosition3D(e);
+                currentDragStrategy = dragStrategies[viewModel.MouseInteractionMode];
+                currentDragStrategy.OnMouseDown(GetPosition3D(e));
                 vpRoot.CaptureMouse();
-                isDragging = true;
-
-                if (mouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
-                    SelectPrimitive(dragStartLocation);
             }
         }
 
         private void vpRoot_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (isDragging && e.ChangedButton == MouseButton.Left)
+            if (currentDragStrategy != null && e.ChangedButton == MouseButton.Left)
             {
-                if (mouseInteractionMode == MouseInterationModes.CurveSelection)
-                {
-                    SelectCurves(GetPosition3D(e));
-                    Action collapse = () =>
-                        {
-                            logger.Log("Hiding selection rectangle", Category.Debug, Priority.High);
-                            selectionRectangle.Visibility = Visibility.Collapsed;
-                        };
-                    Dispatcher.BeginInvoke(collapse);
-                }
-                else
-                    StopPrimitiveDragging();
+                currentDragStrategy.OnMouseUp(GetPosition3D(e));
                 vpRoot.ReleaseMouseCapture();
-                isDragging = false;
+                currentDragStrategy = null;
             }
         }
 
         private void vpRoot_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging)
-            {
-                var position = GetPosition3D(e);
-                if (mouseInteractionMode == MouseInterationModes.CurveSelection)
-                    UpdateSelectionRectangle(position.Pos2D);
-                else if (mouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
-                    DragPrimitive(position);
-            }
+            if (currentDragStrategy != null && currentDragStrategy.IsDragging)
+                currentDragStrategy.OnMouseMove(GetPosition3D(e));
         }
-
-        private void SelectCurves(MousePosInfo3D positionInfo)
-        {
-            var rect = new Rect(positionInfo.Pos2D, dragStartLocation.Pos2D);
-            sketchImageView.SelectCurves(rect);
-        }
-
-        private void DragPrimitive(MousePosInfo3D positionInfo)
-        {
-            if (positionInfo.Ray3D != null)
-                sketchModellingView.DragPrimitive(positionInfo.Pos2D, positionInfo.Ray3D.Value);
-        }
-
-        private void StopPrimitiveDragging()
-        {
-            sketchModellingView.EndDrag();
-        }
-
-        private void UpdateSelectionRectangle(Point point)
-        {
-            var rect = new Rect(point, dragStartLocation.Pos2D);
-            selectionRectangle.Width = rect.Width;
-            selectionRectangle.Height = rect.Height;
-            Canvas.SetTop(selectionRectangle, rect.Top);
-            Canvas.SetLeft(selectionRectangle, rect.Left);
-            selectionRectangle.Visibility = Visibility.Visible;
-        }
-
-        private void SelectPrimitive(MousePosInfo3D positionInfo)
-        {
-            if (positionInfo.Ray3D != null)
-                sketchModellingView.SelectPrimitive(positionInfo.Pos2D, positionInfo.Ray3D.Value);
-        }
-
-        #endregion
 
         private MousePosInfo3D GetPosition3D(MouseEventArgs e)
         {
@@ -234,6 +164,10 @@ namespace SketchModeller.Modelling.Views
             else
                 return new MousePosInfo3D { Pos2D = pos2d, Ray3D = null };
         }
+
+        #endregion
+
+        #region Primitive drag & drop handling
 
         private void OnThumbDragStarted(object sender, RoutedEventArgs e)
         {
@@ -261,22 +195,174 @@ namespace SketchModeller.Modelling.Views
             }
         }
 
+        #endregion
+
+        #region MousePosInfo3D structure
+        
         private struct MousePosInfo3D
         {
             public Point Pos2D;
             public LineRange? Ray3D;
         }
 
-        private enum MouseInterationModes
+        #endregion
+
+        #region IDragStrategy interface
+
+        [ContractClass(typeof(IDragStragegyContract))]
+        private interface IDragStrategy
         {
-            CurveSelection,
-            PrimitiveManipulation,
+            /// <summary>
+            /// Called when user presses the mouse to start dragging.
+            /// </summary>
+            /// <param name="position">2D and 3D mouse position information</param>
+            void OnMouseDown(MousePosInfo3D position);
+
+
+            /// <summary>
+            /// Called when the user drags the mouse.
+            /// </summary>
+            /// <param name="position">2D and 3D mouse position information</param>
+            void OnMouseMove(MousePosInfo3D position);
+
+
+            /// <summary>
+            /// Called when the user releases the mouse and finishes the drag operation.
+            /// </summary>
+            /// <param name="position">2D and 3D position information</param>
+            void OnMouseUp(MousePosInfo3D position);
+
+            /// <summary>
+            /// Gets a value indicating whether the user is dragging.
+            /// </summary>
+            /// <value>
+            /// 	<c>true</c> if the user is dragging; otherwise, <c>false</c>.
+            /// </value>
+            bool IsDragging { get; }
         }
 
-        private void vpRoot_KeyDown(object sender, KeyEventArgs e)
+        [ContractClassFor(typeof(IDragStrategy))]
+        private abstract class IDragStragegyContract : IDragStrategy
         {
-            if (e.Key == Key.Delete && mouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
-                viewModel.DeleteNewPrimitives();
+            public void OnMouseDown(MousePosInfo3D position)
+            {
+                Contract.Requires(IsDragging == false);
+                Contract.Ensures(IsDragging == true);
+            }
+
+            public void OnMouseMove(MousePosInfo3D position)
+            {
+                Contract.Requires(IsDragging == true);
+            }
+
+            public void OnMouseUp(MousePosInfo3D position)
+            {
+                Contract.Requires(IsDragging == true);
+                Contract.Ensures(IsDragging == false);
+            }
+
+            public bool IsDragging
+            {
+                get { return default(bool); }
+            }
         }
+
+        #endregion
+
+        #region DragStrategyBase class
+
+        private abstract class DragStrategyBase : IDragStrategy
+        {
+            private readonly UiState uiState;
+            private bool isDragging;
+
+            public DragStrategyBase(UiState uiState)
+            {
+                this.uiState = uiState;
+            }
+
+            public void OnMouseDown(MousePosInfo3D position)
+            {
+                isDragging = true;
+                LastPosition = StartPosition = position;
+                MouseDownCore(position);
+            }
+
+            public void OnMouseMove(MousePosInfo3D position)
+            {
+                Vector vec2d;
+                Vector3D? vec3d;
+                GetDragVectors(position, out vec2d, out vec3d);
+                MouseMoveCore(position, vec2d, vec3d);
+                LastPosition = position;
+            }
+
+            public void OnMouseUp(MousePosInfo3D position)
+            {
+                Vector vec2d;
+                Vector3D? vec3d;
+                GetDragVectors(position, out vec2d, out vec3d);
+                MouseUpCore(position, vec2d, vec3d);
+                IsDragging = false;
+            }
+
+            public bool IsDragging
+            {
+                get { return isDragging; }
+                private set { isDragging = value; }
+            }
+
+            /// <summary>
+            /// Gets the shared UiState object
+            /// </summary>
+            protected UiState UiState { get { return uiState; } }
+
+            /// <summary>
+            /// Gets the mouse position info when <see cref="OnMouseDown"/> was called.
+            /// </summary>
+            protected MousePosInfo3D StartPosition { get; private set; }
+
+            /// <summary>
+            /// Gets the last mouse position during <see cref="OnMouseDown"/> or <see cref="OnMouseMove"/>
+            /// </summary>
+            protected MousePosInfo3D LastPosition { get; private set; }
+
+            /// <summary>
+            /// Invoked when the user presses the mouse to start dragging.
+            /// </summary>
+            /// <param name="position">2D and 3D position information</param>
+            protected abstract void MouseDownCore(MousePosInfo3D position);
+
+            /// <summary>
+            /// Invoked when the user moved his mouse during drag operation
+            /// </summary>
+            /// <param name="position">2D and 3D position information</param>
+            /// <param name="vec2d">2D move vector</param>
+            /// <param name="vec3d">3D move vector</param>
+            protected abstract void MouseMoveCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d);
+
+            /// <summary>
+            /// Invoked when the user releases the mouse.
+            /// </summary>
+            /// <param name="position">2D and 3D position information</param>
+            /// <param name="vec2d">2D move vector</param>
+            /// <param name="vec3d">3D move vector</param>
+            protected abstract void MouseUpCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d);
+
+            private void GetDragVectors(MousePosInfo3D position, out Vector vec2d, out Vector3D? vec3d)
+            {
+                vec2d = position.Pos2D - LastPosition.Pos2D;
+                vec3d = null;
+                if (position.Ray3D != null && position.Pos2D != null)
+                {
+                    var lastPos3d = uiState.SketchPlane.PointFromRay(LastPosition.Ray3D.Value);
+                    var currPos3d = uiState.SketchPlane.PointFromRay(position.Ray3D.Value);
+                    vec3d = currPos3d - lastPos3d;
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

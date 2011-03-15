@@ -4,9 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cal="http://www.codeplex.com/CompositeWPF"
+             xmlns:local="clr-namespace:SketchModeller.Modelling.Views"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="481"
              ClipToBounds="True">
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="PrimitiveGradientBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Gray" Offset="0"/>
+            <GradientStop Color="White" Offset="1"/>
+        </LinearGradientBrush>
+        
+        <ObjectDataProvider x:Key="MouseModesSource"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:MouseInterationModes" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    
     <Grid x:Name="root">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"  />
@@ -23,7 +40,7 @@
                 MouseUp="vpRoot_MouseUp"
                 MouseMove="vpRoot_MouseMove"
                 KeyDown="vpRoot_KeyDown">
-            <Viewport3D x:Name="viewport3d">
+            <Viewport3D x:Name="viewport3d" IsHitTestVisible="False">
                 <Viewport3D.Camera>
                     <MatrixCamera x:Name="camera"
                                   ProjectionMatrix="Identity"/>
@@ -60,31 +77,39 @@
         </Canvas>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
-        	<StackPanel.Resources>
-        		<Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
-        			<Setter Property="Margin" Value="5,2,0,2" />    		
-				</Style>     	
-			</StackPanel.Resources>
+            <StackPanel.Resources>
+                <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+                    <Setter Property="Margin" Value="5,2,0,2" />    		
+                </Style>     	
+            </StackPanel.Resources>
             <GroupBox Header="Mouse">
-                <StackPanel ToggleButton.Checked="StackPanel_Checked" VerticalAlignment="Center">
-                    <RadioButton Margin="3" IsChecked="True" x:Name="curveSelection" Content="Curve (C)"/>
-                    <RadioButton Margin="3" x:Name="primitiveManipulation" Content="Primitive (P)"/>
+                <StackPanel  VerticalAlignment="Top">
+                    <ComboBox ItemsSource="{Binding Source={StaticResource MouseModesSource}}"
+                              SelectedItem="{Binding Path=MouseInteractionMode}"
+                              MinWidth="70">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static local:SketchView.MouseModeToStringConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button>Cycle (Z)</Button>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">
-                <UniformGrid Rows="1" Columns="2">
+                <UniformGrid Rows="2" Columns="1">
                     <UniformGrid.Resources>
                         <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
                             <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
                             <Setter Property="Margin" Value="2" />
                             <Setter Property="Width" Value="50" />
-                            <Setter Property="Height" Value="30" />
+                            <Setter Property="Height" Value="20" />
                             <Setter Property="Margin" Value="2" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Thumb">
-                                        <Border Background="LightGray"
-                                                BorderBrush="DarkGray"
+                                        <Border Background="{StaticResource PrimitiveGradientBrush}"
+                                                BorderBrush="Black"
                                                 BorderThickness="1">
                                             <TextBlock Text="{TemplateBinding Tag}" 
                                                        VerticalAlignment="Center" 
