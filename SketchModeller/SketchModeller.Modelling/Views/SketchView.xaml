@@ -7,8 +7,7 @@
              xmlns:local="clr-namespace:SketchModeller.Modelling.Views"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="481"
-             ClipToBounds="True">
+             d:DesignHeight="300" d:DesignWidth="481">
     <UserControl.Resources>
         <LinearGradientBrush x:Key="PrimitiveGradientBrush" EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="Gray" Offset="0"/>
@@ -73,6 +72,16 @@
                            RadiusY="2"
                            Fill="LightBlue"
                            Opacity="0.5"/>
+            </Border>
+            <Border BorderBrush="Orange"
+                    BorderThickness="2"
+                    CornerRadius="3"
+                    Visibility="Collapsed"
+                    x:Name="featureSelectionRectangle">
+                <Rectangle RadiusX="2"
+                           RadiusY="2"
+                           Fill="Orange"
+                           Opacity="0.5" />
             </Border>
         </Canvas>
 

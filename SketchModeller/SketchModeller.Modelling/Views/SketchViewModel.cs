@@ -25,6 +25,7 @@ namespace SketchModeller.Modelling.Views
     {
         CurveSelection,
         PrimitiveManipulation,
+        FeatureCurveSelection,
     }
 
     public class SketchViewModel : NotificationObject, IWeakEventListener

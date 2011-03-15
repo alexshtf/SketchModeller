@@ -18,6 +18,8 @@ namespace SketchModeller.Modelling.Views
                         return "Curve";
                     case MouseInterationModes.PrimitiveManipulation:
                         return "Primitive";
+                    case MouseInterationModes.FeatureCurveSelection:
+                        return "Feature";
                     default:
                         throw new NotSupportedException();
                 }
