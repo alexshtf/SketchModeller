@@ -10,12 +10,16 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class SnappedCylindricalPrimitive : SnappedPrimitive
     {
-        #region Cylindrical snapped primitive results
+        public SnappedCylindricalPrimitive()
+        {
+            FeatureCurves = new FeatureCurve[2];
+            
+            // top curve
+            FeatureCurves[0] = TopFeatureCurve = new CircleFeatureCurve();
 
-        public Point3D[] TopCircle { get; set; }
-        public Point3D[] BottomCircle { get; set; }
-
-        #endregion
+            // bottom curve
+            FeatureCurves[1] = BottomFeatureCurve = new CircleFeatureCurve();
+        }
 
         #region optimization variables
 
@@ -47,14 +51,30 @@ namespace SketchModeller.Infrastructure.Data
 
         #endregion
 
-        #region Other data
+        #region Other properties
 
+        // semantic feature curves
+        public CircleFeatureCurve TopFeatureCurve { get; private set; }
+        public CircleFeatureCurve BottomFeatureCurve { get; private set; }
+
+        // sketch curves 
         public PointsSequence TopCurve { get; set; }
-
         public PointsSequence BottomCurve { get; set; }
-
         public PointsSequence[] Silhouettes { get; set; }
 
         #endregion
+
+        public override void UpdateFeatureCurves()
+        {
+            // update variables
+            TopFeatureCurve.Normal = BottomFeatureCurve.Normal = Axis;
+            TopFeatureCurve.Center = GetTopCenter();
+            BottomFeatureCurve.Center = BottomCenter;
+
+            // update results
+            TopFeatureCurve.NormalResult = BottomFeatureCurve.NormalResult = AxisResult;
+            TopFeatureCurve.CenterResult = BottomCenterResult + LengthResult * AxisResult;
+            BottomFeatureCurve.CenterResult = BottomCenterResult;
+        }
     }
 }

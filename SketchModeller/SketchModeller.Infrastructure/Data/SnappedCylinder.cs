@@ -12,5 +12,12 @@ namespace SketchModeller.Infrastructure.Data
     {
         public Variable Radius { get; set; }
         public double RadiusResult { get; set; }
+
+        public override void UpdateFeatureCurves()
+        {
+            base.UpdateFeatureCurves();
+            BottomFeatureCurve.Radius = TopFeatureCurve.Radius = Radius;
+            BottomFeatureCurve.RadiusResult = TopFeatureCurve.RadiusResult = RadiusResult;
+        }
     }
 }

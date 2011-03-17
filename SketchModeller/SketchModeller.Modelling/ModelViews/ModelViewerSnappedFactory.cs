@@ -8,6 +8,7 @@ using Utils;
 using SketchModeller.Infrastructure.Data;
 using System.Windows.Media;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -49,7 +50,21 @@ namespace SketchModeller.Modelling.ModelViews
 
             var visual = new ModelVisual3D();
             visual.Content = model3d;
+
+            CreateFeatureCurves(visual, snappedPrimitive.FeatureCurves);
             return visual;
+        }
+
+        private static void CreateFeatureCurves(ModelVisual3D root, FeatureCurve[] featureCurves)
+        {
+            foreach (var item in featureCurves)
+            {
+                ModelVisual3D featureCurveVisual = null;
+                item.MatchClass<CircleFeatureCurve>(cfc => featureCurveVisual = new CircleFeatureVisual(cfc));
+                Debug.Assert(featureCurveVisual != null, "Unknown feature curve type");
+
+                root.Children.Add(featureCurveVisual);
+            }
         }
 
         private static Visual3D CreateCylinderView(Point3D[] topPoints, Point3D[] botPoints, SnappedPrimitive snappedPrimitive)

@@ -36,22 +36,10 @@ namespace SketchModeller.Modelling.Services.Snap
             snappedCone.BottomCurve = botPts.FirstOrDefault();
             snappedCone.Silhouettes = silhouettes;
 
-            var pointsSets = new List<SnappedPointsSet>();
             if (topPts.Length > 0)
-                pointsSets.Add(
-                    new SnappedPointsSet(
-                        snappedCone.GetTopCenter(),
-                        snappedCone.Axis,
-                        GetTopRadius(snappedCone),
-                        topPts[0]));
+                snappedCone.TopFeatureCurve.SnappedTo = topPts[0];
             if (botPts.Length > 0)
-                pointsSets.Add(
-                    new SnappedPointsSet(
-                        snappedCone.BottomCenter,
-                        snappedCone.Axis,
-                        GetBottomRadius(snappedCone),
-                        botPts[0]));
-            snappedCone.SnappedPointsSets = pointsSets.ToArray();
+                snappedCone.BottomFeatureCurve.SnappedTo = botPts[0];
 
             return snappedCone;
         }
@@ -76,6 +64,14 @@ namespace SketchModeller.Modelling.Services.Snap
             throw new NotImplementedException("Not implemented all missing info yet");
         }
 
+        #region abstract methods
+
+        protected abstract void SpecificInit(TNew newPrimitive, TSnapped snapped);
+        protected abstract Term GetTopRadius(TSnapped snapped);
+        protected abstract Term GetBottomRadius(TSnapped snapped);
+
+        #endregion
+
         private Tuple<Term, Term[]> TwoSilhouettesNoFeatures(TSnapped snappedPrimitive)
         {
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
@@ -87,19 +83,8 @@ namespace SketchModeller.Modelling.Services.Snap
             var sil1Top = GetForwardPoint(sil1, axis2d);
             var sil1Bot = GetForwardPoint(sil1, -axis2d);
 
-            var topPointsSet = new SnappedPointsSet(
-                snappedPrimitive.GetTopCenter(),
-                snappedPrimitive.Axis,
-                GetTopRadius(snappedPrimitive),
-                new Polyline());
-            var botPointsSet = new SnappedPointsSet(
-                snappedPrimitive.BottomCenter,
-                snappedPrimitive.Axis,
-                GetBottomRadius(snappedPrimitive),
-                new Polyline());
-
-            var topFit = ProjectionFit(topPointsSet, new Point[] { sil0Top, sil1Top });
-            var botFit = ProjectionFit(botPointsSet, new Point[] { sil0Bot, sil1Bot });
+            var topFit = ProjectionFit(snappedPrimitive.TopFeatureCurve, new Point[] { sil0Top, sil1Top });
+            var botFit = ProjectionFit(snappedPrimitive.BottomFeatureCurve, new Point[] { sil0Bot, sil1Bot });
 
             var objective = TermUtils.SafeSum(topFit.Concat(botFit));
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
@@ -112,36 +97,14 @@ namespace SketchModeller.Modelling.Services.Snap
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
             var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
 
-            var featureCurve = snappedPrimitive.SnappedPointsSets[0].SnappedTo;
-            var sil0Far = GetFarPoint(sil0, featureCurve);
-            var sil1Far = GetFarPoint(sil1, featureCurve);
+            var snappedFeatureCurve = snappedPrimitive.TopCurve == null ? snappedPrimitive.BottomFeatureCurve : snappedPrimitive.TopFeatureCurve;
+            var unsnappedFeatureCurve = snappedPrimitive.TopCurve == null ? snappedPrimitive.TopFeatureCurve : snappedPrimitive.BottomFeatureCurve;
 
-            // we have only one feature curve - so it's the only feature projection fit
-            var featureProj = ProjectionFit(snappedPrimitive.SnappedPointsSets[0]);
+            var sil0Far = GetFarPoint(sil0, snappedFeatureCurve.SnappedTo);
+            var sil1Far = GetFarPoint(sil1, snappedFeatureCurve.SnappedTo);
 
-            // create an imaginary points set for the missing feature curve
-            // we will fit it to the two far silhouette points
-            TVec center = null;
-            Term radius = null;
-            if (snappedPrimitive.TopCurve == null)
-            {
-                center = snappedPrimitive.GetTopCenter();
-                radius = GetTopRadius(snappedPrimitive);
-            }
-            else if (snappedPrimitive.BottomCurve == null)
-            {
-                center = snappedPrimitive.BottomCenter;
-                radius = GetBottomRadius(snappedPrimitive);
-            }
-            Debug.Assert(center != null);
-            Debug.Assert(radius != null);
-
-            var farPointsSet = new SnappedPointsSet(
-                center,
-                snappedPrimitive.Axis,
-                radius,
-                new Polyline());
-            var farProj = ProjectionFit(farPointsSet, new Point[] { sil0Far, sil1Far });
+            var featureProj = ProjectionFit(snappedFeatureCurve);
+            var farProj = ProjectionFit(unsnappedFeatureCurve, new Point[] { sil0Far, sil1Far });
 
             var objective = TermUtils.SafeSum(featureProj.Concat(farProj));
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
@@ -183,7 +146,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private Tuple<Term, Term[]> FullInfo(TSnapped snappedPrimitive)
         {
             var terms =
-                from item in snappedPrimitive.SnappedPointsSets
+                from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
                 from term in ProjectionFit(item)
                 select term;
 
@@ -210,9 +173,63 @@ namespace SketchModeller.Modelling.Services.Snap
         }
 
 
+        protected IEnumerable<Term> ProjectionFit(CircleFeatureCurve item)
+        {
+            const int SAMPLE_SIZE = 10;
+            var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);
+            return ProjectionFit(item, sample);
+        }
 
-        protected abstract void SpecificInit(TNew newPrimitive, TSnapped snapped);
-        protected abstract Term GetTopRadius(TSnapped snapped);
-        protected abstract Term GetBottomRadius(TSnapped snapped);
+        /// <summary>
+        /// Generates a set of terms, one for each given 2D point, that measure the fitness of each point to being
+        /// a 2D projection of the given set.
+        /// </summary>
+        /// <param name="pointsSet">A representation for the 3D points set</param>
+        /// <param name="sample">The set of 2D points</param>
+        /// <returns>The set of terms, one for each point in <paramref name="sample"/> that measures the fitness of each such point
+        /// to the set in <paramref name="pointsSet"/>.</returns>
+        protected IEnumerable<Term> ProjectionFit(CircleFeatureCurve pointsSet, Point[] sample)
+        {
+            var terms =
+                from point in sample
+                select ProjectionFit(pointsSet, point);
+
+            return terms;
+        }
+
+        /// <summary>
+        /// Generates a term that gets smaller as the given 2D point fits a 3D points set projection.
+        /// </summary>
+        /// <param name="pointsSet">A representation for the 3D points set</param>
+        /// <param name="point">The 2D point</param>
+        /// <returns>The term that measures fitness of <paramref name="point"/> being on the 2D projection of the set specified by <paramref name="pointsSet"/></returns>
+        protected Term ProjectionFit(CircleFeatureCurve pointsSet, Point point)
+        {
+            // here we explicitly assume that the view vector is (0, 0, 1) or (0, 0, -1)
+            var x_ = point.X;
+            var y_ = point.Y;
+
+            var cx = pointsSet.Center.X;
+            var cy = pointsSet.Center.Y;
+            var cz = pointsSet.Center.Z;
+
+            var nx = pointsSet.Normal.X;
+            var ny = pointsSet.Normal.Y;
+            var nz = pointsSet.Normal.Z;
+
+            var r = pointsSet.Radius;
+
+            var dx = cx - x_;
+            var dy = cy + y_;
+
+            var lhs = TermBuilder.Sum(
+                TermBuilder.Power(dx * nz, 2),
+                TermBuilder.Power(dy * nz, 2),
+                TermBuilder.Power(dx * nx + dy * ny, 2));
+            var rhs = TermBuilder.Power(r * nz, 2);
+
+            return TermBuilder.Power(lhs - rhs, 2);
+        }
+
     }
 }

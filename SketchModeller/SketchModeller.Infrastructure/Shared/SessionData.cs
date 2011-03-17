@@ -17,6 +17,7 @@ namespace SketchModeller.Infrastructure.Shared
     {
         private readonly SelectionListener<NewPrimitive> newPrimitivesSelectionListener;
         private readonly SelectionListener<PointsSequence> sketchObjectsSelectionListener;
+        private readonly SelectionListener<FeatureCurve> featureCurvesSelectionListener;
 
         public SessionData()
         {
@@ -24,12 +25,15 @@ namespace SketchModeller.Infrastructure.Shared
             SnappedPrimitives = new ObservableCollection<SnappedPrimitive>();
             Annotations = new ObservableCollection<Annotation>();
             sketchObjects = new PointsSequence[0];
+            FeatureCurves = new ObservableCollection<FeatureCurve>();
 
             newPrimitivesSelectionListener = new SelectionListener<NewPrimitive>(NewPrimitives, p => p.IsSelected);
             sketchObjectsSelectionListener = new SelectionListener<PointsSequence>(sketchObjects, o => o.IsSelected);
+            featureCurvesSelectionListener = new SelectionListener<FeatureCurve>(FeatureCurves, c => c.IsSelected);
 
             SelectedNewPrimitives = newPrimitivesSelectionListener.SelectedItems;
             SelectedSketchObjects = sketchObjectsSelectionListener.SelectedItems;
+            SelectedFeatureCurves = featureCurvesSelectionListener.SelectedItems;
         }
 
         #region SketchData property
@@ -76,6 +80,8 @@ namespace SketchModeller.Infrastructure.Shared
 
         public ObservableCollection<Annotation> Annotations { get; private set; }
 
+        public ObservableCollection<FeatureCurve> FeatureCurves { get; private set; }
+
         #region SketchObjects property
 
         private PointsSequence[] sketchObjects;
@@ -95,6 +101,7 @@ namespace SketchModeller.Infrastructure.Shared
 
         public ReadOnlyObservableCollection<NewPrimitive> SelectedNewPrimitives { get; private set; }
         public ReadOnlyObservableCollection<PointsSequence> SelectedSketchObjects { get; private set; }
+        public ReadOnlyObservableCollection<FeatureCurve> SelectedFeatureCurves { get; private set; }
 
     }
 }

@@ -11,6 +11,30 @@ namespace SketchModeller.Utilities
     public static class ShapeHelper
     {
         /// <summary>
+        /// Generates an approximation of a circle given its center, a normal vector for the plane, and its radius.
+        /// </summary>
+        /// <param name="center">The circle's center</param>
+        /// <param name="normal">Normal vector to the circle's plane</param>
+        /// <param name="radius">Circle's radius.</param>
+        /// <param name="count">Number of points that approximate the circle</param>
+        /// <returns>An array of points that form the circle's approximation</returns>
+        public static Point3D[] GenerateCircle(Point3D center, Vector3D normal, double radius, int count)
+        {
+            Contract.Requires(radius > 0);
+            Contract.Requires(count >= 3);
+            Contract.Ensures(Contract.Result<Point3D[]>() != null);
+            Contract.Ensures(Contract.Result<Point3D[]>().Length == count);
+            Contract.Ensures(Contract.ForAll(
+                Contract.Result<Point3D[]>(),
+                pnt => NumericUtils.AlmostEqual(radius * radius, (pnt - center).LengthSquared, 100)));
+
+            var xAxis = MathUtils3D.NormalVector(normal).Normalized();
+            var yAxis = Vector3D.CrossProduct(normal, xAxis).Normalized();
+
+            return GenerateCircle(center, xAxis, yAxis, radius, count);
+        }
+
+        /// <summary>
         /// Generates an approximation of a circle given its center, two orthonormal basis vectors for the plane, and its radius.
         /// </summary>
         /// <param name="center">The circle's center</param>
@@ -28,6 +52,9 @@ namespace SketchModeller.Utilities
             Contract.Requires(count >= 3);
             Contract.Ensures(Contract.Result<Point3D[]>() != null);
             Contract.Ensures(Contract.Result<Point3D[]>().Length == count);
+            Contract.Ensures(Contract.ForAll(
+                Contract.Result<Point3D[]>(), 
+                pnt => NumericUtils.AlmostEqual((pnt - center).LengthSquared, radius * radius, 100)));
 
             var result = new Point3D[count];
 

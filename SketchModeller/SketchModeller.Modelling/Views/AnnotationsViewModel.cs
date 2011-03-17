@@ -102,7 +102,7 @@ namespace SketchModeller.Modelling.Views
                     item.IsSelected = false;
 
                 var currAnnotation = Annotations[SelectedAnnotationIndex];
-                PointsSequence[] elements = null;
+                FeatureCurve[] elements = null;
                 currAnnotation.MatchClass<Coplanarity>(coplarity => elements = coplarity.Elements);
                 currAnnotation.MatchClass<Parallelism>(parallelism => elements = parallelism.Elements);
                 Contract.Assume(elements != null);
@@ -112,9 +112,9 @@ namespace SketchModeller.Modelling.Views
             }
         }
 
-        private void AddAnnotation(Func<PointsSequence[], Annotation> factory)
+        private void AddAnnotation(Func<FeatureCurve[], Annotation> factory)
         {
-            var selectedElements = sessionData.SelectedSketchObjects.ToArray();
+            var selectedElements = sessionData.SelectedFeatureCurves.ToArray();
             if (selectedElements.Length > 0)
             {
                 var annotation = factory(selectedElements);

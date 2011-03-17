@@ -18,13 +18,18 @@ namespace SketchModeller.Modelling.ModelViews
             Contract.Requires(cylinderData != null);
             Contract.Ensures(Contract.Result<Visual3D>() != null);
 
-            if (cylinderData.TopCircle == null ||
-                cylinderData.BottomCircle == null)
-            {
-                return new ModelVisual3D();
-            }
-            else
-                return CreateCylinderView(cylinderData.TopCircle, cylinderData.BottomCircle, cylinderData);
+            var topCircle = ShapeHelper.GenerateCircle(
+                cylinderData.TopFeatureCurve.CenterResult,
+                cylinderData.TopFeatureCurve.NormalResult,
+                cylinderData.TopFeatureCurve.RadiusResult,
+                50);
+            var botCircle = ShapeHelper.GenerateCircle(
+                cylinderData.BottomFeatureCurve.CenterResult,
+                cylinderData.BottomFeatureCurve.NormalResult,
+                cylinderData.BottomFeatureCurve.RadiusResult,
+                50);
+
+            return CreateCylinderView(topCircle, botCircle, cylinderData);
         }
     }
 }

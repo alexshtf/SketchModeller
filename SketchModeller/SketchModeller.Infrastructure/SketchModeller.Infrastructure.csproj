@@ -95,8 +95,10 @@
     <Compile Include="Blocker.cs" />
     <Compile Include="CheckedMenuCommandData.cs" />
     <Compile Include="Data\Annotation.cs" />
+    <Compile Include="Data\CircleFeatureCurve.cs" />
     <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\CurveCategories.cs" />
+    <Compile Include="Data\FeatureCurve.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />
     <Compile Include="Data\SnappedCylindricalPrimitive.cs" />
     <Compile Include="Data\NewCone.cs" />
@@ -110,8 +112,6 @@
     <Compile Include="Data\SketchPlane.cs" />
     <Compile Include="Data\SnappedCone.cs" />
     <Compile Include="Data\SnappedCylinder.cs" />
-    <Compile Include="Data\SnappedHalfSphere.cs" />
-    <Compile Include="Data\SnappedPointsSet.cs" />
     <Compile Include="Data\SnappedPrimitive.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\GlobalShortcutEvent.cs" />

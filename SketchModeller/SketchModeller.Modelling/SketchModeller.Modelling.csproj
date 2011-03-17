@@ -111,7 +111,9 @@
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
     <Compile Include="Events\TestCaseEvent.cs" />
+    <Compile Include="IFeatureCurveVisual.cs" />
     <Compile Include="ModellingModule.cs" />
+    <Compile Include="ModelViews\CircleFeatureVisual.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Cylinder.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="ModelViews\NavigationRectangleFillConverter.cs" />
     <Compile Include="PCA.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RectangleSelector3D.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />

@@ -16,9 +16,9 @@ namespace SketchModeller.Infrastructure.Data
         public PointsSequence[] SnappedTo { get; set; }
 
         /// <summary>
-        /// A list of snapped point sets that connect points on this snapped primitive to curves on the sketch
+        /// A collection of this primitive's feature curves. 
         /// </summary>
-        public SnappedPointsSet[] SnappedPointsSets { get; set; }
+        public FeatureCurve[] FeatureCurves { get; set; }
 
         /// <summary>
         /// The optimization term that snaps this primitive to the sketch, regardless of the annotations.
@@ -41,5 +41,7 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         #endregion
+
+        public abstract void UpdateFeatureCurves();
     }
 }

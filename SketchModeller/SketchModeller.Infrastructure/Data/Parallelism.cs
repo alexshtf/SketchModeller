@@ -9,6 +9,6 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class Parallelism : Annotation
     {
-        public PointsSequence[] Elements { get; set; }
+        public FeatureCurve[] Elements { get; set; }
     }
 }

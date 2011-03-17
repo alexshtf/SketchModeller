@@ -60,11 +60,16 @@ namespace SketchModeller.Modelling.Services.Snap
 
             if (sessionData.SelectedNewPrimitives.Count == 1)
             {
+                // initialize our snapped primitive
                 var newPrimitive = sessionData.SelectedNewPrimitives.First();
                 var selectedCurves = sessionData.SelectedSketchObjects.ToArray();
                 var snappedPrimitive = snappersManager.Create(selectedCurves, newPrimitive);
+                snappedPrimitive.UpdateFeatureCurves();
+
+                // update session data
                 sessionData.SnappedPrimitives.Add(snappedPrimitive);
                 sessionData.NewPrimitives.Remove(newPrimitive);
+                sessionData.FeatureCurves.AddRange(snappedPrimitive.FeatureCurves);
             }
 
             OptimizeAll();
@@ -152,45 +157,10 @@ namespace SketchModeller.Modelling.Services.Snap
 
             #endregion
 
-            #region Reconstruct geometry data from the optimized parameters
+            #region Update feature curves
 
-            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
-            {
-                var normal = MathUtils3D.NormalVector(snappedCylinder.AxisResult);
-                var secondNormal = Vector3D.CrossProduct(normal, snappedCylinder.AxisResult);
-                snappedCylinder.BottomCircle = SnapperHelper.CirclePoints(
-                    snappedCylinder.BottomCenterResult,
-                    normal,
-                    secondNormal,
-                    snappedCylinder.RadiusResult,
-                    50);
-
-                snappedCylinder.TopCircle = SnapperHelper.CirclePoints(
-                    snappedCylinder.TopCenterResult,
-                    normal,
-                    secondNormal,
-                    snappedCylinder.RadiusResult,
-                    50);
-            }
-
-            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
-            {
-                var normal = MathUtils3D.NormalVector(snappedCone.AxisResult);
-                var secondNormal = Vector3D.CrossProduct(normal, snappedCone.AxisResult);
-                snappedCone.BottomCircle = SnapperHelper.CirclePoints(
-                    snappedCone.BottomCenterResult,
-                    normal,
-                    secondNormal,
-                    snappedCone.BottomRadiusResult,
-                    50);
-                snappedCone.TopCircle = SnapperHelper.CirclePoints(
-                    snappedCone.TopCenterResult,
-                    normal,
-                    secondNormal,
-                    snappedCone.TopRadiusResult,
-                    50);
-            }
-
+            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
+                snappedPrimitive.UpdateFeatureCurves();
 
             #endregion
         }
@@ -207,20 +177,12 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private Term[] GetConcreteAnnotationTerm(Coplanarity coplanarity)
         {
-            var pointsSetsQuery =
-                from curve in coplanarity.Elements
-                from snappedPrimitive in sessionData.SnappedPrimitives
-                from pointsSet in snappedPrimitive.SnappedPointsSets
-                where pointsSet.SnappedTo == curve
-                select pointsSet;
-
-            var pointsSets = pointsSetsQuery.ToArray();
             var constraints = new List<Term>();
 
-            if (pointsSets.Length >= 2)
+            if (coplanarity.Elements.Length >= 2)
             {
                 var terms = new List<Term>();
-                foreach (var pair in pointsSets.SeqPairs())
+                foreach (var pair in coplanarity.Elements.SeqPairs())
                 {
                     var fst = pair.Item1;
                     var snd = pair.Item2;
@@ -228,8 +190,8 @@ namespace SketchModeller.Modelling.Services.Snap
                     var p1 = fst.Center;
                     var p2 = snd.Center;
 
-                    var n1 = fst.Axis;
-                    var n2 = snd.Axis;
+                    var n1 = fst.Normal;
+                    var n2 = snd.Normal;
 
                     var pts1 = GetPointsOnPlane(p1, n1);
                     var pts2 = GetPointsOnPlane(p2, n2);
