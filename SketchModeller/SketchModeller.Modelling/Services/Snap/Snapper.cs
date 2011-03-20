@@ -115,18 +115,38 @@ namespace SketchModeller.Modelling.Services.Snap
             // all equality constraints.
             var constraints = new List<Term>();
 
+            var curvesToAnnotations = new Dictionary<FeatureCurve, ISet<Annotation>>();
+
+            #region Get mapping of curves to annotations
+
+            foreach (var fc in sessionData.FeatureCurves)
+                curvesToAnnotations[fc] = new HashSet<Annotation>();
+
+            foreach (var annotation in sessionData.Annotations)
+            {
+                IEnumerable<FeatureCurve> curves = null;
+                annotation.MatchClass<Parallelism>(pa => curves = pa.Elements);
+                annotation.MatchClass<Coplanarity>(ca => curves = ca.Elements);
+                annotation.MatchClass<Cocentrality>(ca => curves = ca.Elements);
+                Debug.Assert(curves != null);
+                foreach (var fc in curves)
+                    curvesToAnnotations[fc].Add(annotation);
+            }
+
+            #endregion
+
             #region get objectives and constraints for primitives
 
             foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
             {
-                var objectiveAndConstraints = snappersManager.Reconstruct(snappedPrimitive);
+                var objectiveAndConstraints = snappersManager.Reconstruct(snappedPrimitive, curvesToAnnotations);
                 objectives.Add(objectiveAndConstraints.Item1);
                 constraints.AddRange(objectiveAndConstraints.Item2);
             }
             
             #endregion
 
-            #region get objectives and constraints for annotations
+            #region get constraints for annotations
 
             foreach (var annotation in sessionData.Annotations)
             {
@@ -172,7 +192,26 @@ namespace SketchModeller.Modelling.Services.Snap
             var constraints = new Term[0];
             x.MatchClass<Parallelism>(parallelism => constraints = GetConcreteAnnotationTerm(parallelism));
             x.MatchClass<Coplanarity>(coplanarity => constraints = GetConcreteAnnotationTerm(coplanarity));
+            x.MatchClass<Cocentrality>(cocentrality => constraints = GetConcreteAnnotationTerm(cocentrality));
             return constraints;
+        }
+
+        private Term[] GetConcreteAnnotationTerm(Cocentrality cocentrality)
+        {
+            var constraints = new List<Term>();
+            if (cocentrality.Elements.Length >= 2)
+            {
+                foreach (var pair in cocentrality.Elements.SeqPairs())
+                {
+                    var fc1 = pair.Item1;
+                    var fc2 = pair.Item2;
+                    constraints.Add(fc1.Center.X - fc2.Center.X);
+                    constraints.Add(fc1.Center.Y - fc2.Center.Y);
+                    constraints.Add(fc1.Center.Z - fc2.Center.Z);
+                }
+            }
+
+            return constraints.ToArray();
         }
 
         private Term[] GetConcreteAnnotationTerm(Coplanarity coplanarity)

@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using SketchModeller.Infrastructure.Data;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -28,9 +29,6 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchImageView
     {
-        public const ModifierKeys ADD_SELECT_MODIFIER = ModifierKeys.Control;
-        public const ModifierKeys REMOVE_SELECT_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
-
         private static readonly Brush SKETCH_STROKE_UNCATEGORIZED = Brushes.Red;
         private static readonly Brush SKETCH_STROKE_FEATURE = Brushes.Black;
         private static readonly Brush SKETCH_STROKE_SILHOUETTE = Brushes.DarkGray;
@@ -188,9 +186,9 @@ namespace SketchModeller.Modelling.Views
             var selectedSequences = results.Select(x => x.DataContext).OfType<PointsSequence>();
 
             var currModifiers = Keyboard.Modifiers;
-            if (currModifiers == ADD_SELECT_MODIFIER)
+            if (currModifiers == ModifierKeysConstants.ADD_SELECT_MODIFIER)
                 AddToSelection(selectedSequences);
-            else if (currModifiers == REMOVE_SELECT_MODIFIER)
+            else if (currModifiers == ModifierKeysConstants.REMOVE_SELECT_MODIFIER)
                 RemoveFromSelection(selectedSequences);
             else
                 ReplaceSelection(selectedSequences);

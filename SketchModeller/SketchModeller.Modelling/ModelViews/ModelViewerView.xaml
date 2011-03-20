@@ -16,8 +16,8 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Vertical" Grid.Column="0">
-                    <RadioButton Margin="3" IsChecked="{Binding IsFlightMode}">Flight</RadioButton>
-                    <RadioButton Margin="3" IsChecked="{Binding IsTrackBallMode}">Track ball</RadioButton>
+                    <RadioButton Margin="3" IsChecked="{Binding IsFlightMode}">Flight (F)</RadioButton>
+                    <RadioButton Margin="3" IsChecked="{Binding IsTrackBallMode}">Track ball (T)</RadioButton>
                 </StackPanel>
                 <Grid Grid.Column="1" x:Name="flightControls">
                     <Rectangle Width="100" 
@@ -80,39 +80,53 @@
                 MouseUp="OnModelViewerMouseUp"
                 MouseMove="OnModelViewerMouseMove"
                 MouseWheel="OnModelViewerMouseWheel">
-            <Viewport3D xmlns:cp="http://schemas.charlespetzold.com/2007/xaml"
-                        x:Name="viewport"
-                        IsHitTestVisible="False">
-                <Viewport3D.Camera>
-                    <PerspectiveCamera x:Name="camera"
-                                       Position="{Binding Position}"
-                                       LookDirection="{Binding LookDirection}"
-                                       UpDirection="{Binding UpDirection}"
-                                       NearPlaneDistance="0.01"
-                                       FarPlaneDistance="1000"/>
-                </Viewport3D.Camera>
-                <Viewport3D.Children>
-                    <ModelVisual3D>
-                        <ModelVisual3D.Content>
-                            <PointLight Position="{Binding ElementName=camera, Path=Position}"
-                                        Color="White" />
-                        </ModelVisual3D.Content>
-                    </ModelVisual3D>
-                    <ModelVisual3D>
-                        <ModelVisual3D.Transform>
-                            <ScaleTransform3D ScaleZ="-1" />
-                        </ModelVisual3D.Transform>
-                        <ModelVisual3D.Children>
-                            <skm:CloningVisual3D x:Name="primitivesDisplay"
-                                                 Visual3DFactory="{x:Static local:ModelViewerFactory.Instance}"
-                                                 ItemsSource="{Binding Primitives}"/>
-                            <skm:CloningVisual3D x:Name="snappedPrimitivesDisplay"
-                                                 Visual3DFactory="{x:Static local:ModelViewerSnappedFactory.Instance}"
-                                                 ItemsSource="{Binding SnappedPrimitives}" />
-                        </ModelVisual3D.Children>
-                    </ModelVisual3D>
-                </Viewport3D.Children>
-            </Viewport3D>
+            <Grid>
+                <Viewport3D xmlns:cp="http://schemas.charlespetzold.com/2007/xaml"
+                            x:Name="viewport"
+                            IsHitTestVisible="False">
+                    <Viewport3D.Camera>
+                        <PerspectiveCamera x:Name="camera"
+                                           Position="{Binding Position}"
+                                           LookDirection="{Binding LookDirection}"
+                                           UpDirection="{Binding UpDirection}"
+                                           NearPlaneDistance="0.01"
+                                           FarPlaneDistance="1000"/>
+                    </Viewport3D.Camera>
+                    <Viewport3D.Children>
+                        <ModelVisual3D>
+                            <ModelVisual3D.Content>
+                                <PointLight Position="{Binding ElementName=camera, Path=Position}"
+                                            Color="White" />
+                            </ModelVisual3D.Content>
+                        </ModelVisual3D>
+                        <ModelVisual3D>
+                            <ModelVisual3D.Transform>
+                                <ScaleTransform3D ScaleZ="-1" />
+                            </ModelVisual3D.Transform>
+                            <ModelVisual3D.Children>
+                                <skm:CloningVisual3D x:Name="primitivesDisplay"
+                                                     Visual3DFactory="{x:Static local:ModelViewerFactory.Instance}"
+                                                     ItemsSource="{Binding Primitives}"/>
+                                <skm:CloningVisual3D x:Name="snappedPrimitivesDisplay"
+                                                     Visual3DFactory="{x:Static local:ModelViewerSnappedFactory.Instance}"
+                                                     ItemsSource="{Binding SnappedPrimitives}" />
+                            </ModelVisual3D.Children>
+                        </ModelVisual3D>
+                    </Viewport3D.Children>
+                </Viewport3D>
+                <Canvas ClipToBounds="True">
+                    <Border x:Name="selectionRect"
+                            CornerRadius="3"
+                            BorderBrush="Orange"
+                            BorderThickness="2"
+                            Visibility="Collapsed">
+                        <Rectangle RadiusX="2"
+                                   RadiusY="2"
+                                   Fill="Orange"
+                                   Opacity="0.5" />
+                    </Border>
+                </Canvas>
+            </Grid>
         </Border>
     </DockPanel>
 </UserControl>

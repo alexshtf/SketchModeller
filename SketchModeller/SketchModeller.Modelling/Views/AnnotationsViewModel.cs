@@ -30,6 +30,7 @@ namespace SketchModeller.Modelling.Views
             RemoveCommand = new DelegateCommand(RemoveExecute, RemoveCanExecute);
             CoplanarCommand = new DelegateCommand(CoplanarExecute);
             ParallelCommand = new DelegateCommand(ParallelExecute);
+            CocentricCommand = new DelegateCommand(CocentricExecue);
             Annotations = new ObservableCollection<Annotation>();
         }
 
@@ -46,6 +47,7 @@ namespace SketchModeller.Modelling.Views
         public ICommand RemoveCommand { get; private set; }
         public ICommand CoplanarCommand { get; private set; }
         public ICommand ParallelCommand { get; private set; }
+        public ICommand CocentricCommand { get; private set; }
 
         public ObservableCollection<Annotation> Annotations { get; private set; }
 
@@ -89,6 +91,11 @@ namespace SketchModeller.Modelling.Views
             AddAnnotation(selectedElements => new Parallelism { Elements = selectedElements });
         }
 
+        private void CocentricExecue()
+        {
+            AddAnnotation(selectedElements => new Cocentrality { Elements = selectedElements });
+        }
+
         #endregion
 
         #region Helper methods
@@ -105,6 +112,7 @@ namespace SketchModeller.Modelling.Views
                 FeatureCurve[] elements = null;
                 currAnnotation.MatchClass<Coplanarity>(coplarity => elements = coplarity.Elements);
                 currAnnotation.MatchClass<Parallelism>(parallelism => elements = parallelism.Elements);
+                currAnnotation.MatchClass<Cocentrality>(cocentrality => elements = cocentrality.Elements);
                 Contract.Assume(elements != null);
 
                 foreach (var ptsSequence in elements)

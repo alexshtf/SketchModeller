@@ -16,6 +16,7 @@ using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Collections.Specialized;
 using SketchModeller.Utilities;
+using SketchModeller.Infrastructure.Data;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -201,6 +202,38 @@ namespace SketchModeller.Modelling.ModelViews
             Position = (Point3D)(Math.Pow(1 + TRACKBALL_ZOOM_SPEED, amount) * position);
         }
 
+        public void SelectFeatureCurves(IEnumerable<FeatureCurve> featureCurves)
+        {
+            var currSelection = GetSelectedFeatureCurves();
+            var notYetSelected = featureCurves.Except(currSelection);
+
+            foreach (var fc in notYetSelected)
+                fc.IsSelected = true;
+        }
+
+        public void UnselectFeatureCurves(IEnumerable<FeatureCurve> featureCurves)
+        {
+            var currSelection = GetSelectedFeatureCurves();
+            var toUnSelect = currSelection.Intersect(featureCurves);
+
+            foreach (var fc in toUnSelect)
+                fc.IsSelected = false;
+        }
+
+        public void ReplaceSelectedFeatureCurves(IEnumerable<FeatureCurve> featureCurves)
+        {
+            var currSelection = GetSelectedFeatureCurves();
+            foreach (var fc in currSelection)
+                fc.IsSelected = false;
+
+            foreach (var fc in featureCurves)
+                fc.IsSelected = true;
+        }
+
+        private FeatureCurve[] GetSelectedFeatureCurves()
+        {
+            return sessionData.SelectedFeatureCurves.ToArray();
+        }
 
         private void OnSnapComplete(object payload)
         {

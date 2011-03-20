@@ -20,11 +20,6 @@ namespace SketchModeller.Infrastructure.Data
         /// </summary>
         public FeatureCurve[] FeatureCurves { get; set; }
 
-        /// <summary>
-        /// The optimization term that snaps this primitive to the sketch, regardless of the annotations.
-        /// </summary>
-        public Term DataTerm { get; set; }
-
         #region IsMarked property
 
         [NonSerialized]

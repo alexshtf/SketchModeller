@@ -84,8 +84,6 @@ namespace SketchModeller.Modelling.Views
                 new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
             dragStrategies[MouseInterationModes.PrimitiveManipulation] =
                 new PrimitiveDragStrategy(uiState, sketchModellingView);
-            dragStrategies[MouseInterationModes.FeatureCurveSelection] =
-                new FeatureCurvesDragStrategy(uiState, featureSelectionRectangle, sketchModellingView);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

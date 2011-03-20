@@ -38,7 +38,7 @@ namespace SketchModeller.Modelling.Services.Snap
         /// <param name="snappedPrimitive">The snapped primitive to reconstruct</param>
         /// <returns>A pair containing the objective function and the constraints such that their optimization reconstructs
         /// the pimitive's parameters.</returns>
-        Tuple<Term, Term[]> Reconstruct(SnappedPrimitive snappedPrimitive);
+        Tuple<Term, Term[]> Reconstruct(SnappedPrimitive snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations);
 
         /// <summary>
         /// The type of the <see cref="NewPrimitive"/> object this snapper can handle.
@@ -73,10 +73,12 @@ namespace SketchModeller.Modelling.Services.Snap
             return null;
         }
 
-        Tuple<Term, Term[]> IPrimitiveSnapper.Reconstruct(SnappedPrimitive snappedPrimitive)
+        Tuple<Term, Term[]> IPrimitiveSnapper.Reconstruct(SnappedPrimitive snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)
         {
             Contract.Requires(snappedPrimitive != null);
             Contract.Requires(SnappedPrimitiveType.IsAssignableFrom(snappedPrimitive.GetType()));
+            Contract.Requires(curvesToAnnotations != null);
+            Contract.Requires(Contract.ForAll(curvesToAnnotations, pair => pair.Value != null));
 
             Contract.Ensures(Contract.Result<Tuple<Term, Term[]>>() != null);
             Contract.Ensures(Contract.Result<Tuple<Term, Term[]>>().Item1 != null);

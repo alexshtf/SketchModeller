@@ -96,6 +96,7 @@
     <Compile Include="CheckedMenuCommandData.cs" />
     <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\CircleFeatureCurve.cs" />
+    <Compile Include="Data\Cocentrality.cs" />
     <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="IHeaderedView.cs" />
     <Compile Include="MenuCommandData.cs" />
     <Compile Include="MenuCommandsEventArgs.cs" />
+    <Compile Include="ModifierKeysConstants.cs" />
     <Compile Include="PrimitiveKinds.cs" />
     <Compile Include="PropertyChangedEventManagerHelper.cs" />
     <Compile Include="RoutedEvents.cs" />

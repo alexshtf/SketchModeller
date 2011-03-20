@@ -56,7 +56,7 @@ namespace SketchModeller.Modelling.Services.Snap
             return snapper.Create(selectedCurves, newPrimitive);
         }
 
-        public Tuple<Term, Term[]> Reconstruct(SnappedPrimitive snappedPrimitive)
+        public Tuple<Term, Term[]> Reconstruct(SnappedPrimitive snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)
         {
             // find appropriate type snapper
             var snappedPrimitiveType = snappedPrimitive.GetType();
@@ -68,7 +68,7 @@ namespace SketchModeller.Modelling.Services.Snap
             if (snapper == null)
                 throw new InvalidOperationException("Cannot find snapper that can snap primitives of type " + snappedPrimitiveType);
 
-            return snapper.Reconstruct(snappedPrimitive);
+            return snapper.Reconstruct(snappedPrimitive, curvesToAnnotations);
         }
     }
 }

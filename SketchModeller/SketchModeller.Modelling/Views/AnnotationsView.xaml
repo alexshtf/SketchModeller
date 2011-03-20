@@ -17,6 +17,7 @@
             <Button Command="{Binding RemoveCommand}">Remove</Button>
             <Button Command="{Binding CoplanarCommand}">Coplanar</Button>
             <Button Command="{Binding ParallelCommand}">Parallel</Button>
+            <Button Command="{Binding CocentricCommand}">Cocentric</Button>
         </StackPanel>
         <ListBox ItemsSource="{Binding Annotations}" SelectedIndex="{Binding SelectedAnnotationIndex}">
             <ListBox.Resources>

@@ -57,7 +57,10 @@ namespace SketchModeller.Modelling
             if (sketchData.NewPrimitives != null)
                 sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives);
             if (sketchData.SnappedPrimitives != null)
+            {
                 sessionData.SnappedPrimitives.AddRange(sketchData.SnappedPrimitives);
+                sessionData.FeatureCurves.AddRange(sketchData.SnappedPrimitives.SelectMany(sp => sp.FeatureCurves));
+            }
             if (sketchData.Annotations != null)
                 sessionData.Annotations.AddRange(sketchData.Annotations);
 

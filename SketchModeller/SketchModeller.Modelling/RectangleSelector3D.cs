@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Diagnostics.Contracts;
+using System.IO;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling
 {
@@ -38,8 +40,6 @@ namespace SketchModeller.Modelling
 
             var pixelsWidth = (int)vp3d.ActualWidth;
             var pixelsHeight = (int)vp3d.ActualHeight;
-            var intRect = new Int32Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-
 
             // duplicate viewport3d
             var dup = Duplicate(vp3d, filter);
@@ -57,7 +57,6 @@ namespace SketchModeller.Modelling
             dup.Measure(new Size(dup.Width, dup.Height));
             dup.Arrange(new Rect(0, 0, dup.Width, dup.Height));
 
-
             // render to bitmap
             var rtBitmap = new RenderTargetBitmap(pixelsWidth, pixelsHeight, 96, 96, PixelFormats.Default);
             rtBitmap.Render(dup);
@@ -69,12 +68,14 @@ namespace SketchModeller.Modelling
             const int SELECTABLE_COLOR = -16908288;
 
             // get coordinates of the pixels having the feature curves color
+            var intRect = new Int32Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
             var coordsQuery = from x in Enumerable.Range(intRect.X, intRect.Width).AsParallel()
                               from y in Enumerable.Range(intRect.Y, intRect.Height)
-                              let i = y * pixelsWidth + x
+                              let i = x + (y * pixelsWidth)
                               where pixels[i] == SELECTABLE_COLOR
                               select new Point(x, y);
             var coords = coordsQuery.ToArray();
+            //DebugSave(pixels, coords, pixelsWidth, pixelsHeight);
 
             // perform hit-testing in all the relevant pixels
             var resultsSet = new HashSet<ModelVisual3D>();
@@ -88,6 +89,38 @@ namespace SketchModeller.Modelling
             return resultsSet.ToArray();
         }
 
+        #region DebugSave methods. Mostly unused, except for debugging
+
+        //private static void DebugSave(int[] pixels, Point[] coords, int width, int height)
+        //{
+        //    WriteableBitmap bmp = new WriteableBitmap(width, height, 96, 96, PixelFormats.Pbgra32, null);
+        //    bmp.Lock();
+        //    bmp.WritePixels(new Int32Rect(0, 0, width, height), pixels, width * 4, 0);
+        //    bmp.Unlock();
+
+        //    DrawingVisual visual = new DrawingVisual();
+        //    var pen = new Pen(Brushes.Orange, 1);
+        //    var ctx = visual.RenderOpen();
+        //    foreach (var pnt in coords)
+        //        ctx.DrawRectangle(Brushes.Yellow, pen, new Rect(pnt, new Size(1, 1)));
+        //    ctx.DrawRectangle(null, new Pen(Brushes.Black, 2), new Rect(0, 0, width, height));
+        //    ctx.Close();
+        //    var rtb = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+        //    rtb.Render(visual);
+
+        //    var canvas = new Canvas();
+        //    canvas.Width = width;
+        //    canvas.Height = height;
+        //    canvas.Children.Add(new Image { Source = bmp, Width = width, Height = height });
+        //    canvas.Children.Add(new Image { Source = rtb, Width = width, Height = height, Opacity = 0.7 });
+        //    canvas.Measure(new Size(width, height));
+        //    canvas.Arrange(new Rect(0, 0, width, height));
+
+        //    rtb = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+        //    rtb.Render(canvas);
+        //    DebugSave(rtb);
+        //}
+
         //private static void DebugSave(RenderTargetBitmap rtBitmap)
         //{
         //    var encoder = new PngBitmapEncoder();
@@ -97,6 +130,8 @@ namespace SketchModeller.Modelling
         //        encoder.Save(stream);
         //    }
         //}
+
+        #endregion
 
         private static ModelVisual3D PerformHitTest(Viewport3D vp3d, Point pnt, Func<ModelVisual3D, bool> selector)
         {
@@ -149,6 +184,7 @@ namespace SketchModeller.Modelling
 
             var result = new ModelVisual3D();
             result.Content = content;
+            result.Transform = modelVisual3d.Transform.CloneCurrentValue();
             foreach (var child in modelVisual3d.Children)
                 result.Children.Add(Duplicate(child, selector));
 

@@ -9,6 +9,7 @@ using SketchModeller.Utilities;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media.Media3D;
+using Enumerable = System.Linq.Enumerable;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -44,11 +45,15 @@ namespace SketchModeller.Modelling.Services.Snap
             return snappedCone;
         }
 
-        protected override Tuple<Term, Term[]> Reconstruct(TSnapped snappedPrimitive)
+        protected override Tuple<Term, Term[]> Reconstruct(TSnapped snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)
         {
             var topCurve = snappedPrimitive.TopCurve;
             var botCurve = snappedPrimitive.BottomCurve;
             var silhouettes = snappedPrimitive.Silhouettes;
+
+            // get annotated feature curves of this primitive.
+            var annotated = new HashSet<FeatureCurve>(curvesToAnnotations.Keys.Where(key => curvesToAnnotations[key].Count > 0));
+            annotated.Intersect(snappedPrimitive.FeatureCurves);
 
             if (topCurve != null && botCurve != null)
                 // simple case - we use the two curves to reconstruct the cylinder
@@ -56,9 +61,9 @@ namespace SketchModeller.Modelling.Services.Snap
             else if (silhouettes.Length == 2)
             {
                 if (!(topCurve == null && botCurve == null))
-                    return TwoSilhouettesSingleFeature(snappedPrimitive);
+                    return TwoSilhouettesSingleFeature(snappedPrimitive, annotated);
                 else
-                    return TwoSilhouettesNoFeatures(snappedPrimitive);
+                    return TwoSilhouettesNoFeatures(snappedPrimitive, annotated);
             }
 
             throw new NotImplementedException("Not implemented all missing info yet");
@@ -72,7 +77,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         #endregion
 
-        private Tuple<Term, Term[]> TwoSilhouettesNoFeatures(TSnapped snappedPrimitive)
+        private Tuple<Term, Term[]> TwoSilhouettesNoFeatures(TSnapped snappedPrimitive, ISet<FeatureCurve> annotated)
         {
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
             var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
@@ -86,13 +91,18 @@ namespace SketchModeller.Modelling.Services.Snap
             var topFit = ProjectionFit(snappedPrimitive.TopFeatureCurve, new Point[] { sil0Top, sil1Top });
             var botFit = ProjectionFit(snappedPrimitive.BottomFeatureCurve, new Point[] { sil0Bot, sil1Bot });
 
+            if (annotated.Contains(snappedPrimitive.TopFeatureCurve))
+                topFit = Enumerable.Empty<Term>();
+            if (annotated.Contains(snappedPrimitive.BottomFeatureCurve))
+                botFit = Enumerable.Empty<Term>();
+
             var objective = TermUtils.SafeSum(topFit.Concat(botFit));
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
 
             return Tuple.Create(objective, constraints);
         }
 
-        private Tuple<Term, Term[]> TwoSilhouettesSingleFeature(TSnapped snappedPrimitive)
+        private Tuple<Term, Term[]> TwoSilhouettesSingleFeature(TSnapped snappedPrimitive, ISet<FeatureCurve> annotated)
         {
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
             var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
@@ -105,6 +115,9 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var featureProj = ProjectionFit(snappedFeatureCurve);
             var farProj = ProjectionFit(unsnappedFeatureCurve, new Point[] { sil0Far, sil1Far });
+
+            if (annotated.Contains(unsnappedFeatureCurve))
+                farProj = Enumerable.Empty<Term>();
 
             var objective = TermUtils.SafeSum(featureProj.Concat(farProj));
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };

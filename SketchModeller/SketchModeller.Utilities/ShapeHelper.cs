@@ -52,9 +52,10 @@ namespace SketchModeller.Utilities
             Contract.Requires(count >= 3);
             Contract.Ensures(Contract.Result<Point3D[]>() != null);
             Contract.Ensures(Contract.Result<Point3D[]>().Length == count);
-            Contract.Ensures(Contract.ForAll(
-                Contract.Result<Point3D[]>(), 
-                pnt => NumericUtils.AlmostEqual((pnt - center).LengthSquared, radius * radius, 100)));
+            // we cannot really ensure that (?)
+            //Contract.Ensures(Contract.ForAll(
+            //    Contract.Result<Point3D[]>(), 
+            //    pnt => NumericUtils.AlmostEqual((pnt - center).LengthSquared, radius * radius, 100)));
 
             var result = new Point3D[count];
 

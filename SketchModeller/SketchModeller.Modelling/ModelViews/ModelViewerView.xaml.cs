@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using Microsoft.Practices.Prism.Logging;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -98,39 +99,83 @@ namespace SketchModeller.Modelling.ModelViews
             navigationTimer.Stop();
         }
 
-        #region Trackball events handling
+        private void PerformSelection(Point p, Point q)
+        {
+            var rect = new Rect(p, q);
+            var featureCurves =
+                viewport.Select(rect, mv3d => mv3d is IFeatureCurveVisual)
+                .OfType<IFeatureCurveVisual>()
+                .Select(fcv => fcv.FeatureCurve)
+                .ToArray();
 
-        private bool isDragging;
+            if (Keyboard.Modifiers == ModifierKeysConstants.ADD_SELECT_MODIFIER)
+                viewModel.SelectFeatureCurves(featureCurves);
+            else if (Keyboard.Modifiers == ModifierKeysConstants.REMOVE_SELECT_MODIFIER)
+                viewModel.UnselectFeatureCurves(featureCurves);
+            else
+                viewModel.ReplaceSelectedFeatureCurves(featureCurves);
+        }
+
+        #region mouse events handling
+
+        private bool isTrackballDragging;
+        private bool isSelectDragging;
         private Point lastPosition;
+        private Point startPosition;
 
         private void OnModelViewerMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && !isDragging)
+            if (!isTrackballDragging && !isSelectDragging)
             {
-                modelViewerRoot.CaptureMouse();
-                isDragging = true;
-                lastPosition = e.GetPosition(modelViewerRoot);
+                if (e.ChangedButton == MouseButton.Left)
+                {
+                    modelViewerRoot.CaptureMouse();
+                    isTrackballDragging = true;
+                    lastPosition = e.GetPosition(modelViewerRoot);
+                }
+                if (e.ChangedButton == MouseButton.Right)
+                {
+                    modelViewerRoot.CaptureMouse();
+                    isSelectDragging = true;
+                    startPosition = e.GetPosition(modelViewerRoot);
+                }
             }
         }
 
         private void OnModelViewerMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && isDragging)
+            if (e.ChangedButton == MouseButton.Left && isTrackballDragging)
             {
                 modelViewerRoot.ReleaseMouseCapture();
-                isDragging = false;
+                isTrackballDragging = false;
+            }
+            if (e.ChangedButton == MouseButton.Right && isSelectDragging)
+            {
+                modelViewerRoot.ReleaseMouseCapture();
+                isSelectDragging = false;
+                selectionRect.Visibility = Visibility.Collapsed;
+                PerformSelection(startPosition, e.GetPosition(modelViewerRoot));
             }
         }
 
         private void OnModelViewerMouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging)
+            if (isTrackballDragging)
             {
                 var position = e.GetPosition(modelViewerRoot);
                 var dragVector = lastPosition - position;
                 lastPosition = position;
 
                 viewModel.TrackballTrack(dragVector.X, dragVector.Y);
+            }
+            if (isSelectDragging)
+            {
+                selectionRect.Visibility = Visibility.Visible;
+                var rect = new Rect(startPosition, e.GetPosition(modelViewerRoot));
+                selectionRect.Width = rect.Width;
+                selectionRect.Height = rect.Height;
+                Canvas.SetTop(selectionRect, rect.Top);
+                Canvas.SetLeft(selectionRect, rect.Left);
             }
         }
 
