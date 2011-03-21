@@ -4,13 +4,12 @@
         xmlns:cal="http://www.codeplex.com/CompositeWPF"
         xmlns:skm="http://SketchModeller"
         xmlns:utils="http://alex/xaml"
+        xmlns:local="clr-namespace:SketchModeller"
         Height="600" 
         Width="1000"
         IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}"
-        Title="{Binding Title}">
-    <Window.Resources>
-
-    </Window.Resources>
+        Title="{Binding Title}"
+        Background="{DynamicResource WindowBackgroundBrush}">
     <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Bottom" Click="OnDebugClick">Debug</Button>
         <Menu cal:RegionManager.RegionName="{x:Static skm:RegionNames.MainMenu}"

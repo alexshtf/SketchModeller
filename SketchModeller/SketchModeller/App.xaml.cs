@@ -17,8 +17,19 @@ namespace SketchModeller
         {
             base.OnStartup(e);
 
-            //var themes = ThemeManager.GetThemes();
-            ThemeManager.ApplyTheme(this, "ExpressionLight");
+            ThemeManager.ApplyTheme(this, "ExpressionDark");
+            //ThemeManager.ApplyTheme(this, "ExpressionLight");
+            //ThemeManager.ApplyTheme(this, "ShinyBlue");
+            //ThemeManager.ApplyTheme(this, "ShinyRed");
+            //ThemeManager.ApplyTheme(this, "DavesGlossyControls");
+            //ThemeManager.ApplyTheme(this, "WhistlerBlue");
+            //ThemeManager.ApplyTheme(this, "BureauBlack");
+            //ThemeManager.ApplyTheme(this, "BureauBlue");
+            //ThemeManager.ApplyTheme(this, "BubbleCreme");
+            //ThemeManager.ApplyTheme(this, "TwilightBlue");
+            //ThemeManager.ApplyTheme(this, "UXMusingsRed");
+            //ThemeManager.ApplyTheme(this, "UXMusingsGreen");
+            //ThemeManager.ApplyTheme(this, "UXMusingsBubblyBlue");
 
             var bootstrapper = new SketchModellerBootstrapper();
             bootstrapper.Run();

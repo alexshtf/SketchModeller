@@ -6,7 +6,8 @@
           xmlns:alex="http://alex/xaml"
           mc:Ignorable="d" 
           Header="Model"
-          x:Name="rootItem">
+          x:Name="rootItem"
+          Style="{DynamicResource {x:Type MenuItem}}">
     <MenuItem.Resources>
         <Style x:Key="itemContainerStyle" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding}" />

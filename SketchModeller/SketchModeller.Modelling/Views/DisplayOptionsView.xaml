@@ -4,7 +4,8 @@
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
           mc:Ignorable="d" 
-          Header="Display">
+          Header="Display"
+          Style="{DynamicResource {x:Type MenuItem}}">
     <MenuItem Header="Show sketch" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsSketchShown}" />
     <MenuItem Header="Show temporaries" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsTemporaryPrimitivesShown}" />
     <MenuItem Header="Show snapped" IsCheckable="True" IsChecked="{Binding DisplayOptions.IsSnappedPrimitivesShown}"/>
