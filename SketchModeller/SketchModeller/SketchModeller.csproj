@@ -67,9 +67,6 @@
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
     </Reference>
-    <Reference Include="ReuxablesLegacy">
-      <HintPath>..\libs\ReuxablesLegacy.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.CoreEx, Version=1.0.2838.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Data" />
