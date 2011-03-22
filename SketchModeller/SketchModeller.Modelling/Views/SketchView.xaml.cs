@@ -84,6 +84,8 @@ namespace SketchModeller.Modelling.Views
                 new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
             dragStrategies[MouseInterationModes.PrimitiveManipulation] =
                 new PrimitiveDragStrategy(uiState, sketchModellingView);
+            dragStrategies[MouseInterationModes.SnappedDragging] =
+                new SnappedDragStrategy(uiState, sketchModellingView, eventAggregator);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

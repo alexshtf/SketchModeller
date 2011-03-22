@@ -9,6 +9,7 @@ using SketchModeller.Infrastructure.Data;
 using System.Windows.Media;
 using System.Diagnostics.Contracts;
 using System.Diagnostics;
+using System.Windows;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -25,8 +26,26 @@ namespace SketchModeller.Modelling.ModelViews
             Visual3D result = new ModelVisual3D();
             item.MatchClass<SnappedCylinder>(cylinderData => result = CreateCylinderView(cylinderData));
             item.MatchClass<SnappedCone>(coneData => result = CreateConeView(coneData));
+            SetPrimitiveData(result, item as SnappedPrimitive);
             return result;
         }
+
+        #region PrimitiveData attached property
+
+        public static readonly DependencyProperty PrimitiveDataProperty =
+            DependencyProperty.RegisterAttached("PrimitiveData", typeof(SnappedPrimitive), typeof(ModelViewerSnappedFactory));
+
+        public static SnappedPrimitive GetPrimitiveData(Visual3D target)
+        {
+            return (SnappedPrimitive)target.GetValue(PrimitiveDataProperty);
+        }
+
+        public static void SetPrimitiveData(Visual3D target, SnappedPrimitive value)
+        {
+            target.SetValue(PrimitiveDataProperty, value);
+        }
+
+        #endregion
 
         private static ModelVisual3D CreateVisual(MeshGeometry3D geometry, SnappedPrimitive snappedPrimitive)
         {

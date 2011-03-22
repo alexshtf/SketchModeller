@@ -23,6 +23,7 @@ using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Logging;
 using Petzold.Media3D;
 using System.Diagnostics;
+using SketchModeller.Modelling.ModelViews;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -56,27 +57,33 @@ namespace SketchModeller.Modelling.Views
             snappedCloningVisual3d.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsSnappedPrimitivesShown);
         }
 
-        class Visual3DFactory : IVisual3DFactory
+        public SnappedPrimitive PickSnapped(LineRange lineRange)
         {
-            private ILoggerFacade logger;
+            var htParameters = new RayHitTestParameters(lineRange.Point1, lineRange.Point2 - lineRange.Point1);
+            SnappedPrimitive result = null;
+            VisualTreeHelper.HitTest(this,
+                null,
+                htResult =>
+                {
+                    var candidate =
+                        htResult.VisualHit
+                        .VisualPathUp()
+                        .OfType<Visual3D>()
+                        .Select(visual => ModelViewerSnappedFactory.GetPrimitiveData(visual))
+                        .Where(primData => primData != null)
+                        .FirstOrDefault();
 
-            public Visual3DFactory(ILoggerFacade logger)
-            {
-                this.logger = logger;
-            }
+                    if (candidate != null)
+                    {
+                        result = candidate;
+                        return HitTestResultBehavior.Stop;
+                    }
+                    else
+                        return HitTestResultBehavior.Continue;
+                },
+                htParameters);
 
-            public Visual3D Create(object item)
-            {
-                Visual3D result = null;
-                
-                item.MatchClass<NewCylinderViewModel>(
-                    viewModel => result = new NewCylinderView(viewModel, logger));
-                item.MatchClass<NewConeViewModel>(
-                    viewModel => result = new NewConeView(viewModel, logger));
-
-                Contract.Assume(result != null);
-                return result;
-            }
+            return result;
         }
 
         public void SelectPrimitive(Point pos2d, LineRange lineRange)
@@ -122,5 +129,33 @@ namespace SketchModeller.Modelling.Views
                 draggedPrimitive.DragEnd();
             draggedPrimitive = null;
         }
+
+        #region Visual3DFactory class 
+        
+        class Visual3DFactory : IVisual3DFactory
+        {
+            private ILoggerFacade logger;
+
+            public Visual3DFactory(ILoggerFacade logger)
+            {
+                this.logger = logger;
+            }
+
+            public Visual3D Create(object item)
+            {
+                Visual3D result = null;
+
+                item.MatchClass<NewCylinderViewModel>(
+                    viewModel => result = new NewCylinderView(viewModel, logger));
+                item.MatchClass<NewConeViewModel>(
+                    viewModel => result = new NewConeView(viewModel, logger));
+
+                Contract.Assume(result != null);
+                return result;
+            }
+        }
+
+        #endregion
+
     }
 }

@@ -25,6 +25,7 @@ namespace SketchModeller.Modelling.Views
     {
         CurveSelection,
         PrimitiveManipulation,
+        SnappedDragging,
     }
 
     public class SketchViewModel : NotificationObject, IWeakEventListener

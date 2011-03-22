@@ -109,14 +109,13 @@
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">
-                <UniformGrid Rows="2" Columns="1">
+                <UniformGrid Rows="2" Columns="1" VerticalAlignment="Top">
                     <UniformGrid.Resources>
                         <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
                             <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
-                            <Setter Property="Margin" Value="2" />
+                            <Setter Property="Margin" Value="0,5,0,0" />
                             <Setter Property="Width" Value="50" />
                             <Setter Property="Height" Value="20" />
-                            <Setter Property="Margin" Value="2" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Thumb">
