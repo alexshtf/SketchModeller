@@ -53,7 +53,7 @@
                                TextWrapping="Wrap" 
                                Text="Navigation panel. Use W,S,A,D to move, arrows to look." />
                 </Grid>
-                <Grid Grid.Column="2" VerticalAlignment="Top">
+                <Grid Grid.Column="2" VerticalAlignment="Top" Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -63,12 +63,12 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Position" Margin="0,5" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Look direction" Margin="0,5" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Up direction" Margin="0,5" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position}" Margin="5" />
-                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection}" Margin="5" />
-                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection}" Margin="5" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Position" VerticalAlignment="Center" Margin="0,0,5,5" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Look direction" VerticalAlignment="Center" Margin="0,0,5,5" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Up direction" VerticalAlignment="Center" Margin="0,0,5,5" />
+                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position}" Margin="0,0,0,5" />
+                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection}" Margin="0,0,0,5" />
+                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection}" Margin="0,0,0,5" />
                 </Grid>
             </Grid>
         </Border>
