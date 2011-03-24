@@ -85,7 +85,7 @@ namespace SketchModeller.Modelling.Views
             dragStrategies[MouseInterationModes.PrimitiveManipulation] =
                 new PrimitiveDragStrategy(uiState, sketchModellingView);
             dragStrategies[MouseInterationModes.SnappedDragging] =
-                new SnappedDragStrategy(uiState, sketchModellingView, viewModel.SketchModellingViewModel, eventAggregator);
+                new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

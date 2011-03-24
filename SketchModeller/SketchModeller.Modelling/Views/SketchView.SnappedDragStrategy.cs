@@ -19,6 +19,7 @@ namespace SketchModeller.Modelling.Views
         private class SnappedDragStrategy : DragStrategyBase
         {
             private readonly SketchModellingView sketchModellingView;
+            private readonly SketchViewModel sketchViewModel;
             private readonly SketchModellingViewModel sketchModellingViewModel;
 
             private NewPrimitive originalDuplicate;
@@ -27,11 +28,16 @@ namespace SketchModeller.Modelling.Views
             private Visual3D currentSnappedPrimitive;
             private Vector3D currentDragVector;
 
-            public SnappedDragStrategy(UiState uiState, SketchModellingView sketchModellingView, SketchModellingViewModel sketchModellingViewModel, IEventAggregator eventAggregator)
+            public SnappedDragStrategy(
+                UiState uiState, 
+                SketchModellingView sketchModellingView,
+                SketchViewModel sketchViewModel, 
+                IEventAggregator eventAggregator)
                 : base(uiState)
             {
                 this.sketchModellingView = sketchModellingView;
-                this.sketchModellingViewModel = sketchModellingViewModel;
+                this.sketchViewModel = sketchViewModel;
+                this.sketchModellingViewModel = sketchViewModel.SketchModellingViewModel;
                 eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
             }
 
@@ -57,6 +63,7 @@ namespace SketchModeller.Modelling.Views
                 currentSnappedPrimitive = null;
                 currentDuplicate = null;
                 originalDuplicate = null;
+                sketchViewModel.MouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
             }
 
             private void OnGlobalShortcut(KeyEventArgs e)
@@ -89,7 +96,7 @@ namespace SketchModeller.Modelling.Views
 
             private void CycleNextPrimitive()
             {
-                throw new NotImplementedException();
+                sketchModellingViewModel.CycleDuplicates(originalDuplicate, ref currentDuplicate, currentDragVector);
             }
         }
     }

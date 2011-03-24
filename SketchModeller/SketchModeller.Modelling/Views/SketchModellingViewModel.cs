@@ -181,6 +181,18 @@ namespace SketchModeller.Modelling.Views
             OnPrimitiveDragged(currentDuplicate);
         }
 
+        internal void CycleDuplicates(NewPrimitive originalDuplicate, ref NewPrimitive currentDuplicate, Vector3D currentDragVector)
+        {
+            var targetTypes = primitivesConverter.GetTargetTypes(originalDuplicate);
+            var currIndex = Array.IndexOf(targetTypes, currentDuplicate.GetType());
+            var nextIndex = (currIndex + 1) % targetTypes.Length;
+
+            sessionData.NewPrimitives.Remove(currentDuplicate);
+            currentDuplicate = primitivesConverter.NewToNew(originalDuplicate, targetTypes[nextIndex], currentDragVector);
+            sessionData.NewPrimitives.Add(currentDuplicate);
+            SelectPrimitive(currentDuplicate);
+        }
+
         private void SelectPrimitive(NewPrimitive primitive)
         {
             var toUnSelect = sessionData.SelectedNewPrimitives.ToArray();
