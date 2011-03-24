@@ -131,11 +131,17 @@
     <Compile Include="PCA.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleSelector3D.cs" />
-    <Compile Include="Services\Duplicator\BaseDuplicator.cs" />
-    <Compile Include="Services\Duplicator\ConeDuplicators.cs" />
-    <Compile Include="Services\Duplicator\CylinderDuplicators.cs" />
-    <Compile Include="Services\Duplicator\IDuplicator.cs" />
-    <Compile Include="Services\Duplicator\PrimitivesDuplicator.cs" />
+    <Compile Include="Services\PrimitivesConverter\BaseNewConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\BaseSnappedConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\INewConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\ISnappedConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\ConeConeConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\ConeCylinderConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderConeConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderCylinderConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\PrimitivesConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedConeConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedCylinderConverter.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
@@ -272,6 +278,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

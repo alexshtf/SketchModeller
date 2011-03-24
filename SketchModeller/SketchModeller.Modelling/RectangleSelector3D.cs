@@ -28,7 +28,7 @@ namespace SketchModeller.Modelling
         /// performance by filtering un-needed pixels. <c>null</c> means all objects are selectable.</param>
         /// <returns>A collection of objects that are visible inside the rectangle defined by <paramref name="rect"/> in 
         /// the viewport that pass the criterion defined by <paramref name="filter"/></returns>
-        public static IEnumerable<ModelVisual3D> Select(this Viewport3D vp3d, Rect rect, [Pure] Func<ModelVisual3D, bool> filter = null)
+        public static IEnumerable<ModelVisual3D> Select(this Viewport3D vp3d, Rect rect, Predicate<ModelVisual3D> filter = null)
         {
             Contract.Requires(vp3d != null);
             Contract.Ensures(Contract.Result<IEnumerable<ModelVisual3D>>() != null);
@@ -133,7 +133,7 @@ namespace SketchModeller.Modelling
 
         #endregion
 
-        private static ModelVisual3D PerformHitTest(Viewport3D vp3d, Point pnt, Func<ModelVisual3D, bool> selector)
+        private static ModelVisual3D PerformHitTest(Viewport3D vp3d, Point pnt, Predicate<ModelVisual3D> selector)
         {
             ModelVisual3D result = null;
             var htParams = new PointHitTestParameters(pnt);
@@ -154,7 +154,7 @@ namespace SketchModeller.Modelling
             return result;
         }
 
-        private static Viewport3D Duplicate(Viewport3D vp3d, Func<ModelVisual3D, bool> selector)
+        private static Viewport3D Duplicate(Viewport3D vp3d, Predicate<ModelVisual3D> selector)
         {
             var result = new Viewport3D();
             foreach (var child in vp3d.Children)
@@ -162,7 +162,7 @@ namespace SketchModeller.Modelling
             return result;
         }
 
-        private static Visual3D Duplicate(Visual3D child, Func<ModelVisual3D, bool> selector)
+        private static Visual3D Duplicate(Visual3D child, Predicate<ModelVisual3D> selector)
         {
             var modelVisual3d = child as ModelVisual3D;
             if (modelVisual3d != null)
@@ -171,7 +171,7 @@ namespace SketchModeller.Modelling
                 throw new NotSupportedException("We do not support duplication of visuals of type " + child.GetType());
         }
 
-        private static Visual3D Duplicate(ModelVisual3D modelVisual3d, Func<ModelVisual3D, bool> selector)
+        private static Visual3D Duplicate(ModelVisual3D modelVisual3d, Predicate<ModelVisual3D> selector)
         {
             bool hasBeenSelected = selector(modelVisual3d);
             var content = modelVisual3d.Content;

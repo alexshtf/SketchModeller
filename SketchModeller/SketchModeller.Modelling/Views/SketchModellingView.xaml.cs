@@ -57,10 +57,12 @@ namespace SketchModeller.Modelling.Views
             snappedCloningVisual3d.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsSnappedPrimitivesShown);
         }
 
-        public SnappedPrimitive PickSnapped(LineRange lineRange)
+        #region Snapped primitive dragging suppot
+
+        public Visual3D PickSnapped(LineRange lineRange)
         {
             var htParameters = new RayHitTestParameters(lineRange.Point1, lineRange.Point2 - lineRange.Point1);
-            SnappedPrimitive result = null;
+            Visual3D result = null;
             VisualTreeHelper.HitTest(this,
                 null,
                 htResult =>
@@ -69,8 +71,7 @@ namespace SketchModeller.Modelling.Views
                         htResult.VisualHit
                         .VisualPathUp()
                         .OfType<Visual3D>()
-                        .Select(visual => ModelViewerSnappedFactory.GetPrimitiveData(visual))
-                        .Where(primData => primData != null)
+                        .Where(visual => ModelViewerSnappedFactory.GetPrimitiveData(visual) != null)
                         .FirstOrDefault();
 
                     if (candidate != null)
@@ -85,6 +86,10 @@ namespace SketchModeller.Modelling.Views
 
             return result;
         }
+
+        #endregion
+
+        #region New primitive dragging support
 
         public void SelectPrimitive(Point pos2d, LineRange lineRange)
         {
@@ -130,8 +135,10 @@ namespace SketchModeller.Modelling.Views
             draggedPrimitive = null;
         }
 
-        #region Visual3DFactory class 
-        
+        #endregion
+
+        #region Visual3DFactory class
+
         class Visual3DFactory : IVisual3DFactory
         {
             private ILoggerFacade logger;
