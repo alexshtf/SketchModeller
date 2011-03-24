@@ -166,6 +166,18 @@ namespace Utils
         }
 
         /// <summary>
+        /// Projects one vector on another vector (orthogonal projection)
+        /// </summary>
+        /// <param name="projectWhat">The vector to project</param>
+        /// <param name="projectOn">The vector to project on</param>
+        /// <returns>The projection of <paramref name="projectWhat"/> on <paramref name="projectOn"/>.</returns>
+        public static Vector3D ProjectVector(Vector3D projectWhat, Vector3D projectOn)
+        {
+            var t = Vector3D.DotProduct(projectWhat, projectOn) / projectOn.LengthSquared;
+            return t * projectOn;
+        }
+
+        /// <summary>
         /// Projects a point on a segment.
         /// </summary>
         /// <param name="pnt">The point to project</param>

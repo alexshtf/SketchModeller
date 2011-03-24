@@ -21,6 +21,7 @@ namespace SketchModeller.Modelling.Views
         private const ModifierKeys TRACKBALL_MODIFIERS = ModifierKeys.Alt;
         private const ModifierKeys LENGTH_MODIFIER = ModifierKeys.Control;
         private const ModifierKeys DIAMETER_MODIFIER = ModifierKeys.Shift;
+        private const ModifierKeys AXIS_MOVE_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
 
         private readonly NewCylinderViewModel viewModel;
         private readonly Cylinder cylinder;
@@ -50,10 +51,17 @@ namespace SketchModeller.Modelling.Views
             SetDefaultMaterial(cylinder, viewModel);
         }
 
-        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)
+        protected override Vector3D ApproximateAxis
+        {
+            get { return viewModel.Axis; }
+        }
+
+        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector)
         {
             if (Keyboard.Modifiers == ModifierKeys.None)
                 viewModel.Center = viewModel.Center + dragVector3d;
+            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
+                viewModel.Center = viewModel.Center + axisDragVector;
             else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
             {
                 viewModel.Axis = TrackballRotate(viewModel.Axis, dragVector2d);

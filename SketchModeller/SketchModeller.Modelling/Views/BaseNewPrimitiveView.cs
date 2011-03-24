@@ -68,7 +68,10 @@ namespace SketchModeller.Modelling.Views
             var dragVector2d = currPos - lastDragPosition2d;
 
             if (dragVector3d != null)
-                PerformDrag(dragVector2d, dragVector3d.Value);
+            {
+                var axisDragVector = MathUtils3D.ProjectVector(dragVector3d.Value, ApproximateAxis);
+                PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector);
+            }
 
             if (currDragPosition != null)
                 lastDragPosition3d = currDragPosition;
@@ -80,15 +83,13 @@ namespace SketchModeller.Modelling.Views
             isDragging = false;
         }
 
-        protected virtual void PerformDrag(Vector dragVector2d, Vector3D dragVector3d)
-        {
-
-        }
-
         public bool IsDragging
         {
             get { return isDragging; }
         }
+
+        protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector);
+        protected abstract Vector3D ApproximateAxis { get; }
 
         protected void SetDefaultMaterial(ModelVisualBase mv3d, NewPrimitiveViewModel viewModel)
         {
