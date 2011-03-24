@@ -6,7 +6,7 @@
              xmlns:skm="http://SketchModeller"
              xmlns:local="clr-namespace:SketchModeller.Modelling.ModelViews"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="400">
     <DockPanel LastChildFill="True">
         <Border BorderBrush="Black" BorderThickness="1" DockPanel.Dock="Top">
             <Grid x:Name="controlPanel">
@@ -63,12 +63,12 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Position" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Look direction" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Up direction" />
-                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position}" />
-                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection}" />
-                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection}" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Position" Margin="0,5" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Look direction" Margin="0,5" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Up direction" Margin="0,5" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position}" Margin="5" />
+                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection}" Margin="5" />
+                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection}" Margin="5" />
                 </Grid>
             </Grid>
         </Border>
