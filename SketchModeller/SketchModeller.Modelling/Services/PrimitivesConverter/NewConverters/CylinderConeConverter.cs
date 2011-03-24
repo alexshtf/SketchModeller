@@ -20,5 +20,10 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
                 BottomRadius = source.Radius,
             };
         }
+
+        protected override void ApplyMovementCore(NewCylinder source, NewCone target, Vector3D moveVector)
+        {
+            target.Center = source.Center + moveVector;
+        }
     }
 }

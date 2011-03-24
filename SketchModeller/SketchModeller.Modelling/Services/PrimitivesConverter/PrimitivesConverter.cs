@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using SketchModeller.Infrastructure.Services;
-using SketchModeller.Infrastructure.Data;
-
-using NewConverterKey = System.Tuple<System.Type, System.Type>;
 using System.Windows.Media.Media3D;
+using SketchModeller.Infrastructure.Data;
+using SketchModeller.Infrastructure.Services;
+using NewConverterKey = System.Tuple<System.Type, System.Type>;
 
 namespace SketchModeller.Modelling.Services.PrimitivesConverter
 {
@@ -19,6 +17,14 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
         {
             newConvertersRegistry = new Dictionary<NewConverterKey, INewConverter>();
             snappedConvertersRegistry = new Dictionary<Type, ISnappedConverter>();
+
+            RegisterConverter(new SnappedConeConverter());
+            RegisterConverter(new SnappedCylinderConverter());
+
+            RegisterConverter(new ConeConeConverter());
+            RegisterConverter(new ConeCylinderConverter());
+            RegisterConverter(new CylinderConeConverter());
+            RegisterConverter(new CylinderCylinderConverter());
         }
 
         public NewPrimitive SnappedToNew(SnappedPrimitive source)
@@ -29,6 +35,11 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
         public NewPrimitive NewToNew(NewPrimitive source, Type targetType, Vector3D moveVector)
         {
             return newConvertersRegistry[GetKey(source, targetType)].Convert(source, moveVector);
+        }
+
+        public void ApplyMovement(NewPrimitive source, NewPrimitive target, Vector3D moveVector)
+        {
+            newConvertersRegistry[GetKey(source, target)].ApplyMovement(source, target, moveVector);
         }
 
         public Type[] GetTargetTypes(NewPrimitive source)
@@ -60,6 +71,11 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
         private static NewConverterKey GetKey(NewPrimitive source, Type targetType)
         {
             return Tuple.Create(source.GetType(), targetType);
+        }
+
+        private static NewConverterKey GetKey(NewPrimitive source, NewPrimitive target)
+        {
+            return Tuple.Create(source.GetType(), target.GetType());
         }
 
         private static Type GetKey(ISnappedConverter converter)

@@ -20,7 +20,7 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
 
         public Type TargetType
         {
-            get { return typeof(TSource); }
+            get { return typeof(TTarget); }
         }
 
         public NewPrimitive Convert(NewPrimitive source, Vector3D moveVector)
@@ -29,7 +29,16 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             return ConvertCore(concreteSource, moveVector);
         }
 
+        public void ApplyMovement(NewPrimitive source, NewPrimitive target, Vector3D moveVector)
+        {
+            var concreteSource = (TSource)source;
+            var concreteTarget = (TTarget)target;
+            ApplyMovementCore(concreteSource, concreteTarget, moveVector);
+        }
+
         protected abstract TTarget ConvertCore(TSource source, Vector3D moveVector);
+
+        protected abstract void ApplyMovementCore(TSource source, TTarget target, Vector3D moveVector);
     }
 
     [ContractClassFor(typeof(BaseNewConverter<,>))]
@@ -43,6 +52,12 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             Contract.Requires(source != null);
             Contract.Ensures(Contract.Result<TTarget>() != null);
             return null;
+        }
+
+        protected override void ApplyMovementCore(TSource source, TTarget target, Vector3D moveVector)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(target != null);
         }
     }
 }

@@ -38,6 +38,14 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
         /// <returns>Another <c>NewPrimitive</c> object generated from the data in <paramref name="source"/> and has
         /// the semantics of being moved according to <paramref name="moveVector"/>.</returns>
         NewPrimitive Convert(NewPrimitive source, Vector3D moveVector);
+
+        /// <summary>
+        /// Applies a movement from the position of the source primitive to the position of the target primitive.
+        /// </summary>
+        /// <param name="source">The source primitive</param>
+        /// <param name="target">The target primitive</param>
+        /// <param name="moveVector">The movement vector</param>
+        void ApplyMovement(NewPrimitive source, NewPrimitive target, Vector3D moveVector);
     }
 
     [ContractClassFor(typeof(INewConverter))]
@@ -67,6 +75,13 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             Contract.Requires(source != null && source.GetType() == SourceType);
             Contract.Ensures(Contract.Result<NewPrimitive>() != null && Contract.Result<NewPrimitive>().GetType() == TargetType);
             return null;
+        }
+
+
+        public void ApplyMovement(NewPrimitive source, NewPrimitive target, Vector3D moveVector)
+        {
+            Contract.Requires(source != null && source.GetType() == SourceType);
+            Contract.Requires(target != null && target.GetType() == TargetType);
         }
     }
 }

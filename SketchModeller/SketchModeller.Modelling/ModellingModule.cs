@@ -14,6 +14,7 @@ using System.Windows.Markup;
 using System.Windows;
 using SketchModeller.Modelling.ModelViews;
 using SketchModeller.Modelling.Services.Snap;
+using SketchModeller.Modelling.Services.PrimitivesConverter;
 
 namespace SketchModeller.Modelling
 {
@@ -36,8 +37,8 @@ namespace SketchModeller.Modelling
 
             // register services
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
-            //container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IPrimitivesConverter, PrimitivesConverter>(new ContainerControlledLifetimeManager());
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());

@@ -29,6 +29,7 @@ namespace SketchModeller.Modelling.Views
     {
         private UiState uiState;
         private SessionData sessionData;
+        private IPrimitivesConverter primitivesConverter;
         private IUnityContainer container;
         private ISketchCatalog sketchCatalog;
         private IEventAggregator eventAggregator;
@@ -46,6 +47,7 @@ namespace SketchModeller.Modelling.Views
             UiState uiState, 
             SessionData sessionData, 
             DisplayOptions displayOptions,
+            IPrimitivesConverter primitivesConverter,
             IEventAggregator eventAggregator, 
             IUnityContainer container,
             ISketchCatalog sketchCatalog)
@@ -53,6 +55,7 @@ namespace SketchModeller.Modelling.Views
         {
             this.uiState = uiState;
             this.sessionData = sessionData;
+            this.primitivesConverter = primitivesConverter;
             this.DisplayOptions = displayOptions;
             this.container = container;
             this.sketchCatalog = sketchCatalog;
@@ -101,12 +104,8 @@ namespace SketchModeller.Modelling.Views
 
         public void SelectPrimitive(NewPrimitiveViewModel newPrimitiveViewModel)
         {
-            var toUnSelect = sessionData.SelectedNewPrimitives.ToArray();
-            foreach (var item in toUnSelect)
-                if (item != newPrimitiveViewModel.Model)
-                    item.IsSelected = false;
-
-            newPrimitiveViewModel.Model.IsSelected = true;
+            var primitive = newPrimitiveViewModel.Model;
+            SelectPrimitive(primitive);
         }
 
         public void UnselectAllPrimitives()
@@ -154,6 +153,29 @@ namespace SketchModeller.Modelling.Views
             }
 
             return false;
+        }
+
+        public void DuplicateSnapped(SnappedPrimitive primitiveData, out NewPrimitive newPrimitive, out NewPrimitive clone)
+        {
+            newPrimitive = primitivesConverter.SnappedToNew(primitiveData);
+            sessionData.NewPrimitives.Add(newPrimitive);
+            clone = primitivesConverter.NewToNew(newPrimitive, newPrimitive.GetType(), new Vector3D(0, 0, 0));
+            SelectPrimitive(newPrimitive);
+        }
+
+        public void UpdateDuplicatePosition(NewPrimitive originalDuplicate, ref NewPrimitive currentDuplicate, Vector3D currentDragVector)
+        {
+            primitivesConverter.ApplyMovement(originalDuplicate, currentDuplicate, currentDragVector);
+        }
+
+        private void SelectPrimitive(NewPrimitive primitive)
+        {
+            var toUnSelect = sessionData.SelectedNewPrimitives.ToArray();
+            foreach (var item in toUnSelect)
+                if (item != primitive)
+                    item.IsSelected = false;
+
+            primitive.IsSelected = true;
         }
     }
 }

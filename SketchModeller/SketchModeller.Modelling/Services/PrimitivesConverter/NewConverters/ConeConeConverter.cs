@@ -20,5 +20,10 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
                 Length = source.Length,
             };
         }
+
+        protected override void ApplyMovementCore(NewCone source, NewCone target, Vector3D moveVector)
+        {
+            target.Center = source.Center + moveVector;
+        }
     }
 }

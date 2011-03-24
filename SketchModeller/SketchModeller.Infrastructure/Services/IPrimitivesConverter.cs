@@ -29,6 +29,14 @@ namespace SketchModeller.Infrastructure.Services
         NewPrimitive NewToNew(NewPrimitive source, Type targetType, Vector3D moveVector);
 
         /// <summary>
+        /// Applies a movement from the position of a source primitive to the position of a target primitive.
+        /// </summary>
+        /// <param name="source">The source primitive</param>
+        /// <param name="target">The target primitive</param>
+        /// <param name="moveVector">The movement vector</param>
+        void ApplyMovement(NewPrimitive source, NewPrimitive target, Vector3D moveVector);
+
+        /// <summary>
         /// Gets the valid target types of new primitives that the specified source primitive can be converted to.
         /// </summary>
         /// <param name="source">The source new primitive</param>
@@ -55,6 +63,13 @@ namespace SketchModeller.Infrastructure.Services
             Contract.Ensures(Contract.Result<NewPrimitive>() != null);
             Contract.Ensures(Contract.Result<NewPrimitive>().GetType() == targetType);
             return null;
+        }
+
+        public void ApplyMovement(NewPrimitive source, NewPrimitive target, Vector3D moveVector)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(target != null);
+            Contract.Requires(GetTargetTypes(source).Contains(target.GetType()));
         }
 
         public Type[] GetTargetTypes(NewPrimitive source)

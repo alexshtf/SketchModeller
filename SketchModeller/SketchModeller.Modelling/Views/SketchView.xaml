@@ -6,6 +6,7 @@
              xmlns:cal="http://www.codeplex.com/CompositeWPF"
              xmlns:local="clr-namespace:SketchModeller.Modelling.Views"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:skm="http://SketchModeller"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="481">
     <UserControl.Resources>
@@ -105,7 +106,7 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button>Cycle (Z)</Button>
+                    <Button Content="{skm:ShortcutText Text=Cycle, Key={x:Static skm:GlobalShortcuts.CycleMouseModes}}" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Basic primitives">

@@ -85,7 +85,7 @@ namespace SketchModeller.Modelling.Views
             dragStrategies[MouseInterationModes.PrimitiveManipulation] =
                 new PrimitiveDragStrategy(uiState, sketchModellingView);
             dragStrategies[MouseInterationModes.SnappedDragging] =
-                new SnappedDragStrategy(uiState, sketchModellingView, eventAggregator);
+                new SnappedDragStrategy(uiState, sketchModellingView, viewModel.SketchModellingViewModel, eventAggregator);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -113,7 +113,7 @@ namespace SketchModeller.Modelling.Views
 
         private void OnGlobalShortcut(KeyEventArgs e)
         {
-            if (e.Key == Key.Z)
+            if (e.Key == GlobalShortcuts.CycleMouseModes)
                 viewModel.CycleMouseInteractionMode.Execute(null);
         }
 
