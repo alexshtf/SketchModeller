@@ -9,7 +9,6 @@ using SketchModeller.Infrastructure.Data;
 using Microsoft.Practices.Unity;
 using SketchModeller.Utilities;
 
-using WpfPoint3D = System.Windows.Media.Media3D.Point3D;
 using SketchModeller.Infrastructure;
 using Microsoft.Practices.Prism.Commands;
 using CollectionUtils = Utils.CollectionUtils;
@@ -24,6 +23,7 @@ namespace SketchModeller.Modelling.Views
         public const double MIN_DIAMETER = 0.01;
 
         private NewCylinder model;
+        private bool isUpdating;
 
         [InjectionConstructor]
         public NewCylinderViewModel(UiState uiState = null)
@@ -41,18 +41,31 @@ namespace SketchModeller.Modelling.Views
             };
         }
 
-        public void Initialize(NewCylinder newCylinder)
+        public void Init(NewCylinder newCylinder)
         {
             Contract.Requires(newCylinder != null);
             Contract.Requires(newCylinder.Axis != MathUtils3D.ZeroVector);
             Contract.Requires(newCylinder.Length > 0);
             Contract.Requires(newCylinder.Diameter > 0);
-
-            Center = newCylinder.Center;
-            Axis = newCylinder.Axis;
-            Length = newCylinder.Length;
-            Diameter = newCylinder.Diameter;
+            
             Model = model = newCylinder;
+            UpdateFromModel();
+        }
+
+        public override void UpdateFromModel()
+        {
+            isUpdating = true;
+            try
+            {
+                Center = model.Center;
+                Axis = model.Axis;
+                Length = model.Length;
+                Diameter = model.Diameter;
+            }
+            finally
+            {
+                isUpdating = false;
+            }
         }
 
         #region Axis property
@@ -66,7 +79,8 @@ namespace SketchModeller.Modelling.Views
             {
                 axis = value;
                 RaisePropertyChanged(() => Axis);
-                model.Axis = value;
+                if (!isUpdating)
+                    model.Axis = value;
             }
         }
 
@@ -83,7 +97,8 @@ namespace SketchModeller.Modelling.Views
             {
                 diameter = value;
                 RaisePropertyChanged(() => Diameter);
-                model.Diameter = value;
+                if (!isUpdating)
+                    model.Diameter = value;
             }
         }
 
@@ -91,16 +106,17 @@ namespace SketchModeller.Modelling.Views
 
         #region Center property
 
-        private WpfPoint3D center;
+        private Point3D center;
 
-        public WpfPoint3D Center
+        public Point3D Center
         {
             get { return center; }
             set
             {
                 center = value;
                 RaisePropertyChanged(() => Center);
-                model.Center = value;
+                if (!isUpdating)
+                    model.Center = value;
             }
         }
 
@@ -117,7 +133,8 @@ namespace SketchModeller.Modelling.Views
             {
                 length = value;
                 RaisePropertyChanged(() => Length);
-                model.Length = value;
+                if (!isUpdating)
+                    model.Length = value;
             }
         }
 

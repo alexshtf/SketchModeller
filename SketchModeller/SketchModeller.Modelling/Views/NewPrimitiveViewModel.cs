@@ -12,7 +12,7 @@ using SketchPlane = SketchModeller.Infrastructure.Data.SketchPlane;
 
 namespace SketchModeller.Modelling.Views
 {
-    public class NewPrimitiveViewModel : NotificationObject
+    abstract public class NewPrimitiveViewModel : NotificationObject
     {
         protected UiState uiState;
 
@@ -25,5 +25,7 @@ namespace SketchModeller.Modelling.Views
         public ObservableCollection<MenuCommandData> ContextMenu { get; private set; }
         public NewPrimitive Model { get; set; }
         public SketchPlane SketchPlane { get { return uiState.SketchPlane; } }
+
+        public abstract void UpdateFromModel();
     }
 }

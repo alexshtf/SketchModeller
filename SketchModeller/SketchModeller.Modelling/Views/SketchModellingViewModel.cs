@@ -22,6 +22,7 @@ using System.Collections.Specialized;
 
 using SnappedPrimitivesCollection = SketchModeller.Modelling.ModelViews.ModelViewerViewModel.SnappedPrimitivesCollection;
 using System.Diagnostics.Contracts;
+using SketchModeller.Modelling.Events;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -121,7 +122,7 @@ namespace SketchModeller.Modelling.Views
             data.MatchClass<NewCylinder>(cylinder =>
                 {
                     var viewModel = container.Resolve<NewCylinderViewModel>();
-                    viewModel.Initialize(cylinder);
+                    viewModel.Init(cylinder);
                     result = viewModel;
                 });
             data.MatchClass<NewCone>(newCone =>
@@ -139,6 +140,17 @@ namespace SketchModeller.Modelling.Views
         private void OnSnapComplete(object payload)
         {
             ((SnappedPrimitivesCollection)SnappedPrimitives).RaiseReset();
+        }
+
+        private void OnPrimitiveDragged(NewPrimitive primitive)
+        {
+            var query =
+                from vm in NewPrimitiveViewModels
+                where vm.Model == primitive
+                select vm;
+            var viewModel = query.FirstOrDefault();
+            if (viewModel != null)
+                viewModel.UpdateFromModel();
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -166,6 +178,7 @@ namespace SketchModeller.Modelling.Views
         public void UpdateDuplicatePosition(NewPrimitive originalDuplicate, ref NewPrimitive currentDuplicate, Vector3D currentDragVector)
         {
             primitivesConverter.ApplyMovement(originalDuplicate, currentDuplicate, currentDragVector);
+            OnPrimitiveDragged(currentDuplicate);
         }
 
         private void SelectPrimitive(NewPrimitive primitive)

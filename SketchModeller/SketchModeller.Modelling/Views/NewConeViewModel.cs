@@ -39,6 +39,11 @@ namespace SketchModeller.Modelling.Views
         public void Init(NewCone newModel)
         {
             this.model = newModel;
+            UpdateFromModel();
+        }
+
+        public override void UpdateFromModel()
+        {
             initializing = true;
             try
             {
