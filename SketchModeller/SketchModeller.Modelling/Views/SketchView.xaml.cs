@@ -44,7 +44,8 @@ namespace SketchModeller.Modelling.Views
 
         private readonly ILoggerFacade logger;
         private readonly SketchViewModel viewModel;
-        private readonly Dictionary<MouseInterationModes, IDragStrategy> dragStrategies;
+        private readonly IDragStrategy primitivesDragStrategy;
+        private readonly IDragStrategy curveDragStrategy;
         private IDragStrategy currentDragStrategy;
 
         private readonly SketchModellingView sketchModellingView;
@@ -53,7 +54,6 @@ namespace SketchModeller.Modelling.Views
         public SketchView()
         {
             InitializeComponent();
-            dragStrategies = new Dictionary<MouseInterationModes, IDragStrategy>();
         }
 
         [InjectionConstructor]
@@ -78,14 +78,8 @@ namespace SketchModeller.Modelling.Views
             sketchImageView.Margin = vpRoot.Margin;
             root.Children.Insert(1, sketchImageView);
 
-            eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
-
-            dragStrategies[MouseInterationModes.CurveSelection] = 
-                new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
-            dragStrategies[MouseInterationModes.PrimitiveManipulation] =
-                new PrimitiveDragStrategy(uiState, sketchModellingView);
-            dragStrategies[MouseInterationModes.SnappedDragging] =
-                new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
+            primitivesDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
+            curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -111,38 +105,46 @@ namespace SketchModeller.Modelling.Views
             }
         }
 
-        private void OnGlobalShortcut(KeyEventArgs e)
-        {
-            if (e.Key == GlobalShortcuts.CycleMouseModes)
-                viewModel.CycleMouseInteractionMode.Execute(null);
-        }
-
-        private void vpRoot_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete && viewModel.MouseInteractionMode == MouseInterationModes.PrimitiveManipulation)
-                viewModel.DeleteNewPrimitives();
-        }
-
         #region Sketch viewport mouse events
 
-        private void vpRoot_MouseDown(object sender, MouseButtonEventArgs e)
+
+        private void vpRoot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            vpRoot.Focus();
-            if (currentDragStrategy == null && e.ChangedButton == MouseButton.Left)
+            if (currentDragStrategy == null)
             {
-                currentDragStrategy = dragStrategies[viewModel.MouseInteractionMode];
+                currentDragStrategy = primitivesDragStrategy;
                 currentDragStrategy.OnMouseDown(GetPosition3D(e));
                 vpRoot.CaptureMouse();
             }
         }
 
-        private void vpRoot_MouseUp(object sender, MouseButtonEventArgs e)
+        private void vpRoot_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (currentDragStrategy != null && e.ChangedButton == MouseButton.Left)
+            if (currentDragStrategy == primitivesDragStrategy)
             {
                 currentDragStrategy.OnMouseUp(GetPosition3D(e));
-                vpRoot.ReleaseMouseCapture();
                 currentDragStrategy = null;
+                vpRoot.ReleaseMouseCapture();
+            }
+        }
+
+        private void vpRoot_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (currentDragStrategy == null)
+            {
+                currentDragStrategy = curveDragStrategy;
+                curveDragStrategy.OnMouseDown(GetPosition3D(e));
+                vpRoot.CaptureMouse();
+            }
+        }
+
+        private void vpRoot_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (currentDragStrategy == curveDragStrategy)
+            {
+                currentDragStrategy.OnMouseUp(GetPosition3D(e));
+                currentDragStrategy = null;
+                vpRoot.ReleaseMouseCapture();
             }
         }
 
@@ -194,7 +196,6 @@ namespace SketchModeller.Modelling.Views
             {
                 var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
                 viewModel.AddNewPrimitive(primitiveKind, pos3d.Ray3D.Value);
-                viewModel.MouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
             }
         }
 
@@ -366,6 +367,7 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+
 
     }
 }

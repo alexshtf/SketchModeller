@@ -63,7 +63,7 @@ namespace SketchModeller.Modelling.Views
                 currentSnappedPrimitive = null;
                 currentDuplicate = null;
                 originalDuplicate = null;
-                sketchViewModel.MouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
+                //sketchViewModel.MouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
             }
 
             private void OnGlobalShortcut(KeyEventArgs e)

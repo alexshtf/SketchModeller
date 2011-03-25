@@ -39,10 +39,11 @@
                 AllowDrop="True"
                 Drop="vpRoot_Drop"
                 Focusable="True"
-                MouseDown="vpRoot_MouseDown"
-                MouseUp="vpRoot_MouseUp"
-                MouseMove="vpRoot_MouseMove"
-                KeyDown="vpRoot_KeyDown">
+                MouseLeftButtonDown="vpRoot_MouseLeftButtonDown"
+                MouseLeftButtonUp="vpRoot_MouseLeftButtonUp"
+                MouseRightButtonDown="vpRoot_MouseRightButtonDown"
+                MouseRightButtonUp="vpRoot_MouseRightButtonUp"
+                MouseMove="vpRoot_MouseMove">
             <Viewport3D x:Name="viewport3d" IsHitTestVisible="False">
                 <Viewport3D.Camera>
                     <MatrixCamera x:Name="camera"
@@ -95,20 +96,6 @@
                     <Setter Property="Margin" Value="5,2,0,2" />    		
                 </Style>     	
             </StackPanel.Resources>
-            <GroupBox Header="Mouse">
-                <StackPanel  VerticalAlignment="Top">
-                    <ComboBox ItemsSource="{Binding Source={StaticResource MouseModesSource}}"
-                              SelectedItem="{Binding Path=MouseInteractionMode}"
-                              MinWidth="70">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Converter={x:Static local:SketchView.MouseModeToStringConverter}}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <Button Content="{skm:ShortcutText Text=Cycle, Key={x:Static skm:GlobalShortcuts.CycleMouseModes}}" />
-                </StackPanel>
-            </GroupBox>
             <GroupBox Header="Basic primitives">
                 <UniformGrid Rows="2" Columns="1" VerticalAlignment="Top">
                     <UniformGrid.Resources>

@@ -193,7 +193,6 @@
       <DependentUpon>SketchPlanesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SketchPlanesViewModel.cs" />
-    <Compile Include="Views\SketchView.Converters.cs" />
     <Compile Include="Views\SketchView.CurveDragStrategy.cs" />
     <Compile Include="Views\SketchView.PrimitiveDragStrategy.cs" />
     <Compile Include="Views\SketchView.SnappedDragStrategy.cs" />
