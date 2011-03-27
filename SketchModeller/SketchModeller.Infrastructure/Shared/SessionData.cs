@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Utils;
+using ContinuousLinq;
 
 namespace SketchModeller.Infrastructure.Shared
 {
@@ -18,6 +19,8 @@ namespace SketchModeller.Infrastructure.Shared
         private readonly SelectionListener<NewPrimitive> newPrimitivesSelectionListener;
         private readonly SelectionListener<PointsSequence> sketchObjectsSelectionListener;
         private readonly SelectionListener<FeatureCurve> featureCurvesSelectionListener;
+        private readonly SelectionListener<SelectablePrimitive> allPrimitivesSelectionListener;
+        private readonly ReadOnlyContinuousCollection<SelectablePrimitive> allPrimitives;
 
         public SessionData()
         {
@@ -31,9 +34,16 @@ namespace SketchModeller.Infrastructure.Shared
             sketchObjectsSelectionListener = new SelectionListener<PointsSequence>(sketchObjects, o => o.IsSelected);
             featureCurvesSelectionListener = new SelectionListener<FeatureCurve>(FeatureCurves, c => c.IsSelected);
 
+            allPrimitives = 
+                NewPrimitives
+                .Select(x => (SelectablePrimitive)x)
+                .Concat(SnappedPrimitives.Select(x => (SelectablePrimitive)x));
+            allPrimitivesSelectionListener = new SelectionListener<SelectablePrimitive>(allPrimitives, p => p.IsSelected);
+
             SelectedNewPrimitives = newPrimitivesSelectionListener.SelectedItems;
             SelectedSketchObjects = sketchObjectsSelectionListener.SelectedItems;
             SelectedFeatureCurves = featureCurvesSelectionListener.SelectedItems;
+            SelectedPrimitives = allPrimitivesSelectionListener.SelectedItems;
         }
 
         #region SketchData property
@@ -99,6 +109,7 @@ namespace SketchModeller.Infrastructure.Shared
 
         #endregion
 
+        public ReadOnlyObservableCollection<SelectablePrimitive> SelectedPrimitives { get; private set; }
         public ReadOnlyObservableCollection<NewPrimitive> SelectedNewPrimitives { get; private set; }
         public ReadOnlyObservableCollection<PointsSequence> SelectedSketchObjects { get; private set; }
         public ReadOnlyObservableCollection<FeatureCurve> SelectedFeatureCurves { get; private set; }

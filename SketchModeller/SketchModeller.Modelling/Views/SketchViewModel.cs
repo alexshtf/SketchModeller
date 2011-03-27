@@ -124,6 +124,23 @@ namespace SketchModeller.Modelling.Views
         
         #endregion
 
+        #region Primitive selection
+
+        public void SelectPrimitive(SelectablePrimitive toSelect)
+        {
+            UnselectPrimitives();
+            toSelect.IsSelected = true;
+        }
+
+        public void UnselectPrimitives()
+        {
+            var toUnSelect = sessionData.SelectedPrimitives.ToArray();
+            foreach (var item in toUnSelect)
+                item.IsSelected = false;
+        }
+
+        #endregion
+
         #region Commands execute
 
         private void DeletePrimitiveExecute()
@@ -185,5 +202,6 @@ namespace SketchModeller.Modelling.Views
 
             return true;
         }
+
     }
 }

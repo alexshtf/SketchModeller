@@ -41,10 +41,10 @@ namespace SketchModeller.Modelling.Views
                 eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
             }
 
-            protected override void MouseDownCore(MousePosInfo3D position)
+            protected override void MouseDownCore(MousePosInfo3D position, dynamic data)
             {
                 currentDragVector = new Vector3D(0, 0, 0);
-                currentSnappedPrimitive = PickSnappedPrimitive(position);
+                currentSnappedPrimitive = data.Item1;
                 originalDuplicate = null;
             }
 
@@ -63,7 +63,6 @@ namespace SketchModeller.Modelling.Views
                 currentSnappedPrimitive = null;
                 currentDuplicate = null;
                 originalDuplicate = null;
-                //sketchViewModel.MouseInteractionMode = MouseInterationModes.PrimitiveManipulation;
             }
 
             private void OnGlobalShortcut(KeyEventArgs e)
@@ -72,19 +71,11 @@ namespace SketchModeller.Modelling.Views
                     CycleNextPrimitive();
             }
 
-            private Visual3D PickSnappedPrimitive(MousePosInfo3D position)
-            {
-                if (position.Ray3D != null)
-                    return sketchModellingView.PickSnapped(position.Ray3D.Value);
-                else
-                    return null;
-            }
-
             private void DuplicateIfNecessary()
             {
                 if (originalDuplicate == null)
                 {
-                    var primitiveData = ModelViewerSnappedFactory.GetPrimitiveData(currentSnappedPrimitive);
+                    var primitiveData = PrimitivesPickService.GetPrimitiveData(currentSnappedPrimitive) as SnappedPrimitive;
                     sketchModellingViewModel.DuplicateSnapped(primitiveData, out currentDuplicate, out originalDuplicate);
                 }
             }

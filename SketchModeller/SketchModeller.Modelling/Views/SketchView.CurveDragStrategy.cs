@@ -24,7 +24,7 @@ namespace SketchModeller.Modelling.Views
                 this.selectionRectangle = selectionRectangle;
             }
 
-            protected override void MouseDownCore(MousePosInfo3D position)
+            protected override void MouseDownCore(MousePosInfo3D position, dynamic data)
             {
                 // we do nothing in response to mouse down
             }

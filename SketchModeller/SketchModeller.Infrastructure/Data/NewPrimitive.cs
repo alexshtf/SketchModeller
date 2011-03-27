@@ -8,23 +8,7 @@ using System.Xml.Serialization;
 namespace SketchModeller.Infrastructure.Data
 {
     [Serializable]
-    public abstract class NewPrimitive : NotificationObject
+    public abstract class NewPrimitive : SelectablePrimitive
     {
-        #region IsSelected property
-
-        [NonSerialized]
-        private bool isSelected;
-
-        public bool IsSelected
-        {
-            get { return isSelected; }
-            set
-            {
-                isSelected = value;
-                RaisePropertyChanged(() => IsSelected);
-            }
-        }
-
-        #endregion
     }
 }

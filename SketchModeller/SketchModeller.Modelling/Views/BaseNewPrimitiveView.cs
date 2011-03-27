@@ -47,6 +47,7 @@ namespace SketchModeller.Modelling.Views
             {
                 Children = { rotation, scale, translation }
             };
+            PrimitivesPickService.SetPrimitiveData(this, viewModel.Model);
         }
 
         NewPrimitiveViewModel INewPrimitiveView.ViewModel

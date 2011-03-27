@@ -77,6 +77,9 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ContinuousLinq">
+      <HintPath>..\libs\ContinuousLinq.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -101,6 +104,7 @@
     <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />
+    <Compile Include="Data\SelectablePrimitive.cs" />
     <Compile Include="Data\SnappedCylindricalPrimitive.cs" />
     <Compile Include="Data\NewCone.cs" />
     <Compile Include="Data\NewCylinder.cs" />

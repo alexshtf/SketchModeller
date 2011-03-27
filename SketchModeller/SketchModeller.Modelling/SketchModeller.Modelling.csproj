@@ -132,6 +132,7 @@
     <Compile Include="ModelViews\ModelViewerViewModel.cs" />
     <Compile Include="ModelViews\NavigationRectangleFillConverter.cs" />
     <Compile Include="PCA.cs" />
+    <Compile Include="PrimitivesPickService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleSelector3D.cs" />
     <Compile Include="Services\PrimitivesConverter\BaseNewConverter.cs" />
@@ -200,10 +201,6 @@
       <DependentUpon>SketchView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SketchViewModel.cs" />
-    <Compile Include="Views\SnappedPanelView.xaml.cs">
-      <DependentUpon>SnappedPanelView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SnappedPanelViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="ModelViews\ModelViewerView.xaml">
@@ -239,10 +236,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SketchView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SnappedPanelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

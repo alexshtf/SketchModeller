@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using SketchModeller.Infrastructure.Shared;
+using SketchModeller.Infrastructure.Data;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -13,6 +14,7 @@ namespace SketchModeller.Modelling.Views
         private class PrimitiveDragStrategy : DragStrategyBase
         {
             private readonly SketchModellingView sketchModellingView;
+            private INewPrimitiveView draggedPrimitive;
 
             public PrimitiveDragStrategy(UiState uiState, SketchModellingView sketchModellingView)
                 : base(uiState)
@@ -20,36 +22,24 @@ namespace SketchModeller.Modelling.Views
                 this.sketchModellingView = sketchModellingView;
             }
 
-            protected override void MouseDownCore(MousePosInfo3D position)
+            protected override void MouseDownCore(MousePosInfo3D position, dynamic data)
             {
-                SelectPrimitive(position);
+                draggedPrimitive = data.Item1 as INewPrimitiveView;
+                if (draggedPrimitive != null && position.Ray3D != null)
+                    draggedPrimitive.DragStart(position.Pos2D, position.Ray3D.Value);
             }
 
             protected override void MouseMoveCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
-                DragPrimitive(position);
+                if (draggedPrimitive != null && position.Ray3D != null)
+                    draggedPrimitive.Drag(position.Pos2D, position.Ray3D.Value);
             }
 
             protected override void MouseUpCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
-                StopPrimitiveDragging();
-            }
-
-            private void StopPrimitiveDragging()
-            {
-                sketchModellingView.EndDrag();
-            }
-
-            private void SelectPrimitive(MousePosInfo3D positionInfo)
-            {
-                if (positionInfo.Ray3D != null)
-                    sketchModellingView.SelectPrimitive(positionInfo.Pos2D, positionInfo.Ray3D.Value);
-            }
-
-            private void DragPrimitive(MousePosInfo3D positionInfo)
-            {
-                if (positionInfo.Ray3D != null)
-                    sketchModellingView.DragPrimitive(positionInfo.Pos2D, positionInfo.Ray3D.Value);
+                if (draggedPrimitive != null)
+                    draggedPrimitive.DragEnd();
+                draggedPrimitive = null;
             }
         }
 

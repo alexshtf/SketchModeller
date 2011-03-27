@@ -16,6 +16,8 @@ using System.Diagnostics.Contracts;
 using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Utilities;
 using System.Collections.Generic;
+using SketchModeller.Infrastructure.Data;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -44,7 +46,8 @@ namespace SketchModeller.Modelling.Views
 
         private readonly ILoggerFacade logger;
         private readonly SketchViewModel viewModel;
-        private readonly IDragStrategy primitivesDragStrategy;
+        private readonly IDragStrategy newPrimitiveDragStrategy;
+        private readonly IDragStrategy snappedDragStrategy;
         private readonly IDragStrategy curveDragStrategy;
         private IDragStrategy currentDragStrategy;
 
@@ -78,7 +81,8 @@ namespace SketchModeller.Modelling.Views
             sketchImageView.Margin = vpRoot.Margin;
             root.Children.Insert(1, sketchImageView);
 
-            primitivesDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
+            newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
+            snappedDragStrategy = new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
         }
 
@@ -107,20 +111,32 @@ namespace SketchModeller.Modelling.Views
 
         #region Sketch viewport mouse events
 
-
         private void vpRoot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (currentDragStrategy == null)
             {
-                currentDragStrategy = primitivesDragStrategy;
-                currentDragStrategy.OnMouseDown(GetPosition3D(e));
-                vpRoot.CaptureMouse();
+                var positionInfo = GetPosition3D(e);
+                var primitiveVisual = PrimitivesPickService.PickPrimitiveVisual(viewport3d, positionInfo.Pos2D);
+                if (primitiveVisual != null)
+                {
+                    var primitiveData = PrimitivesPickService.GetPrimitiveData(primitiveVisual);
+                    viewModel.SelectPrimitive(primitiveData);
+
+                    primitiveData.MatchClass<NewPrimitive>(_ => currentDragStrategy = newPrimitiveDragStrategy);
+                    primitiveData.MatchClass<SnappedPrimitive>(_ => currentDragStrategy = snappedDragStrategy);
+                    Debug.Assert(currentDragStrategy != null);
+
+                    currentDragStrategy.OnMouseDown(GetPosition3D(e), Tuple.Create(primitiveVisual, primitiveData));
+                    vpRoot.CaptureMouse();
+                }
+                else
+                    viewModel.UnselectPrimitives();
             }
         }
 
         private void vpRoot_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (currentDragStrategy == primitivesDragStrategy)
+            if (currentDragStrategy == newPrimitiveDragStrategy || currentDragStrategy == snappedDragStrategy)
             {
                 currentDragStrategy.OnMouseUp(GetPosition3D(e));
                 currentDragStrategy = null;
@@ -133,7 +149,7 @@ namespace SketchModeller.Modelling.Views
             if (currentDragStrategy == null)
             {
                 currentDragStrategy = curveDragStrategy;
-                curveDragStrategy.OnMouseDown(GetPosition3D(e));
+                curveDragStrategy.OnMouseDown(GetPosition3D(e), null);
                 vpRoot.CaptureMouse();
             }
         }
@@ -220,7 +236,8 @@ namespace SketchModeller.Modelling.Views
             /// Called when user presses the mouse to start dragging.
             /// </summary>
             /// <param name="position">2D and 3D mouse position information</param>
-            void OnMouseDown(MousePosInfo3D position);
+            /// <param name="data">Additional data needed for the drag strategy</param>
+            void OnMouseDown(MousePosInfo3D position, dynamic data);
 
 
             /// <summary>
@@ -248,7 +265,7 @@ namespace SketchModeller.Modelling.Views
         [ContractClassFor(typeof(IDragStrategy))]
         private abstract class IDragStragegyContract : IDragStrategy
         {
-            public void OnMouseDown(MousePosInfo3D position)
+            public void OnMouseDown(MousePosInfo3D position, dynamic data)
             {
                 Contract.Requires(IsDragging == false);
                 Contract.Ensures(IsDragging == true);
@@ -285,11 +302,11 @@ namespace SketchModeller.Modelling.Views
                 this.uiState = uiState;
             }
 
-            public void OnMouseDown(MousePosInfo3D position)
+            public void OnMouseDown(MousePosInfo3D position, dynamic data)
             {
                 isDragging = true;
                 LastPosition = StartPosition = position;
-                MouseDownCore(position);
+                MouseDownCore(position, data);
             }
 
             public void OnMouseMove(MousePosInfo3D position)
@@ -335,7 +352,7 @@ namespace SketchModeller.Modelling.Views
             /// Invoked when the user presses the mouse to start dragging.
             /// </summary>
             /// <param name="position">2D and 3D position information</param>
-            protected abstract void MouseDownCore(MousePosInfo3D position);
+            protected abstract void MouseDownCore(MousePosInfo3D position, object data);
 
             /// <summary>
             /// Invoked when the user moved his mouse during drag operation

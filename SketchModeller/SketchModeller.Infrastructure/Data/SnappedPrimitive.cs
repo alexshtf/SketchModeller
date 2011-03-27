@@ -8,7 +8,7 @@ using AutoDiff;
 namespace SketchModeller.Infrastructure.Data
 {
     [Serializable]
-    public abstract class SnappedPrimitive : NotificationObject
+    public abstract class SnappedPrimitive : SelectablePrimitive
     {
         /// <summary>
         /// The list of sketch curves this primitive is snapped to.
@@ -19,23 +19,6 @@ namespace SketchModeller.Infrastructure.Data
         /// A collection of this primitive's feature curves. 
         /// </summary>
         public FeatureCurve[] FeatureCurves { get; set; }
-
-        #region IsMarked property
-
-        [NonSerialized]
-        private bool isMarked;
-
-        public bool IsMarked
-        {
-            get { return isMarked; }
-            set
-            {
-                isMarked = value;
-                RaisePropertyChanged(() => IsMarked);
-            }
-        }
-
-        #endregion
 
         public abstract void UpdateFeatureCurves();
     }
