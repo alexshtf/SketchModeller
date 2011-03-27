@@ -2,7 +2,7 @@
 AP library
 Copyright (c) 2003-2009 Sergey Bochkanov (ALGLIB project).
 
->>> LICENSE >>>
+>>> SOURCE LICENSE >>>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation (www.fsf.org); either version 2 of the
@@ -15,7 +15,6 @@ GNU General Public License for more details.
 
 A copy of the GNU General Public License is available at
 http://www.fsf.org/licensing/licenses
-
 >>> END OF LICENSE >>>
 *************************************************************************/
 using System;
@@ -253,6 +252,18 @@ public partial class alglib
             int result = 0;
             double t;
             for (result = 0, t = 1; t / 10 > threshold*(1+1E-10); result++, t /= 10) ;
+            return result;
+        }
+
+        /****************************************************************
+        prints formatted complex
+        ****************************************************************/
+        public static string format(complex a, int dps)
+        {
+            string fmtx = String.Format("{{0:F{0}}}", dps);
+            string fmty = String.Format("{{0:F{0}}}", dps);
+            string result = String.Format(fmtx, a.x) + (a.y >= 0 ? "+" : "-") + String.Format(fmty, Math.Abs(a.y)) + "i";
+            result = result.Replace(',', '.');
             return result;
         }
 

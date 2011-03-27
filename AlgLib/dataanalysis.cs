@@ -25,6 +25,85 @@ public partial class alglib
 
 
     /*************************************************************************
+    Optimal binary classification
+
+    Algorithms finds optimal (=with minimal cross-entropy) binary partition.
+    Internal subroutine.
+
+    INPUT PARAMETERS:
+        A       -   array[0..N-1], variable
+        C       -   array[0..N-1], class numbers (0 or 1).
+        N       -   array size
+
+    OUTPUT PARAMETERS:
+        Info    -   completetion code:
+                    * -3, all values of A[] are same (partition is impossible)
+                    * -2, one of C[] is incorrect (<0, >1)
+                    * -1, incorrect pararemets were passed (N<=0).
+                    *  1, OK
+        Threshold-  partiton boundary. Left part contains values which are
+                    strictly less than Threshold. Right part contains values
+                    which are greater than or equal to Threshold.
+        PAL, PBL-   probabilities P(0|v<Threshold) and P(1|v<Threshold)
+        PAR, PBR-   probabilities P(0|v>=Threshold) and P(1|v>=Threshold)
+        CVE     -   cross-validation estimate of cross-entropy
+
+      -- ALGLIB --
+         Copyright 22.05.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void dsoptimalsplit2(double[] a, int[] c, int n, out int info, out double threshold, out double pal, out double pbl, out double par, out double pbr, out double cve)
+    {
+        info = 0;
+        threshold = 0;
+        pal = 0;
+        pbl = 0;
+        par = 0;
+        pbr = 0;
+        cve = 0;
+        bdss.dsoptimalsplit2(a, c, n, ref info, ref threshold, ref pal, ref pbl, ref par, ref pbr, ref cve);
+        return;
+    }
+
+    /*************************************************************************
+    Optimal partition, internal subroutine. Fast version.
+
+    Accepts:
+        A       array[0..N-1]       array of attributes     array[0..N-1]
+        C       array[0..N-1]       array of class labels
+        TiesBuf array[0..N]         temporaries (ties)
+        CntBuf  array[0..2*NC-1]    temporaries (counts)
+        Alpha                       centering factor (0<=alpha<=1, recommended value - 0.05)
+        BufR    array[0..N-1]       temporaries
+        BufI    array[0..N-1]       temporaries
+
+    Output:
+        Info    error code (">0"=OK, "<0"=bad)
+        RMS     training set RMS error
+        CVRMS   leave-one-out RMS error
+
+    Note:
+        content of all arrays is changed by subroutine;
+        it doesn't allocate temporaries.
+
+      -- ALGLIB --
+         Copyright 11.12.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void dsoptimalsplit2fast(ref double[] a, ref int[] c, ref int[] tiesbuf, ref int[] cntbuf, ref double[] bufr, ref int[] bufi, int n, int nc, double alpha, out int info, out double threshold, out double rms, out double cvrms)
+    {
+        info = 0;
+        threshold = 0;
+        rms = 0;
+        cvrms = 0;
+        bdss.dsoptimalsplit2fast(ref a, ref c, ref tiesbuf, ref cntbuf, ref bufr, ref bufi, n, nc, alpha, ref info, ref threshold, ref rms, ref cvrms);
+        return;
+    }
+
+}
+public partial class alglib
+{
+
+
+    /*************************************************************************
 
     *************************************************************************/
     public class decisionforest
@@ -282,85 +361,6 @@ public partial class alglib
 
         double result = dforest.dfavgrelerror(df.innerobj, xy, npoints);
         return result;
-    }
-
-}
-public partial class alglib
-{
-
-
-    /*************************************************************************
-    Optimal binary classification
-
-    Algorithms finds optimal (=with minimal cross-entropy) binary partition.
-    Internal subroutine.
-
-    INPUT PARAMETERS:
-        A       -   array[0..N-1], variable
-        C       -   array[0..N-1], class numbers (0 or 1).
-        N       -   array size
-
-    OUTPUT PARAMETERS:
-        Info    -   completetion code:
-                    * -3, all values of A[] are same (partition is impossible)
-                    * -2, one of C[] is incorrect (<0, >1)
-                    * -1, incorrect pararemets were passed (N<=0).
-                    *  1, OK
-        Threshold-  partiton boundary. Left part contains values which are
-                    strictly less than Threshold. Right part contains values
-                    which are greater than or equal to Threshold.
-        PAL, PBL-   probabilities P(0|v<Threshold) and P(1|v<Threshold)
-        PAR, PBR-   probabilities P(0|v>=Threshold) and P(1|v>=Threshold)
-        CVE     -   cross-validation estimate of cross-entropy
-
-      -- ALGLIB --
-         Copyright 22.05.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void dsoptimalsplit2(double[] a, int[] c, int n, out int info, out double threshold, out double pal, out double pbl, out double par, out double pbr, out double cve)
-    {
-        info = 0;
-        threshold = 0;
-        pal = 0;
-        pbl = 0;
-        par = 0;
-        pbr = 0;
-        cve = 0;
-        bdss.dsoptimalsplit2(a, c, n, ref info, ref threshold, ref pal, ref pbl, ref par, ref pbr, ref cve);
-        return;
-    }
-
-    /*************************************************************************
-    Optimal partition, internal subroutine. Fast version.
-
-    Accepts:
-        A       array[0..N-1]       array of attributes     array[0..N-1]
-        C       array[0..N-1]       array of class labels
-        TiesBuf array[0..N]         temporaries (ties)
-        CntBuf  array[0..2*NC-1]    temporaries (counts)
-        Alpha                       centering factor (0<=alpha<=1, recommended value - 0.05)
-        BufR    array[0..N-1]       temporaries
-        BufI    array[0..N-1]       temporaries
-
-    Output:
-        Info    error code (">0"=OK, "<0"=bad)
-        RMS     training set RMS error
-        CVRMS   leave-one-out RMS error
-
-    Note:
-        content of all arrays is changed by subroutine;
-        it doesn't allocate temporaries.
-
-      -- ALGLIB --
-         Copyright 11.12.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void dsoptimalsplit2fast(ref double[] a, ref int[] c, ref int[] tiesbuf, ref int[] cntbuf, ref double[] bufr, ref int[] bufi, int n, int nc, double alpha, out int info, out double threshold, out double rms, out double cvrms)
-    {
-        info = 0;
-        threshold = 0;
-        rms = 0;
-        cvrms = 0;
-        bdss.dsoptimalsplit2fast(ref a, ref c, ref tiesbuf, ref cntbuf, ref bufr, ref bufi, n, nc, alpha, ref info, ref threshold, ref rms, ref cvrms);
-        return;
     }
 
 }
@@ -700,6 +700,7 @@ public partial class alglib
 
     OUTPUT PARAMETERS:
         V           -   coefficients, array[0..NVars]
+                        constant term (intercept) is stored in the V[NVars].
         NVars       -   number of independent variables (one less than number
                         of coefficients)
 
@@ -815,315 +816,6 @@ public partial class alglib
     {
 
         double result = linreg.lravgrelerror(lm.innerobj, xy, npoints);
-        return result;
-    }
-
-}
-public partial class alglib
-{
-
-
-    /*************************************************************************
-
-    *************************************************************************/
-    public class logitmodel
-    {
-        //
-        // Public declarations
-        //
-
-        public logitmodel()
-        {
-            _innerobj = new logit.logitmodel();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private logit.logitmodel _innerobj;
-        public logit.logitmodel innerobj { get { return _innerobj; } }
-        public logitmodel(logit.logitmodel obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-    MNLReport structure contains information about training process:
-    * NGrad     -   number of gradient calculations
-    * NHess     -   number of Hessian calculations
-    *************************************************************************/
-    public class mnlreport
-    {
-        //
-        // Public declarations
-        //
-        public int ngrad { get { return _innerobj.ngrad; } set { _innerobj.ngrad = value; } }
-        public int nhess { get { return _innerobj.nhess; } set { _innerobj.nhess = value; } }
-
-        public mnlreport()
-        {
-            _innerobj = new logit.mnlreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private logit.mnlreport _innerobj;
-        public logit.mnlreport innerobj { get { return _innerobj; } }
-        public mnlreport(logit.mnlreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-    /*************************************************************************
-    This subroutine trains logit model.
-
-    INPUT PARAMETERS:
-        XY          -   training set, array[0..NPoints-1,0..NVars]
-                        First NVars columns store values of independent
-                        variables, next column stores number of class (from 0
-                        to NClasses-1) which dataset element belongs to. Fractional
-                        values are rounded to nearest integer.
-        NPoints     -   training set size, NPoints>=1
-        NVars       -   number of independent variables, NVars>=1
-        NClasses    -   number of classes, NClasses>=2
-
-    OUTPUT PARAMETERS:
-        Info        -   return code:
-                        * -2, if there is a point with class number
-                              outside of [0..NClasses-1].
-                        * -1, if incorrect parameters was passed
-                              (NPoints<NVars+2, NVars<1, NClasses<2).
-                        *  1, if task has been solved
-        LM          -   model built
-        Rep         -   training report
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mnltrainh(double[,] xy, int npoints, int nvars, int nclasses, out int info, out logitmodel lm, out mnlreport rep)
-    {
-        info = 0;
-        lm = new logitmodel();
-        rep = new mnlreport();
-        logit.mnltrainh(xy, npoints, nvars, nclasses, ref info, lm.innerobj, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Procesing
-
-    INPUT PARAMETERS:
-        LM      -   logit model, passed by non-constant reference
-                    (some fields of structure are used as temporaries
-                    when calculating model output).
-        X       -   input vector,  array[0..NVars-1].
-        Y       -   (possibly) preallocated buffer; if size of Y is less than
-                    NClasses, it will be reallocated.If it is large enough, it
-                    is NOT reallocated, so we can save some time on reallocation.
-
-    OUTPUT PARAMETERS:
-        Y       -   result, array[0..NClasses-1]
-                    Vector of posterior probabilities for classification task.
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mnlprocess(logitmodel lm, double[] x, ref double[] y)
-    {
-
-        logit.mnlprocess(lm.innerobj, x, ref y);
-        return;
-    }
-
-    /*************************************************************************
-    'interactive'  variant  of  MNLProcess  for  languages  like  Python which
-    support constructs like "Y = MNLProcess(LM,X)" and interactive mode of the
-    interpreter
-
-    This function allocates new array on each call,  so  it  is  significantly
-    slower than its 'non-interactive' counterpart, but it is  more  convenient
-    when you call it from command line.
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mnlprocessi(logitmodel lm, double[] x, out double[] y)
-    {
-        y = new double[0];
-        logit.mnlprocessi(lm.innerobj, x, ref y);
-        return;
-    }
-
-    /*************************************************************************
-    Unpacks coefficients of logit model. Logit model have form:
-
-        P(class=i) = S(i) / (S(0) + S(1) + ... +S(M-1))
-              S(i) = Exp(A[i,0]*X[0] + ... + A[i,N-1]*X[N-1] + A[i,N]), when i<M-1
-            S(M-1) = 1
-
-    INPUT PARAMETERS:
-        LM          -   logit model in ALGLIB format
-
-    OUTPUT PARAMETERS:
-        V           -   coefficients, array[0..NClasses-2,0..NVars]
-        NVars       -   number of independent variables
-        NClasses    -   number of classes
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mnlunpack(logitmodel lm, out double[,] a, out int nvars, out int nclasses)
-    {
-        a = new double[0,0];
-        nvars = 0;
-        nclasses = 0;
-        logit.mnlunpack(lm.innerobj, ref a, ref nvars, ref nclasses);
-        return;
-    }
-
-    /*************************************************************************
-    "Packs" coefficients and creates logit model in ALGLIB format (MNLUnpack
-    reversed).
-
-    INPUT PARAMETERS:
-        A           -   model (see MNLUnpack)
-        NVars       -   number of independent variables
-        NClasses    -   number of classes
-
-    OUTPUT PARAMETERS:
-        LM          -   logit model.
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mnlpack(double[,] a, int nvars, int nclasses, out logitmodel lm)
-    {
-        lm = new logitmodel();
-        logit.mnlpack(a, nvars, nclasses, lm.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Average cross-entropy (in bits per element) on the test set
-
-    INPUT PARAMETERS:
-        LM      -   logit model
-        XY      -   test set
-        NPoints -   test set size
-
-    RESULT:
-        CrossEntropy/(NPoints*ln(2)).
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static double mnlavgce(logitmodel lm, double[,] xy, int npoints)
-    {
-
-        double result = logit.mnlavgce(lm.innerobj, xy, npoints);
-        return result;
-    }
-
-    /*************************************************************************
-    Relative classification error on the test set
-
-    INPUT PARAMETERS:
-        LM      -   logit model
-        XY      -   test set
-        NPoints -   test set size
-
-    RESULT:
-        percent of incorrectly classified cases.
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static double mnlrelclserror(logitmodel lm, double[,] xy, int npoints)
-    {
-
-        double result = logit.mnlrelclserror(lm.innerobj, xy, npoints);
-        return result;
-    }
-
-    /*************************************************************************
-    RMS error on the test set
-
-    INPUT PARAMETERS:
-        LM      -   logit model
-        XY      -   test set
-        NPoints -   test set size
-
-    RESULT:
-        root mean square error (error when estimating posterior probabilities).
-
-      -- ALGLIB --
-         Copyright 30.08.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static double mnlrmserror(logitmodel lm, double[,] xy, int npoints)
-    {
-
-        double result = logit.mnlrmserror(lm.innerobj, xy, npoints);
-        return result;
-    }
-
-    /*************************************************************************
-    Average error on the test set
-
-    INPUT PARAMETERS:
-        LM      -   logit model
-        XY      -   test set
-        NPoints -   test set size
-
-    RESULT:
-        average error (error when estimating posterior probabilities).
-
-      -- ALGLIB --
-         Copyright 30.08.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static double mnlavgerror(logitmodel lm, double[,] xy, int npoints)
-    {
-
-        double result = logit.mnlavgerror(lm.innerobj, xy, npoints);
-        return result;
-    }
-
-    /*************************************************************************
-    Average relative error on the test set
-
-    INPUT PARAMETERS:
-        LM      -   logit model
-        XY      -   test set
-        NPoints -   test set size
-
-    RESULT:
-        average relative error (error when estimating posterior probabilities).
-
-      -- ALGLIB --
-         Copyright 30.08.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static double mnlavgrelerror(logitmodel lm, double[,] xy, int ssize)
-    {
-
-        double result = logit.mnlavgrelerror(lm.innerobj, xy, ssize);
-        return result;
-    }
-
-    /*************************************************************************
-    Classification error on test set = MNLRelClsError*NPoints
-
-      -- ALGLIB --
-         Copyright 10.09.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static int mnlclserror(logitmodel lm, double[,] xy, int npoints)
-    {
-
-        int result = logit.mnlclserror(lm.innerobj, xy, npoints);
         return result;
     }
 
@@ -1741,6 +1433,592 @@ public partial class alglib
 
 
     /*************************************************************************
+
+    *************************************************************************/
+    public class logitmodel
+    {
+        //
+        // Public declarations
+        //
+
+        public logitmodel()
+        {
+            _innerobj = new logit.logitmodel();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private logit.logitmodel _innerobj;
+        public logit.logitmodel innerobj { get { return _innerobj; } }
+        public logitmodel(logit.logitmodel obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    MNLReport structure contains information about training process:
+    * NGrad     -   number of gradient calculations
+    * NHess     -   number of Hessian calculations
+    *************************************************************************/
+    public class mnlreport
+    {
+        //
+        // Public declarations
+        //
+        public int ngrad { get { return _innerobj.ngrad; } set { _innerobj.ngrad = value; } }
+        public int nhess { get { return _innerobj.nhess; } set { _innerobj.nhess = value; } }
+
+        public mnlreport()
+        {
+            _innerobj = new logit.mnlreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private logit.mnlreport _innerobj;
+        public logit.mnlreport innerobj { get { return _innerobj; } }
+        public mnlreport(logit.mnlreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
+    This subroutine trains logit model.
+
+    INPUT PARAMETERS:
+        XY          -   training set, array[0..NPoints-1,0..NVars]
+                        First NVars columns store values of independent
+                        variables, next column stores number of class (from 0
+                        to NClasses-1) which dataset element belongs to. Fractional
+                        values are rounded to nearest integer.
+        NPoints     -   training set size, NPoints>=1
+        NVars       -   number of independent variables, NVars>=1
+        NClasses    -   number of classes, NClasses>=2
+
+    OUTPUT PARAMETERS:
+        Info        -   return code:
+                        * -2, if there is a point with class number
+                              outside of [0..NClasses-1].
+                        * -1, if incorrect parameters was passed
+                              (NPoints<NVars+2, NVars<1, NClasses<2).
+                        *  1, if task has been solved
+        LM          -   model built
+        Rep         -   training report
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mnltrainh(double[,] xy, int npoints, int nvars, int nclasses, out int info, out logitmodel lm, out mnlreport rep)
+    {
+        info = 0;
+        lm = new logitmodel();
+        rep = new mnlreport();
+        logit.mnltrainh(xy, npoints, nvars, nclasses, ref info, lm.innerobj, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Procesing
+
+    INPUT PARAMETERS:
+        LM      -   logit model, passed by non-constant reference
+                    (some fields of structure are used as temporaries
+                    when calculating model output).
+        X       -   input vector,  array[0..NVars-1].
+        Y       -   (possibly) preallocated buffer; if size of Y is less than
+                    NClasses, it will be reallocated.If it is large enough, it
+                    is NOT reallocated, so we can save some time on reallocation.
+
+    OUTPUT PARAMETERS:
+        Y       -   result, array[0..NClasses-1]
+                    Vector of posterior probabilities for classification task.
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mnlprocess(logitmodel lm, double[] x, ref double[] y)
+    {
+
+        logit.mnlprocess(lm.innerobj, x, ref y);
+        return;
+    }
+
+    /*************************************************************************
+    'interactive'  variant  of  MNLProcess  for  languages  like  Python which
+    support constructs like "Y = MNLProcess(LM,X)" and interactive mode of the
+    interpreter
+
+    This function allocates new array on each call,  so  it  is  significantly
+    slower than its 'non-interactive' counterpart, but it is  more  convenient
+    when you call it from command line.
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mnlprocessi(logitmodel lm, double[] x, out double[] y)
+    {
+        y = new double[0];
+        logit.mnlprocessi(lm.innerobj, x, ref y);
+        return;
+    }
+
+    /*************************************************************************
+    Unpacks coefficients of logit model. Logit model have form:
+
+        P(class=i) = S(i) / (S(0) + S(1) + ... +S(M-1))
+              S(i) = Exp(A[i,0]*X[0] + ... + A[i,N-1]*X[N-1] + A[i,N]), when i<M-1
+            S(M-1) = 1
+
+    INPUT PARAMETERS:
+        LM          -   logit model in ALGLIB format
+
+    OUTPUT PARAMETERS:
+        V           -   coefficients, array[0..NClasses-2,0..NVars]
+        NVars       -   number of independent variables
+        NClasses    -   number of classes
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mnlunpack(logitmodel lm, out double[,] a, out int nvars, out int nclasses)
+    {
+        a = new double[0,0];
+        nvars = 0;
+        nclasses = 0;
+        logit.mnlunpack(lm.innerobj, ref a, ref nvars, ref nclasses);
+        return;
+    }
+
+    /*************************************************************************
+    "Packs" coefficients and creates logit model in ALGLIB format (MNLUnpack
+    reversed).
+
+    INPUT PARAMETERS:
+        A           -   model (see MNLUnpack)
+        NVars       -   number of independent variables
+        NClasses    -   number of classes
+
+    OUTPUT PARAMETERS:
+        LM          -   logit model.
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mnlpack(double[,] a, int nvars, int nclasses, out logitmodel lm)
+    {
+        lm = new logitmodel();
+        logit.mnlpack(a, nvars, nclasses, lm.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Average cross-entropy (in bits per element) on the test set
+
+    INPUT PARAMETERS:
+        LM      -   logit model
+        XY      -   test set
+        NPoints -   test set size
+
+    RESULT:
+        CrossEntropy/(NPoints*ln(2)).
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static double mnlavgce(logitmodel lm, double[,] xy, int npoints)
+    {
+
+        double result = logit.mnlavgce(lm.innerobj, xy, npoints);
+        return result;
+    }
+
+    /*************************************************************************
+    Relative classification error on the test set
+
+    INPUT PARAMETERS:
+        LM      -   logit model
+        XY      -   test set
+        NPoints -   test set size
+
+    RESULT:
+        percent of incorrectly classified cases.
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static double mnlrelclserror(logitmodel lm, double[,] xy, int npoints)
+    {
+
+        double result = logit.mnlrelclserror(lm.innerobj, xy, npoints);
+        return result;
+    }
+
+    /*************************************************************************
+    RMS error on the test set
+
+    INPUT PARAMETERS:
+        LM      -   logit model
+        XY      -   test set
+        NPoints -   test set size
+
+    RESULT:
+        root mean square error (error when estimating posterior probabilities).
+
+      -- ALGLIB --
+         Copyright 30.08.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static double mnlrmserror(logitmodel lm, double[,] xy, int npoints)
+    {
+
+        double result = logit.mnlrmserror(lm.innerobj, xy, npoints);
+        return result;
+    }
+
+    /*************************************************************************
+    Average error on the test set
+
+    INPUT PARAMETERS:
+        LM      -   logit model
+        XY      -   test set
+        NPoints -   test set size
+
+    RESULT:
+        average error (error when estimating posterior probabilities).
+
+      -- ALGLIB --
+         Copyright 30.08.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static double mnlavgerror(logitmodel lm, double[,] xy, int npoints)
+    {
+
+        double result = logit.mnlavgerror(lm.innerobj, xy, npoints);
+        return result;
+    }
+
+    /*************************************************************************
+    Average relative error on the test set
+
+    INPUT PARAMETERS:
+        LM      -   logit model
+        XY      -   test set
+        NPoints -   test set size
+
+    RESULT:
+        average relative error (error when estimating posterior probabilities).
+
+      -- ALGLIB --
+         Copyright 30.08.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static double mnlavgrelerror(logitmodel lm, double[,] xy, int ssize)
+    {
+
+        double result = logit.mnlavgrelerror(lm.innerobj, xy, ssize);
+        return result;
+    }
+
+    /*************************************************************************
+    Classification error on test set = MNLRelClsError*NPoints
+
+      -- ALGLIB --
+         Copyright 10.09.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static int mnlclserror(logitmodel lm, double[,] xy, int npoints)
+    {
+
+        int result = logit.mnlclserror(lm.innerobj, xy, npoints);
+        return result;
+    }
+
+}
+public partial class alglib
+{
+
+
+    /*************************************************************************
+    Training report:
+        * NGrad     - number of gradient calculations
+        * NHess     - number of Hessian calculations
+        * NCholesky - number of Cholesky decompositions
+    *************************************************************************/
+    public class mlpreport
+    {
+        //
+        // Public declarations
+        //
+        public int ngrad { get { return _innerobj.ngrad; } set { _innerobj.ngrad = value; } }
+        public int nhess { get { return _innerobj.nhess; } set { _innerobj.nhess = value; } }
+        public int ncholesky { get { return _innerobj.ncholesky; } set { _innerobj.ncholesky = value; } }
+
+        public mlpreport()
+        {
+            _innerobj = new mlptrain.mlpreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mlptrain.mlpreport _innerobj;
+        public mlptrain.mlpreport innerobj { get { return _innerobj; } }
+        public mlpreport(mlptrain.mlpreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    Cross-validation estimates of generalization error
+    *************************************************************************/
+    public class mlpcvreport
+    {
+        //
+        // Public declarations
+        //
+        public double relclserror { get { return _innerobj.relclserror; } set { _innerobj.relclserror = value; } }
+        public double avgce { get { return _innerobj.avgce; } set { _innerobj.avgce = value; } }
+        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
+        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
+        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
+
+        public mlpcvreport()
+        {
+            _innerobj = new mlptrain.mlpcvreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mlptrain.mlpcvreport _innerobj;
+        public mlptrain.mlpcvreport innerobj { get { return _innerobj; } }
+        public mlpcvreport(mlptrain.mlpcvreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
+    Neural network training  using  modified  Levenberg-Marquardt  with  exact
+    Hessian calculation and regularization. Subroutine trains  neural  network
+    with restarts from random positions. Algorithm is well  suited  for  small
+    and medium scale problems (hundreds of weights).
+
+    INPUT PARAMETERS:
+        Network     -   neural network with initialized geometry
+        XY          -   training set
+        NPoints     -   training set size
+        Decay       -   weight decay constant, >=0.001
+                        Decay term 'Decay*||Weights||^2' is added to error
+                        function.
+                        If you don't know what Decay to choose, use 0.001.
+        Restarts    -   number of restarts from random position, >0.
+                        If you don't know what Restarts to choose, use 2.
+
+    OUTPUT PARAMETERS:
+        Network     -   trained neural network.
+        Info        -   return code:
+                        * -9, if internal matrix inverse subroutine failed
+                        * -2, if there is a point with class number
+                              outside of [0..NOut-1].
+                        * -1, if wrong parameters specified
+                              (NPoints<0, Restarts<1).
+                        *  2, if task has been solved.
+        Rep         -   training report
+
+      -- ALGLIB --
+         Copyright 10.03.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlptrainlm(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, out int info, out mlpreport rep)
+    {
+        info = 0;
+        rep = new mlpreport();
+        mlptrain.mlptrainlm(network.innerobj, xy, npoints, decay, restarts, ref info, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Neural  network  training  using  L-BFGS  algorithm  with  regularization.
+    Subroutine  trains  neural  network  with  restarts from random positions.
+    Algorithm  is  well  suited  for  problems  of  any dimensionality (memory
+    requirements and step complexity are linear by weights number).
+
+    INPUT PARAMETERS:
+        Network     -   neural network with initialized geometry
+        XY          -   training set
+        NPoints     -   training set size
+        Decay       -   weight decay constant, >=0.001
+                        Decay term 'Decay*||Weights||^2' is added to error
+                        function.
+                        If you don't know what Decay to choose, use 0.001.
+        Restarts    -   number of restarts from random position, >0.
+                        If you don't know what Restarts to choose, use 2.
+        WStep       -   stopping criterion. Algorithm stops if  step  size  is
+                        less than WStep. Recommended value - 0.01.  Zero  step
+                        size means stopping after MaxIts iterations.
+        MaxIts      -   stopping   criterion.  Algorithm  stops  after  MaxIts
+                        iterations (NOT gradient  calculations).  Zero  MaxIts
+                        means stopping when step is sufficiently small.
+
+    OUTPUT PARAMETERS:
+        Network     -   trained neural network.
+        Info        -   return code:
+                        * -8, if both WStep=0 and MaxIts=0
+                        * -2, if there is a point with class number
+                              outside of [0..NOut-1].
+                        * -1, if wrong parameters specified
+                              (NPoints<0, Restarts<1).
+                        *  2, if task has been solved.
+        Rep         -   training report
+
+      -- ALGLIB --
+         Copyright 09.12.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlptrainlbfgs(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, double wstep, int maxits, out int info, out mlpreport rep)
+    {
+        info = 0;
+        rep = new mlpreport();
+        mlptrain.mlptrainlbfgs(network.innerobj, xy, npoints, decay, restarts, wstep, maxits, ref info, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Neural network training using early stopping (base algorithm - L-BFGS with
+    regularization).
+
+    INPUT PARAMETERS:
+        Network     -   neural network with initialized geometry
+        TrnXY       -   training set
+        TrnSize     -   training set size
+        ValXY       -   validation set
+        ValSize     -   validation set size
+        Decay       -   weight decay constant, >=0.001
+                        Decay term 'Decay*||Weights||^2' is added to error
+                        function.
+                        If you don't know what Decay to choose, use 0.001.
+        Restarts    -   number of restarts from random position, >0.
+                        If you don't know what Restarts to choose, use 2.
+
+    OUTPUT PARAMETERS:
+        Network     -   trained neural network.
+        Info        -   return code:
+                        * -2, if there is a point with class number
+                              outside of [0..NOut-1].
+                        * -1, if wrong parameters specified
+                              (NPoints<0, Restarts<1, ...).
+                        *  2, task has been solved, stopping  criterion  met -
+                              sufficiently small step size.  Not expected  (we
+                              use  EARLY  stopping)  but  possible  and not an
+                              error.
+                        *  6, task has been solved, stopping  criterion  met -
+                              increasing of validation set error.
+        Rep         -   training report
+
+    NOTE:
+
+    Algorithm stops if validation set error increases for  a  long  enough  or
+    step size is small enought  (there  are  task  where  validation  set  may
+    decrease for eternity). In any case solution returned corresponds  to  the
+    minimum of validation set error.
+
+      -- ALGLIB --
+         Copyright 10.03.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlptraines(multilayerperceptron network, double[,] trnxy, int trnsize, double[,] valxy, int valsize, double decay, int restarts, out int info, out mlpreport rep)
+    {
+        info = 0;
+        rep = new mlpreport();
+        mlptrain.mlptraines(network.innerobj, trnxy, trnsize, valxy, valsize, decay, restarts, ref info, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Cross-validation estimate of generalization error.
+
+    Base algorithm - L-BFGS.
+
+    INPUT PARAMETERS:
+        Network     -   neural network with initialized geometry.   Network is
+                        not changed during cross-validation -  it is used only
+                        as a representative of its architecture.
+        XY          -   training set.
+        SSize       -   training set size
+        Decay       -   weight  decay, same as in MLPTrainLBFGS
+        Restarts    -   number of restarts, >0.
+                        restarts are counted for each partition separately, so
+                        total number of restarts will be Restarts*FoldsCount.
+        WStep       -   stopping criterion, same as in MLPTrainLBFGS
+        MaxIts      -   stopping criterion, same as in MLPTrainLBFGS
+        FoldsCount  -   number of folds in k-fold cross-validation,
+                        2<=FoldsCount<=SSize.
+                        recommended value: 10.
+
+    OUTPUT PARAMETERS:
+        Info        -   return code, same as in MLPTrainLBFGS
+        Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
+        CVRep       -   generalization error estimates
+
+      -- ALGLIB --
+         Copyright 09.12.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpkfoldcvlbfgs(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, double wstep, int maxits, int foldscount, out int info, out mlpreport rep, out mlpcvreport cvrep)
+    {
+        info = 0;
+        rep = new mlpreport();
+        cvrep = new mlpcvreport();
+        mlptrain.mlpkfoldcvlbfgs(network.innerobj, xy, npoints, decay, restarts, wstep, maxits, foldscount, ref info, rep.innerobj, cvrep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Cross-validation estimate of generalization error.
+
+    Base algorithm - Levenberg-Marquardt.
+
+    INPUT PARAMETERS:
+        Network     -   neural network with initialized geometry.   Network is
+                        not changed during cross-validation -  it is used only
+                        as a representative of its architecture.
+        XY          -   training set.
+        SSize       -   training set size
+        Decay       -   weight  decay, same as in MLPTrainLBFGS
+        Restarts    -   number of restarts, >0.
+                        restarts are counted for each partition separately, so
+                        total number of restarts will be Restarts*FoldsCount.
+        FoldsCount  -   number of folds in k-fold cross-validation,
+                        2<=FoldsCount<=SSize.
+                        recommended value: 10.
+
+    OUTPUT PARAMETERS:
+        Info        -   return code, same as in MLPTrainLBFGS
+        Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
+        CVRep       -   generalization error estimates
+
+      -- ALGLIB --
+         Copyright 09.12.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpkfoldcvlm(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, int foldscount, out int info, out mlpreport rep, out mlpcvreport cvrep)
+    {
+        info = 0;
+        rep = new mlpreport();
+        cvrep = new mlpcvreport();
+        mlptrain.mlpkfoldcvlm(network.innerobj, xy, npoints, decay, restarts, foldscount, ref info, rep.innerobj, cvrep.innerobj);
+        return;
+    }
+
+}
+public partial class alglib
+{
+
+
+    /*************************************************************************
     Neural networks ensemble
     *************************************************************************/
     public class mlpensemble
@@ -2240,283 +2518,6 @@ public partial class alglib
 
 
     /*************************************************************************
-    Training report:
-        * NGrad     - number of gradient calculations
-        * NHess     - number of Hessian calculations
-        * NCholesky - number of Cholesky decompositions
-    *************************************************************************/
-    public class mlpreport
-    {
-        //
-        // Public declarations
-        //
-        public int ngrad { get { return _innerobj.ngrad; } set { _innerobj.ngrad = value; } }
-        public int nhess { get { return _innerobj.nhess; } set { _innerobj.nhess = value; } }
-        public int ncholesky { get { return _innerobj.ncholesky; } set { _innerobj.ncholesky = value; } }
-
-        public mlpreport()
-        {
-            _innerobj = new mlptrain.mlpreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private mlptrain.mlpreport _innerobj;
-        public mlptrain.mlpreport innerobj { get { return _innerobj; } }
-        public mlpreport(mlptrain.mlpreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-    Cross-validation estimates of generalization error
-    *************************************************************************/
-    public class mlpcvreport
-    {
-        //
-        // Public declarations
-        //
-        public double relclserror { get { return _innerobj.relclserror; } set { _innerobj.relclserror = value; } }
-        public double avgce { get { return _innerobj.avgce; } set { _innerobj.avgce = value; } }
-        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
-        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
-        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
-
-        public mlpcvreport()
-        {
-            _innerobj = new mlptrain.mlpcvreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private mlptrain.mlpcvreport _innerobj;
-        public mlptrain.mlpcvreport innerobj { get { return _innerobj; } }
-        public mlpcvreport(mlptrain.mlpcvreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-    /*************************************************************************
-    Neural network training  using  modified  Levenberg-Marquardt  with  exact
-    Hessian calculation and regularization. Subroutine trains  neural  network
-    with restarts from random positions. Algorithm is well  suited  for  small
-    and medium scale problems (hundreds of weights).
-
-    INPUT PARAMETERS:
-        Network     -   neural network with initialized geometry
-        XY          -   training set
-        NPoints     -   training set size
-        Decay       -   weight decay constant, >=0.001
-                        Decay term 'Decay*||Weights||^2' is added to error
-                        function.
-                        If you don't know what Decay to choose, use 0.001.
-        Restarts    -   number of restarts from random position, >0.
-                        If you don't know what Restarts to choose, use 2.
-
-    OUTPUT PARAMETERS:
-        Network     -   trained neural network.
-        Info        -   return code:
-                        * -9, if internal matrix inverse subroutine failed
-                        * -2, if there is a point with class number
-                              outside of [0..NOut-1].
-                        * -1, if wrong parameters specified
-                              (NPoints<0, Restarts<1).
-                        *  2, if task has been solved.
-        Rep         -   training report
-
-      -- ALGLIB --
-         Copyright 10.03.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mlptrainlm(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, out int info, out mlpreport rep)
-    {
-        info = 0;
-        rep = new mlpreport();
-        mlptrain.mlptrainlm(network.innerobj, xy, npoints, decay, restarts, ref info, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Neural  network  training  using  L-BFGS  algorithm  with  regularization.
-    Subroutine  trains  neural  network  with  restarts from random positions.
-    Algorithm  is  well  suited  for  problems  of  any dimensionality (memory
-    requirements and step complexity are linear by weights number).
-
-    INPUT PARAMETERS:
-        Network     -   neural network with initialized geometry
-        XY          -   training set
-        NPoints     -   training set size
-        Decay       -   weight decay constant, >=0.001
-                        Decay term 'Decay*||Weights||^2' is added to error
-                        function.
-                        If you don't know what Decay to choose, use 0.001.
-        Restarts    -   number of restarts from random position, >0.
-                        If you don't know what Restarts to choose, use 2.
-        WStep       -   stopping criterion. Algorithm stops if  step  size  is
-                        less than WStep. Recommended value - 0.01.  Zero  step
-                        size means stopping after MaxIts iterations.
-        MaxIts      -   stopping   criterion.  Algorithm  stops  after  MaxIts
-                        iterations (NOT gradient  calculations).  Zero  MaxIts
-                        means stopping when step is sufficiently small.
-
-    OUTPUT PARAMETERS:
-        Network     -   trained neural network.
-        Info        -   return code:
-                        * -8, if both WStep=0 and MaxIts=0
-                        * -2, if there is a point with class number
-                              outside of [0..NOut-1].
-                        * -1, if wrong parameters specified
-                              (NPoints<0, Restarts<1).
-                        *  2, if task has been solved.
-        Rep         -   training report
-
-      -- ALGLIB --
-         Copyright 09.12.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mlptrainlbfgs(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, double wstep, int maxits, out int info, out mlpreport rep)
-    {
-        info = 0;
-        rep = new mlpreport();
-        mlptrain.mlptrainlbfgs(network.innerobj, xy, npoints, decay, restarts, wstep, maxits, ref info, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Neural network training using early stopping (base algorithm - L-BFGS with
-    regularization).
-
-    INPUT PARAMETERS:
-        Network     -   neural network with initialized geometry
-        TrnXY       -   training set
-        TrnSize     -   training set size
-        ValXY       -   validation set
-        ValSize     -   validation set size
-        Decay       -   weight decay constant, >=0.001
-                        Decay term 'Decay*||Weights||^2' is added to error
-                        function.
-                        If you don't know what Decay to choose, use 0.001.
-        Restarts    -   number of restarts from random position, >0.
-                        If you don't know what Restarts to choose, use 2.
-
-    OUTPUT PARAMETERS:
-        Network     -   trained neural network.
-        Info        -   return code:
-                        * -2, if there is a point with class number
-                              outside of [0..NOut-1].
-                        * -1, if wrong parameters specified
-                              (NPoints<0, Restarts<1, ...).
-                        *  2, task has been solved, stopping  criterion  met -
-                              sufficiently small step size.  Not expected  (we
-                              use  EARLY  stopping)  but  possible  and not an
-                              error.
-                        *  6, task has been solved, stopping  criterion  met -
-                              increasing of validation set error.
-        Rep         -   training report
-
-    NOTE:
-
-    Algorithm stops if validation set error increases for  a  long  enough  or
-    step size is small enought  (there  are  task  where  validation  set  may
-    decrease for eternity). In any case solution returned corresponds  to  the
-    minimum of validation set error.
-
-      -- ALGLIB --
-         Copyright 10.03.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mlptraines(multilayerperceptron network, double[,] trnxy, int trnsize, double[,] valxy, int valsize, double decay, int restarts, out int info, out mlpreport rep)
-    {
-        info = 0;
-        rep = new mlpreport();
-        mlptrain.mlptraines(network.innerobj, trnxy, trnsize, valxy, valsize, decay, restarts, ref info, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Cross-validation estimate of generalization error.
-
-    Base algorithm - L-BFGS.
-
-    INPUT PARAMETERS:
-        Network     -   neural network with initialized geometry.   Network is
-                        not changed during cross-validation -  it is used only
-                        as a representative of its architecture.
-        XY          -   training set.
-        SSize       -   training set size
-        Decay       -   weight  decay, same as in MLPTrainLBFGS
-        Restarts    -   number of restarts, >0.
-                        restarts are counted for each partition separately, so
-                        total number of restarts will be Restarts*FoldsCount.
-        WStep       -   stopping criterion, same as in MLPTrainLBFGS
-        MaxIts      -   stopping criterion, same as in MLPTrainLBFGS
-        FoldsCount  -   number of folds in k-fold cross-validation,
-                        2<=FoldsCount<=SSize.
-                        recommended value: 10.
-
-    OUTPUT PARAMETERS:
-        Info        -   return code, same as in MLPTrainLBFGS
-        Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
-        CVRep       -   generalization error estimates
-
-      -- ALGLIB --
-         Copyright 09.12.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mlpkfoldcvlbfgs(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, double wstep, int maxits, int foldscount, out int info, out mlpreport rep, out mlpcvreport cvrep)
-    {
-        info = 0;
-        rep = new mlpreport();
-        cvrep = new mlpcvreport();
-        mlptrain.mlpkfoldcvlbfgs(network.innerobj, xy, npoints, decay, restarts, wstep, maxits, foldscount, ref info, rep.innerobj, cvrep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Cross-validation estimate of generalization error.
-
-    Base algorithm - Levenberg-Marquardt.
-
-    INPUT PARAMETERS:
-        Network     -   neural network with initialized geometry.   Network is
-                        not changed during cross-validation -  it is used only
-                        as a representative of its architecture.
-        XY          -   training set.
-        SSize       -   training set size
-        Decay       -   weight  decay, same as in MLPTrainLBFGS
-        Restarts    -   number of restarts, >0.
-                        restarts are counted for each partition separately, so
-                        total number of restarts will be Restarts*FoldsCount.
-        FoldsCount  -   number of folds in k-fold cross-validation,
-                        2<=FoldsCount<=SSize.
-                        recommended value: 10.
-
-    OUTPUT PARAMETERS:
-        Info        -   return code, same as in MLPTrainLBFGS
-        Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
-        CVRep       -   generalization error estimates
-
-      -- ALGLIB --
-         Copyright 09.12.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mlpkfoldcvlm(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, int foldscount, out int info, out mlpreport rep, out mlpcvreport cvrep)
-    {
-        info = 0;
-        rep = new mlpreport();
-        cvrep = new mlpcvreport();
-        mlptrain.mlpkfoldcvlm(network.innerobj, xy, npoints, decay, restarts, foldscount, ref info, rep.innerobj, cvrep.innerobj);
-        return;
-    }
-
-}
-public partial class alglib
-{
-
-
-    /*************************************************************************
     Principal components analysis
 
     Subroutine  builds  orthogonal  basis  where  first  axis  corresponds  to
@@ -2557,6 +2558,1474 @@ public partial class alglib
 }
 public partial class alglib
 {
+    public class bdss
+    {
+        public class cvreport
+        {
+            public double relclserror;
+            public double avgce;
+            public double rmserror;
+            public double avgerror;
+            public double avgrelerror;
+        };
+
+
+
+
+        /*************************************************************************
+        This set of routines (DSErrAllocate, DSErrAccumulate, DSErrFinish)
+        calculates different error functions (classification error, cross-entropy,
+        rms, avg, avg.rel errors).
+
+        1. DSErrAllocate prepares buffer.
+        2. DSErrAccumulate accumulates individual errors:
+            * Y contains predicted output (posterior probabilities for classification)
+            * DesiredY contains desired output (class number for classification)
+        3. DSErrFinish outputs results:
+           * Buf[0] contains relative classification error (zero for regression tasks)
+           * Buf[1] contains avg. cross-entropy (zero for regression tasks)
+           * Buf[2] contains rms error (regression, classification)
+           * Buf[3] contains average error (regression, classification)
+           * Buf[4] contains average relative error (regression, classification)
+           
+        NOTES(1):
+            "NClasses>0" means that we have classification task.
+            "NClasses<0" means regression task with -NClasses real outputs.
+
+        NOTES(2):
+            rms. avg, avg.rel errors for classification tasks are interpreted as
+            errors in posterior probabilities with respect to probabilities given
+            by training/test set.
+
+          -- ALGLIB --
+             Copyright 11.01.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dserrallocate(int nclasses,
+            ref double[] buf)
+        {
+            buf = new double[0];
+
+            buf = new double[7+1];
+            buf[0] = 0;
+            buf[1] = 0;
+            buf[2] = 0;
+            buf[3] = 0;
+            buf[4] = 0;
+            buf[5] = nclasses;
+            buf[6] = 0;
+            buf[7] = 0;
+        }
+
+
+        /*************************************************************************
+        See DSErrAllocate for comments on this routine.
+
+          -- ALGLIB --
+             Copyright 11.01.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dserraccumulate(ref double[] buf,
+            double[] y,
+            double[] desiredy)
+        {
+            int nclasses = 0;
+            int nout = 0;
+            int offs = 0;
+            int mmax = 0;
+            int rmax = 0;
+            int j = 0;
+            double v = 0;
+            double ev = 0;
+
+            offs = 5;
+            nclasses = (int)Math.Round(buf[offs]);
+            if( nclasses>0 )
+            {
+                
+                //
+                // Classification
+                //
+                rmax = (int)Math.Round(desiredy[0]);
+                mmax = 0;
+                for(j=1; j<=nclasses-1; j++)
+                {
+                    if( (double)(y[j])>(double)(y[mmax]) )
+                    {
+                        mmax = j;
+                    }
+                }
+                if( mmax!=rmax )
+                {
+                    buf[0] = buf[0]+1;
+                }
+                if( (double)(y[rmax])>(double)(0) )
+                {
+                    buf[1] = buf[1]-Math.Log(y[rmax]);
+                }
+                else
+                {
+                    buf[1] = buf[1]+Math.Log(math.maxrealnumber);
+                }
+                for(j=0; j<=nclasses-1; j++)
+                {
+                    v = y[j];
+                    if( j==rmax )
+                    {
+                        ev = 1;
+                    }
+                    else
+                    {
+                        ev = 0;
+                    }
+                    buf[2] = buf[2]+math.sqr(v-ev);
+                    buf[3] = buf[3]+Math.Abs(v-ev);
+                    if( (double)(ev)!=(double)(0) )
+                    {
+                        buf[4] = buf[4]+Math.Abs((v-ev)/ev);
+                        buf[offs+2] = buf[offs+2]+1;
+                    }
+                }
+                buf[offs+1] = buf[offs+1]+1;
+            }
+            else
+            {
+                
+                //
+                // Regression
+                //
+                nout = -nclasses;
+                rmax = 0;
+                for(j=1; j<=nout-1; j++)
+                {
+                    if( (double)(desiredy[j])>(double)(desiredy[rmax]) )
+                    {
+                        rmax = j;
+                    }
+                }
+                mmax = 0;
+                for(j=1; j<=nout-1; j++)
+                {
+                    if( (double)(y[j])>(double)(y[mmax]) )
+                    {
+                        mmax = j;
+                    }
+                }
+                if( mmax!=rmax )
+                {
+                    buf[0] = buf[0]+1;
+                }
+                for(j=0; j<=nout-1; j++)
+                {
+                    v = y[j];
+                    ev = desiredy[j];
+                    buf[2] = buf[2]+math.sqr(v-ev);
+                    buf[3] = buf[3]+Math.Abs(v-ev);
+                    if( (double)(ev)!=(double)(0) )
+                    {
+                        buf[4] = buf[4]+Math.Abs((v-ev)/ev);
+                        buf[offs+2] = buf[offs+2]+1;
+                    }
+                }
+                buf[offs+1] = buf[offs+1]+1;
+            }
+        }
+
+
+        /*************************************************************************
+        See DSErrAllocate for comments on this routine.
+
+          -- ALGLIB --
+             Copyright 11.01.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dserrfinish(ref double[] buf)
+        {
+            int nout = 0;
+            int offs = 0;
+
+            offs = 5;
+            nout = Math.Abs((int)Math.Round(buf[offs]));
+            if( (double)(buf[offs+1])!=(double)(0) )
+            {
+                buf[0] = buf[0]/buf[offs+1];
+                buf[1] = buf[1]/buf[offs+1];
+                buf[2] = Math.Sqrt(buf[2]/(nout*buf[offs+1]));
+                buf[3] = buf[3]/(nout*buf[offs+1]);
+            }
+            if( (double)(buf[offs+2])!=(double)(0) )
+            {
+                buf[4] = buf[4]/buf[offs+2];
+            }
+        }
+
+
+        /*************************************************************************
+
+          -- ALGLIB --
+             Copyright 19.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dsnormalize(ref double[,] xy,
+            int npoints,
+            int nvars,
+            ref int info,
+            ref double[] means,
+            ref double[] sigmas)
+        {
+            int i = 0;
+            int j = 0;
+            double[] tmp = new double[0];
+            double mean = 0;
+            double variance = 0;
+            double skewness = 0;
+            double kurtosis = 0;
+            int i_ = 0;
+
+            info = 0;
+            means = new double[0];
+            sigmas = new double[0];
+
+            
+            //
+            // Test parameters
+            //
+            if( npoints<=0 | nvars<1 )
+            {
+                info = -1;
+                return;
+            }
+            info = 1;
+            
+            //
+            // Standartization
+            //
+            means = new double[nvars-1+1];
+            sigmas = new double[nvars-1+1];
+            tmp = new double[npoints-1+1];
+            for(j=0; j<=nvars-1; j++)
+            {
+                for(i_=0; i_<=npoints-1;i_++)
+                {
+                    tmp[i_] = xy[i_,j];
+                }
+                basestat.samplemoments(tmp, npoints, ref mean, ref variance, ref skewness, ref kurtosis);
+                means[j] = mean;
+                sigmas[j] = Math.Sqrt(variance);
+                if( (double)(sigmas[j])==(double)(0) )
+                {
+                    sigmas[j] = 1;
+                }
+                for(i=0; i<=npoints-1; i++)
+                {
+                    xy[i,j] = (xy[i,j]-means[j])/sigmas[j];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+
+          -- ALGLIB --
+             Copyright 19.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dsnormalizec(double[,] xy,
+            int npoints,
+            int nvars,
+            ref int info,
+            ref double[] means,
+            ref double[] sigmas)
+        {
+            int j = 0;
+            double[] tmp = new double[0];
+            double mean = 0;
+            double variance = 0;
+            double skewness = 0;
+            double kurtosis = 0;
+            int i_ = 0;
+
+            info = 0;
+            means = new double[0];
+            sigmas = new double[0];
+
+            
+            //
+            // Test parameters
+            //
+            if( npoints<=0 | nvars<1 )
+            {
+                info = -1;
+                return;
+            }
+            info = 1;
+            
+            //
+            // Standartization
+            //
+            means = new double[nvars-1+1];
+            sigmas = new double[nvars-1+1];
+            tmp = new double[npoints-1+1];
+            for(j=0; j<=nvars-1; j++)
+            {
+                for(i_=0; i_<=npoints-1;i_++)
+                {
+                    tmp[i_] = xy[i_,j];
+                }
+                basestat.samplemoments(tmp, npoints, ref mean, ref variance, ref skewness, ref kurtosis);
+                means[j] = mean;
+                sigmas[j] = Math.Sqrt(variance);
+                if( (double)(sigmas[j])==(double)(0) )
+                {
+                    sigmas[j] = 1;
+                }
+            }
+        }
+
+
+        /*************************************************************************
+
+          -- ALGLIB --
+             Copyright 19.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static double dsgetmeanmindistance(double[,] xy,
+            int npoints,
+            int nvars)
+        {
+            double result = 0;
+            int i = 0;
+            int j = 0;
+            double[] tmp = new double[0];
+            double[] tmp2 = new double[0];
+            double v = 0;
+            int i_ = 0;
+
+            
+            //
+            // Test parameters
+            //
+            if( npoints<=0 | nvars<1 )
+            {
+                result = 0;
+                return result;
+            }
+            
+            //
+            // Process
+            //
+            tmp = new double[npoints-1+1];
+            for(i=0; i<=npoints-1; i++)
+            {
+                tmp[i] = math.maxrealnumber;
+            }
+            tmp2 = new double[nvars-1+1];
+            for(i=0; i<=npoints-1; i++)
+            {
+                for(j=i+1; j<=npoints-1; j++)
+                {
+                    for(i_=0; i_<=nvars-1;i_++)
+                    {
+                        tmp2[i_] = xy[i,i_];
+                    }
+                    for(i_=0; i_<=nvars-1;i_++)
+                    {
+                        tmp2[i_] = tmp2[i_] - xy[j,i_];
+                    }
+                    v = 0.0;
+                    for(i_=0; i_<=nvars-1;i_++)
+                    {
+                        v += tmp2[i_]*tmp2[i_];
+                    }
+                    v = Math.Sqrt(v);
+                    tmp[i] = Math.Min(tmp[i], v);
+                    tmp[j] = Math.Min(tmp[j], v);
+                }
+            }
+            result = 0;
+            for(i=0; i<=npoints-1; i++)
+            {
+                result = result+tmp[i]/npoints;
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+
+          -- ALGLIB --
+             Copyright 19.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dstie(ref double[] a,
+            int n,
+            ref int[] ties,
+            ref int tiecount,
+            ref int[] p1,
+            ref int[] p2)
+        {
+            int i = 0;
+            int k = 0;
+            int[] tmp = new int[0];
+
+            ties = new int[0];
+            tiecount = 0;
+            p1 = new int[0];
+            p2 = new int[0];
+
+            
+            //
+            // Special case
+            //
+            if( n<=0 )
+            {
+                tiecount = 0;
+                return;
+            }
+            
+            //
+            // Sort A
+            //
+            tsort.tagsort(ref a, n, ref p1, ref p2);
+            
+            //
+            // Process ties
+            //
+            tiecount = 1;
+            for(i=1; i<=n-1; i++)
+            {
+                if( (double)(a[i])!=(double)(a[i-1]) )
+                {
+                    tiecount = tiecount+1;
+                }
+            }
+            ties = new int[tiecount+1];
+            ties[0] = 0;
+            k = 1;
+            for(i=1; i<=n-1; i++)
+            {
+                if( (double)(a[i])!=(double)(a[i-1]) )
+                {
+                    ties[k] = i;
+                    k = k+1;
+                }
+            }
+            ties[tiecount] = n;
+        }
+
+
+        /*************************************************************************
+
+          -- ALGLIB --
+             Copyright 11.12.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dstiefasti(ref double[] a,
+            ref int[] b,
+            int n,
+            ref int[] ties,
+            ref int tiecount,
+            ref double[] bufr,
+            ref int[] bufi)
+        {
+            int i = 0;
+            int k = 0;
+            int[] tmp = new int[0];
+
+            tiecount = 0;
+
+            
+            //
+            // Special case
+            //
+            if( n<=0 )
+            {
+                tiecount = 0;
+                return;
+            }
+            
+            //
+            // Sort A
+            //
+            tsort.tagsortfasti(ref a, ref b, ref bufr, ref bufi, n);
+            
+            //
+            // Process ties
+            //
+            ties[0] = 0;
+            k = 1;
+            for(i=1; i<=n-1; i++)
+            {
+                if( (double)(a[i])!=(double)(a[i-1]) )
+                {
+                    ties[k] = i;
+                    k = k+1;
+                }
+            }
+            ties[k] = n;
+            tiecount = k;
+        }
+
+
+        /*************************************************************************
+        Optimal binary classification
+
+        Algorithms finds optimal (=with minimal cross-entropy) binary partition.
+        Internal subroutine.
+
+        INPUT PARAMETERS:
+            A       -   array[0..N-1], variable
+            C       -   array[0..N-1], class numbers (0 or 1).
+            N       -   array size
+
+        OUTPUT PARAMETERS:
+            Info    -   completetion code:
+                        * -3, all values of A[] are same (partition is impossible)
+                        * -2, one of C[] is incorrect (<0, >1)
+                        * -1, incorrect pararemets were passed (N<=0).
+                        *  1, OK
+            Threshold-  partiton boundary. Left part contains values which are
+                        strictly less than Threshold. Right part contains values
+                        which are greater than or equal to Threshold.
+            PAL, PBL-   probabilities P(0|v<Threshold) and P(1|v<Threshold)
+            PAR, PBR-   probabilities P(0|v>=Threshold) and P(1|v>=Threshold)
+            CVE     -   cross-validation estimate of cross-entropy
+
+          -- ALGLIB --
+             Copyright 22.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dsoptimalsplit2(double[] a,
+            int[] c,
+            int n,
+            ref int info,
+            ref double threshold,
+            ref double pal,
+            ref double pbl,
+            ref double par,
+            ref double pbr,
+            ref double cve)
+        {
+            int i = 0;
+            int t = 0;
+            double s = 0;
+            int[] ties = new int[0];
+            int tiecount = 0;
+            int[] p1 = new int[0];
+            int[] p2 = new int[0];
+            int k = 0;
+            int koptimal = 0;
+            double pak = 0;
+            double pbk = 0;
+            double cvoptimal = 0;
+            double cv = 0;
+
+            a = (double[])a.Clone();
+            c = (int[])c.Clone();
+            info = 0;
+            threshold = 0;
+            pal = 0;
+            pbl = 0;
+            par = 0;
+            pbr = 0;
+            cve = 0;
+
+            
+            //
+            // Test for errors in inputs
+            //
+            if( n<=0 )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                if( c[i]!=0 & c[i]!=1 )
+                {
+                    info = -2;
+                    return;
+                }
+            }
+            info = 1;
+            
+            //
+            // Tie
+            //
+            dstie(ref a, n, ref ties, ref tiecount, ref p1, ref p2);
+            for(i=0; i<=n-1; i++)
+            {
+                if( p2[i]!=i )
+                {
+                    t = c[i];
+                    c[i] = c[p2[i]];
+                    c[p2[i]] = t;
+                }
+            }
+            
+            //
+            // Special case: number of ties is 1.
+            //
+            // NOTE: we assume that P[i,j] equals to 0 or 1,
+            //       intermediate values are not allowed.
+            //
+            if( tiecount==1 )
+            {
+                info = -3;
+                return;
+            }
+            
+            //
+            // General case, number of ties > 1
+            //
+            // NOTE: we assume that P[i,j] equals to 0 or 1,
+            //       intermediate values are not allowed.
+            //
+            pal = 0;
+            pbl = 0;
+            par = 0;
+            pbr = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                if( c[i]==0 )
+                {
+                    par = par+1;
+                }
+                if( c[i]==1 )
+                {
+                    pbr = pbr+1;
+                }
+            }
+            koptimal = -1;
+            cvoptimal = math.maxrealnumber;
+            for(k=0; k<=tiecount-2; k++)
+            {
+                
+                //
+                // first, obtain information about K-th tie which is
+                // moved from R-part to L-part
+                //
+                pak = 0;
+                pbk = 0;
+                for(i=ties[k]; i<=ties[k+1]-1; i++)
+                {
+                    if( c[i]==0 )
+                    {
+                        pak = pak+1;
+                    }
+                    if( c[i]==1 )
+                    {
+                        pbk = pbk+1;
+                    }
+                }
+                
+                //
+                // Calculate cross-validation CE
+                //
+                cv = 0;
+                cv = cv-xlny(pal+pak, (pal+pak)/(pal+pak+pbl+pbk+1));
+                cv = cv-xlny(pbl+pbk, (pbl+pbk)/(pal+pak+1+pbl+pbk));
+                cv = cv-xlny(par-pak, (par-pak)/(par-pak+pbr-pbk+1));
+                cv = cv-xlny(pbr-pbk, (pbr-pbk)/(par-pak+1+pbr-pbk));
+                
+                //
+                // Compare with best
+                //
+                if( (double)(cv)<(double)(cvoptimal) )
+                {
+                    cvoptimal = cv;
+                    koptimal = k;
+                }
+                
+                //
+                // update
+                //
+                pal = pal+pak;
+                pbl = pbl+pbk;
+                par = par-pak;
+                pbr = pbr-pbk;
+            }
+            cve = cvoptimal;
+            threshold = 0.5*(a[ties[koptimal]]+a[ties[koptimal+1]]);
+            pal = 0;
+            pbl = 0;
+            par = 0;
+            pbr = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                if( (double)(a[i])<(double)(threshold) )
+                {
+                    if( c[i]==0 )
+                    {
+                        pal = pal+1;
+                    }
+                    else
+                    {
+                        pbl = pbl+1;
+                    }
+                }
+                else
+                {
+                    if( c[i]==0 )
+                    {
+                        par = par+1;
+                    }
+                    else
+                    {
+                        pbr = pbr+1;
+                    }
+                }
+            }
+            s = pal+pbl;
+            pal = pal/s;
+            pbl = pbl/s;
+            s = par+pbr;
+            par = par/s;
+            pbr = pbr/s;
+        }
+
+
+        /*************************************************************************
+        Optimal partition, internal subroutine. Fast version.
+
+        Accepts:
+            A       array[0..N-1]       array of attributes     array[0..N-1]
+            C       array[0..N-1]       array of class labels
+            TiesBuf array[0..N]         temporaries (ties)
+            CntBuf  array[0..2*NC-1]    temporaries (counts)
+            Alpha                       centering factor (0<=alpha<=1, recommended value - 0.05)
+            BufR    array[0..N-1]       temporaries
+            BufI    array[0..N-1]       temporaries
+
+        Output:
+            Info    error code (">0"=OK, "<0"=bad)
+            RMS     training set RMS error
+            CVRMS   leave-one-out RMS error
+            
+        Note:
+            content of all arrays is changed by subroutine;
+            it doesn't allocate temporaries.
+
+          -- ALGLIB --
+             Copyright 11.12.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dsoptimalsplit2fast(ref double[] a,
+            ref int[] c,
+            ref int[] tiesbuf,
+            ref int[] cntbuf,
+            ref double[] bufr,
+            ref int[] bufi,
+            int n,
+            int nc,
+            double alpha,
+            ref int info,
+            ref double threshold,
+            ref double rms,
+            ref double cvrms)
+        {
+            int i = 0;
+            int k = 0;
+            int cl = 0;
+            int tiecount = 0;
+            double cbest = 0;
+            double cc = 0;
+            int koptimal = 0;
+            int sl = 0;
+            int sr = 0;
+            double v = 0;
+            double w = 0;
+            double x = 0;
+
+            info = 0;
+            threshold = 0;
+            rms = 0;
+            cvrms = 0;
+
+            
+            //
+            // Test for errors in inputs
+            //
+            if( n<=0 | nc<2 )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                if( c[i]<0 | c[i]>=nc )
+                {
+                    info = -2;
+                    return;
+                }
+            }
+            info = 1;
+            
+            //
+            // Tie
+            //
+            dstiefasti(ref a, ref c, n, ref tiesbuf, ref tiecount, ref bufr, ref bufi);
+            
+            //
+            // Special case: number of ties is 1.
+            //
+            if( tiecount==1 )
+            {
+                info = -3;
+                return;
+            }
+            
+            //
+            // General case, number of ties > 1
+            //
+            for(i=0; i<=2*nc-1; i++)
+            {
+                cntbuf[i] = 0;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                cntbuf[nc+c[i]] = cntbuf[nc+c[i]]+1;
+            }
+            koptimal = -1;
+            threshold = a[n-1];
+            cbest = math.maxrealnumber;
+            sl = 0;
+            sr = n;
+            for(k=0; k<=tiecount-2; k++)
+            {
+                
+                //
+                // first, move Kth tie from right to left
+                //
+                for(i=tiesbuf[k]; i<=tiesbuf[k+1]-1; i++)
+                {
+                    cl = c[i];
+                    cntbuf[cl] = cntbuf[cl]+1;
+                    cntbuf[nc+cl] = cntbuf[nc+cl]-1;
+                }
+                sl = sl+(tiesbuf[k+1]-tiesbuf[k]);
+                sr = sr-(tiesbuf[k+1]-tiesbuf[k]);
+                
+                //
+                // Calculate RMS error
+                //
+                v = 0;
+                for(i=0; i<=nc-1; i++)
+                {
+                    w = cntbuf[i];
+                    v = v+w*math.sqr(w/sl-1);
+                    v = v+(sl-w)*math.sqr(w/sl);
+                    w = cntbuf[nc+i];
+                    v = v+w*math.sqr(w/sr-1);
+                    v = v+(sr-w)*math.sqr(w/sr);
+                }
+                v = Math.Sqrt(v/(nc*n));
+                
+                //
+                // Compare with best
+                //
+                x = (double)(2*sl)/(double)(sl+sr)-1;
+                cc = v*(1-alpha+alpha*math.sqr(x));
+                if( (double)(cc)<(double)(cbest) )
+                {
+                    
+                    //
+                    // store split
+                    //
+                    rms = v;
+                    koptimal = k;
+                    cbest = cc;
+                    
+                    //
+                    // calculate CVRMS error
+                    //
+                    cvrms = 0;
+                    for(i=0; i<=nc-1; i++)
+                    {
+                        if( sl>1 )
+                        {
+                            w = cntbuf[i];
+                            cvrms = cvrms+w*math.sqr((w-1)/(sl-1)-1);
+                            cvrms = cvrms+(sl-w)*math.sqr(w/(sl-1));
+                        }
+                        else
+                        {
+                            w = cntbuf[i];
+                            cvrms = cvrms+w*math.sqr((double)1/(double)nc-1);
+                            cvrms = cvrms+(sl-w)*math.sqr((double)1/(double)nc);
+                        }
+                        if( sr>1 )
+                        {
+                            w = cntbuf[nc+i];
+                            cvrms = cvrms+w*math.sqr((w-1)/(sr-1)-1);
+                            cvrms = cvrms+(sr-w)*math.sqr(w/(sr-1));
+                        }
+                        else
+                        {
+                            w = cntbuf[nc+i];
+                            cvrms = cvrms+w*math.sqr((double)1/(double)nc-1);
+                            cvrms = cvrms+(sr-w)*math.sqr((double)1/(double)nc);
+                        }
+                    }
+                    cvrms = Math.Sqrt(cvrms/(nc*n));
+                }
+            }
+            
+            //
+            // Calculate threshold.
+            // Code is a bit complicated because there can be such
+            // numbers that 0.5(A+B) equals to A or B (if A-B=epsilon)
+            //
+            threshold = 0.5*(a[tiesbuf[koptimal]]+a[tiesbuf[koptimal+1]]);
+            if( (double)(threshold)<=(double)(a[tiesbuf[koptimal]]) )
+            {
+                threshold = a[tiesbuf[koptimal+1]];
+            }
+        }
+
+
+        /*************************************************************************
+        Automatic non-optimal discretization, internal subroutine.
+
+          -- ALGLIB --
+             Copyright 22.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dssplitk(double[] a,
+            int[] c,
+            int n,
+            int nc,
+            int kmax,
+            ref int info,
+            ref double[] thresholds,
+            ref int ni,
+            ref double cve)
+        {
+            int i = 0;
+            int j = 0;
+            int j1 = 0;
+            int k = 0;
+            int[] ties = new int[0];
+            int tiecount = 0;
+            int[] p1 = new int[0];
+            int[] p2 = new int[0];
+            int[] cnt = new int[0];
+            double v2 = 0;
+            int bestk = 0;
+            double bestcve = 0;
+            int[] bestsizes = new int[0];
+            double curcve = 0;
+            int[] cursizes = new int[0];
+
+            a = (double[])a.Clone();
+            c = (int[])c.Clone();
+            info = 0;
+            thresholds = new double[0];
+            ni = 0;
+            cve = 0;
+
+            
+            //
+            // Test for errors in inputs
+            //
+            if( (n<=0 | nc<2) | kmax<2 )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                if( c[i]<0 | c[i]>=nc )
+                {
+                    info = -2;
+                    return;
+                }
+            }
+            info = 1;
+            
+            //
+            // Tie
+            //
+            dstie(ref a, n, ref ties, ref tiecount, ref p1, ref p2);
+            for(i=0; i<=n-1; i++)
+            {
+                if( p2[i]!=i )
+                {
+                    k = c[i];
+                    c[i] = c[p2[i]];
+                    c[p2[i]] = k;
+                }
+            }
+            
+            //
+            // Special cases
+            //
+            if( tiecount==1 )
+            {
+                info = -3;
+                return;
+            }
+            
+            //
+            // General case:
+            // 0. allocate arrays
+            //
+            kmax = Math.Min(kmax, tiecount);
+            bestsizes = new int[kmax-1+1];
+            cursizes = new int[kmax-1+1];
+            cnt = new int[nc-1+1];
+            
+            //
+            // General case:
+            // 1. prepare "weak" solution (two subintervals, divided at median)
+            //
+            v2 = math.maxrealnumber;
+            j = -1;
+            for(i=1; i<=tiecount-1; i++)
+            {
+                if( (double)(Math.Abs(ties[i]-0.5*(n-1)))<(double)(v2) )
+                {
+                    v2 = Math.Abs(ties[i]-0.5*n);
+                    j = i;
+                }
+            }
+            ap.assert(j>0, "DSSplitK: internal error #1!");
+            bestk = 2;
+            bestsizes[0] = ties[j];
+            bestsizes[1] = n-j;
+            bestcve = 0;
+            for(i=0; i<=nc-1; i++)
+            {
+                cnt[i] = 0;
+            }
+            for(i=0; i<=j-1; i++)
+            {
+                tieaddc(c, ties, i, nc, ref cnt);
+            }
+            bestcve = bestcve+getcv(cnt, nc);
+            for(i=0; i<=nc-1; i++)
+            {
+                cnt[i] = 0;
+            }
+            for(i=j; i<=tiecount-1; i++)
+            {
+                tieaddc(c, ties, i, nc, ref cnt);
+            }
+            bestcve = bestcve+getcv(cnt, nc);
+            
+            //
+            // General case:
+            // 2. Use greedy algorithm to find sub-optimal split in O(KMax*N) time
+            //
+            for(k=2; k<=kmax; k++)
+            {
+                
+                //
+                // Prepare greedy K-interval split
+                //
+                for(i=0; i<=k-1; i++)
+                {
+                    cursizes[i] = 0;
+                }
+                i = 0;
+                j = 0;
+                while( j<=tiecount-1 & i<=k-1 )
+                {
+                    
+                    //
+                    // Rule: I-th bin is empty, fill it
+                    //
+                    if( cursizes[i]==0 )
+                    {
+                        cursizes[i] = ties[j+1]-ties[j];
+                        j = j+1;
+                        continue;
+                    }
+                    
+                    //
+                    // Rule: (K-1-I) bins left, (K-1-I) ties left (1 tie per bin); next bin
+                    //
+                    if( tiecount-j==k-1-i )
+                    {
+                        i = i+1;
+                        continue;
+                    }
+                    
+                    //
+                    // Rule: last bin, always place in current
+                    //
+                    if( i==k-1 )
+                    {
+                        cursizes[i] = cursizes[i]+ties[j+1]-ties[j];
+                        j = j+1;
+                        continue;
+                    }
+                    
+                    //
+                    // Place J-th tie in I-th bin, or leave for I+1-th bin.
+                    //
+                    if( (double)(Math.Abs(cursizes[i]+ties[j+1]-ties[j]-(double)n/(double)k))<(double)(Math.Abs(cursizes[i]-(double)n/(double)k)) )
+                    {
+                        cursizes[i] = cursizes[i]+ties[j+1]-ties[j];
+                        j = j+1;
+                    }
+                    else
+                    {
+                        i = i+1;
+                    }
+                }
+                ap.assert(cursizes[k-1]!=0 & j==tiecount, "DSSplitK: internal error #1");
+                
+                //
+                // Calculate CVE
+                //
+                curcve = 0;
+                j = 0;
+                for(i=0; i<=k-1; i++)
+                {
+                    for(j1=0; j1<=nc-1; j1++)
+                    {
+                        cnt[j1] = 0;
+                    }
+                    for(j1=j; j1<=j+cursizes[i]-1; j1++)
+                    {
+                        cnt[c[j1]] = cnt[c[j1]]+1;
+                    }
+                    curcve = curcve+getcv(cnt, nc);
+                    j = j+cursizes[i];
+                }
+                
+                //
+                // Choose best variant
+                //
+                if( (double)(curcve)<(double)(bestcve) )
+                {
+                    for(i=0; i<=k-1; i++)
+                    {
+                        bestsizes[i] = cursizes[i];
+                    }
+                    bestcve = curcve;
+                    bestk = k;
+                }
+            }
+            
+            //
+            // Transform from sizes to thresholds
+            //
+            cve = bestcve;
+            ni = bestk;
+            thresholds = new double[ni-2+1];
+            j = bestsizes[0];
+            for(i=1; i<=bestk-1; i++)
+            {
+                thresholds[i-1] = 0.5*(a[j-1]+a[j]);
+                j = j+bestsizes[i];
+            }
+        }
+
+
+        /*************************************************************************
+        Automatic optimal discretization, internal subroutine.
+
+          -- ALGLIB --
+             Copyright 22.05.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dsoptimalsplitk(double[] a,
+            int[] c,
+            int n,
+            int nc,
+            int kmax,
+            ref int info,
+            ref double[] thresholds,
+            ref int ni,
+            ref double cve)
+        {
+            int i = 0;
+            int j = 0;
+            int s = 0;
+            int jl = 0;
+            int jr = 0;
+            double v2 = 0;
+            int[] ties = new int[0];
+            int tiecount = 0;
+            int[] p1 = new int[0];
+            int[] p2 = new int[0];
+            double cvtemp = 0;
+            int[] cnt = new int[0];
+            int[] cnt2 = new int[0];
+            double[,] cv = new double[0,0];
+            int[,] splits = new int[0,0];
+            int k = 0;
+            int koptimal = 0;
+            double cvoptimal = 0;
+
+            a = (double[])a.Clone();
+            c = (int[])c.Clone();
+            info = 0;
+            thresholds = new double[0];
+            ni = 0;
+            cve = 0;
+
+            
+            //
+            // Test for errors in inputs
+            //
+            if( (n<=0 | nc<2) | kmax<2 )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                if( c[i]<0 | c[i]>=nc )
+                {
+                    info = -2;
+                    return;
+                }
+            }
+            info = 1;
+            
+            //
+            // Tie
+            //
+            dstie(ref a, n, ref ties, ref tiecount, ref p1, ref p2);
+            for(i=0; i<=n-1; i++)
+            {
+                if( p2[i]!=i )
+                {
+                    k = c[i];
+                    c[i] = c[p2[i]];
+                    c[p2[i]] = k;
+                }
+            }
+            
+            //
+            // Special cases
+            //
+            if( tiecount==1 )
+            {
+                info = -3;
+                return;
+            }
+            
+            //
+            // General case
+            // Use dynamic programming to find best split in O(KMax*NC*TieCount^2) time
+            //
+            kmax = Math.Min(kmax, tiecount);
+            cv = new double[kmax-1+1, tiecount-1+1];
+            splits = new int[kmax-1+1, tiecount-1+1];
+            cnt = new int[nc-1+1];
+            cnt2 = new int[nc-1+1];
+            for(j=0; j<=nc-1; j++)
+            {
+                cnt[j] = 0;
+            }
+            for(j=0; j<=tiecount-1; j++)
+            {
+                tieaddc(c, ties, j, nc, ref cnt);
+                splits[0,j] = 0;
+                cv[0,j] = getcv(cnt, nc);
+            }
+            for(k=1; k<=kmax-1; k++)
+            {
+                for(j=0; j<=nc-1; j++)
+                {
+                    cnt[j] = 0;
+                }
+                
+                //
+                // Subtask size J in [K..TieCount-1]:
+                // optimal K-splitting on ties from 0-th to J-th.
+                //
+                for(j=k; j<=tiecount-1; j++)
+                {
+                    
+                    //
+                    // Update Cnt - let it contain classes of ties from K-th to J-th
+                    //
+                    tieaddc(c, ties, j, nc, ref cnt);
+                    
+                    //
+                    // Search for optimal split point S in [K..J]
+                    //
+                    for(i=0; i<=nc-1; i++)
+                    {
+                        cnt2[i] = cnt[i];
+                    }
+                    cv[k,j] = cv[k-1,j-1]+getcv(cnt2, nc);
+                    splits[k,j] = j;
+                    for(s=k+1; s<=j; s++)
+                    {
+                        
+                        //
+                        // Update Cnt2 - let it contain classes of ties from S-th to J-th
+                        //
+                        tiesubc(c, ties, s-1, nc, ref cnt2);
+                        
+                        //
+                        // Calculate CVE
+                        //
+                        cvtemp = cv[k-1,s-1]+getcv(cnt2, nc);
+                        if( (double)(cvtemp)<(double)(cv[k,j]) )
+                        {
+                            cv[k,j] = cvtemp;
+                            splits[k,j] = s;
+                        }
+                    }
+                }
+            }
+            
+            //
+            // Choose best partition, output result
+            //
+            koptimal = -1;
+            cvoptimal = math.maxrealnumber;
+            for(k=0; k<=kmax-1; k++)
+            {
+                if( (double)(cv[k,tiecount-1])<(double)(cvoptimal) )
+                {
+                    cvoptimal = cv[k,tiecount-1];
+                    koptimal = k;
+                }
+            }
+            ap.assert(koptimal>=0, "DSOptimalSplitK: internal error #1!");
+            if( koptimal==0 )
+            {
+                
+                //
+                // Special case: best partition is one big interval.
+                // Even 2-partition is not better.
+                // This is possible when dealing with "weak" predictor variables.
+                //
+                // Make binary split as close to the median as possible.
+                //
+                v2 = math.maxrealnumber;
+                j = -1;
+                for(i=1; i<=tiecount-1; i++)
+                {
+                    if( (double)(Math.Abs(ties[i]-0.5*(n-1)))<(double)(v2) )
+                    {
+                        v2 = Math.Abs(ties[i]-0.5*(n-1));
+                        j = i;
+                    }
+                }
+                ap.assert(j>0, "DSOptimalSplitK: internal error #2!");
+                thresholds = new double[0+1];
+                thresholds[0] = 0.5*(a[ties[j-1]]+a[ties[j]]);
+                ni = 2;
+                cve = 0;
+                for(i=0; i<=nc-1; i++)
+                {
+                    cnt[i] = 0;
+                }
+                for(i=0; i<=j-1; i++)
+                {
+                    tieaddc(c, ties, i, nc, ref cnt);
+                }
+                cve = cve+getcv(cnt, nc);
+                for(i=0; i<=nc-1; i++)
+                {
+                    cnt[i] = 0;
+                }
+                for(i=j; i<=tiecount-1; i++)
+                {
+                    tieaddc(c, ties, i, nc, ref cnt);
+                }
+                cve = cve+getcv(cnt, nc);
+            }
+            else
+            {
+                
+                //
+                // General case: 2 or more intervals
+                //
+                thresholds = new double[koptimal-1+1];
+                ni = koptimal+1;
+                cve = cv[koptimal,tiecount-1];
+                jl = splits[koptimal,tiecount-1];
+                jr = tiecount-1;
+                for(k=koptimal; k>=1; k--)
+                {
+                    thresholds[k-1] = 0.5*(a[ties[jl-1]]+a[ties[jl]]);
+                    jr = jl-1;
+                    jl = splits[k-1,jl-1];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Internal function
+        *************************************************************************/
+        private static double xlny(double x,
+            double y)
+        {
+            double result = 0;
+
+            if( (double)(x)==(double)(0) )
+            {
+                result = 0;
+            }
+            else
+            {
+                result = x*Math.Log(y);
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        Internal function,
+        returns number of samples of class I in Cnt[I]
+        *************************************************************************/
+        private static double getcv(int[] cnt,
+            int nc)
+        {
+            double result = 0;
+            int i = 0;
+            double s = 0;
+
+            s = 0;
+            for(i=0; i<=nc-1; i++)
+            {
+                s = s+cnt[i];
+            }
+            result = 0;
+            for(i=0; i<=nc-1; i++)
+            {
+                result = result-xlny(cnt[i], cnt[i]/(s+nc-1));
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        Internal function, adds number of samples of class I in tie NTie to Cnt[I]
+        *************************************************************************/
+        private static void tieaddc(int[] c,
+            int[] ties,
+            int ntie,
+            int nc,
+            ref int[] cnt)
+        {
+            int i = 0;
+
+            for(i=ties[ntie]; i<=ties[ntie+1]-1; i++)
+            {
+                cnt[c[i]] = cnt[c[i]]+1;
+            }
+        }
+
+
+        /*************************************************************************
+        Internal function, subtracts number of samples of class I in tie NTie to Cnt[I]
+        *************************************************************************/
+        private static void tiesubc(int[] c,
+            int[] ties,
+            int ntie,
+            int nc,
+            ref int[] cnt)
+        {
+            int i = 0;
+
+            for(i=ties[ntie]; i<=ties[ntie+1]-1; i++)
+            {
+                cnt[c[i]] = cnt[c[i]]-1;
+            }
+        }
+
+
+    }
     public class dforest
     {
         public class decisionforest
@@ -4305,1474 +5774,6 @@ public partial class alglib
 
 
     }
-    public class bdss
-    {
-        public class cvreport
-        {
-            public double relclserror;
-            public double avgce;
-            public double rmserror;
-            public double avgerror;
-            public double avgrelerror;
-        };
-
-
-
-
-        /*************************************************************************
-        This set of routines (DSErrAllocate, DSErrAccumulate, DSErrFinish)
-        calculates different error functions (classification error, cross-entropy,
-        rms, avg, avg.rel errors).
-
-        1. DSErrAllocate prepares buffer.
-        2. DSErrAccumulate accumulates individual errors:
-            * Y contains predicted output (posterior probabilities for classification)
-            * DesiredY contains desired output (class number for classification)
-        3. DSErrFinish outputs results:
-           * Buf[0] contains relative classification error (zero for regression tasks)
-           * Buf[1] contains avg. cross-entropy (zero for regression tasks)
-           * Buf[2] contains rms error (regression, classification)
-           * Buf[3] contains average error (regression, classification)
-           * Buf[4] contains average relative error (regression, classification)
-           
-        NOTES(1):
-            "NClasses>0" means that we have classification task.
-            "NClasses<0" means regression task with -NClasses real outputs.
-
-        NOTES(2):
-            rms. avg, avg.rel errors for classification tasks are interpreted as
-            errors in posterior probabilities with respect to probabilities given
-            by training/test set.
-
-          -- ALGLIB --
-             Copyright 11.01.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dserrallocate(int nclasses,
-            ref double[] buf)
-        {
-            buf = new double[0];
-
-            buf = new double[7+1];
-            buf[0] = 0;
-            buf[1] = 0;
-            buf[2] = 0;
-            buf[3] = 0;
-            buf[4] = 0;
-            buf[5] = nclasses;
-            buf[6] = 0;
-            buf[7] = 0;
-        }
-
-
-        /*************************************************************************
-        See DSErrAllocate for comments on this routine.
-
-          -- ALGLIB --
-             Copyright 11.01.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dserraccumulate(ref double[] buf,
-            double[] y,
-            double[] desiredy)
-        {
-            int nclasses = 0;
-            int nout = 0;
-            int offs = 0;
-            int mmax = 0;
-            int rmax = 0;
-            int j = 0;
-            double v = 0;
-            double ev = 0;
-
-            offs = 5;
-            nclasses = (int)Math.Round(buf[offs]);
-            if( nclasses>0 )
-            {
-                
-                //
-                // Classification
-                //
-                rmax = (int)Math.Round(desiredy[0]);
-                mmax = 0;
-                for(j=1; j<=nclasses-1; j++)
-                {
-                    if( (double)(y[j])>(double)(y[mmax]) )
-                    {
-                        mmax = j;
-                    }
-                }
-                if( mmax!=rmax )
-                {
-                    buf[0] = buf[0]+1;
-                }
-                if( (double)(y[rmax])>(double)(0) )
-                {
-                    buf[1] = buf[1]-Math.Log(y[rmax]);
-                }
-                else
-                {
-                    buf[1] = buf[1]+Math.Log(math.maxrealnumber);
-                }
-                for(j=0; j<=nclasses-1; j++)
-                {
-                    v = y[j];
-                    if( j==rmax )
-                    {
-                        ev = 1;
-                    }
-                    else
-                    {
-                        ev = 0;
-                    }
-                    buf[2] = buf[2]+math.sqr(v-ev);
-                    buf[3] = buf[3]+Math.Abs(v-ev);
-                    if( (double)(ev)!=(double)(0) )
-                    {
-                        buf[4] = buf[4]+Math.Abs((v-ev)/ev);
-                        buf[offs+2] = buf[offs+2]+1;
-                    }
-                }
-                buf[offs+1] = buf[offs+1]+1;
-            }
-            else
-            {
-                
-                //
-                // Regression
-                //
-                nout = -nclasses;
-                rmax = 0;
-                for(j=1; j<=nout-1; j++)
-                {
-                    if( (double)(desiredy[j])>(double)(desiredy[rmax]) )
-                    {
-                        rmax = j;
-                    }
-                }
-                mmax = 0;
-                for(j=1; j<=nout-1; j++)
-                {
-                    if( (double)(y[j])>(double)(y[mmax]) )
-                    {
-                        mmax = j;
-                    }
-                }
-                if( mmax!=rmax )
-                {
-                    buf[0] = buf[0]+1;
-                }
-                for(j=0; j<=nout-1; j++)
-                {
-                    v = y[j];
-                    ev = desiredy[j];
-                    buf[2] = buf[2]+math.sqr(v-ev);
-                    buf[3] = buf[3]+Math.Abs(v-ev);
-                    if( (double)(ev)!=(double)(0) )
-                    {
-                        buf[4] = buf[4]+Math.Abs((v-ev)/ev);
-                        buf[offs+2] = buf[offs+2]+1;
-                    }
-                }
-                buf[offs+1] = buf[offs+1]+1;
-            }
-        }
-
-
-        /*************************************************************************
-        See DSErrAllocate for comments on this routine.
-
-          -- ALGLIB --
-             Copyright 11.01.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dserrfinish(ref double[] buf)
-        {
-            int nout = 0;
-            int offs = 0;
-
-            offs = 5;
-            nout = Math.Abs((int)Math.Round(buf[offs]));
-            if( (double)(buf[offs+1])!=(double)(0) )
-            {
-                buf[0] = buf[0]/buf[offs+1];
-                buf[1] = buf[1]/buf[offs+1];
-                buf[2] = Math.Sqrt(buf[2]/(nout*buf[offs+1]));
-                buf[3] = buf[3]/(nout*buf[offs+1]);
-            }
-            if( (double)(buf[offs+2])!=(double)(0) )
-            {
-                buf[4] = buf[4]/buf[offs+2];
-            }
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 19.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dsnormalize(ref double[,] xy,
-            int npoints,
-            int nvars,
-            ref int info,
-            ref double[] means,
-            ref double[] sigmas)
-        {
-            int i = 0;
-            int j = 0;
-            double[] tmp = new double[0];
-            double mean = 0;
-            double variance = 0;
-            double skewness = 0;
-            double kurtosis = 0;
-            int i_ = 0;
-
-            info = 0;
-            means = new double[0];
-            sigmas = new double[0];
-
-            
-            //
-            // Test parameters
-            //
-            if( npoints<=0 | nvars<1 )
-            {
-                info = -1;
-                return;
-            }
-            info = 1;
-            
-            //
-            // Standartization
-            //
-            means = new double[nvars-1+1];
-            sigmas = new double[nvars-1+1];
-            tmp = new double[npoints-1+1];
-            for(j=0; j<=nvars-1; j++)
-            {
-                for(i_=0; i_<=npoints-1;i_++)
-                {
-                    tmp[i_] = xy[i_,j];
-                }
-                basestat.samplemoments(tmp, npoints, ref mean, ref variance, ref skewness, ref kurtosis);
-                means[j] = mean;
-                sigmas[j] = Math.Sqrt(variance);
-                if( (double)(sigmas[j])==(double)(0) )
-                {
-                    sigmas[j] = 1;
-                }
-                for(i=0; i<=npoints-1; i++)
-                {
-                    xy[i,j] = (xy[i,j]-means[j])/sigmas[j];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 19.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dsnormalizec(double[,] xy,
-            int npoints,
-            int nvars,
-            ref int info,
-            ref double[] means,
-            ref double[] sigmas)
-        {
-            int j = 0;
-            double[] tmp = new double[0];
-            double mean = 0;
-            double variance = 0;
-            double skewness = 0;
-            double kurtosis = 0;
-            int i_ = 0;
-
-            info = 0;
-            means = new double[0];
-            sigmas = new double[0];
-
-            
-            //
-            // Test parameters
-            //
-            if( npoints<=0 | nvars<1 )
-            {
-                info = -1;
-                return;
-            }
-            info = 1;
-            
-            //
-            // Standartization
-            //
-            means = new double[nvars-1+1];
-            sigmas = new double[nvars-1+1];
-            tmp = new double[npoints-1+1];
-            for(j=0; j<=nvars-1; j++)
-            {
-                for(i_=0; i_<=npoints-1;i_++)
-                {
-                    tmp[i_] = xy[i_,j];
-                }
-                basestat.samplemoments(tmp, npoints, ref mean, ref variance, ref skewness, ref kurtosis);
-                means[j] = mean;
-                sigmas[j] = Math.Sqrt(variance);
-                if( (double)(sigmas[j])==(double)(0) )
-                {
-                    sigmas[j] = 1;
-                }
-            }
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 19.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static double dsgetmeanmindistance(double[,] xy,
-            int npoints,
-            int nvars)
-        {
-            double result = 0;
-            int i = 0;
-            int j = 0;
-            double[] tmp = new double[0];
-            double[] tmp2 = new double[0];
-            double v = 0;
-            int i_ = 0;
-
-            
-            //
-            // Test parameters
-            //
-            if( npoints<=0 | nvars<1 )
-            {
-                result = 0;
-                return result;
-            }
-            
-            //
-            // Process
-            //
-            tmp = new double[npoints-1+1];
-            for(i=0; i<=npoints-1; i++)
-            {
-                tmp[i] = math.maxrealnumber;
-            }
-            tmp2 = new double[nvars-1+1];
-            for(i=0; i<=npoints-1; i++)
-            {
-                for(j=i+1; j<=npoints-1; j++)
-                {
-                    for(i_=0; i_<=nvars-1;i_++)
-                    {
-                        tmp2[i_] = xy[i,i_];
-                    }
-                    for(i_=0; i_<=nvars-1;i_++)
-                    {
-                        tmp2[i_] = tmp2[i_] - xy[j,i_];
-                    }
-                    v = 0.0;
-                    for(i_=0; i_<=nvars-1;i_++)
-                    {
-                        v += tmp2[i_]*tmp2[i_];
-                    }
-                    v = Math.Sqrt(v);
-                    tmp[i] = Math.Min(tmp[i], v);
-                    tmp[j] = Math.Min(tmp[j], v);
-                }
-            }
-            result = 0;
-            for(i=0; i<=npoints-1; i++)
-            {
-                result = result+tmp[i]/npoints;
-            }
-            return result;
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 19.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dstie(ref double[] a,
-            int n,
-            ref int[] ties,
-            ref int tiecount,
-            ref int[] p1,
-            ref int[] p2)
-        {
-            int i = 0;
-            int k = 0;
-            int[] tmp = new int[0];
-
-            ties = new int[0];
-            tiecount = 0;
-            p1 = new int[0];
-            p2 = new int[0];
-
-            
-            //
-            // Special case
-            //
-            if( n<=0 )
-            {
-                tiecount = 0;
-                return;
-            }
-            
-            //
-            // Sort A
-            //
-            tsort.tagsort(ref a, n, ref p1, ref p2);
-            
-            //
-            // Process ties
-            //
-            tiecount = 1;
-            for(i=1; i<=n-1; i++)
-            {
-                if( (double)(a[i])!=(double)(a[i-1]) )
-                {
-                    tiecount = tiecount+1;
-                }
-            }
-            ties = new int[tiecount+1];
-            ties[0] = 0;
-            k = 1;
-            for(i=1; i<=n-1; i++)
-            {
-                if( (double)(a[i])!=(double)(a[i-1]) )
-                {
-                    ties[k] = i;
-                    k = k+1;
-                }
-            }
-            ties[tiecount] = n;
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 11.12.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dstiefasti(ref double[] a,
-            ref int[] b,
-            int n,
-            ref int[] ties,
-            ref int tiecount,
-            ref double[] bufr,
-            ref int[] bufi)
-        {
-            int i = 0;
-            int k = 0;
-            int[] tmp = new int[0];
-
-            tiecount = 0;
-
-            
-            //
-            // Special case
-            //
-            if( n<=0 )
-            {
-                tiecount = 0;
-                return;
-            }
-            
-            //
-            // Sort A
-            //
-            tsort.tagsortfasti(ref a, ref b, ref bufr, ref bufi, n);
-            
-            //
-            // Process ties
-            //
-            ties[0] = 0;
-            k = 1;
-            for(i=1; i<=n-1; i++)
-            {
-                if( (double)(a[i])!=(double)(a[i-1]) )
-                {
-                    ties[k] = i;
-                    k = k+1;
-                }
-            }
-            ties[k] = n;
-            tiecount = k;
-        }
-
-
-        /*************************************************************************
-        Optimal binary classification
-
-        Algorithms finds optimal (=with minimal cross-entropy) binary partition.
-        Internal subroutine.
-
-        INPUT PARAMETERS:
-            A       -   array[0..N-1], variable
-            C       -   array[0..N-1], class numbers (0 or 1).
-            N       -   array size
-
-        OUTPUT PARAMETERS:
-            Info    -   completetion code:
-                        * -3, all values of A[] are same (partition is impossible)
-                        * -2, one of C[] is incorrect (<0, >1)
-                        * -1, incorrect pararemets were passed (N<=0).
-                        *  1, OK
-            Threshold-  partiton boundary. Left part contains values which are
-                        strictly less than Threshold. Right part contains values
-                        which are greater than or equal to Threshold.
-            PAL, PBL-   probabilities P(0|v<Threshold) and P(1|v<Threshold)
-            PAR, PBR-   probabilities P(0|v>=Threshold) and P(1|v>=Threshold)
-            CVE     -   cross-validation estimate of cross-entropy
-
-          -- ALGLIB --
-             Copyright 22.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dsoptimalsplit2(double[] a,
-            int[] c,
-            int n,
-            ref int info,
-            ref double threshold,
-            ref double pal,
-            ref double pbl,
-            ref double par,
-            ref double pbr,
-            ref double cve)
-        {
-            int i = 0;
-            int t = 0;
-            double s = 0;
-            int[] ties = new int[0];
-            int tiecount = 0;
-            int[] p1 = new int[0];
-            int[] p2 = new int[0];
-            int k = 0;
-            int koptimal = 0;
-            double pak = 0;
-            double pbk = 0;
-            double cvoptimal = 0;
-            double cv = 0;
-
-            a = (double[])a.Clone();
-            c = (int[])c.Clone();
-            info = 0;
-            threshold = 0;
-            pal = 0;
-            pbl = 0;
-            par = 0;
-            pbr = 0;
-            cve = 0;
-
-            
-            //
-            // Test for errors in inputs
-            //
-            if( n<=0 )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                if( c[i]!=0 & c[i]!=1 )
-                {
-                    info = -2;
-                    return;
-                }
-            }
-            info = 1;
-            
-            //
-            // Tie
-            //
-            dstie(ref a, n, ref ties, ref tiecount, ref p1, ref p2);
-            for(i=0; i<=n-1; i++)
-            {
-                if( p2[i]!=i )
-                {
-                    t = c[i];
-                    c[i] = c[p2[i]];
-                    c[p2[i]] = t;
-                }
-            }
-            
-            //
-            // Special case: number of ties is 1.
-            //
-            // NOTE: we assume that P[i,j] equals to 0 or 1,
-            //       intermediate values are not allowed.
-            //
-            if( tiecount==1 )
-            {
-                info = -3;
-                return;
-            }
-            
-            //
-            // General case, number of ties > 1
-            //
-            // NOTE: we assume that P[i,j] equals to 0 or 1,
-            //       intermediate values are not allowed.
-            //
-            pal = 0;
-            pbl = 0;
-            par = 0;
-            pbr = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                if( c[i]==0 )
-                {
-                    par = par+1;
-                }
-                if( c[i]==1 )
-                {
-                    pbr = pbr+1;
-                }
-            }
-            koptimal = -1;
-            cvoptimal = math.maxrealnumber;
-            for(k=0; k<=tiecount-2; k++)
-            {
-                
-                //
-                // first, obtain information about K-th tie which is
-                // moved from R-part to L-part
-                //
-                pak = 0;
-                pbk = 0;
-                for(i=ties[k]; i<=ties[k+1]-1; i++)
-                {
-                    if( c[i]==0 )
-                    {
-                        pak = pak+1;
-                    }
-                    if( c[i]==1 )
-                    {
-                        pbk = pbk+1;
-                    }
-                }
-                
-                //
-                // Calculate cross-validation CE
-                //
-                cv = 0;
-                cv = cv-xlny(pal+pak, (pal+pak)/(pal+pak+pbl+pbk+1));
-                cv = cv-xlny(pbl+pbk, (pbl+pbk)/(pal+pak+1+pbl+pbk));
-                cv = cv-xlny(par-pak, (par-pak)/(par-pak+pbr-pbk+1));
-                cv = cv-xlny(pbr-pbk, (pbr-pbk)/(par-pak+1+pbr-pbk));
-                
-                //
-                // Compare with best
-                //
-                if( (double)(cv)<(double)(cvoptimal) )
-                {
-                    cvoptimal = cv;
-                    koptimal = k;
-                }
-                
-                //
-                // update
-                //
-                pal = pal+pak;
-                pbl = pbl+pbk;
-                par = par-pak;
-                pbr = pbr-pbk;
-            }
-            cve = cvoptimal;
-            threshold = 0.5*(a[ties[koptimal]]+a[ties[koptimal+1]]);
-            pal = 0;
-            pbl = 0;
-            par = 0;
-            pbr = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                if( (double)(a[i])<(double)(threshold) )
-                {
-                    if( c[i]==0 )
-                    {
-                        pal = pal+1;
-                    }
-                    else
-                    {
-                        pbl = pbl+1;
-                    }
-                }
-                else
-                {
-                    if( c[i]==0 )
-                    {
-                        par = par+1;
-                    }
-                    else
-                    {
-                        pbr = pbr+1;
-                    }
-                }
-            }
-            s = pal+pbl;
-            pal = pal/s;
-            pbl = pbl/s;
-            s = par+pbr;
-            par = par/s;
-            pbr = pbr/s;
-        }
-
-
-        /*************************************************************************
-        Optimal partition, internal subroutine. Fast version.
-
-        Accepts:
-            A       array[0..N-1]       array of attributes     array[0..N-1]
-            C       array[0..N-1]       array of class labels
-            TiesBuf array[0..N]         temporaries (ties)
-            CntBuf  array[0..2*NC-1]    temporaries (counts)
-            Alpha                       centering factor (0<=alpha<=1, recommended value - 0.05)
-            BufR    array[0..N-1]       temporaries
-            BufI    array[0..N-1]       temporaries
-
-        Output:
-            Info    error code (">0"=OK, "<0"=bad)
-            RMS     training set RMS error
-            CVRMS   leave-one-out RMS error
-            
-        Note:
-            content of all arrays is changed by subroutine;
-            it doesn't allocate temporaries.
-
-          -- ALGLIB --
-             Copyright 11.12.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dsoptimalsplit2fast(ref double[] a,
-            ref int[] c,
-            ref int[] tiesbuf,
-            ref int[] cntbuf,
-            ref double[] bufr,
-            ref int[] bufi,
-            int n,
-            int nc,
-            double alpha,
-            ref int info,
-            ref double threshold,
-            ref double rms,
-            ref double cvrms)
-        {
-            int i = 0;
-            int k = 0;
-            int cl = 0;
-            int tiecount = 0;
-            double cbest = 0;
-            double cc = 0;
-            int koptimal = 0;
-            int sl = 0;
-            int sr = 0;
-            double v = 0;
-            double w = 0;
-            double x = 0;
-
-            info = 0;
-            threshold = 0;
-            rms = 0;
-            cvrms = 0;
-
-            
-            //
-            // Test for errors in inputs
-            //
-            if( n<=0 | nc<2 )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                if( c[i]<0 | c[i]>=nc )
-                {
-                    info = -2;
-                    return;
-                }
-            }
-            info = 1;
-            
-            //
-            // Tie
-            //
-            dstiefasti(ref a, ref c, n, ref tiesbuf, ref tiecount, ref bufr, ref bufi);
-            
-            //
-            // Special case: number of ties is 1.
-            //
-            if( tiecount==1 )
-            {
-                info = -3;
-                return;
-            }
-            
-            //
-            // General case, number of ties > 1
-            //
-            for(i=0; i<=2*nc-1; i++)
-            {
-                cntbuf[i] = 0;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                cntbuf[nc+c[i]] = cntbuf[nc+c[i]]+1;
-            }
-            koptimal = -1;
-            threshold = a[n-1];
-            cbest = math.maxrealnumber;
-            sl = 0;
-            sr = n;
-            for(k=0; k<=tiecount-2; k++)
-            {
-                
-                //
-                // first, move Kth tie from right to left
-                //
-                for(i=tiesbuf[k]; i<=tiesbuf[k+1]-1; i++)
-                {
-                    cl = c[i];
-                    cntbuf[cl] = cntbuf[cl]+1;
-                    cntbuf[nc+cl] = cntbuf[nc+cl]-1;
-                }
-                sl = sl+(tiesbuf[k+1]-tiesbuf[k]);
-                sr = sr-(tiesbuf[k+1]-tiesbuf[k]);
-                
-                //
-                // Calculate RMS error
-                //
-                v = 0;
-                for(i=0; i<=nc-1; i++)
-                {
-                    w = cntbuf[i];
-                    v = v+w*math.sqr(w/sl-1);
-                    v = v+(sl-w)*math.sqr(w/sl);
-                    w = cntbuf[nc+i];
-                    v = v+w*math.sqr(w/sr-1);
-                    v = v+(sr-w)*math.sqr(w/sr);
-                }
-                v = Math.Sqrt(v/(nc*n));
-                
-                //
-                // Compare with best
-                //
-                x = (double)(2*sl)/(double)(sl+sr)-1;
-                cc = v*(1-alpha+alpha*math.sqr(x));
-                if( (double)(cc)<(double)(cbest) )
-                {
-                    
-                    //
-                    // store split
-                    //
-                    rms = v;
-                    koptimal = k;
-                    cbest = cc;
-                    
-                    //
-                    // calculate CVRMS error
-                    //
-                    cvrms = 0;
-                    for(i=0; i<=nc-1; i++)
-                    {
-                        if( sl>1 )
-                        {
-                            w = cntbuf[i];
-                            cvrms = cvrms+w*math.sqr((w-1)/(sl-1)-1);
-                            cvrms = cvrms+(sl-w)*math.sqr(w/(sl-1));
-                        }
-                        else
-                        {
-                            w = cntbuf[i];
-                            cvrms = cvrms+w*math.sqr((double)1/(double)nc-1);
-                            cvrms = cvrms+(sl-w)*math.sqr((double)1/(double)nc);
-                        }
-                        if( sr>1 )
-                        {
-                            w = cntbuf[nc+i];
-                            cvrms = cvrms+w*math.sqr((w-1)/(sr-1)-1);
-                            cvrms = cvrms+(sr-w)*math.sqr(w/(sr-1));
-                        }
-                        else
-                        {
-                            w = cntbuf[nc+i];
-                            cvrms = cvrms+w*math.sqr((double)1/(double)nc-1);
-                            cvrms = cvrms+(sr-w)*math.sqr((double)1/(double)nc);
-                        }
-                    }
-                    cvrms = Math.Sqrt(cvrms/(nc*n));
-                }
-            }
-            
-            //
-            // Calculate threshold.
-            // Code is a bit complicated because there can be such
-            // numbers that 0.5(A+B) equals to A or B (if A-B=epsilon)
-            //
-            threshold = 0.5*(a[tiesbuf[koptimal]]+a[tiesbuf[koptimal+1]]);
-            if( (double)(threshold)<=(double)(a[tiesbuf[koptimal]]) )
-            {
-                threshold = a[tiesbuf[koptimal+1]];
-            }
-        }
-
-
-        /*************************************************************************
-        Automatic non-optimal discretization, internal subroutine.
-
-          -- ALGLIB --
-             Copyright 22.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dssplitk(double[] a,
-            int[] c,
-            int n,
-            int nc,
-            int kmax,
-            ref int info,
-            ref double[] thresholds,
-            ref int ni,
-            ref double cve)
-        {
-            int i = 0;
-            int j = 0;
-            int j1 = 0;
-            int k = 0;
-            int[] ties = new int[0];
-            int tiecount = 0;
-            int[] p1 = new int[0];
-            int[] p2 = new int[0];
-            int[] cnt = new int[0];
-            double v2 = 0;
-            int bestk = 0;
-            double bestcve = 0;
-            int[] bestsizes = new int[0];
-            double curcve = 0;
-            int[] cursizes = new int[0];
-
-            a = (double[])a.Clone();
-            c = (int[])c.Clone();
-            info = 0;
-            thresholds = new double[0];
-            ni = 0;
-            cve = 0;
-
-            
-            //
-            // Test for errors in inputs
-            //
-            if( (n<=0 | nc<2) | kmax<2 )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                if( c[i]<0 | c[i]>=nc )
-                {
-                    info = -2;
-                    return;
-                }
-            }
-            info = 1;
-            
-            //
-            // Tie
-            //
-            dstie(ref a, n, ref ties, ref tiecount, ref p1, ref p2);
-            for(i=0; i<=n-1; i++)
-            {
-                if( p2[i]!=i )
-                {
-                    k = c[i];
-                    c[i] = c[p2[i]];
-                    c[p2[i]] = k;
-                }
-            }
-            
-            //
-            // Special cases
-            //
-            if( tiecount==1 )
-            {
-                info = -3;
-                return;
-            }
-            
-            //
-            // General case:
-            // 0. allocate arrays
-            //
-            kmax = Math.Min(kmax, tiecount);
-            bestsizes = new int[kmax-1+1];
-            cursizes = new int[kmax-1+1];
-            cnt = new int[nc-1+1];
-            
-            //
-            // General case:
-            // 1. prepare "weak" solution (two subintervals, divided at median)
-            //
-            v2 = math.maxrealnumber;
-            j = -1;
-            for(i=1; i<=tiecount-1; i++)
-            {
-                if( (double)(Math.Abs(ties[i]-0.5*(n-1)))<(double)(v2) )
-                {
-                    v2 = Math.Abs(ties[i]-0.5*n);
-                    j = i;
-                }
-            }
-            ap.assert(j>0, "DSSplitK: internal error #1!");
-            bestk = 2;
-            bestsizes[0] = ties[j];
-            bestsizes[1] = n-j;
-            bestcve = 0;
-            for(i=0; i<=nc-1; i++)
-            {
-                cnt[i] = 0;
-            }
-            for(i=0; i<=j-1; i++)
-            {
-                tieaddc(c, ties, i, nc, ref cnt);
-            }
-            bestcve = bestcve+getcv(cnt, nc);
-            for(i=0; i<=nc-1; i++)
-            {
-                cnt[i] = 0;
-            }
-            for(i=j; i<=tiecount-1; i++)
-            {
-                tieaddc(c, ties, i, nc, ref cnt);
-            }
-            bestcve = bestcve+getcv(cnt, nc);
-            
-            //
-            // General case:
-            // 2. Use greedy algorithm to find sub-optimal split in O(KMax*N) time
-            //
-            for(k=2; k<=kmax; k++)
-            {
-                
-                //
-                // Prepare greedy K-interval split
-                //
-                for(i=0; i<=k-1; i++)
-                {
-                    cursizes[i] = 0;
-                }
-                i = 0;
-                j = 0;
-                while( j<=tiecount-1 & i<=k-1 )
-                {
-                    
-                    //
-                    // Rule: I-th bin is empty, fill it
-                    //
-                    if( cursizes[i]==0 )
-                    {
-                        cursizes[i] = ties[j+1]-ties[j];
-                        j = j+1;
-                        continue;
-                    }
-                    
-                    //
-                    // Rule: (K-1-I) bins left, (K-1-I) ties left (1 tie per bin); next bin
-                    //
-                    if( tiecount-j==k-1-i )
-                    {
-                        i = i+1;
-                        continue;
-                    }
-                    
-                    //
-                    // Rule: last bin, always place in current
-                    //
-                    if( i==k-1 )
-                    {
-                        cursizes[i] = cursizes[i]+ties[j+1]-ties[j];
-                        j = j+1;
-                        continue;
-                    }
-                    
-                    //
-                    // Place J-th tie in I-th bin, or leave for I+1-th bin.
-                    //
-                    if( (double)(Math.Abs(cursizes[i]+ties[j+1]-ties[j]-(double)n/(double)k))<(double)(Math.Abs(cursizes[i]-(double)n/(double)k)) )
-                    {
-                        cursizes[i] = cursizes[i]+ties[j+1]-ties[j];
-                        j = j+1;
-                    }
-                    else
-                    {
-                        i = i+1;
-                    }
-                }
-                ap.assert(cursizes[k-1]!=0 & j==tiecount, "DSSplitK: internal error #1");
-                
-                //
-                // Calculate CVE
-                //
-                curcve = 0;
-                j = 0;
-                for(i=0; i<=k-1; i++)
-                {
-                    for(j1=0; j1<=nc-1; j1++)
-                    {
-                        cnt[j1] = 0;
-                    }
-                    for(j1=j; j1<=j+cursizes[i]-1; j1++)
-                    {
-                        cnt[c[j1]] = cnt[c[j1]]+1;
-                    }
-                    curcve = curcve+getcv(cnt, nc);
-                    j = j+cursizes[i];
-                }
-                
-                //
-                // Choose best variant
-                //
-                if( (double)(curcve)<(double)(bestcve) )
-                {
-                    for(i=0; i<=k-1; i++)
-                    {
-                        bestsizes[i] = cursizes[i];
-                    }
-                    bestcve = curcve;
-                    bestk = k;
-                }
-            }
-            
-            //
-            // Transform from sizes to thresholds
-            //
-            cve = bestcve;
-            ni = bestk;
-            thresholds = new double[ni-2+1];
-            j = bestsizes[0];
-            for(i=1; i<=bestk-1; i++)
-            {
-                thresholds[i-1] = 0.5*(a[j-1]+a[j]);
-                j = j+bestsizes[i];
-            }
-        }
-
-
-        /*************************************************************************
-        Automatic optimal discretization, internal subroutine.
-
-          -- ALGLIB --
-             Copyright 22.05.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void dsoptimalsplitk(double[] a,
-            int[] c,
-            int n,
-            int nc,
-            int kmax,
-            ref int info,
-            ref double[] thresholds,
-            ref int ni,
-            ref double cve)
-        {
-            int i = 0;
-            int j = 0;
-            int s = 0;
-            int jl = 0;
-            int jr = 0;
-            double v2 = 0;
-            int[] ties = new int[0];
-            int tiecount = 0;
-            int[] p1 = new int[0];
-            int[] p2 = new int[0];
-            double cvtemp = 0;
-            int[] cnt = new int[0];
-            int[] cnt2 = new int[0];
-            double[,] cv = new double[0,0];
-            int[,] splits = new int[0,0];
-            int k = 0;
-            int koptimal = 0;
-            double cvoptimal = 0;
-
-            a = (double[])a.Clone();
-            c = (int[])c.Clone();
-            info = 0;
-            thresholds = new double[0];
-            ni = 0;
-            cve = 0;
-
-            
-            //
-            // Test for errors in inputs
-            //
-            if( (n<=0 | nc<2) | kmax<2 )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                if( c[i]<0 | c[i]>=nc )
-                {
-                    info = -2;
-                    return;
-                }
-            }
-            info = 1;
-            
-            //
-            // Tie
-            //
-            dstie(ref a, n, ref ties, ref tiecount, ref p1, ref p2);
-            for(i=0; i<=n-1; i++)
-            {
-                if( p2[i]!=i )
-                {
-                    k = c[i];
-                    c[i] = c[p2[i]];
-                    c[p2[i]] = k;
-                }
-            }
-            
-            //
-            // Special cases
-            //
-            if( tiecount==1 )
-            {
-                info = -3;
-                return;
-            }
-            
-            //
-            // General case
-            // Use dynamic programming to find best split in O(KMax*NC*TieCount^2) time
-            //
-            kmax = Math.Min(kmax, tiecount);
-            cv = new double[kmax-1+1, tiecount-1+1];
-            splits = new int[kmax-1+1, tiecount-1+1];
-            cnt = new int[nc-1+1];
-            cnt2 = new int[nc-1+1];
-            for(j=0; j<=nc-1; j++)
-            {
-                cnt[j] = 0;
-            }
-            for(j=0; j<=tiecount-1; j++)
-            {
-                tieaddc(c, ties, j, nc, ref cnt);
-                splits[0,j] = 0;
-                cv[0,j] = getcv(cnt, nc);
-            }
-            for(k=1; k<=kmax-1; k++)
-            {
-                for(j=0; j<=nc-1; j++)
-                {
-                    cnt[j] = 0;
-                }
-                
-                //
-                // Subtask size J in [K..TieCount-1]:
-                // optimal K-splitting on ties from 0-th to J-th.
-                //
-                for(j=k; j<=tiecount-1; j++)
-                {
-                    
-                    //
-                    // Update Cnt - let it contain classes of ties from K-th to J-th
-                    //
-                    tieaddc(c, ties, j, nc, ref cnt);
-                    
-                    //
-                    // Search for optimal split point S in [K..J]
-                    //
-                    for(i=0; i<=nc-1; i++)
-                    {
-                        cnt2[i] = cnt[i];
-                    }
-                    cv[k,j] = cv[k-1,j-1]+getcv(cnt2, nc);
-                    splits[k,j] = j;
-                    for(s=k+1; s<=j; s++)
-                    {
-                        
-                        //
-                        // Update Cnt2 - let it contain classes of ties from S-th to J-th
-                        //
-                        tiesubc(c, ties, s-1, nc, ref cnt2);
-                        
-                        //
-                        // Calculate CVE
-                        //
-                        cvtemp = cv[k-1,s-1]+getcv(cnt2, nc);
-                        if( (double)(cvtemp)<(double)(cv[k,j]) )
-                        {
-                            cv[k,j] = cvtemp;
-                            splits[k,j] = s;
-                        }
-                    }
-                }
-            }
-            
-            //
-            // Choose best partition, output result
-            //
-            koptimal = -1;
-            cvoptimal = math.maxrealnumber;
-            for(k=0; k<=kmax-1; k++)
-            {
-                if( (double)(cv[k,tiecount-1])<(double)(cvoptimal) )
-                {
-                    cvoptimal = cv[k,tiecount-1];
-                    koptimal = k;
-                }
-            }
-            ap.assert(koptimal>=0, "DSOptimalSplitK: internal error #1!");
-            if( koptimal==0 )
-            {
-                
-                //
-                // Special case: best partition is one big interval.
-                // Even 2-partition is not better.
-                // This is possible when dealing with "weak" predictor variables.
-                //
-                // Make binary split as close to the median as possible.
-                //
-                v2 = math.maxrealnumber;
-                j = -1;
-                for(i=1; i<=tiecount-1; i++)
-                {
-                    if( (double)(Math.Abs(ties[i]-0.5*(n-1)))<(double)(v2) )
-                    {
-                        v2 = Math.Abs(ties[i]-0.5*(n-1));
-                        j = i;
-                    }
-                }
-                ap.assert(j>0, "DSOptimalSplitK: internal error #2!");
-                thresholds = new double[0+1];
-                thresholds[0] = 0.5*(a[ties[j-1]]+a[ties[j]]);
-                ni = 2;
-                cve = 0;
-                for(i=0; i<=nc-1; i++)
-                {
-                    cnt[i] = 0;
-                }
-                for(i=0; i<=j-1; i++)
-                {
-                    tieaddc(c, ties, i, nc, ref cnt);
-                }
-                cve = cve+getcv(cnt, nc);
-                for(i=0; i<=nc-1; i++)
-                {
-                    cnt[i] = 0;
-                }
-                for(i=j; i<=tiecount-1; i++)
-                {
-                    tieaddc(c, ties, i, nc, ref cnt);
-                }
-                cve = cve+getcv(cnt, nc);
-            }
-            else
-            {
-                
-                //
-                // General case: 2 or more intervals
-                //
-                thresholds = new double[koptimal-1+1];
-                ni = koptimal+1;
-                cve = cv[koptimal,tiecount-1];
-                jl = splits[koptimal,tiecount-1];
-                jr = tiecount-1;
-                for(k=koptimal; k>=1; k--)
-                {
-                    thresholds[k-1] = 0.5*(a[ties[jl-1]]+a[ties[jl]]);
-                    jr = jl-1;
-                    jl = splits[k-1,jl-1];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        Internal function
-        *************************************************************************/
-        private static double xlny(double x,
-            double y)
-        {
-            double result = 0;
-
-            if( (double)(x)==(double)(0) )
-            {
-                result = 0;
-            }
-            else
-            {
-                result = x*Math.Log(y);
-            }
-            return result;
-        }
-
-
-        /*************************************************************************
-        Internal function,
-        returns number of samples of class I in Cnt[I]
-        *************************************************************************/
-        private static double getcv(int[] cnt,
-            int nc)
-        {
-            double result = 0;
-            int i = 0;
-            double s = 0;
-
-            s = 0;
-            for(i=0; i<=nc-1; i++)
-            {
-                s = s+cnt[i];
-            }
-            result = 0;
-            for(i=0; i<=nc-1; i++)
-            {
-                result = result-xlny(cnt[i], cnt[i]/(s+nc-1));
-            }
-            return result;
-        }
-
-
-        /*************************************************************************
-        Internal function, adds number of samples of class I in tie NTie to Cnt[I]
-        *************************************************************************/
-        private static void tieaddc(int[] c,
-            int[] ties,
-            int ntie,
-            int nc,
-            ref int[] cnt)
-        {
-            int i = 0;
-
-            for(i=ties[ntie]; i<=ties[ntie+1]-1; i++)
-            {
-                cnt[c[i]] = cnt[c[i]]+1;
-            }
-        }
-
-
-        /*************************************************************************
-        Internal function, subtracts number of samples of class I in tie NTie to Cnt[I]
-        *************************************************************************/
-        private static void tiesubc(int[] c,
-            int[] ties,
-            int ntie,
-            int nc,
-            ref int[] cnt)
-        {
-            int i = 0;
-
-            for(i=ties[ntie]; i<=ties[ntie+1]-1; i++)
-            {
-                cnt[c[i]] = cnt[c[i]]-1;
-            }
-        }
-
-
-    }
     public class kmeans
     {
         /*************************************************************************
@@ -7078,6 +7079,7 @@ public partial class alglib
 
         OUTPUT PARAMETERS:
             V           -   coefficients, array[0..NVars]
+                            constant term (intercept) is stored in the V[NVars].
             NVars       -   number of independent variables (one less than number
                             of coefficients)
 
@@ -7891,1350 +7893,6 @@ public partial class alglib
             if( nacv!=0 )
             {
                 ar.cvavgrelerror = ar.cvavgrelerror/nacv;
-            }
-        }
-
-
-    }
-    public class logit
-    {
-        public class logitmodel
-        {
-            public double[] w;
-            public logitmodel()
-            {
-                w = new double[0];
-            }
-        };
-
-
-        public class logitmcstate
-        {
-            public bool brackt;
-            public bool stage1;
-            public int infoc;
-            public double dg;
-            public double dgm;
-            public double dginit;
-            public double dgtest;
-            public double dgx;
-            public double dgxm;
-            public double dgy;
-            public double dgym;
-            public double finit;
-            public double ftest1;
-            public double fm;
-            public double fx;
-            public double fxm;
-            public double fy;
-            public double fym;
-            public double stx;
-            public double sty;
-            public double stmin;
-            public double stmax;
-            public double width;
-            public double width1;
-            public double xtrapf;
-        };
-
-
-        /*************************************************************************
-        MNLReport structure contains information about training process:
-        * NGrad     -   number of gradient calculations
-        * NHess     -   number of Hessian calculations
-        *************************************************************************/
-        public class mnlreport
-        {
-            public int ngrad;
-            public int nhess;
-        };
-
-
-
-
-        public const double xtol = 100*math.machineepsilon;
-        public const double ftol = 0.0001;
-        public const double gtol = 0.3;
-        public const int maxfev = 20;
-        public const double stpmin = 1.0E-2;
-        public const double stpmax = 1.0E5;
-        public const int logitvnum = 6;
-
-
-        public static void mnltrainh(double[,] xy,
-            int npoints,
-            int nvars,
-            int nclasses,
-            ref int info,
-            logitmodel lm,
-            mnlreport rep)
-        {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int ssize = 0;
-            bool allsame = new bool();
-            int offs = 0;
-            double threshold = 0;
-            double wminstep = 0;
-            double decay = 0;
-            int wdim = 0;
-            int expoffs = 0;
-            double v = 0;
-            double s = 0;
-            mlpbase.multilayerperceptron network = new mlpbase.multilayerperceptron();
-            int nin = 0;
-            int nout = 0;
-            int wcount = 0;
-            double e = 0;
-            double[] g = new double[0];
-            double[,] h = new double[0,0];
-            bool spd = new bool();
-            double[] x = new double[0];
-            double[] y = new double[0];
-            double[] wbase = new double[0];
-            double wstep = 0;
-            double[] wdir = new double[0];
-            double[] work = new double[0];
-            int mcstage = 0;
-            logitmcstate mcstate = new logitmcstate();
-            int mcinfo = 0;
-            int mcnfev = 0;
-            int solverinfo = 0;
-            densesolver.densesolverreport solverrep = new densesolver.densesolverreport();
-            int i_ = 0;
-            int i1_ = 0;
-
-            info = 0;
-
-            threshold = 1000*math.machineepsilon;
-            wminstep = 0.001;
-            decay = 0.001;
-            
-            //
-            // Test for inputs
-            //
-            if( (npoints<nvars+2 | nvars<1) | nclasses<2 )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=npoints-1; i++)
-            {
-                if( (int)Math.Round(xy[i,nvars])<0 | (int)Math.Round(xy[i,nvars])>=nclasses )
-                {
-                    info = -2;
-                    return;
-                }
-            }
-            info = 1;
-            
-            //
-            // Initialize data
-            //
-            rep.ngrad = 0;
-            rep.nhess = 0;
-            
-            //
-            // Allocate array
-            //
-            wdim = (nvars+1)*(nclasses-1);
-            offs = 5;
-            expoffs = offs+wdim;
-            ssize = 5+(nvars+1)*(nclasses-1)+nclasses;
-            lm.w = new double[ssize-1+1];
-            lm.w[0] = ssize;
-            lm.w[1] = logitvnum;
-            lm.w[2] = nvars;
-            lm.w[3] = nclasses;
-            lm.w[4] = offs;
-            
-            //
-            // Degenerate case: all outputs are equal
-            //
-            allsame = true;
-            for(i=1; i<=npoints-1; i++)
-            {
-                if( (int)Math.Round(xy[i,nvars])!=(int)Math.Round(xy[i-1,nvars]) )
-                {
-                    allsame = false;
-                }
-            }
-            if( allsame )
-            {
-                for(i=0; i<=(nvars+1)*(nclasses-1)-1; i++)
-                {
-                    lm.w[offs+i] = 0;
-                }
-                v = -(2*Math.Log(math.minrealnumber));
-                k = (int)Math.Round(xy[0,nvars]);
-                if( k==nclasses-1 )
-                {
-                    for(i=0; i<=nclasses-2; i++)
-                    {
-                        lm.w[offs+i*(nvars+1)+nvars] = -v;
-                    }
-                }
-                else
-                {
-                    for(i=0; i<=nclasses-2; i++)
-                    {
-                        if( i==k )
-                        {
-                            lm.w[offs+i*(nvars+1)+nvars] = v;
-                        }
-                        else
-                        {
-                            lm.w[offs+i*(nvars+1)+nvars] = 0;
-                        }
-                    }
-                }
-                return;
-            }
-            
-            //
-            // General case.
-            // Prepare task and network. Allocate space.
-            //
-            mlpbase.mlpcreatec0(nvars, nclasses, network);
-            mlpbase.mlpinitpreprocessor(network, xy, npoints);
-            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
-            for(i=0; i<=wcount-1; i++)
-            {
-                network.weights[i] = (2*math.randomreal()-1)/nvars;
-            }
-            g = new double[wcount-1+1];
-            h = new double[wcount-1+1, wcount-1+1];
-            wbase = new double[wcount-1+1];
-            wdir = new double[wcount-1+1];
-            work = new double[wcount-1+1];
-            
-            //
-            // First stage: optimize in gradient direction.
-            //
-            for(k=0; k<=wcount/3+10; k++)
-            {
-                
-                //
-                // Calculate gradient in starting point
-                //
-                mlpbase.mlpgradnbatch(network, xy, npoints, ref e, ref g);
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += network.weights[i_]*network.weights[i_];
-                }
-                e = e+0.5*decay*v;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    g[i_] = g[i_] + decay*network.weights[i_];
-                }
-                rep.ngrad = rep.ngrad+1;
-                
-                //
-                // Setup optimization scheme
-                //
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    wdir[i_] = -g[i_];
-                }
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += wdir[i_]*wdir[i_];
-                }
-                wstep = Math.Sqrt(v);
-                v = 1/Math.Sqrt(v);
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    wdir[i_] = v*wdir[i_];
-                }
-                mcstage = 0;
-                mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
-                while( mcstage!=0 )
-                {
-                    mlpbase.mlpgradnbatch(network, xy, npoints, ref e, ref g);
-                    v = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        v += network.weights[i_]*network.weights[i_];
-                    }
-                    e = e+0.5*decay*v;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        g[i_] = g[i_] + decay*network.weights[i_];
-                    }
-                    rep.ngrad = rep.ngrad+1;
-                    mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
-                }
-            }
-            
-            //
-            // Second stage: use Hessian when we are close to the minimum
-            //
-            while( true )
-            {
-                
-                //
-                // Calculate and update E/G/H
-                //
-                mlpbase.mlphessiannbatch(network, xy, npoints, ref e, ref g, ref h);
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += network.weights[i_]*network.weights[i_];
-                }
-                e = e+0.5*decay*v;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    g[i_] = g[i_] + decay*network.weights[i_];
-                }
-                for(k=0; k<=wcount-1; k++)
-                {
-                    h[k,k] = h[k,k]+decay;
-                }
-                rep.nhess = rep.nhess+1;
-                
-                //
-                // Select step direction
-                // NOTE: it is important to use lower-triangle Cholesky
-                // factorization since it is much faster than higher-triangle version.
-                //
-                spd = trfac.spdmatrixcholesky(ref h, wcount, false);
-                densesolver.spdmatrixcholeskysolve(h, wcount, false, g, ref solverinfo, solverrep, ref wdir);
-                spd = solverinfo>0;
-                if( spd )
-                {
-                    
-                    //
-                    // H is positive definite.
-                    // Step in Newton direction.
-                    //
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wdir[i_] = -1*wdir[i_];
-                    }
-                    spd = true;
-                }
-                else
-                {
-                    
-                    //
-                    // H is indefinite.
-                    // Step in gradient direction.
-                    //
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wdir[i_] = -g[i_];
-                    }
-                    spd = false;
-                }
-                
-                //
-                // Optimize in WDir direction
-                //
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += wdir[i_]*wdir[i_];
-                }
-                wstep = Math.Sqrt(v);
-                v = 1/Math.Sqrt(v);
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    wdir[i_] = v*wdir[i_];
-                }
-                mcstage = 0;
-                mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
-                while( mcstage!=0 )
-                {
-                    mlpbase.mlpgradnbatch(network, xy, npoints, ref e, ref g);
-                    v = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        v += network.weights[i_]*network.weights[i_];
-                    }
-                    e = e+0.5*decay*v;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        g[i_] = g[i_] + decay*network.weights[i_];
-                    }
-                    rep.ngrad = rep.ngrad+1;
-                    mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
-                }
-                if( spd & ((mcinfo==2 | mcinfo==4) | mcinfo==6) )
-                {
-                    break;
-                }
-            }
-            
-            //
-            // Convert from NN format to MNL format
-            //
-            i1_ = (0) - (offs);
-            for(i_=offs; i_<=offs+wcount-1;i_++)
-            {
-                lm.w[i_] = network.weights[i_+i1_];
-            }
-            for(k=0; k<=nvars-1; k++)
-            {
-                for(i=0; i<=nclasses-2; i++)
-                {
-                    s = network.columnsigmas[k];
-                    if( (double)(s)==(double)(0) )
-                    {
-                        s = 1;
-                    }
-                    j = offs+(nvars+1)*i;
-                    v = lm.w[j+k];
-                    lm.w[j+k] = v/s;
-                    lm.w[j+nvars] = lm.w[j+nvars]+v*network.columnmeans[k]/s;
-                }
-            }
-            for(k=0; k<=nclasses-2; k++)
-            {
-                lm.w[offs+(nvars+1)*k+nvars] = -lm.w[offs+(nvars+1)*k+nvars];
-            }
-        }
-
-
-        public static void mnlprocess(logitmodel lm,
-            double[] x,
-            ref double[] y)
-        {
-            int nvars = 0;
-            int nclasses = 0;
-            int offs = 0;
-            int i = 0;
-            int i1 = 0;
-            double s = 0;
-
-            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLProcess: unexpected model version");
-            nvars = (int)Math.Round(lm.w[2]);
-            nclasses = (int)Math.Round(lm.w[3]);
-            offs = (int)Math.Round(lm.w[4]);
-            mnliexp(ref lm.w, x);
-            s = 0;
-            i1 = offs+(nvars+1)*(nclasses-1);
-            for(i=i1; i<=i1+nclasses-1; i++)
-            {
-                s = s+lm.w[i];
-            }
-            if( ap.len(y)<nclasses )
-            {
-                y = new double[nclasses];
-            }
-            for(i=0; i<=nclasses-1; i++)
-            {
-                y[i] = lm.w[i1+i]/s;
-            }
-        }
-
-
-        public static void mnlprocessi(logitmodel lm,
-            double[] x,
-            ref double[] y)
-        {
-            y = new double[0];
-
-            mnlprocess(lm, x, ref y);
-        }
-
-
-        public static void mnlunpack(logitmodel lm,
-            ref double[,] a,
-            ref int nvars,
-            ref int nclasses)
-        {
-            int offs = 0;
-            int i = 0;
-            int i_ = 0;
-            int i1_ = 0;
-
-            a = new double[0,0];
-            nvars = 0;
-            nclasses = 0;
-
-            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLUnpack: unexpected model version");
-            nvars = (int)Math.Round(lm.w[2]);
-            nclasses = (int)Math.Round(lm.w[3]);
-            offs = (int)Math.Round(lm.w[4]);
-            a = new double[nclasses-2+1, nvars+1];
-            for(i=0; i<=nclasses-2; i++)
-            {
-                i1_ = (offs+i*(nvars+1)) - (0);
-                for(i_=0; i_<=nvars;i_++)
-                {
-                    a[i,i_] = lm.w[i_+i1_];
-                }
-            }
-        }
-
-
-        public static void mnlpack(double[,] a,
-            int nvars,
-            int nclasses,
-            logitmodel lm)
-        {
-            int offs = 0;
-            int i = 0;
-            int wdim = 0;
-            int ssize = 0;
-            int i_ = 0;
-            int i1_ = 0;
-
-            wdim = (nvars+1)*(nclasses-1);
-            offs = 5;
-            ssize = 5+(nvars+1)*(nclasses-1)+nclasses;
-            lm.w = new double[ssize-1+1];
-            lm.w[0] = ssize;
-            lm.w[1] = logitvnum;
-            lm.w[2] = nvars;
-            lm.w[3] = nclasses;
-            lm.w[4] = offs;
-            for(i=0; i<=nclasses-2; i++)
-            {
-                i1_ = (0) - (offs+i*(nvars+1));
-                for(i_=offs+i*(nvars+1); i_<=offs+i*(nvars+1)+nvars;i_++)
-                {
-                    lm.w[i_] = a[i,i_+i1_];
-                }
-            }
-        }
-
-
-        public static void mnlcopy(logitmodel lm1,
-            logitmodel lm2)
-        {
-            int k = 0;
-            int i_ = 0;
-
-            k = (int)Math.Round(lm1.w[0]);
-            lm2.w = new double[k-1+1];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                lm2.w[i_] = lm1.w[i_];
-            }
-        }
-
-
-        public static double mnlavgce(logitmodel lm,
-            double[,] xy,
-            int npoints)
-        {
-            double result = 0;
-            int nvars = 0;
-            int nclasses = 0;
-            int i = 0;
-            double[] workx = new double[0];
-            double[] worky = new double[0];
-            int i_ = 0;
-
-            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLClsError: unexpected model version");
-            nvars = (int)Math.Round(lm.w[2]);
-            nclasses = (int)Math.Round(lm.w[3]);
-            workx = new double[nvars-1+1];
-            worky = new double[nclasses-1+1];
-            result = 0;
-            for(i=0; i<=npoints-1; i++)
-            {
-                ap.assert((int)Math.Round(xy[i,nvars])>=0 & (int)Math.Round(xy[i,nvars])<nclasses, "MNLAvgCE: incorrect class number!");
-                
-                //
-                // Process
-                //
-                for(i_=0; i_<=nvars-1;i_++)
-                {
-                    workx[i_] = xy[i,i_];
-                }
-                mnlprocess(lm, workx, ref worky);
-                if( (double)(worky[(int)Math.Round(xy[i,nvars])])>(double)(0) )
-                {
-                    result = result-Math.Log(worky[(int)Math.Round(xy[i,nvars])]);
-                }
-                else
-                {
-                    result = result-Math.Log(math.minrealnumber);
-                }
-            }
-            result = result/(npoints*Math.Log(2));
-            return result;
-        }
-
-
-        public static double mnlrelclserror(logitmodel lm,
-            double[,] xy,
-            int npoints)
-        {
-            double result = 0;
-
-            result = (double)mnlclserror(lm, xy, npoints)/(double)npoints;
-            return result;
-        }
-
-
-        public static double mnlrmserror(logitmodel lm,
-            double[,] xy,
-            int npoints)
-        {
-            double result = 0;
-            double relcls = 0;
-            double avgce = 0;
-            double rms = 0;
-            double avg = 0;
-            double avgrel = 0;
-
-            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNLRMSError: Incorrect MNL version!");
-            mnlallerrors(lm, xy, npoints, ref relcls, ref avgce, ref rms, ref avg, ref avgrel);
-            result = rms;
-            return result;
-        }
-
-
-        public static double mnlavgerror(logitmodel lm,
-            double[,] xy,
-            int npoints)
-        {
-            double result = 0;
-            double relcls = 0;
-            double avgce = 0;
-            double rms = 0;
-            double avg = 0;
-            double avgrel = 0;
-
-            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNLRMSError: Incorrect MNL version!");
-            mnlallerrors(lm, xy, npoints, ref relcls, ref avgce, ref rms, ref avg, ref avgrel);
-            result = avg;
-            return result;
-        }
-
-
-        public static double mnlavgrelerror(logitmodel lm,
-            double[,] xy,
-            int ssize)
-        {
-            double result = 0;
-            double relcls = 0;
-            double avgce = 0;
-            double rms = 0;
-            double avg = 0;
-            double avgrel = 0;
-
-            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNLRMSError: Incorrect MNL version!");
-            mnlallerrors(lm, xy, ssize, ref relcls, ref avgce, ref rms, ref avg, ref avgrel);
-            result = avgrel;
-            return result;
-        }
-
-
-        public static int mnlclserror(logitmodel lm,
-            double[,] xy,
-            int npoints)
-        {
-            int result = 0;
-            int nvars = 0;
-            int nclasses = 0;
-            int i = 0;
-            int j = 0;
-            double[] workx = new double[0];
-            double[] worky = new double[0];
-            int nmax = 0;
-            int i_ = 0;
-
-            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLClsError: unexpected model version");
-            nvars = (int)Math.Round(lm.w[2]);
-            nclasses = (int)Math.Round(lm.w[3]);
-            workx = new double[nvars-1+1];
-            worky = new double[nclasses-1+1];
-            result = 0;
-            for(i=0; i<=npoints-1; i++)
-            {
-                
-                //
-                // Process
-                //
-                for(i_=0; i_<=nvars-1;i_++)
-                {
-                    workx[i_] = xy[i,i_];
-                }
-                mnlprocess(lm, workx, ref worky);
-                
-                //
-                // Logit version of the answer
-                //
-                nmax = 0;
-                for(j=0; j<=nclasses-1; j++)
-                {
-                    if( (double)(worky[j])>(double)(worky[nmax]) )
-                    {
-                        nmax = j;
-                    }
-                }
-                
-                //
-                // compare
-                //
-                if( nmax!=(int)Math.Round(xy[i,nvars]) )
-                {
-                    result = result+1;
-                }
-            }
-            return result;
-        }
-
-
-        private static void mnliexp(ref double[] w,
-            double[] x)
-        {
-            int nvars = 0;
-            int nclasses = 0;
-            int offs = 0;
-            int i = 0;
-            int i1 = 0;
-            double v = 0;
-            double mx = 0;
-            int i_ = 0;
-            int i1_ = 0;
-
-            ap.assert((double)(w[1])==(double)(logitvnum), "LOGIT: unexpected model version");
-            nvars = (int)Math.Round(w[2]);
-            nclasses = (int)Math.Round(w[3]);
-            offs = (int)Math.Round(w[4]);
-            i1 = offs+(nvars+1)*(nclasses-1);
-            for(i=0; i<=nclasses-2; i++)
-            {
-                i1_ = (0)-(offs+i*(nvars+1));
-                v = 0.0;
-                for(i_=offs+i*(nvars+1); i_<=offs+i*(nvars+1)+nvars-1;i_++)
-                {
-                    v += w[i_]*x[i_+i1_];
-                }
-                w[i1+i] = v+w[offs+i*(nvars+1)+nvars];
-            }
-            w[i1+nclasses-1] = 0;
-            mx = 0;
-            for(i=i1; i<=i1+nclasses-1; i++)
-            {
-                mx = Math.Max(mx, w[i]);
-            }
-            for(i=i1; i<=i1+nclasses-1; i++)
-            {
-                w[i] = Math.Exp(w[i]-mx);
-            }
-        }
-
-
-        private static void mnlallerrors(logitmodel lm,
-            double[,] xy,
-            int npoints,
-            ref double relcls,
-            ref double avgce,
-            ref double rms,
-            ref double avg,
-            ref double avgrel)
-        {
-            int nvars = 0;
-            int nclasses = 0;
-            int i = 0;
-            double[] buf = new double[0];
-            double[] workx = new double[0];
-            double[] y = new double[0];
-            double[] dy = new double[0];
-            int i_ = 0;
-
-            relcls = 0;
-            avgce = 0;
-            rms = 0;
-            avg = 0;
-            avgrel = 0;
-
-            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNL unit: Incorrect MNL version!");
-            nvars = (int)Math.Round(lm.w[2]);
-            nclasses = (int)Math.Round(lm.w[3]);
-            workx = new double[nvars-1+1];
-            y = new double[nclasses-1+1];
-            dy = new double[0+1];
-            bdss.dserrallocate(nclasses, ref buf);
-            for(i=0; i<=npoints-1; i++)
-            {
-                for(i_=0; i_<=nvars-1;i_++)
-                {
-                    workx[i_] = xy[i,i_];
-                }
-                mnlprocess(lm, workx, ref y);
-                dy[0] = xy[i,nvars];
-                bdss.dserraccumulate(ref buf, y, dy);
-            }
-            bdss.dserrfinish(ref buf);
-            relcls = buf[0];
-            avgce = buf[1];
-            rms = buf[2];
-            avg = buf[3];
-            avgrel = buf[4];
-        }
-
-
-        private static void mnlmcsrch(int n,
-            ref double[] x,
-            ref double f,
-            ref double[] g,
-            double[] s,
-            ref double stp,
-            ref int info,
-            ref int nfev,
-            ref double[] wa,
-            logitmcstate state,
-            ref int stage)
-        {
-            double v = 0;
-            double p5 = 0;
-            double p66 = 0;
-            double zero = 0;
-            int i_ = 0;
-
-            
-            //
-            // init
-            //
-            p5 = 0.5;
-            p66 = 0.66;
-            state.xtrapf = 4.0;
-            zero = 0;
-            
-            //
-            // Main cycle
-            //
-            while( true )
-            {
-                if( stage==0 )
-                {
-                    
-                    //
-                    // NEXT
-                    //
-                    stage = 2;
-                    continue;
-                }
-                if( stage==2 )
-                {
-                    state.infoc = 1;
-                    info = 0;
-                    
-                    //
-                    //     CHECK THE INPUT PARAMETERS FOR ERRORS.
-                    //
-                    if( ((((((n<=0 | (double)(stp)<=(double)(0)) | (double)(ftol)<(double)(0)) | (double)(gtol)<(double)(zero)) | (double)(xtol)<(double)(zero)) | (double)(stpmin)<(double)(zero)) | (double)(stpmax)<(double)(stpmin)) | maxfev<=0 )
-                    {
-                        stage = 0;
-                        return;
-                    }
-                    
-                    //
-                    //     COMPUTE THE INITIAL GRADIENT IN THE SEARCH DIRECTION
-                    //     AND CHECK THAT S IS A DESCENT DIRECTION.
-                    //
-                    v = 0.0;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        v += g[i_]*s[i_];
-                    }
-                    state.dginit = v;
-                    if( (double)(state.dginit)>=(double)(0) )
-                    {
-                        stage = 0;
-                        return;
-                    }
-                    
-                    //
-                    //     INITIALIZE LOCAL VARIABLES.
-                    //
-                    state.brackt = false;
-                    state.stage1 = true;
-                    nfev = 0;
-                    state.finit = f;
-                    state.dgtest = ftol*state.dginit;
-                    state.width = stpmax-stpmin;
-                    state.width1 = state.width/p5;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        wa[i_] = x[i_];
-                    }
-                    
-                    //
-                    //     THE VARIABLES STX, FX, DGX CONTAIN THE VALUES OF THE STEP,
-                    //     FUNCTION, AND DIRECTIONAL DERIVATIVE AT THE BEST STEP.
-                    //     THE VARIABLES STY, FY, DGY CONTAIN THE VALUE OF THE STEP,
-                    //     FUNCTION, AND DERIVATIVE AT THE OTHER ENDPOINT OF
-                    //     THE INTERVAL OF UNCERTAINTY.
-                    //     THE VARIABLES STP, F, DG CONTAIN THE VALUES OF THE STEP,
-                    //     FUNCTION, AND DERIVATIVE AT THE CURRENT STEP.
-                    //
-                    state.stx = 0;
-                    state.fx = state.finit;
-                    state.dgx = state.dginit;
-                    state.sty = 0;
-                    state.fy = state.finit;
-                    state.dgy = state.dginit;
-                    
-                    //
-                    // NEXT
-                    //
-                    stage = 3;
-                    continue;
-                }
-                if( stage==3 )
-                {
-                    
-                    //
-                    //     START OF ITERATION.
-                    //
-                    //     SET THE MINIMUM AND MAXIMUM STEPS TO CORRESPOND
-                    //     TO THE PRESENT INTERVAL OF UNCERTAINTY.
-                    //
-                    if( state.brackt )
-                    {
-                        if( (double)(state.stx)<(double)(state.sty) )
-                        {
-                            state.stmin = state.stx;
-                            state.stmax = state.sty;
-                        }
-                        else
-                        {
-                            state.stmin = state.sty;
-                            state.stmax = state.stx;
-                        }
-                    }
-                    else
-                    {
-                        state.stmin = state.stx;
-                        state.stmax = stp+state.xtrapf*(stp-state.stx);
-                    }
-                    
-                    //
-                    //        FORCE THE STEP TO BE WITHIN THE BOUNDS STPMAX AND STPMIN.
-                    //
-                    if( (double)(stp)>(double)(stpmax) )
-                    {
-                        stp = stpmax;
-                    }
-                    if( (double)(stp)<(double)(stpmin) )
-                    {
-                        stp = stpmin;
-                    }
-                    
-                    //
-                    //        IF AN UNUSUAL TERMINATION IS TO OCCUR THEN LET
-                    //        STP BE THE LOWEST POINT OBTAINED SO FAR.
-                    //
-                    if( (((state.brackt & ((double)(stp)<=(double)(state.stmin) | (double)(stp)>=(double)(state.stmax))) | nfev>=maxfev-1) | state.infoc==0) | (state.brackt & (double)(state.stmax-state.stmin)<=(double)(xtol*state.stmax)) )
-                    {
-                        stp = state.stx;
-                    }
-                    
-                    //
-                    //        EVALUATE THE FUNCTION AND GRADIENT AT STP
-                    //        AND COMPUTE THE DIRECTIONAL DERIVATIVE.
-                    //
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        x[i_] = wa[i_];
-                    }
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        x[i_] = x[i_] + stp*s[i_];
-                    }
-                    
-                    //
-                    // NEXT
-                    //
-                    stage = 4;
-                    return;
-                }
-                if( stage==4 )
-                {
-                    info = 0;
-                    nfev = nfev+1;
-                    v = 0.0;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        v += g[i_]*s[i_];
-                    }
-                    state.dg = v;
-                    state.ftest1 = state.finit+stp*state.dgtest;
-                    
-                    //
-                    //        TEST FOR CONVERGENCE.
-                    //
-                    if( (state.brackt & ((double)(stp)<=(double)(state.stmin) | (double)(stp)>=(double)(state.stmax))) | state.infoc==0 )
-                    {
-                        info = 6;
-                    }
-                    if( ((double)(stp)==(double)(stpmax) & (double)(f)<=(double)(state.ftest1)) & (double)(state.dg)<=(double)(state.dgtest) )
-                    {
-                        info = 5;
-                    }
-                    if( (double)(stp)==(double)(stpmin) & ((double)(f)>(double)(state.ftest1) | (double)(state.dg)>=(double)(state.dgtest)) )
-                    {
-                        info = 4;
-                    }
-                    if( nfev>=maxfev )
-                    {
-                        info = 3;
-                    }
-                    if( state.brackt & (double)(state.stmax-state.stmin)<=(double)(xtol*state.stmax) )
-                    {
-                        info = 2;
-                    }
-                    if( (double)(f)<=(double)(state.ftest1) & (double)(Math.Abs(state.dg))<=(double)(-(gtol*state.dginit)) )
-                    {
-                        info = 1;
-                    }
-                    
-                    //
-                    //        CHECK FOR TERMINATION.
-                    //
-                    if( info!=0 )
-                    {
-                        stage = 0;
-                        return;
-                    }
-                    
-                    //
-                    //        IN THE FIRST STAGE WE SEEK A STEP FOR WHICH THE MODIFIED
-                    //        FUNCTION HAS A NONPOSITIVE VALUE AND NONNEGATIVE DERIVATIVE.
-                    //
-                    if( (state.stage1 & (double)(f)<=(double)(state.ftest1)) & (double)(state.dg)>=(double)(Math.Min(ftol, gtol)*state.dginit) )
-                    {
-                        state.stage1 = false;
-                    }
-                    
-                    //
-                    //        A MODIFIED FUNCTION IS USED TO PREDICT THE STEP ONLY IF
-                    //        WE HAVE NOT OBTAINED A STEP FOR WHICH THE MODIFIED
-                    //        FUNCTION HAS A NONPOSITIVE FUNCTION VALUE AND NONNEGATIVE
-                    //        DERIVATIVE, AND IF A LOWER FUNCTION VALUE HAS BEEN
-                    //        OBTAINED BUT THE DECREASE IS NOT SUFFICIENT.
-                    //
-                    if( (state.stage1 & (double)(f)<=(double)(state.fx)) & (double)(f)>(double)(state.ftest1) )
-                    {
-                        
-                        //
-                        //           DEFINE THE MODIFIED FUNCTION AND DERIVATIVE VALUES.
-                        //
-                        state.fm = f-stp*state.dgtest;
-                        state.fxm = state.fx-state.stx*state.dgtest;
-                        state.fym = state.fy-state.sty*state.dgtest;
-                        state.dgm = state.dg-state.dgtest;
-                        state.dgxm = state.dgx-state.dgtest;
-                        state.dgym = state.dgy-state.dgtest;
-                        
-                        //
-                        //           CALL CSTEP TO UPDATE THE INTERVAL OF UNCERTAINTY
-                        //           AND TO COMPUTE THE NEW STEP.
-                        //
-                        mnlmcstep(ref state.stx, ref state.fxm, ref state.dgxm, ref state.sty, ref state.fym, ref state.dgym, ref stp, state.fm, state.dgm, ref state.brackt, state.stmin, state.stmax, ref state.infoc);
-                        
-                        //
-                        //           RESET THE FUNCTION AND GRADIENT VALUES FOR F.
-                        //
-                        state.fx = state.fxm+state.stx*state.dgtest;
-                        state.fy = state.fym+state.sty*state.dgtest;
-                        state.dgx = state.dgxm+state.dgtest;
-                        state.dgy = state.dgym+state.dgtest;
-                    }
-                    else
-                    {
-                        
-                        //
-                        //           CALL MCSTEP TO UPDATE THE INTERVAL OF UNCERTAINTY
-                        //           AND TO COMPUTE THE NEW STEP.
-                        //
-                        mnlmcstep(ref state.stx, ref state.fx, ref state.dgx, ref state.sty, ref state.fy, ref state.dgy, ref stp, f, state.dg, ref state.brackt, state.stmin, state.stmax, ref state.infoc);
-                    }
-                    
-                    //
-                    //        FORCE A SUFFICIENT DECREASE IN THE SIZE OF THE
-                    //        INTERVAL OF UNCERTAINTY.
-                    //
-                    if( state.brackt )
-                    {
-                        if( (double)(Math.Abs(state.sty-state.stx))>=(double)(p66*state.width1) )
-                        {
-                            stp = state.stx+p5*(state.sty-state.stx);
-                        }
-                        state.width1 = state.width;
-                        state.width = Math.Abs(state.sty-state.stx);
-                    }
-                    
-                    //
-                    //  NEXT.
-                    //
-                    stage = 3;
-                    continue;
-                }
-            }
-        }
-
-
-        private static void mnlmcstep(ref double stx,
-            ref double fx,
-            ref double dx,
-            ref double sty,
-            ref double fy,
-            ref double dy,
-            ref double stp,
-            double fp,
-            double dp,
-            ref bool brackt,
-            double stmin,
-            double stmax,
-            ref int info)
-        {
-            bool bound = new bool();
-            double gamma = 0;
-            double p = 0;
-            double q = 0;
-            double r = 0;
-            double s = 0;
-            double sgnd = 0;
-            double stpc = 0;
-            double stpf = 0;
-            double stpq = 0;
-            double theta = 0;
-
-            info = 0;
-            
-            //
-            //     CHECK THE INPUT PARAMETERS FOR ERRORS.
-            //
-            if( ((brackt & ((double)(stp)<=(double)(Math.Min(stx, sty)) | (double)(stp)>=(double)(Math.Max(stx, sty)))) | (double)(dx*(stp-stx))>=(double)(0)) | (double)(stmax)<(double)(stmin) )
-            {
-                return;
-            }
-            
-            //
-            //     DETERMINE IF THE DERIVATIVES HAVE OPPOSITE SIGN.
-            //
-            sgnd = dp*(dx/Math.Abs(dx));
-            
-            //
-            //     FIRST CASE. A HIGHER FUNCTION VALUE.
-            //     THE MINIMUM IS BRACKETED. IF THE CUBIC STEP IS CLOSER
-            //     TO STX THAN THE QUADRATIC STEP, THE CUBIC STEP IS TAKEN,
-            //     ELSE THE AVERAGE OF THE CUBIC AND QUADRATIC STEPS IS TAKEN.
-            //
-            if( (double)(fp)>(double)(fx) )
-            {
-                info = 1;
-                bound = true;
-                theta = 3*(fx-fp)/(stp-stx)+dx+dp;
-                s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dx), Math.Abs(dp)));
-                gamma = s*Math.Sqrt(math.sqr(theta/s)-dx/s*(dp/s));
-                if( (double)(stp)<(double)(stx) )
-                {
-                    gamma = -gamma;
-                }
-                p = gamma-dx+theta;
-                q = gamma-dx+gamma+dp;
-                r = p/q;
-                stpc = stx+r*(stp-stx);
-                stpq = stx+dx/((fx-fp)/(stp-stx)+dx)/2*(stp-stx);
-                if( (double)(Math.Abs(stpc-stx))<(double)(Math.Abs(stpq-stx)) )
-                {
-                    stpf = stpc;
-                }
-                else
-                {
-                    stpf = stpc+(stpq-stpc)/2;
-                }
-                brackt = true;
-            }
-            else
-            {
-                if( (double)(sgnd)<(double)(0) )
-                {
-                    
-                    //
-                    //     SECOND CASE. A LOWER FUNCTION VALUE AND DERIVATIVES OF
-                    //     OPPOSITE SIGN. THE MINIMUM IS BRACKETED. IF THE CUBIC
-                    //     STEP IS CLOSER TO STX THAN THE QUADRATIC (SECANT) STEP,
-                    //     THE CUBIC STEP IS TAKEN, ELSE THE QUADRATIC STEP IS TAKEN.
-                    //
-                    info = 2;
-                    bound = false;
-                    theta = 3*(fx-fp)/(stp-stx)+dx+dp;
-                    s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dx), Math.Abs(dp)));
-                    gamma = s*Math.Sqrt(math.sqr(theta/s)-dx/s*(dp/s));
-                    if( (double)(stp)>(double)(stx) )
-                    {
-                        gamma = -gamma;
-                    }
-                    p = gamma-dp+theta;
-                    q = gamma-dp+gamma+dx;
-                    r = p/q;
-                    stpc = stp+r*(stx-stp);
-                    stpq = stp+dp/(dp-dx)*(stx-stp);
-                    if( (double)(Math.Abs(stpc-stp))>(double)(Math.Abs(stpq-stp)) )
-                    {
-                        stpf = stpc;
-                    }
-                    else
-                    {
-                        stpf = stpq;
-                    }
-                    brackt = true;
-                }
-                else
-                {
-                    if( (double)(Math.Abs(dp))<(double)(Math.Abs(dx)) )
-                    {
-                        
-                        //
-                        //     THIRD CASE. A LOWER FUNCTION VALUE, DERIVATIVES OF THE
-                        //     SAME SIGN, AND THE MAGNITUDE OF THE DERIVATIVE DECREASES.
-                        //     THE CUBIC STEP IS ONLY USED IF THE CUBIC TENDS TO INFINITY
-                        //     IN THE DIRECTION OF THE STEP OR IF THE MINIMUM OF THE CUBIC
-                        //     IS BEYOND STP. OTHERWISE THE CUBIC STEP IS DEFINED TO BE
-                        //     EITHER STPMIN OR STPMAX. THE QUADRATIC (SECANT) STEP IS ALSO
-                        //     COMPUTED AND IF THE MINIMUM IS BRACKETED THEN THE THE STEP
-                        //     CLOSEST TO STX IS TAKEN, ELSE THE STEP FARTHEST AWAY IS TAKEN.
-                        //
-                        info = 3;
-                        bound = true;
-                        theta = 3*(fx-fp)/(stp-stx)+dx+dp;
-                        s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dx), Math.Abs(dp)));
-                        
-                        //
-                        //        THE CASE GAMMA = 0 ONLY ARISES IF THE CUBIC DOES NOT TEND
-                        //        TO INFINITY IN THE DIRECTION OF THE STEP.
-                        //
-                        gamma = s*Math.Sqrt(Math.Max(0, math.sqr(theta/s)-dx/s*(dp/s)));
-                        if( (double)(stp)>(double)(stx) )
-                        {
-                            gamma = -gamma;
-                        }
-                        p = gamma-dp+theta;
-                        q = gamma+(dx-dp)+gamma;
-                        r = p/q;
-                        if( (double)(r)<(double)(0) & (double)(gamma)!=(double)(0) )
-                        {
-                            stpc = stp+r*(stx-stp);
-                        }
-                        else
-                        {
-                            if( (double)(stp)>(double)(stx) )
-                            {
-                                stpc = stmax;
-                            }
-                            else
-                            {
-                                stpc = stmin;
-                            }
-                        }
-                        stpq = stp+dp/(dp-dx)*(stx-stp);
-                        if( brackt )
-                        {
-                            if( (double)(Math.Abs(stp-stpc))<(double)(Math.Abs(stp-stpq)) )
-                            {
-                                stpf = stpc;
-                            }
-                            else
-                            {
-                                stpf = stpq;
-                            }
-                        }
-                        else
-                        {
-                            if( (double)(Math.Abs(stp-stpc))>(double)(Math.Abs(stp-stpq)) )
-                            {
-                                stpf = stpc;
-                            }
-                            else
-                            {
-                                stpf = stpq;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        
-                        //
-                        //     FOURTH CASE. A LOWER FUNCTION VALUE, DERIVATIVES OF THE
-                        //     SAME SIGN, AND THE MAGNITUDE OF THE DERIVATIVE DOES
-                        //     NOT DECREASE. IF THE MINIMUM IS NOT BRACKETED, THE STEP
-                        //     IS EITHER STPMIN OR STPMAX, ELSE THE CUBIC STEP IS TAKEN.
-                        //
-                        info = 4;
-                        bound = false;
-                        if( brackt )
-                        {
-                            theta = 3*(fp-fy)/(sty-stp)+dy+dp;
-                            s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dy), Math.Abs(dp)));
-                            gamma = s*Math.Sqrt(math.sqr(theta/s)-dy/s*(dp/s));
-                            if( (double)(stp)>(double)(sty) )
-                            {
-                                gamma = -gamma;
-                            }
-                            p = gamma-dp+theta;
-                            q = gamma-dp+gamma+dy;
-                            r = p/q;
-                            stpc = stp+r*(sty-stp);
-                            stpf = stpc;
-                        }
-                        else
-                        {
-                            if( (double)(stp)>(double)(stx) )
-                            {
-                                stpf = stmax;
-                            }
-                            else
-                            {
-                                stpf = stmin;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            //
-            //     UPDATE THE INTERVAL OF UNCERTAINTY. THIS UPDATE DOES NOT
-            //     DEPEND ON THE NEW STEP OR THE CASE ANALYSIS ABOVE.
-            //
-            if( (double)(fp)>(double)(fx) )
-            {
-                sty = stp;
-                fy = fp;
-                dy = dp;
-            }
-            else
-            {
-                if( (double)(sgnd)<(double)(0.0) )
-                {
-                    sty = stx;
-                    fy = fx;
-                    dy = dx;
-                }
-                stx = stp;
-                fx = fp;
-                dx = dp;
-            }
-            
-            //
-            //     COMPUTE THE NEW STEP AND SAFEGUARD IT.
-            //
-            stpf = Math.Min(stmax, stpf);
-            stpf = Math.Max(stmin, stpf);
-            stp = stpf;
-            if( brackt & bound )
-            {
-                if( (double)(sty)>(double)(stx) )
-                {
-                    stp = Math.Min(stx+0.66*(sty-stx), stp);
-                }
-                else
-                {
-                    stp = Math.Max(stx+0.66*(sty-stx), stp);
-                }
             }
         }
 
@@ -12918,6 +11576,2820 @@ public partial class alglib
 
 
     }
+    public class logit
+    {
+        public class logitmodel
+        {
+            public double[] w;
+            public logitmodel()
+            {
+                w = new double[0];
+            }
+        };
+
+
+        public class logitmcstate
+        {
+            public bool brackt;
+            public bool stage1;
+            public int infoc;
+            public double dg;
+            public double dgm;
+            public double dginit;
+            public double dgtest;
+            public double dgx;
+            public double dgxm;
+            public double dgy;
+            public double dgym;
+            public double finit;
+            public double ftest1;
+            public double fm;
+            public double fx;
+            public double fxm;
+            public double fy;
+            public double fym;
+            public double stx;
+            public double sty;
+            public double stmin;
+            public double stmax;
+            public double width;
+            public double width1;
+            public double xtrapf;
+        };
+
+
+        /*************************************************************************
+        MNLReport structure contains information about training process:
+        * NGrad     -   number of gradient calculations
+        * NHess     -   number of Hessian calculations
+        *************************************************************************/
+        public class mnlreport
+        {
+            public int ngrad;
+            public int nhess;
+        };
+
+
+
+
+        public const double xtol = 100*math.machineepsilon;
+        public const double ftol = 0.0001;
+        public const double gtol = 0.3;
+        public const int maxfev = 20;
+        public const double stpmin = 1.0E-2;
+        public const double stpmax = 1.0E5;
+        public const int logitvnum = 6;
+
+
+        /*************************************************************************
+        This subroutine trains logit model.
+
+        INPUT PARAMETERS:
+            XY          -   training set, array[0..NPoints-1,0..NVars]
+                            First NVars columns store values of independent
+                            variables, next column stores number of class (from 0
+                            to NClasses-1) which dataset element belongs to. Fractional
+                            values are rounded to nearest integer.
+            NPoints     -   training set size, NPoints>=1
+            NVars       -   number of independent variables, NVars>=1
+            NClasses    -   number of classes, NClasses>=2
+
+        OUTPUT PARAMETERS:
+            Info        -   return code:
+                            * -2, if there is a point with class number
+                                  outside of [0..NClasses-1].
+                            * -1, if incorrect parameters was passed
+                                  (NPoints<NVars+2, NVars<1, NClasses<2).
+                            *  1, if task has been solved
+            LM          -   model built
+            Rep         -   training report
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mnltrainh(double[,] xy,
+            int npoints,
+            int nvars,
+            int nclasses,
+            ref int info,
+            logitmodel lm,
+            mnlreport rep)
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int ssize = 0;
+            bool allsame = new bool();
+            int offs = 0;
+            double threshold = 0;
+            double wminstep = 0;
+            double decay = 0;
+            int wdim = 0;
+            int expoffs = 0;
+            double v = 0;
+            double s = 0;
+            mlpbase.multilayerperceptron network = new mlpbase.multilayerperceptron();
+            int nin = 0;
+            int nout = 0;
+            int wcount = 0;
+            double e = 0;
+            double[] g = new double[0];
+            double[,] h = new double[0,0];
+            bool spd = new bool();
+            double[] x = new double[0];
+            double[] y = new double[0];
+            double[] wbase = new double[0];
+            double wstep = 0;
+            double[] wdir = new double[0];
+            double[] work = new double[0];
+            int mcstage = 0;
+            logitmcstate mcstate = new logitmcstate();
+            int mcinfo = 0;
+            int mcnfev = 0;
+            int solverinfo = 0;
+            densesolver.densesolverreport solverrep = new densesolver.densesolverreport();
+            int i_ = 0;
+            int i1_ = 0;
+
+            info = 0;
+
+            threshold = 1000*math.machineepsilon;
+            wminstep = 0.001;
+            decay = 0.001;
+            
+            //
+            // Test for inputs
+            //
+            if( (npoints<nvars+2 | nvars<1) | nclasses<2 )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=npoints-1; i++)
+            {
+                if( (int)Math.Round(xy[i,nvars])<0 | (int)Math.Round(xy[i,nvars])>=nclasses )
+                {
+                    info = -2;
+                    return;
+                }
+            }
+            info = 1;
+            
+            //
+            // Initialize data
+            //
+            rep.ngrad = 0;
+            rep.nhess = 0;
+            
+            //
+            // Allocate array
+            //
+            wdim = (nvars+1)*(nclasses-1);
+            offs = 5;
+            expoffs = offs+wdim;
+            ssize = 5+(nvars+1)*(nclasses-1)+nclasses;
+            lm.w = new double[ssize-1+1];
+            lm.w[0] = ssize;
+            lm.w[1] = logitvnum;
+            lm.w[2] = nvars;
+            lm.w[3] = nclasses;
+            lm.w[4] = offs;
+            
+            //
+            // Degenerate case: all outputs are equal
+            //
+            allsame = true;
+            for(i=1; i<=npoints-1; i++)
+            {
+                if( (int)Math.Round(xy[i,nvars])!=(int)Math.Round(xy[i-1,nvars]) )
+                {
+                    allsame = false;
+                }
+            }
+            if( allsame )
+            {
+                for(i=0; i<=(nvars+1)*(nclasses-1)-1; i++)
+                {
+                    lm.w[offs+i] = 0;
+                }
+                v = -(2*Math.Log(math.minrealnumber));
+                k = (int)Math.Round(xy[0,nvars]);
+                if( k==nclasses-1 )
+                {
+                    for(i=0; i<=nclasses-2; i++)
+                    {
+                        lm.w[offs+i*(nvars+1)+nvars] = -v;
+                    }
+                }
+                else
+                {
+                    for(i=0; i<=nclasses-2; i++)
+                    {
+                        if( i==k )
+                        {
+                            lm.w[offs+i*(nvars+1)+nvars] = v;
+                        }
+                        else
+                        {
+                            lm.w[offs+i*(nvars+1)+nvars] = 0;
+                        }
+                    }
+                }
+                return;
+            }
+            
+            //
+            // General case.
+            // Prepare task and network. Allocate space.
+            //
+            mlpbase.mlpcreatec0(nvars, nclasses, network);
+            mlpbase.mlpinitpreprocessor(network, xy, npoints);
+            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
+            for(i=0; i<=wcount-1; i++)
+            {
+                network.weights[i] = (2*math.randomreal()-1)/nvars;
+            }
+            g = new double[wcount-1+1];
+            h = new double[wcount-1+1, wcount-1+1];
+            wbase = new double[wcount-1+1];
+            wdir = new double[wcount-1+1];
+            work = new double[wcount-1+1];
+            
+            //
+            // First stage: optimize in gradient direction.
+            //
+            for(k=0; k<=wcount/3+10; k++)
+            {
+                
+                //
+                // Calculate gradient in starting point
+                //
+                mlpbase.mlpgradnbatch(network, xy, npoints, ref e, ref g);
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += network.weights[i_]*network.weights[i_];
+                }
+                e = e+0.5*decay*v;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    g[i_] = g[i_] + decay*network.weights[i_];
+                }
+                rep.ngrad = rep.ngrad+1;
+                
+                //
+                // Setup optimization scheme
+                //
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    wdir[i_] = -g[i_];
+                }
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += wdir[i_]*wdir[i_];
+                }
+                wstep = Math.Sqrt(v);
+                v = 1/Math.Sqrt(v);
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    wdir[i_] = v*wdir[i_];
+                }
+                mcstage = 0;
+                mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
+                while( mcstage!=0 )
+                {
+                    mlpbase.mlpgradnbatch(network, xy, npoints, ref e, ref g);
+                    v = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        v += network.weights[i_]*network.weights[i_];
+                    }
+                    e = e+0.5*decay*v;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        g[i_] = g[i_] + decay*network.weights[i_];
+                    }
+                    rep.ngrad = rep.ngrad+1;
+                    mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
+                }
+            }
+            
+            //
+            // Second stage: use Hessian when we are close to the minimum
+            //
+            while( true )
+            {
+                
+                //
+                // Calculate and update E/G/H
+                //
+                mlpbase.mlphessiannbatch(network, xy, npoints, ref e, ref g, ref h);
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += network.weights[i_]*network.weights[i_];
+                }
+                e = e+0.5*decay*v;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    g[i_] = g[i_] + decay*network.weights[i_];
+                }
+                for(k=0; k<=wcount-1; k++)
+                {
+                    h[k,k] = h[k,k]+decay;
+                }
+                rep.nhess = rep.nhess+1;
+                
+                //
+                // Select step direction
+                // NOTE: it is important to use lower-triangle Cholesky
+                // factorization since it is much faster than higher-triangle version.
+                //
+                spd = trfac.spdmatrixcholesky(ref h, wcount, false);
+                densesolver.spdmatrixcholeskysolve(h, wcount, false, g, ref solverinfo, solverrep, ref wdir);
+                spd = solverinfo>0;
+                if( spd )
+                {
+                    
+                    //
+                    // H is positive definite.
+                    // Step in Newton direction.
+                    //
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wdir[i_] = -1*wdir[i_];
+                    }
+                    spd = true;
+                }
+                else
+                {
+                    
+                    //
+                    // H is indefinite.
+                    // Step in gradient direction.
+                    //
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wdir[i_] = -g[i_];
+                    }
+                    spd = false;
+                }
+                
+                //
+                // Optimize in WDir direction
+                //
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += wdir[i_]*wdir[i_];
+                }
+                wstep = Math.Sqrt(v);
+                v = 1/Math.Sqrt(v);
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    wdir[i_] = v*wdir[i_];
+                }
+                mcstage = 0;
+                mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
+                while( mcstage!=0 )
+                {
+                    mlpbase.mlpgradnbatch(network, xy, npoints, ref e, ref g);
+                    v = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        v += network.weights[i_]*network.weights[i_];
+                    }
+                    e = e+0.5*decay*v;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        g[i_] = g[i_] + decay*network.weights[i_];
+                    }
+                    rep.ngrad = rep.ngrad+1;
+                    mnlmcsrch(wcount, ref network.weights, ref e, ref g, wdir, ref wstep, ref mcinfo, ref mcnfev, ref work, mcstate, ref mcstage);
+                }
+                if( spd & ((mcinfo==2 | mcinfo==4) | mcinfo==6) )
+                {
+                    break;
+                }
+            }
+            
+            //
+            // Convert from NN format to MNL format
+            //
+            i1_ = (0) - (offs);
+            for(i_=offs; i_<=offs+wcount-1;i_++)
+            {
+                lm.w[i_] = network.weights[i_+i1_];
+            }
+            for(k=0; k<=nvars-1; k++)
+            {
+                for(i=0; i<=nclasses-2; i++)
+                {
+                    s = network.columnsigmas[k];
+                    if( (double)(s)==(double)(0) )
+                    {
+                        s = 1;
+                    }
+                    j = offs+(nvars+1)*i;
+                    v = lm.w[j+k];
+                    lm.w[j+k] = v/s;
+                    lm.w[j+nvars] = lm.w[j+nvars]+v*network.columnmeans[k]/s;
+                }
+            }
+            for(k=0; k<=nclasses-2; k++)
+            {
+                lm.w[offs+(nvars+1)*k+nvars] = -lm.w[offs+(nvars+1)*k+nvars];
+            }
+        }
+
+
+        /*************************************************************************
+        Procesing
+
+        INPUT PARAMETERS:
+            LM      -   logit model, passed by non-constant reference
+                        (some fields of structure are used as temporaries
+                        when calculating model output).
+            X       -   input vector,  array[0..NVars-1].
+            Y       -   (possibly) preallocated buffer; if size of Y is less than
+                        NClasses, it will be reallocated.If it is large enough, it
+                        is NOT reallocated, so we can save some time on reallocation.
+
+        OUTPUT PARAMETERS:
+            Y       -   result, array[0..NClasses-1]
+                        Vector of posterior probabilities for classification task.
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mnlprocess(logitmodel lm,
+            double[] x,
+            ref double[] y)
+        {
+            int nvars = 0;
+            int nclasses = 0;
+            int offs = 0;
+            int i = 0;
+            int i1 = 0;
+            double s = 0;
+
+            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLProcess: unexpected model version");
+            nvars = (int)Math.Round(lm.w[2]);
+            nclasses = (int)Math.Round(lm.w[3]);
+            offs = (int)Math.Round(lm.w[4]);
+            mnliexp(ref lm.w, x);
+            s = 0;
+            i1 = offs+(nvars+1)*(nclasses-1);
+            for(i=i1; i<=i1+nclasses-1; i++)
+            {
+                s = s+lm.w[i];
+            }
+            if( ap.len(y)<nclasses )
+            {
+                y = new double[nclasses];
+            }
+            for(i=0; i<=nclasses-1; i++)
+            {
+                y[i] = lm.w[i1+i]/s;
+            }
+        }
+
+
+        /*************************************************************************
+        'interactive'  variant  of  MNLProcess  for  languages  like  Python which
+        support constructs like "Y = MNLProcess(LM,X)" and interactive mode of the
+        interpreter
+
+        This function allocates new array on each call,  so  it  is  significantly
+        slower than its 'non-interactive' counterpart, but it is  more  convenient
+        when you call it from command line.
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mnlprocessi(logitmodel lm,
+            double[] x,
+            ref double[] y)
+        {
+            y = new double[0];
+
+            mnlprocess(lm, x, ref y);
+        }
+
+
+        /*************************************************************************
+        Unpacks coefficients of logit model. Logit model have form:
+
+            P(class=i) = S(i) / (S(0) + S(1) + ... +S(M-1))
+                  S(i) = Exp(A[i,0]*X[0] + ... + A[i,N-1]*X[N-1] + A[i,N]), when i<M-1
+                S(M-1) = 1
+
+        INPUT PARAMETERS:
+            LM          -   logit model in ALGLIB format
+
+        OUTPUT PARAMETERS:
+            V           -   coefficients, array[0..NClasses-2,0..NVars]
+            NVars       -   number of independent variables
+            NClasses    -   number of classes
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mnlunpack(logitmodel lm,
+            ref double[,] a,
+            ref int nvars,
+            ref int nclasses)
+        {
+            int offs = 0;
+            int i = 0;
+            int i_ = 0;
+            int i1_ = 0;
+
+            a = new double[0,0];
+            nvars = 0;
+            nclasses = 0;
+
+            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLUnpack: unexpected model version");
+            nvars = (int)Math.Round(lm.w[2]);
+            nclasses = (int)Math.Round(lm.w[3]);
+            offs = (int)Math.Round(lm.w[4]);
+            a = new double[nclasses-2+1, nvars+1];
+            for(i=0; i<=nclasses-2; i++)
+            {
+                i1_ = (offs+i*(nvars+1)) - (0);
+                for(i_=0; i_<=nvars;i_++)
+                {
+                    a[i,i_] = lm.w[i_+i1_];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        "Packs" coefficients and creates logit model in ALGLIB format (MNLUnpack
+        reversed).
+
+        INPUT PARAMETERS:
+            A           -   model (see MNLUnpack)
+            NVars       -   number of independent variables
+            NClasses    -   number of classes
+
+        OUTPUT PARAMETERS:
+            LM          -   logit model.
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mnlpack(double[,] a,
+            int nvars,
+            int nclasses,
+            logitmodel lm)
+        {
+            int offs = 0;
+            int i = 0;
+            int wdim = 0;
+            int ssize = 0;
+            int i_ = 0;
+            int i1_ = 0;
+
+            wdim = (nvars+1)*(nclasses-1);
+            offs = 5;
+            ssize = 5+(nvars+1)*(nclasses-1)+nclasses;
+            lm.w = new double[ssize-1+1];
+            lm.w[0] = ssize;
+            lm.w[1] = logitvnum;
+            lm.w[2] = nvars;
+            lm.w[3] = nclasses;
+            lm.w[4] = offs;
+            for(i=0; i<=nclasses-2; i++)
+            {
+                i1_ = (0) - (offs+i*(nvars+1));
+                for(i_=offs+i*(nvars+1); i_<=offs+i*(nvars+1)+nvars;i_++)
+                {
+                    lm.w[i_] = a[i,i_+i1_];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Copying of LogitModel strucure
+
+        INPUT PARAMETERS:
+            LM1 -   original
+
+        OUTPUT PARAMETERS:
+            LM2 -   copy
+
+          -- ALGLIB --
+             Copyright 15.03.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mnlcopy(logitmodel lm1,
+            logitmodel lm2)
+        {
+            int k = 0;
+            int i_ = 0;
+
+            k = (int)Math.Round(lm1.w[0]);
+            lm2.w = new double[k-1+1];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                lm2.w[i_] = lm1.w[i_];
+            }
+        }
+
+
+        /*************************************************************************
+        Average cross-entropy (in bits per element) on the test set
+
+        INPUT PARAMETERS:
+            LM      -   logit model
+            XY      -   test set
+            NPoints -   test set size
+
+        RESULT:
+            CrossEntropy/(NPoints*ln(2)).
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static double mnlavgce(logitmodel lm,
+            double[,] xy,
+            int npoints)
+        {
+            double result = 0;
+            int nvars = 0;
+            int nclasses = 0;
+            int i = 0;
+            double[] workx = new double[0];
+            double[] worky = new double[0];
+            int i_ = 0;
+
+            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLClsError: unexpected model version");
+            nvars = (int)Math.Round(lm.w[2]);
+            nclasses = (int)Math.Round(lm.w[3]);
+            workx = new double[nvars-1+1];
+            worky = new double[nclasses-1+1];
+            result = 0;
+            for(i=0; i<=npoints-1; i++)
+            {
+                ap.assert((int)Math.Round(xy[i,nvars])>=0 & (int)Math.Round(xy[i,nvars])<nclasses, "MNLAvgCE: incorrect class number!");
+                
+                //
+                // Process
+                //
+                for(i_=0; i_<=nvars-1;i_++)
+                {
+                    workx[i_] = xy[i,i_];
+                }
+                mnlprocess(lm, workx, ref worky);
+                if( (double)(worky[(int)Math.Round(xy[i,nvars])])>(double)(0) )
+                {
+                    result = result-Math.Log(worky[(int)Math.Round(xy[i,nvars])]);
+                }
+                else
+                {
+                    result = result-Math.Log(math.minrealnumber);
+                }
+            }
+            result = result/(npoints*Math.Log(2));
+            return result;
+        }
+
+
+        /*************************************************************************
+        Relative classification error on the test set
+
+        INPUT PARAMETERS:
+            LM      -   logit model
+            XY      -   test set
+            NPoints -   test set size
+
+        RESULT:
+            percent of incorrectly classified cases.
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static double mnlrelclserror(logitmodel lm,
+            double[,] xy,
+            int npoints)
+        {
+            double result = 0;
+
+            result = (double)mnlclserror(lm, xy, npoints)/(double)npoints;
+            return result;
+        }
+
+
+        /*************************************************************************
+        RMS error on the test set
+
+        INPUT PARAMETERS:
+            LM      -   logit model
+            XY      -   test set
+            NPoints -   test set size
+
+        RESULT:
+            root mean square error (error when estimating posterior probabilities).
+
+          -- ALGLIB --
+             Copyright 30.08.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static double mnlrmserror(logitmodel lm,
+            double[,] xy,
+            int npoints)
+        {
+            double result = 0;
+            double relcls = 0;
+            double avgce = 0;
+            double rms = 0;
+            double avg = 0;
+            double avgrel = 0;
+
+            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNLRMSError: Incorrect MNL version!");
+            mnlallerrors(lm, xy, npoints, ref relcls, ref avgce, ref rms, ref avg, ref avgrel);
+            result = rms;
+            return result;
+        }
+
+
+        /*************************************************************************
+        Average error on the test set
+
+        INPUT PARAMETERS:
+            LM      -   logit model
+            XY      -   test set
+            NPoints -   test set size
+
+        RESULT:
+            average error (error when estimating posterior probabilities).
+
+          -- ALGLIB --
+             Copyright 30.08.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static double mnlavgerror(logitmodel lm,
+            double[,] xy,
+            int npoints)
+        {
+            double result = 0;
+            double relcls = 0;
+            double avgce = 0;
+            double rms = 0;
+            double avg = 0;
+            double avgrel = 0;
+
+            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNLRMSError: Incorrect MNL version!");
+            mnlallerrors(lm, xy, npoints, ref relcls, ref avgce, ref rms, ref avg, ref avgrel);
+            result = avg;
+            return result;
+        }
+
+
+        /*************************************************************************
+        Average relative error on the test set
+
+        INPUT PARAMETERS:
+            LM      -   logit model
+            XY      -   test set
+            NPoints -   test set size
+
+        RESULT:
+            average relative error (error when estimating posterior probabilities).
+
+          -- ALGLIB --
+             Copyright 30.08.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static double mnlavgrelerror(logitmodel lm,
+            double[,] xy,
+            int ssize)
+        {
+            double result = 0;
+            double relcls = 0;
+            double avgce = 0;
+            double rms = 0;
+            double avg = 0;
+            double avgrel = 0;
+
+            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNLRMSError: Incorrect MNL version!");
+            mnlallerrors(lm, xy, ssize, ref relcls, ref avgce, ref rms, ref avg, ref avgrel);
+            result = avgrel;
+            return result;
+        }
+
+
+        /*************************************************************************
+        Classification error on test set = MNLRelClsError*NPoints
+
+          -- ALGLIB --
+             Copyright 10.09.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static int mnlclserror(logitmodel lm,
+            double[,] xy,
+            int npoints)
+        {
+            int result = 0;
+            int nvars = 0;
+            int nclasses = 0;
+            int i = 0;
+            int j = 0;
+            double[] workx = new double[0];
+            double[] worky = new double[0];
+            int nmax = 0;
+            int i_ = 0;
+
+            ap.assert((double)(lm.w[1])==(double)(logitvnum), "MNLClsError: unexpected model version");
+            nvars = (int)Math.Round(lm.w[2]);
+            nclasses = (int)Math.Round(lm.w[3]);
+            workx = new double[nvars-1+1];
+            worky = new double[nclasses-1+1];
+            result = 0;
+            for(i=0; i<=npoints-1; i++)
+            {
+                
+                //
+                // Process
+                //
+                for(i_=0; i_<=nvars-1;i_++)
+                {
+                    workx[i_] = xy[i,i_];
+                }
+                mnlprocess(lm, workx, ref worky);
+                
+                //
+                // Logit version of the answer
+                //
+                nmax = 0;
+                for(j=0; j<=nclasses-1; j++)
+                {
+                    if( (double)(worky[j])>(double)(worky[nmax]) )
+                    {
+                        nmax = j;
+                    }
+                }
+                
+                //
+                // compare
+                //
+                if( nmax!=(int)Math.Round(xy[i,nvars]) )
+                {
+                    result = result+1;
+                }
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        Internal subroutine. Places exponents of the anti-overflow shifted
+        internal linear outputs into the service part of the W array.
+        *************************************************************************/
+        private static void mnliexp(ref double[] w,
+            double[] x)
+        {
+            int nvars = 0;
+            int nclasses = 0;
+            int offs = 0;
+            int i = 0;
+            int i1 = 0;
+            double v = 0;
+            double mx = 0;
+            int i_ = 0;
+            int i1_ = 0;
+
+            ap.assert((double)(w[1])==(double)(logitvnum), "LOGIT: unexpected model version");
+            nvars = (int)Math.Round(w[2]);
+            nclasses = (int)Math.Round(w[3]);
+            offs = (int)Math.Round(w[4]);
+            i1 = offs+(nvars+1)*(nclasses-1);
+            for(i=0; i<=nclasses-2; i++)
+            {
+                i1_ = (0)-(offs+i*(nvars+1));
+                v = 0.0;
+                for(i_=offs+i*(nvars+1); i_<=offs+i*(nvars+1)+nvars-1;i_++)
+                {
+                    v += w[i_]*x[i_+i1_];
+                }
+                w[i1+i] = v+w[offs+i*(nvars+1)+nvars];
+            }
+            w[i1+nclasses-1] = 0;
+            mx = 0;
+            for(i=i1; i<=i1+nclasses-1; i++)
+            {
+                mx = Math.Max(mx, w[i]);
+            }
+            for(i=i1; i<=i1+nclasses-1; i++)
+            {
+                w[i] = Math.Exp(w[i]-mx);
+            }
+        }
+
+
+        /*************************************************************************
+        Calculation of all types of errors
+
+          -- ALGLIB --
+             Copyright 30.08.2008 by Bochkanov Sergey
+        *************************************************************************/
+        private static void mnlallerrors(logitmodel lm,
+            double[,] xy,
+            int npoints,
+            ref double relcls,
+            ref double avgce,
+            ref double rms,
+            ref double avg,
+            ref double avgrel)
+        {
+            int nvars = 0;
+            int nclasses = 0;
+            int i = 0;
+            double[] buf = new double[0];
+            double[] workx = new double[0];
+            double[] y = new double[0];
+            double[] dy = new double[0];
+            int i_ = 0;
+
+            relcls = 0;
+            avgce = 0;
+            rms = 0;
+            avg = 0;
+            avgrel = 0;
+
+            ap.assert((int)Math.Round(lm.w[1])==logitvnum, "MNL unit: Incorrect MNL version!");
+            nvars = (int)Math.Round(lm.w[2]);
+            nclasses = (int)Math.Round(lm.w[3]);
+            workx = new double[nvars-1+1];
+            y = new double[nclasses-1+1];
+            dy = new double[0+1];
+            bdss.dserrallocate(nclasses, ref buf);
+            for(i=0; i<=npoints-1; i++)
+            {
+                for(i_=0; i_<=nvars-1;i_++)
+                {
+                    workx[i_] = xy[i,i_];
+                }
+                mnlprocess(lm, workx, ref y);
+                dy[0] = xy[i,nvars];
+                bdss.dserraccumulate(ref buf, y, dy);
+            }
+            bdss.dserrfinish(ref buf);
+            relcls = buf[0];
+            avgce = buf[1];
+            rms = buf[2];
+            avg = buf[3];
+            avgrel = buf[4];
+        }
+
+
+        /*************************************************************************
+        THE  PURPOSE  OF  MCSRCH  IS  TO  FIND A STEP WHICH SATISFIES A SUFFICIENT
+        DECREASE CONDITION AND A CURVATURE CONDITION.
+
+        AT EACH STAGE THE SUBROUTINE  UPDATES  AN  INTERVAL  OF  UNCERTAINTY  WITH
+        ENDPOINTS  STX  AND  STY.  THE INTERVAL OF UNCERTAINTY IS INITIALLY CHOSEN
+        SO THAT IT CONTAINS A MINIMIZER OF THE MODIFIED FUNCTION
+
+            F(X+STP*S) - F(X) - FTOL*STP*(GRADF(X)'S).
+
+        IF  A STEP  IS OBTAINED FOR  WHICH THE MODIFIED FUNCTION HAS A NONPOSITIVE
+        FUNCTION  VALUE  AND  NONNEGATIVE  DERIVATIVE,   THEN   THE   INTERVAL  OF
+        UNCERTAINTY IS CHOSEN SO THAT IT CONTAINS A MINIMIZER OF F(X+STP*S).
+
+        THE  ALGORITHM  IS  DESIGNED TO FIND A STEP WHICH SATISFIES THE SUFFICIENT
+        DECREASE CONDITION
+
+            F(X+STP*S) .LE. F(X) + FTOL*STP*(GRADF(X)'S),
+
+        AND THE CURVATURE CONDITION
+
+            ABS(GRADF(X+STP*S)'S)) .LE. GTOL*ABS(GRADF(X)'S).
+
+        IF  FTOL  IS  LESS  THAN GTOL AND IF, FOR EXAMPLE, THE FUNCTION IS BOUNDED
+        BELOW,  THEN  THERE  IS  ALWAYS  A  STEP  WHICH SATISFIES BOTH CONDITIONS.
+        IF  NO  STEP  CAN BE FOUND  WHICH  SATISFIES  BOTH  CONDITIONS,  THEN  THE
+        ALGORITHM  USUALLY STOPS  WHEN  ROUNDING ERRORS  PREVENT FURTHER PROGRESS.
+        IN THIS CASE STP ONLY SATISFIES THE SUFFICIENT DECREASE CONDITION.
+
+        PARAMETERS DESCRIPRION
+
+        N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER OF VARIABLES.
+
+        X IS  AN  ARRAY  OF  LENGTH N. ON INPUT IT MUST CONTAIN THE BASE POINT FOR
+        THE LINE SEARCH. ON OUTPUT IT CONTAINS X+STP*S.
+
+        F IS  A  VARIABLE. ON INPUT IT MUST CONTAIN THE VALUE OF F AT X. ON OUTPUT
+        IT CONTAINS THE VALUE OF F AT X + STP*S.
+
+        G IS AN ARRAY OF LENGTH N. ON INPUT IT MUST CONTAIN THE GRADIENT OF F AT X.
+        ON OUTPUT IT CONTAINS THE GRADIENT OF F AT X + STP*S.
+
+        S IS AN INPUT ARRAY OF LENGTH N WHICH SPECIFIES THE SEARCH DIRECTION.
+
+        STP  IS  A NONNEGATIVE VARIABLE. ON INPUT STP CONTAINS AN INITIAL ESTIMATE
+        OF A SATISFACTORY STEP. ON OUTPUT STP CONTAINS THE FINAL ESTIMATE.
+
+        FTOL AND GTOL ARE NONNEGATIVE INPUT VARIABLES. TERMINATION OCCURS WHEN THE
+        SUFFICIENT DECREASE CONDITION AND THE DIRECTIONAL DERIVATIVE CONDITION ARE
+        SATISFIED.
+
+        XTOL IS A NONNEGATIVE INPUT VARIABLE. TERMINATION OCCURS WHEN THE RELATIVE
+        WIDTH OF THE INTERVAL OF UNCERTAINTY IS AT MOST XTOL.
+
+        STPMIN AND STPMAX ARE NONNEGATIVE INPUT VARIABLES WHICH SPECIFY LOWER  AND
+        UPPER BOUNDS FOR THE STEP.
+
+        MAXFEV IS A POSITIVE INTEGER INPUT VARIABLE. TERMINATION OCCURS WHEN THE
+        NUMBER OF CALLS TO FCN IS AT LEAST MAXFEV BY THE END OF AN ITERATION.
+
+        INFO IS AN INTEGER OUTPUT VARIABLE SET AS FOLLOWS:
+            INFO = 0  IMPROPER INPUT PARAMETERS.
+
+            INFO = 1  THE SUFFICIENT DECREASE CONDITION AND THE
+                      DIRECTIONAL DERIVATIVE CONDITION HOLD.
+
+            INFO = 2  RELATIVE WIDTH OF THE INTERVAL OF UNCERTAINTY
+                      IS AT MOST XTOL.
+
+            INFO = 3  NUMBER OF CALLS TO FCN HAS REACHED MAXFEV.
+
+            INFO = 4  THE STEP IS AT THE LOWER BOUND STPMIN.
+
+            INFO = 5  THE STEP IS AT THE UPPER BOUND STPMAX.
+
+            INFO = 6  ROUNDING ERRORS PREVENT FURTHER PROGRESS.
+                      THERE MAY NOT BE A STEP WHICH SATISFIES THE
+                      SUFFICIENT DECREASE AND CURVATURE CONDITIONS.
+                      TOLERANCES MAY BE TOO SMALL.
+
+        NFEV IS AN INTEGER OUTPUT VARIABLE SET TO THE NUMBER OF CALLS TO FCN.
+
+        WA IS A WORK ARRAY OF LENGTH N.
+
+        ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. JUNE 1983
+        JORGE J. MORE', DAVID J. THUENTE
+        *************************************************************************/
+        private static void mnlmcsrch(int n,
+            ref double[] x,
+            ref double f,
+            ref double[] g,
+            double[] s,
+            ref double stp,
+            ref int info,
+            ref int nfev,
+            ref double[] wa,
+            logitmcstate state,
+            ref int stage)
+        {
+            double v = 0;
+            double p5 = 0;
+            double p66 = 0;
+            double zero = 0;
+            int i_ = 0;
+
+            
+            //
+            // init
+            //
+            p5 = 0.5;
+            p66 = 0.66;
+            state.xtrapf = 4.0;
+            zero = 0;
+            
+            //
+            // Main cycle
+            //
+            while( true )
+            {
+                if( stage==0 )
+                {
+                    
+                    //
+                    // NEXT
+                    //
+                    stage = 2;
+                    continue;
+                }
+                if( stage==2 )
+                {
+                    state.infoc = 1;
+                    info = 0;
+                    
+                    //
+                    //     CHECK THE INPUT PARAMETERS FOR ERRORS.
+                    //
+                    if( ((((((n<=0 | (double)(stp)<=(double)(0)) | (double)(ftol)<(double)(0)) | (double)(gtol)<(double)(zero)) | (double)(xtol)<(double)(zero)) | (double)(stpmin)<(double)(zero)) | (double)(stpmax)<(double)(stpmin)) | maxfev<=0 )
+                    {
+                        stage = 0;
+                        return;
+                    }
+                    
+                    //
+                    //     COMPUTE THE INITIAL GRADIENT IN THE SEARCH DIRECTION
+                    //     AND CHECK THAT S IS A DESCENT DIRECTION.
+                    //
+                    v = 0.0;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        v += g[i_]*s[i_];
+                    }
+                    state.dginit = v;
+                    if( (double)(state.dginit)>=(double)(0) )
+                    {
+                        stage = 0;
+                        return;
+                    }
+                    
+                    //
+                    //     INITIALIZE LOCAL VARIABLES.
+                    //
+                    state.brackt = false;
+                    state.stage1 = true;
+                    nfev = 0;
+                    state.finit = f;
+                    state.dgtest = ftol*state.dginit;
+                    state.width = stpmax-stpmin;
+                    state.width1 = state.width/p5;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        wa[i_] = x[i_];
+                    }
+                    
+                    //
+                    //     THE VARIABLES STX, FX, DGX CONTAIN THE VALUES OF THE STEP,
+                    //     FUNCTION, AND DIRECTIONAL DERIVATIVE AT THE BEST STEP.
+                    //     THE VARIABLES STY, FY, DGY CONTAIN THE VALUE OF THE STEP,
+                    //     FUNCTION, AND DERIVATIVE AT THE OTHER ENDPOINT OF
+                    //     THE INTERVAL OF UNCERTAINTY.
+                    //     THE VARIABLES STP, F, DG CONTAIN THE VALUES OF THE STEP,
+                    //     FUNCTION, AND DERIVATIVE AT THE CURRENT STEP.
+                    //
+                    state.stx = 0;
+                    state.fx = state.finit;
+                    state.dgx = state.dginit;
+                    state.sty = 0;
+                    state.fy = state.finit;
+                    state.dgy = state.dginit;
+                    
+                    //
+                    // NEXT
+                    //
+                    stage = 3;
+                    continue;
+                }
+                if( stage==3 )
+                {
+                    
+                    //
+                    //     START OF ITERATION.
+                    //
+                    //     SET THE MINIMUM AND MAXIMUM STEPS TO CORRESPOND
+                    //     TO THE PRESENT INTERVAL OF UNCERTAINTY.
+                    //
+                    if( state.brackt )
+                    {
+                        if( (double)(state.stx)<(double)(state.sty) )
+                        {
+                            state.stmin = state.stx;
+                            state.stmax = state.sty;
+                        }
+                        else
+                        {
+                            state.stmin = state.sty;
+                            state.stmax = state.stx;
+                        }
+                    }
+                    else
+                    {
+                        state.stmin = state.stx;
+                        state.stmax = stp+state.xtrapf*(stp-state.stx);
+                    }
+                    
+                    //
+                    //        FORCE THE STEP TO BE WITHIN THE BOUNDS STPMAX AND STPMIN.
+                    //
+                    if( (double)(stp)>(double)(stpmax) )
+                    {
+                        stp = stpmax;
+                    }
+                    if( (double)(stp)<(double)(stpmin) )
+                    {
+                        stp = stpmin;
+                    }
+                    
+                    //
+                    //        IF AN UNUSUAL TERMINATION IS TO OCCUR THEN LET
+                    //        STP BE THE LOWEST POINT OBTAINED SO FAR.
+                    //
+                    if( (((state.brackt & ((double)(stp)<=(double)(state.stmin) | (double)(stp)>=(double)(state.stmax))) | nfev>=maxfev-1) | state.infoc==0) | (state.brackt & (double)(state.stmax-state.stmin)<=(double)(xtol*state.stmax)) )
+                    {
+                        stp = state.stx;
+                    }
+                    
+                    //
+                    //        EVALUATE THE FUNCTION AND GRADIENT AT STP
+                    //        AND COMPUTE THE DIRECTIONAL DERIVATIVE.
+                    //
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        x[i_] = wa[i_];
+                    }
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        x[i_] = x[i_] + stp*s[i_];
+                    }
+                    
+                    //
+                    // NEXT
+                    //
+                    stage = 4;
+                    return;
+                }
+                if( stage==4 )
+                {
+                    info = 0;
+                    nfev = nfev+1;
+                    v = 0.0;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        v += g[i_]*s[i_];
+                    }
+                    state.dg = v;
+                    state.ftest1 = state.finit+stp*state.dgtest;
+                    
+                    //
+                    //        TEST FOR CONVERGENCE.
+                    //
+                    if( (state.brackt & ((double)(stp)<=(double)(state.stmin) | (double)(stp)>=(double)(state.stmax))) | state.infoc==0 )
+                    {
+                        info = 6;
+                    }
+                    if( ((double)(stp)==(double)(stpmax) & (double)(f)<=(double)(state.ftest1)) & (double)(state.dg)<=(double)(state.dgtest) )
+                    {
+                        info = 5;
+                    }
+                    if( (double)(stp)==(double)(stpmin) & ((double)(f)>(double)(state.ftest1) | (double)(state.dg)>=(double)(state.dgtest)) )
+                    {
+                        info = 4;
+                    }
+                    if( nfev>=maxfev )
+                    {
+                        info = 3;
+                    }
+                    if( state.brackt & (double)(state.stmax-state.stmin)<=(double)(xtol*state.stmax) )
+                    {
+                        info = 2;
+                    }
+                    if( (double)(f)<=(double)(state.ftest1) & (double)(Math.Abs(state.dg))<=(double)(-(gtol*state.dginit)) )
+                    {
+                        info = 1;
+                    }
+                    
+                    //
+                    //        CHECK FOR TERMINATION.
+                    //
+                    if( info!=0 )
+                    {
+                        stage = 0;
+                        return;
+                    }
+                    
+                    //
+                    //        IN THE FIRST STAGE WE SEEK A STEP FOR WHICH THE MODIFIED
+                    //        FUNCTION HAS A NONPOSITIVE VALUE AND NONNEGATIVE DERIVATIVE.
+                    //
+                    if( (state.stage1 & (double)(f)<=(double)(state.ftest1)) & (double)(state.dg)>=(double)(Math.Min(ftol, gtol)*state.dginit) )
+                    {
+                        state.stage1 = false;
+                    }
+                    
+                    //
+                    //        A MODIFIED FUNCTION IS USED TO PREDICT THE STEP ONLY IF
+                    //        WE HAVE NOT OBTAINED A STEP FOR WHICH THE MODIFIED
+                    //        FUNCTION HAS A NONPOSITIVE FUNCTION VALUE AND NONNEGATIVE
+                    //        DERIVATIVE, AND IF A LOWER FUNCTION VALUE HAS BEEN
+                    //        OBTAINED BUT THE DECREASE IS NOT SUFFICIENT.
+                    //
+                    if( (state.stage1 & (double)(f)<=(double)(state.fx)) & (double)(f)>(double)(state.ftest1) )
+                    {
+                        
+                        //
+                        //           DEFINE THE MODIFIED FUNCTION AND DERIVATIVE VALUES.
+                        //
+                        state.fm = f-stp*state.dgtest;
+                        state.fxm = state.fx-state.stx*state.dgtest;
+                        state.fym = state.fy-state.sty*state.dgtest;
+                        state.dgm = state.dg-state.dgtest;
+                        state.dgxm = state.dgx-state.dgtest;
+                        state.dgym = state.dgy-state.dgtest;
+                        
+                        //
+                        //           CALL CSTEP TO UPDATE THE INTERVAL OF UNCERTAINTY
+                        //           AND TO COMPUTE THE NEW STEP.
+                        //
+                        mnlmcstep(ref state.stx, ref state.fxm, ref state.dgxm, ref state.sty, ref state.fym, ref state.dgym, ref stp, state.fm, state.dgm, ref state.brackt, state.stmin, state.stmax, ref state.infoc);
+                        
+                        //
+                        //           RESET THE FUNCTION AND GRADIENT VALUES FOR F.
+                        //
+                        state.fx = state.fxm+state.stx*state.dgtest;
+                        state.fy = state.fym+state.sty*state.dgtest;
+                        state.dgx = state.dgxm+state.dgtest;
+                        state.dgy = state.dgym+state.dgtest;
+                    }
+                    else
+                    {
+                        
+                        //
+                        //           CALL MCSTEP TO UPDATE THE INTERVAL OF UNCERTAINTY
+                        //           AND TO COMPUTE THE NEW STEP.
+                        //
+                        mnlmcstep(ref state.stx, ref state.fx, ref state.dgx, ref state.sty, ref state.fy, ref state.dgy, ref stp, f, state.dg, ref state.brackt, state.stmin, state.stmax, ref state.infoc);
+                    }
+                    
+                    //
+                    //        FORCE A SUFFICIENT DECREASE IN THE SIZE OF THE
+                    //        INTERVAL OF UNCERTAINTY.
+                    //
+                    if( state.brackt )
+                    {
+                        if( (double)(Math.Abs(state.sty-state.stx))>=(double)(p66*state.width1) )
+                        {
+                            stp = state.stx+p5*(state.sty-state.stx);
+                        }
+                        state.width1 = state.width;
+                        state.width = Math.Abs(state.sty-state.stx);
+                    }
+                    
+                    //
+                    //  NEXT.
+                    //
+                    stage = 3;
+                    continue;
+                }
+            }
+        }
+
+
+        private static void mnlmcstep(ref double stx,
+            ref double fx,
+            ref double dx,
+            ref double sty,
+            ref double fy,
+            ref double dy,
+            ref double stp,
+            double fp,
+            double dp,
+            ref bool brackt,
+            double stmin,
+            double stmax,
+            ref int info)
+        {
+            bool bound = new bool();
+            double gamma = 0;
+            double p = 0;
+            double q = 0;
+            double r = 0;
+            double s = 0;
+            double sgnd = 0;
+            double stpc = 0;
+            double stpf = 0;
+            double stpq = 0;
+            double theta = 0;
+
+            info = 0;
+            
+            //
+            //     CHECK THE INPUT PARAMETERS FOR ERRORS.
+            //
+            if( ((brackt & ((double)(stp)<=(double)(Math.Min(stx, sty)) | (double)(stp)>=(double)(Math.Max(stx, sty)))) | (double)(dx*(stp-stx))>=(double)(0)) | (double)(stmax)<(double)(stmin) )
+            {
+                return;
+            }
+            
+            //
+            //     DETERMINE IF THE DERIVATIVES HAVE OPPOSITE SIGN.
+            //
+            sgnd = dp*(dx/Math.Abs(dx));
+            
+            //
+            //     FIRST CASE. A HIGHER FUNCTION VALUE.
+            //     THE MINIMUM IS BRACKETED. IF THE CUBIC STEP IS CLOSER
+            //     TO STX THAN THE QUADRATIC STEP, THE CUBIC STEP IS TAKEN,
+            //     ELSE THE AVERAGE OF THE CUBIC AND QUADRATIC STEPS IS TAKEN.
+            //
+            if( (double)(fp)>(double)(fx) )
+            {
+                info = 1;
+                bound = true;
+                theta = 3*(fx-fp)/(stp-stx)+dx+dp;
+                s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dx), Math.Abs(dp)));
+                gamma = s*Math.Sqrt(math.sqr(theta/s)-dx/s*(dp/s));
+                if( (double)(stp)<(double)(stx) )
+                {
+                    gamma = -gamma;
+                }
+                p = gamma-dx+theta;
+                q = gamma-dx+gamma+dp;
+                r = p/q;
+                stpc = stx+r*(stp-stx);
+                stpq = stx+dx/((fx-fp)/(stp-stx)+dx)/2*(stp-stx);
+                if( (double)(Math.Abs(stpc-stx))<(double)(Math.Abs(stpq-stx)) )
+                {
+                    stpf = stpc;
+                }
+                else
+                {
+                    stpf = stpc+(stpq-stpc)/2;
+                }
+                brackt = true;
+            }
+            else
+            {
+                if( (double)(sgnd)<(double)(0) )
+                {
+                    
+                    //
+                    //     SECOND CASE. A LOWER FUNCTION VALUE AND DERIVATIVES OF
+                    //     OPPOSITE SIGN. THE MINIMUM IS BRACKETED. IF THE CUBIC
+                    //     STEP IS CLOSER TO STX THAN THE QUADRATIC (SECANT) STEP,
+                    //     THE CUBIC STEP IS TAKEN, ELSE THE QUADRATIC STEP IS TAKEN.
+                    //
+                    info = 2;
+                    bound = false;
+                    theta = 3*(fx-fp)/(stp-stx)+dx+dp;
+                    s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dx), Math.Abs(dp)));
+                    gamma = s*Math.Sqrt(math.sqr(theta/s)-dx/s*(dp/s));
+                    if( (double)(stp)>(double)(stx) )
+                    {
+                        gamma = -gamma;
+                    }
+                    p = gamma-dp+theta;
+                    q = gamma-dp+gamma+dx;
+                    r = p/q;
+                    stpc = stp+r*(stx-stp);
+                    stpq = stp+dp/(dp-dx)*(stx-stp);
+                    if( (double)(Math.Abs(stpc-stp))>(double)(Math.Abs(stpq-stp)) )
+                    {
+                        stpf = stpc;
+                    }
+                    else
+                    {
+                        stpf = stpq;
+                    }
+                    brackt = true;
+                }
+                else
+                {
+                    if( (double)(Math.Abs(dp))<(double)(Math.Abs(dx)) )
+                    {
+                        
+                        //
+                        //     THIRD CASE. A LOWER FUNCTION VALUE, DERIVATIVES OF THE
+                        //     SAME SIGN, AND THE MAGNITUDE OF THE DERIVATIVE DECREASES.
+                        //     THE CUBIC STEP IS ONLY USED IF THE CUBIC TENDS TO INFINITY
+                        //     IN THE DIRECTION OF THE STEP OR IF THE MINIMUM OF THE CUBIC
+                        //     IS BEYOND STP. OTHERWISE THE CUBIC STEP IS DEFINED TO BE
+                        //     EITHER STPMIN OR STPMAX. THE QUADRATIC (SECANT) STEP IS ALSO
+                        //     COMPUTED AND IF THE MINIMUM IS BRACKETED THEN THE THE STEP
+                        //     CLOSEST TO STX IS TAKEN, ELSE THE STEP FARTHEST AWAY IS TAKEN.
+                        //
+                        info = 3;
+                        bound = true;
+                        theta = 3*(fx-fp)/(stp-stx)+dx+dp;
+                        s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dx), Math.Abs(dp)));
+                        
+                        //
+                        //        THE CASE GAMMA = 0 ONLY ARISES IF THE CUBIC DOES NOT TEND
+                        //        TO INFINITY IN THE DIRECTION OF THE STEP.
+                        //
+                        gamma = s*Math.Sqrt(Math.Max(0, math.sqr(theta/s)-dx/s*(dp/s)));
+                        if( (double)(stp)>(double)(stx) )
+                        {
+                            gamma = -gamma;
+                        }
+                        p = gamma-dp+theta;
+                        q = gamma+(dx-dp)+gamma;
+                        r = p/q;
+                        if( (double)(r)<(double)(0) & (double)(gamma)!=(double)(0) )
+                        {
+                            stpc = stp+r*(stx-stp);
+                        }
+                        else
+                        {
+                            if( (double)(stp)>(double)(stx) )
+                            {
+                                stpc = stmax;
+                            }
+                            else
+                            {
+                                stpc = stmin;
+                            }
+                        }
+                        stpq = stp+dp/(dp-dx)*(stx-stp);
+                        if( brackt )
+                        {
+                            if( (double)(Math.Abs(stp-stpc))<(double)(Math.Abs(stp-stpq)) )
+                            {
+                                stpf = stpc;
+                            }
+                            else
+                            {
+                                stpf = stpq;
+                            }
+                        }
+                        else
+                        {
+                            if( (double)(Math.Abs(stp-stpc))>(double)(Math.Abs(stp-stpq)) )
+                            {
+                                stpf = stpc;
+                            }
+                            else
+                            {
+                                stpf = stpq;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        
+                        //
+                        //     FOURTH CASE. A LOWER FUNCTION VALUE, DERIVATIVES OF THE
+                        //     SAME SIGN, AND THE MAGNITUDE OF THE DERIVATIVE DOES
+                        //     NOT DECREASE. IF THE MINIMUM IS NOT BRACKETED, THE STEP
+                        //     IS EITHER STPMIN OR STPMAX, ELSE THE CUBIC STEP IS TAKEN.
+                        //
+                        info = 4;
+                        bound = false;
+                        if( brackt )
+                        {
+                            theta = 3*(fp-fy)/(sty-stp)+dy+dp;
+                            s = Math.Max(Math.Abs(theta), Math.Max(Math.Abs(dy), Math.Abs(dp)));
+                            gamma = s*Math.Sqrt(math.sqr(theta/s)-dy/s*(dp/s));
+                            if( (double)(stp)>(double)(sty) )
+                            {
+                                gamma = -gamma;
+                            }
+                            p = gamma-dp+theta;
+                            q = gamma-dp+gamma+dy;
+                            r = p/q;
+                            stpc = stp+r*(sty-stp);
+                            stpf = stpc;
+                        }
+                        else
+                        {
+                            if( (double)(stp)>(double)(stx) )
+                            {
+                                stpf = stmax;
+                            }
+                            else
+                            {
+                                stpf = stmin;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //
+            //     UPDATE THE INTERVAL OF UNCERTAINTY. THIS UPDATE DOES NOT
+            //     DEPEND ON THE NEW STEP OR THE CASE ANALYSIS ABOVE.
+            //
+            if( (double)(fp)>(double)(fx) )
+            {
+                sty = stp;
+                fy = fp;
+                dy = dp;
+            }
+            else
+            {
+                if( (double)(sgnd)<(double)(0.0) )
+                {
+                    sty = stx;
+                    fy = fx;
+                    dy = dx;
+                }
+                stx = stp;
+                fx = fp;
+                dx = dp;
+            }
+            
+            //
+            //     COMPUTE THE NEW STEP AND SAFEGUARD IT.
+            //
+            stpf = Math.Min(stmax, stpf);
+            stpf = Math.Max(stmin, stpf);
+            stp = stpf;
+            if( brackt & bound )
+            {
+                if( (double)(sty)>(double)(stx) )
+                {
+                    stp = Math.Min(stx+0.66*(sty-stx), stp);
+                }
+                else
+                {
+                    stp = Math.Max(stx+0.66*(sty-stx), stp);
+                }
+            }
+        }
+
+
+    }
+    public class mlptrain
+    {
+        /*************************************************************************
+        Training report:
+            * NGrad     - number of gradient calculations
+            * NHess     - number of Hessian calculations
+            * NCholesky - number of Cholesky decompositions
+        *************************************************************************/
+        public class mlpreport
+        {
+            public int ngrad;
+            public int nhess;
+            public int ncholesky;
+        };
+
+
+        /*************************************************************************
+        Cross-validation estimates of generalization error
+        *************************************************************************/
+        public class mlpcvreport
+        {
+            public double relclserror;
+            public double avgce;
+            public double rmserror;
+            public double avgerror;
+            public double avgrelerror;
+        };
+
+
+
+
+        public const double mindecay = 0.001;
+
+
+        /*************************************************************************
+        Neural network training  using  modified  Levenberg-Marquardt  with  exact
+        Hessian calculation and regularization. Subroutine trains  neural  network
+        with restarts from random positions. Algorithm is well  suited  for  small
+        and medium scale problems (hundreds of weights).
+
+        INPUT PARAMETERS:
+            Network     -   neural network with initialized geometry
+            XY          -   training set
+            NPoints     -   training set size
+            Decay       -   weight decay constant, >=0.001
+                            Decay term 'Decay*||Weights||^2' is added to error
+                            function.
+                            If you don't know what Decay to choose, use 0.001.
+            Restarts    -   number of restarts from random position, >0.
+                            If you don't know what Restarts to choose, use 2.
+
+        OUTPUT PARAMETERS:
+            Network     -   trained neural network.
+            Info        -   return code:
+                            * -9, if internal matrix inverse subroutine failed
+                            * -2, if there is a point with class number
+                                  outside of [0..NOut-1].
+                            * -1, if wrong parameters specified
+                                  (NPoints<0, Restarts<1).
+                            *  2, if task has been solved.
+            Rep         -   training report
+
+          -- ALGLIB --
+             Copyright 10.03.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlptrainlm(mlpbase.multilayerperceptron network,
+            double[,] xy,
+            int npoints,
+            double decay,
+            int restarts,
+            ref int info,
+            mlpreport rep)
+        {
+            int nin = 0;
+            int nout = 0;
+            int wcount = 0;
+            double lmftol = 0;
+            double lmsteptol = 0;
+            int i = 0;
+            int k = 0;
+            double v = 0;
+            double e = 0;
+            double enew = 0;
+            double xnorm2 = 0;
+            double stepnorm = 0;
+            double[] g = new double[0];
+            double[] d = new double[0];
+            double[,] h = new double[0,0];
+            double[,] hmod = new double[0,0];
+            double[,] z = new double[0,0];
+            bool spd = new bool();
+            double nu = 0;
+            double lambdav = 0;
+            double lambdaup = 0;
+            double lambdadown = 0;
+            minlbfgs.minlbfgsreport internalrep = new minlbfgs.minlbfgsreport();
+            minlbfgs.minlbfgsstate state = new minlbfgs.minlbfgsstate();
+            double[] x = new double[0];
+            double[] y = new double[0];
+            double[] wbase = new double[0];
+            double[] wdir = new double[0];
+            double[] wt = new double[0];
+            double[] wx = new double[0];
+            int pass = 0;
+            double[] wbest = new double[0];
+            double ebest = 0;
+            int invinfo = 0;
+            matinv.matinvreport invrep = new matinv.matinvreport();
+            int solverinfo = 0;
+            densesolver.densesolverreport solverrep = new densesolver.densesolverreport();
+            int i_ = 0;
+
+            info = 0;
+
+            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
+            lambdaup = 10;
+            lambdadown = 0.3;
+            lmftol = 0.001;
+            lmsteptol = 0.001;
+            
+            //
+            // Test for inputs
+            //
+            if( npoints<=0 | restarts<1 )
+            {
+                info = -1;
+                return;
+            }
+            if( mlpbase.mlpissoftmax(network) )
+            {
+                for(i=0; i<=npoints-1; i++)
+                {
+                    if( (int)Math.Round(xy[i,nin])<0 | (int)Math.Round(xy[i,nin])>=nout )
+                    {
+                        info = -2;
+                        return;
+                    }
+                }
+            }
+            decay = Math.Max(decay, mindecay);
+            info = 2;
+            
+            //
+            // Initialize data
+            //
+            rep.ngrad = 0;
+            rep.nhess = 0;
+            rep.ncholesky = 0;
+            
+            //
+            // General case.
+            // Prepare task and network. Allocate space.
+            //
+            mlpbase.mlpinitpreprocessor(network, xy, npoints);
+            g = new double[wcount-1+1];
+            h = new double[wcount-1+1, wcount-1+1];
+            hmod = new double[wcount-1+1, wcount-1+1];
+            wbase = new double[wcount-1+1];
+            wdir = new double[wcount-1+1];
+            wbest = new double[wcount-1+1];
+            wt = new double[wcount-1+1];
+            wx = new double[wcount-1+1];
+            ebest = math.maxrealnumber;
+            
+            //
+            // Multiple passes
+            //
+            for(pass=1; pass<=restarts; pass++)
+            {
+                
+                //
+                // Initialize weights
+                //
+                mlpbase.mlprandomize(network);
+                
+                //
+                // First stage of the hybrid algorithm: LBFGS
+                //
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    wbase[i_] = network.weights[i_];
+                }
+                minlbfgs.minlbfgscreate(wcount, Math.Min(wcount, 5), wbase, state);
+                minlbfgs.minlbfgssetcond(state, 0, 0, 0, Math.Max(25, wcount));
+                while( minlbfgs.minlbfgsiteration(state) )
+                {
+                    
+                    //
+                    // gradient
+                    //
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        network.weights[i_] = state.x[i_];
+                    }
+                    mlpbase.mlpgradbatch(network, xy, npoints, ref state.f, ref state.g);
+                    
+                    //
+                    // weight decay
+                    //
+                    v = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        v += network.weights[i_]*network.weights[i_];
+                    }
+                    state.f = state.f+0.5*decay*v;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        state.g[i_] = state.g[i_] + decay*network.weights[i_];
+                    }
+                    
+                    //
+                    // next iteration
+                    //
+                    rep.ngrad = rep.ngrad+1;
+                }
+                minlbfgs.minlbfgsresults(state, ref wbase, internalrep);
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    network.weights[i_] = wbase[i_];
+                }
+                
+                //
+                // Second stage of the hybrid algorithm: LM
+                //
+                // Initialize H with identity matrix,
+                // G with gradient,
+                // E with regularized error.
+                //
+                mlpbase.mlphessianbatch(network, xy, npoints, ref e, ref g, ref h);
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += network.weights[i_]*network.weights[i_];
+                }
+                e = e+0.5*decay*v;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    g[i_] = g[i_] + decay*network.weights[i_];
+                }
+                for(k=0; k<=wcount-1; k++)
+                {
+                    h[k,k] = h[k,k]+decay;
+                }
+                rep.nhess = rep.nhess+1;
+                lambdav = 0.001;
+                nu = 2;
+                while( true )
+                {
+                    
+                    //
+                    // 1. HMod = H+lambda*I
+                    // 2. Try to solve (H+Lambda*I)*dx = -g.
+                    //    Increase lambda if left part is not positive definite.
+                    //
+                    for(i=0; i<=wcount-1; i++)
+                    {
+                        for(i_=0; i_<=wcount-1;i_++)
+                        {
+                            hmod[i,i_] = h[i,i_];
+                        }
+                        hmod[i,i] = hmod[i,i]+lambdav;
+                    }
+                    spd = trfac.spdmatrixcholesky(ref hmod, wcount, true);
+                    rep.ncholesky = rep.ncholesky+1;
+                    if( !spd )
+                    {
+                        lambdav = lambdav*lambdaup*nu;
+                        nu = nu*2;
+                        continue;
+                    }
+                    densesolver.spdmatrixcholeskysolve(hmod, wcount, true, g, ref solverinfo, solverrep, ref wdir);
+                    if( solverinfo<0 )
+                    {
+                        lambdav = lambdav*lambdaup*nu;
+                        nu = nu*2;
+                        continue;
+                    }
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wdir[i_] = -1*wdir[i_];
+                    }
+                    
+                    //
+                    // Lambda found.
+                    // 1. Save old w in WBase
+                    // 1. Test some stopping criterions
+                    // 2. If error(w+wdir)>error(w), increase lambda
+                    //
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        network.weights[i_] = network.weights[i_] + wdir[i_];
+                    }
+                    xnorm2 = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        xnorm2 += network.weights[i_]*network.weights[i_];
+                    }
+                    stepnorm = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        stepnorm += wdir[i_]*wdir[i_];
+                    }
+                    stepnorm = Math.Sqrt(stepnorm);
+                    enew = mlpbase.mlperror(network, xy, npoints)+0.5*decay*xnorm2;
+                    if( (double)(stepnorm)<(double)(lmsteptol*(1+Math.Sqrt(xnorm2))) )
+                    {
+                        break;
+                    }
+                    if( (double)(enew)>(double)(e) )
+                    {
+                        lambdav = lambdav*lambdaup*nu;
+                        nu = nu*2;
+                        continue;
+                    }
+                    
+                    //
+                    // Optimize using inv(cholesky(H)) as preconditioner
+                    //
+                    matinv.rmatrixtrinverse(ref hmod, wcount, true, false, ref invinfo, invrep);
+                    if( invinfo<=0 )
+                    {
+                        
+                        //
+                        // if matrix can't be inverted then exit with errors
+                        // TODO: make WCount steps in direction suggested by HMod
+                        //
+                        info = -9;
+                        return;
+                    }
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wbase[i_] = network.weights[i_];
+                    }
+                    for(i=0; i<=wcount-1; i++)
+                    {
+                        wt[i] = 0;
+                    }
+                    minlbfgs.minlbfgscreatex(wcount, wcount, wt, 1, state);
+                    minlbfgs.minlbfgssetcond(state, 0, 0, 0, 5);
+                    while( minlbfgs.minlbfgsiteration(state) )
+                    {
+                        
+                        //
+                        // gradient
+                        //
+                        for(i=0; i<=wcount-1; i++)
+                        {
+                            v = 0.0;
+                            for(i_=i; i_<=wcount-1;i_++)
+                            {
+                                v += state.x[i_]*hmod[i,i_];
+                            }
+                            network.weights[i] = wbase[i]+v;
+                        }
+                        mlpbase.mlpgradbatch(network, xy, npoints, ref state.f, ref g);
+                        for(i=0; i<=wcount-1; i++)
+                        {
+                            state.g[i] = 0;
+                        }
+                        for(i=0; i<=wcount-1; i++)
+                        {
+                            v = g[i];
+                            for(i_=i; i_<=wcount-1;i_++)
+                            {
+                                state.g[i_] = state.g[i_] + v*hmod[i,i_];
+                            }
+                        }
+                        
+                        //
+                        // weight decay
+                        // grad(x'*x) = A'*(x0+A*t)
+                        //
+                        v = 0.0;
+                        for(i_=0; i_<=wcount-1;i_++)
+                        {
+                            v += network.weights[i_]*network.weights[i_];
+                        }
+                        state.f = state.f+0.5*decay*v;
+                        for(i=0; i<=wcount-1; i++)
+                        {
+                            v = decay*network.weights[i];
+                            for(i_=i; i_<=wcount-1;i_++)
+                            {
+                                state.g[i_] = state.g[i_] + v*hmod[i,i_];
+                            }
+                        }
+                        
+                        //
+                        // next iteration
+                        //
+                        rep.ngrad = rep.ngrad+1;
+                    }
+                    minlbfgs.minlbfgsresults(state, ref wt, internalrep);
+                    
+                    //
+                    // Accept new position.
+                    // Calculate Hessian
+                    //
+                    for(i=0; i<=wcount-1; i++)
+                    {
+                        v = 0.0;
+                        for(i_=i; i_<=wcount-1;i_++)
+                        {
+                            v += wt[i_]*hmod[i,i_];
+                        }
+                        network.weights[i] = wbase[i]+v;
+                    }
+                    mlpbase.mlphessianbatch(network, xy, npoints, ref e, ref g, ref h);
+                    v = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        v += network.weights[i_]*network.weights[i_];
+                    }
+                    e = e+0.5*decay*v;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        g[i_] = g[i_] + decay*network.weights[i_];
+                    }
+                    for(k=0; k<=wcount-1; k++)
+                    {
+                        h[k,k] = h[k,k]+decay;
+                    }
+                    rep.nhess = rep.nhess+1;
+                    
+                    //
+                    // Update lambda
+                    //
+                    lambdav = lambdav*lambdadown;
+                    nu = 2;
+                }
+                
+                //
+                // update WBest
+                //
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += network.weights[i_]*network.weights[i_];
+                }
+                e = 0.5*decay*v+mlpbase.mlperror(network, xy, npoints);
+                if( (double)(e)<(double)(ebest) )
+                {
+                    ebest = e;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wbest[i_] = network.weights[i_];
+                    }
+                }
+            }
+            
+            //
+            // copy WBest to output
+            //
+            for(i_=0; i_<=wcount-1;i_++)
+            {
+                network.weights[i_] = wbest[i_];
+            }
+        }
+
+
+        /*************************************************************************
+        Neural  network  training  using  L-BFGS  algorithm  with  regularization.
+        Subroutine  trains  neural  network  with  restarts from random positions.
+        Algorithm  is  well  suited  for  problems  of  any dimensionality (memory
+        requirements and step complexity are linear by weights number).
+
+        INPUT PARAMETERS:
+            Network     -   neural network with initialized geometry
+            XY          -   training set
+            NPoints     -   training set size
+            Decay       -   weight decay constant, >=0.001
+                            Decay term 'Decay*||Weights||^2' is added to error
+                            function.
+                            If you don't know what Decay to choose, use 0.001.
+            Restarts    -   number of restarts from random position, >0.
+                            If you don't know what Restarts to choose, use 2.
+            WStep       -   stopping criterion. Algorithm stops if  step  size  is
+                            less than WStep. Recommended value - 0.01.  Zero  step
+                            size means stopping after MaxIts iterations.
+            MaxIts      -   stopping   criterion.  Algorithm  stops  after  MaxIts
+                            iterations (NOT gradient  calculations).  Zero  MaxIts
+                            means stopping when step is sufficiently small.
+
+        OUTPUT PARAMETERS:
+            Network     -   trained neural network.
+            Info        -   return code:
+                            * -8, if both WStep=0 and MaxIts=0
+                            * -2, if there is a point with class number
+                                  outside of [0..NOut-1].
+                            * -1, if wrong parameters specified
+                                  (NPoints<0, Restarts<1).
+                            *  2, if task has been solved.
+            Rep         -   training report
+
+          -- ALGLIB --
+             Copyright 09.12.2007 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlptrainlbfgs(mlpbase.multilayerperceptron network,
+            double[,] xy,
+            int npoints,
+            double decay,
+            int restarts,
+            double wstep,
+            int maxits,
+            ref int info,
+            mlpreport rep)
+        {
+            int i = 0;
+            int pass = 0;
+            int nin = 0;
+            int nout = 0;
+            int wcount = 0;
+            double[] w = new double[0];
+            double[] wbest = new double[0];
+            double e = 0;
+            double v = 0;
+            double ebest = 0;
+            minlbfgs.minlbfgsreport internalrep = new minlbfgs.minlbfgsreport();
+            minlbfgs.minlbfgsstate state = new minlbfgs.minlbfgsstate();
+            int i_ = 0;
+
+            info = 0;
+
+            
+            //
+            // Test inputs, parse flags, read network geometry
+            //
+            if( (double)(wstep)==(double)(0) & maxits==0 )
+            {
+                info = -8;
+                return;
+            }
+            if( ((npoints<=0 | restarts<1) | (double)(wstep)<(double)(0)) | maxits<0 )
+            {
+                info = -1;
+                return;
+            }
+            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
+            if( mlpbase.mlpissoftmax(network) )
+            {
+                for(i=0; i<=npoints-1; i++)
+                {
+                    if( (int)Math.Round(xy[i,nin])<0 | (int)Math.Round(xy[i,nin])>=nout )
+                    {
+                        info = -2;
+                        return;
+                    }
+                }
+            }
+            decay = Math.Max(decay, mindecay);
+            info = 2;
+            
+            //
+            // Prepare
+            //
+            mlpbase.mlpinitpreprocessor(network, xy, npoints);
+            w = new double[wcount-1+1];
+            wbest = new double[wcount-1+1];
+            ebest = math.maxrealnumber;
+            
+            //
+            // Multiple starts
+            //
+            rep.ncholesky = 0;
+            rep.nhess = 0;
+            rep.ngrad = 0;
+            for(pass=1; pass<=restarts; pass++)
+            {
+                
+                //
+                // Process
+                //
+                mlpbase.mlprandomize(network);
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    w[i_] = network.weights[i_];
+                }
+                minlbfgs.minlbfgscreate(wcount, Math.Min(wcount, 10), w, state);
+                minlbfgs.minlbfgssetcond(state, 0.0, 0.0, wstep, maxits);
+                while( minlbfgs.minlbfgsiteration(state) )
+                {
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        network.weights[i_] = state.x[i_];
+                    }
+                    mlpbase.mlpgradnbatch(network, xy, npoints, ref state.f, ref state.g);
+                    v = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        v += network.weights[i_]*network.weights[i_];
+                    }
+                    state.f = state.f+0.5*decay*v;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        state.g[i_] = state.g[i_] + decay*network.weights[i_];
+                    }
+                    rep.ngrad = rep.ngrad+1;
+                }
+                minlbfgs.minlbfgsresults(state, ref w, internalrep);
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    network.weights[i_] = w[i_];
+                }
+                
+                //
+                // Compare with best
+                //
+                v = 0.0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    v += network.weights[i_]*network.weights[i_];
+                }
+                e = mlpbase.mlperrorn(network, xy, npoints)+0.5*decay*v;
+                if( (double)(e)<(double)(ebest) )
+                {
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wbest[i_] = network.weights[i_];
+                    }
+                    ebest = e;
+                }
+            }
+            
+            //
+            // The best network
+            //
+            for(i_=0; i_<=wcount-1;i_++)
+            {
+                network.weights[i_] = wbest[i_];
+            }
+        }
+
+
+        /*************************************************************************
+        Neural network training using early stopping (base algorithm - L-BFGS with
+        regularization).
+
+        INPUT PARAMETERS:
+            Network     -   neural network with initialized geometry
+            TrnXY       -   training set
+            TrnSize     -   training set size
+            ValXY       -   validation set
+            ValSize     -   validation set size
+            Decay       -   weight decay constant, >=0.001
+                            Decay term 'Decay*||Weights||^2' is added to error
+                            function.
+                            If you don't know what Decay to choose, use 0.001.
+            Restarts    -   number of restarts from random position, >0.
+                            If you don't know what Restarts to choose, use 2.
+
+        OUTPUT PARAMETERS:
+            Network     -   trained neural network.
+            Info        -   return code:
+                            * -2, if there is a point with class number
+                                  outside of [0..NOut-1].
+                            * -1, if wrong parameters specified
+                                  (NPoints<0, Restarts<1, ...).
+                            *  2, task has been solved, stopping  criterion  met -
+                                  sufficiently small step size.  Not expected  (we
+                                  use  EARLY  stopping)  but  possible  and not an
+                                  error.
+                            *  6, task has been solved, stopping  criterion  met -
+                                  increasing of validation set error.
+            Rep         -   training report
+
+        NOTE:
+
+        Algorithm stops if validation set error increases for  a  long  enough  or
+        step size is small enought  (there  are  task  where  validation  set  may
+        decrease for eternity). In any case solution returned corresponds  to  the
+        minimum of validation set error.
+
+          -- ALGLIB --
+             Copyright 10.03.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlptraines(mlpbase.multilayerperceptron network,
+            double[,] trnxy,
+            int trnsize,
+            double[,] valxy,
+            int valsize,
+            double decay,
+            int restarts,
+            ref int info,
+            mlpreport rep)
+        {
+            int i = 0;
+            int pass = 0;
+            int nin = 0;
+            int nout = 0;
+            int wcount = 0;
+            double[] w = new double[0];
+            double[] wbest = new double[0];
+            double e = 0;
+            double v = 0;
+            double ebest = 0;
+            double[] wfinal = new double[0];
+            double efinal = 0;
+            int itbest = 0;
+            minlbfgs.minlbfgsreport internalrep = new minlbfgs.minlbfgsreport();
+            minlbfgs.minlbfgsstate state = new minlbfgs.minlbfgsstate();
+            double wstep = 0;
+            int i_ = 0;
+
+            info = 0;
+
+            wstep = 0.001;
+            
+            //
+            // Test inputs, parse flags, read network geometry
+            //
+            if( ((trnsize<=0 | valsize<=0) | restarts<1) | (double)(decay)<(double)(0) )
+            {
+                info = -1;
+                return;
+            }
+            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
+            if( mlpbase.mlpissoftmax(network) )
+            {
+                for(i=0; i<=trnsize-1; i++)
+                {
+                    if( (int)Math.Round(trnxy[i,nin])<0 | (int)Math.Round(trnxy[i,nin])>=nout )
+                    {
+                        info = -2;
+                        return;
+                    }
+                }
+                for(i=0; i<=valsize-1; i++)
+                {
+                    if( (int)Math.Round(valxy[i,nin])<0 | (int)Math.Round(valxy[i,nin])>=nout )
+                    {
+                        info = -2;
+                        return;
+                    }
+                }
+            }
+            info = 2;
+            
+            //
+            // Prepare
+            //
+            mlpbase.mlpinitpreprocessor(network, trnxy, trnsize);
+            w = new double[wcount-1+1];
+            wbest = new double[wcount-1+1];
+            wfinal = new double[wcount-1+1];
+            efinal = math.maxrealnumber;
+            for(i=0; i<=wcount-1; i++)
+            {
+                wfinal[i] = 0;
+            }
+            
+            //
+            // Multiple starts
+            //
+            rep.ncholesky = 0;
+            rep.nhess = 0;
+            rep.ngrad = 0;
+            for(pass=1; pass<=restarts; pass++)
+            {
+                
+                //
+                // Process
+                //
+                mlpbase.mlprandomize(network);
+                ebest = mlpbase.mlperror(network, valxy, valsize);
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    wbest[i_] = network.weights[i_];
+                }
+                itbest = 0;
+                for(i_=0; i_<=wcount-1;i_++)
+                {
+                    w[i_] = network.weights[i_];
+                }
+                minlbfgs.minlbfgscreate(wcount, Math.Min(wcount, 10), w, state);
+                minlbfgs.minlbfgssetcond(state, 0.0, 0.0, wstep, 0);
+                minlbfgs.minlbfgssetxrep(state, true);
+                while( minlbfgs.minlbfgsiteration(state) )
+                {
+                    
+                    //
+                    // Calculate gradient
+                    //
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        network.weights[i_] = state.x[i_];
+                    }
+                    mlpbase.mlpgradnbatch(network, trnxy, trnsize, ref state.f, ref state.g);
+                    v = 0.0;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        v += network.weights[i_]*network.weights[i_];
+                    }
+                    state.f = state.f+0.5*decay*v;
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        state.g[i_] = state.g[i_] + decay*network.weights[i_];
+                    }
+                    rep.ngrad = rep.ngrad+1;
+                    
+                    //
+                    // Validation set
+                    //
+                    if( state.xupdated )
+                    {
+                        for(i_=0; i_<=wcount-1;i_++)
+                        {
+                            network.weights[i_] = w[i_];
+                        }
+                        e = mlpbase.mlperror(network, valxy, valsize);
+                        if( (double)(e)<(double)(ebest) )
+                        {
+                            ebest = e;
+                            for(i_=0; i_<=wcount-1;i_++)
+                            {
+                                wbest[i_] = network.weights[i_];
+                            }
+                            itbest = internalrep.iterationscount;
+                        }
+                        if( internalrep.iterationscount>30 & (double)(internalrep.iterationscount)>(double)(1.5*itbest) )
+                        {
+                            info = 6;
+                            break;
+                        }
+                    }
+                }
+                minlbfgs.minlbfgsresults(state, ref w, internalrep);
+                
+                //
+                // Compare with final answer
+                //
+                if( (double)(ebest)<(double)(efinal) )
+                {
+                    for(i_=0; i_<=wcount-1;i_++)
+                    {
+                        wfinal[i_] = wbest[i_];
+                    }
+                    efinal = ebest;
+                }
+            }
+            
+            //
+            // The best network
+            //
+            for(i_=0; i_<=wcount-1;i_++)
+            {
+                network.weights[i_] = wfinal[i_];
+            }
+        }
+
+
+        /*************************************************************************
+        Cross-validation estimate of generalization error.
+
+        Base algorithm - L-BFGS.
+
+        INPUT PARAMETERS:
+            Network     -   neural network with initialized geometry.   Network is
+                            not changed during cross-validation -  it is used only
+                            as a representative of its architecture.
+            XY          -   training set.
+            SSize       -   training set size
+            Decay       -   weight  decay, same as in MLPTrainLBFGS
+            Restarts    -   number of restarts, >0.
+                            restarts are counted for each partition separately, so
+                            total number of restarts will be Restarts*FoldsCount.
+            WStep       -   stopping criterion, same as in MLPTrainLBFGS
+            MaxIts      -   stopping criterion, same as in MLPTrainLBFGS
+            FoldsCount  -   number of folds in k-fold cross-validation,
+                            2<=FoldsCount<=SSize.
+                            recommended value: 10.
+
+        OUTPUT PARAMETERS:
+            Info        -   return code, same as in MLPTrainLBFGS
+            Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
+            CVRep       -   generalization error estimates
+
+          -- ALGLIB --
+             Copyright 09.12.2007 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpkfoldcvlbfgs(mlpbase.multilayerperceptron network,
+            double[,] xy,
+            int npoints,
+            double decay,
+            int restarts,
+            double wstep,
+            int maxits,
+            int foldscount,
+            ref int info,
+            mlpreport rep,
+            mlpcvreport cvrep)
+        {
+            info = 0;
+
+            mlpkfoldcvgeneral(network, xy, npoints, decay, restarts, foldscount, false, wstep, maxits, ref info, rep, cvrep);
+        }
+
+
+        /*************************************************************************
+        Cross-validation estimate of generalization error.
+
+        Base algorithm - Levenberg-Marquardt.
+
+        INPUT PARAMETERS:
+            Network     -   neural network with initialized geometry.   Network is
+                            not changed during cross-validation -  it is used only
+                            as a representative of its architecture.
+            XY          -   training set.
+            SSize       -   training set size
+            Decay       -   weight  decay, same as in MLPTrainLBFGS
+            Restarts    -   number of restarts, >0.
+                            restarts are counted for each partition separately, so
+                            total number of restarts will be Restarts*FoldsCount.
+            FoldsCount  -   number of folds in k-fold cross-validation,
+                            2<=FoldsCount<=SSize.
+                            recommended value: 10.
+
+        OUTPUT PARAMETERS:
+            Info        -   return code, same as in MLPTrainLBFGS
+            Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
+            CVRep       -   generalization error estimates
+
+          -- ALGLIB --
+             Copyright 09.12.2007 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpkfoldcvlm(mlpbase.multilayerperceptron network,
+            double[,] xy,
+            int npoints,
+            double decay,
+            int restarts,
+            int foldscount,
+            ref int info,
+            mlpreport rep,
+            mlpcvreport cvrep)
+        {
+            info = 0;
+
+            mlpkfoldcvgeneral(network, xy, npoints, decay, restarts, foldscount, true, 0.0, 0, ref info, rep, cvrep);
+        }
+
+
+        /*************************************************************************
+        Internal cross-validation subroutine
+        *************************************************************************/
+        private static void mlpkfoldcvgeneral(mlpbase.multilayerperceptron n,
+            double[,] xy,
+            int npoints,
+            double decay,
+            int restarts,
+            int foldscount,
+            bool lmalgorithm,
+            double wstep,
+            int maxits,
+            ref int info,
+            mlpreport rep,
+            mlpcvreport cvrep)
+        {
+            int i = 0;
+            int fold = 0;
+            int j = 0;
+            int k = 0;
+            mlpbase.multilayerperceptron network = new mlpbase.multilayerperceptron();
+            int nin = 0;
+            int nout = 0;
+            int rowlen = 0;
+            int wcount = 0;
+            int nclasses = 0;
+            int tssize = 0;
+            int cvssize = 0;
+            double[,] cvset = new double[0,0];
+            double[,] testset = new double[0,0];
+            int[] folds = new int[0];
+            int relcnt = 0;
+            mlpreport internalrep = new mlpreport();
+            double[] x = new double[0];
+            double[] y = new double[0];
+            int i_ = 0;
+
+            info = 0;
+
+            
+            //
+            // Read network geometry, test parameters
+            //
+            mlpbase.mlpproperties(n, ref nin, ref nout, ref wcount);
+            if( mlpbase.mlpissoftmax(n) )
+            {
+                nclasses = nout;
+                rowlen = nin+1;
+            }
+            else
+            {
+                nclasses = -nout;
+                rowlen = nin+nout;
+            }
+            if( (npoints<=0 | foldscount<2) | foldscount>npoints )
+            {
+                info = -1;
+                return;
+            }
+            mlpbase.mlpcopy(n, network);
+            
+            //
+            // K-fold out cross-validation.
+            // First, estimate generalization error
+            //
+            testset = new double[npoints-1+1, rowlen-1+1];
+            cvset = new double[npoints-1+1, rowlen-1+1];
+            x = new double[nin-1+1];
+            y = new double[nout-1+1];
+            mlpkfoldsplit(xy, npoints, nclasses, foldscount, false, ref folds);
+            cvrep.relclserror = 0;
+            cvrep.avgce = 0;
+            cvrep.rmserror = 0;
+            cvrep.avgerror = 0;
+            cvrep.avgrelerror = 0;
+            rep.ngrad = 0;
+            rep.nhess = 0;
+            rep.ncholesky = 0;
+            relcnt = 0;
+            for(fold=0; fold<=foldscount-1; fold++)
+            {
+                
+                //
+                // Separate set
+                //
+                tssize = 0;
+                cvssize = 0;
+                for(i=0; i<=npoints-1; i++)
+                {
+                    if( folds[i]==fold )
+                    {
+                        for(i_=0; i_<=rowlen-1;i_++)
+                        {
+                            testset[tssize,i_] = xy[i,i_];
+                        }
+                        tssize = tssize+1;
+                    }
+                    else
+                    {
+                        for(i_=0; i_<=rowlen-1;i_++)
+                        {
+                            cvset[cvssize,i_] = xy[i,i_];
+                        }
+                        cvssize = cvssize+1;
+                    }
+                }
+                
+                //
+                // Train on CV training set
+                //
+                if( lmalgorithm )
+                {
+                    mlptrainlm(network, cvset, cvssize, decay, restarts, ref info, internalrep);
+                }
+                else
+                {
+                    mlptrainlbfgs(network, cvset, cvssize, decay, restarts, wstep, maxits, ref info, internalrep);
+                }
+                if( info<0 )
+                {
+                    cvrep.relclserror = 0;
+                    cvrep.avgce = 0;
+                    cvrep.rmserror = 0;
+                    cvrep.avgerror = 0;
+                    cvrep.avgrelerror = 0;
+                    return;
+                }
+                rep.ngrad = rep.ngrad+internalrep.ngrad;
+                rep.nhess = rep.nhess+internalrep.nhess;
+                rep.ncholesky = rep.ncholesky+internalrep.ncholesky;
+                
+                //
+                // Estimate error using CV test set
+                //
+                if( mlpbase.mlpissoftmax(network) )
+                {
+                    
+                    //
+                    // classification-only code
+                    //
+                    cvrep.relclserror = cvrep.relclserror+mlpbase.mlpclserror(network, testset, tssize);
+                    cvrep.avgce = cvrep.avgce+mlpbase.mlperrorn(network, testset, tssize);
+                }
+                for(i=0; i<=tssize-1; i++)
+                {
+                    for(i_=0; i_<=nin-1;i_++)
+                    {
+                        x[i_] = testset[i,i_];
+                    }
+                    mlpbase.mlpprocess(network, x, ref y);
+                    if( mlpbase.mlpissoftmax(network) )
+                    {
+                        
+                        //
+                        // Classification-specific code
+                        //
+                        k = (int)Math.Round(testset[i,nin]);
+                        for(j=0; j<=nout-1; j++)
+                        {
+                            if( j==k )
+                            {
+                                cvrep.rmserror = cvrep.rmserror+math.sqr(y[j]-1);
+                                cvrep.avgerror = cvrep.avgerror+Math.Abs(y[j]-1);
+                                cvrep.avgrelerror = cvrep.avgrelerror+Math.Abs(y[j]-1);
+                                relcnt = relcnt+1;
+                            }
+                            else
+                            {
+                                cvrep.rmserror = cvrep.rmserror+math.sqr(y[j]);
+                                cvrep.avgerror = cvrep.avgerror+Math.Abs(y[j]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        
+                        //
+                        // Regression-specific code
+                        //
+                        for(j=0; j<=nout-1; j++)
+                        {
+                            cvrep.rmserror = cvrep.rmserror+math.sqr(y[j]-testset[i,nin+j]);
+                            cvrep.avgerror = cvrep.avgerror+Math.Abs(y[j]-testset[i,nin+j]);
+                            if( (double)(testset[i,nin+j])!=(double)(0) )
+                            {
+                                cvrep.avgrelerror = cvrep.avgrelerror+Math.Abs((y[j]-testset[i,nin+j])/testset[i,nin+j]);
+                                relcnt = relcnt+1;
+                            }
+                        }
+                    }
+                }
+            }
+            if( mlpbase.mlpissoftmax(network) )
+            {
+                cvrep.relclserror = cvrep.relclserror/npoints;
+                cvrep.avgce = cvrep.avgce/(Math.Log(2)*npoints);
+            }
+            cvrep.rmserror = Math.Sqrt(cvrep.rmserror/(npoints*nout));
+            cvrep.avgerror = cvrep.avgerror/(npoints*nout);
+            cvrep.avgrelerror = cvrep.avgrelerror/relcnt;
+            info = 1;
+        }
+
+
+        /*************************************************************************
+        Subroutine prepares K-fold split of the training set.
+
+        NOTES:
+            "NClasses>0" means that we have classification task.
+            "NClasses<0" means regression task with -NClasses real outputs.
+        *************************************************************************/
+        private static void mlpkfoldsplit(double[,] xy,
+            int npoints,
+            int nclasses,
+            int foldscount,
+            bool stratifiedsplits,
+            ref int[] folds)
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+
+            folds = new int[0];
+
+            
+            //
+            // test parameters
+            //
+            ap.assert(npoints>0, "MLPKFoldSplit: wrong NPoints!");
+            ap.assert(nclasses>1 | nclasses<0, "MLPKFoldSplit: wrong NClasses!");
+            ap.assert(foldscount>=2 & foldscount<=npoints, "MLPKFoldSplit: wrong FoldsCount!");
+            ap.assert(!stratifiedsplits, "MLPKFoldSplit: stratified splits are not supported!");
+            
+            //
+            // Folds
+            //
+            folds = new int[npoints-1+1];
+            for(i=0; i<=npoints-1; i++)
+            {
+                folds[i] = i*foldscount/npoints;
+            }
+            for(i=0; i<=npoints-2; i++)
+            {
+                j = i+math.randominteger(npoints-i);
+                if( j!=i )
+                {
+                    k = folds[i];
+                    folds[i] = folds[j];
+                    folds[j] = k;
+                }
+            }
+        }
+
+
+    }
     public class mlpe
     {
         /*************************************************************************
@@ -14460,1201 +15932,6 @@ public partial class alglib
             ooberrors.rmserror = dsbuf[2];
             ooberrors.avgerror = dsbuf[3];
             ooberrors.avgrelerror = dsbuf[4];
-        }
-
-
-    }
-    public class mlptrain
-    {
-        /*************************************************************************
-        Training report:
-            * NGrad     - number of gradient calculations
-            * NHess     - number of Hessian calculations
-            * NCholesky - number of Cholesky decompositions
-        *************************************************************************/
-        public class mlpreport
-        {
-            public int ngrad;
-            public int nhess;
-            public int ncholesky;
-        };
-
-
-        /*************************************************************************
-        Cross-validation estimates of generalization error
-        *************************************************************************/
-        public class mlpcvreport
-        {
-            public double relclserror;
-            public double avgce;
-            public double rmserror;
-            public double avgerror;
-            public double avgrelerror;
-        };
-
-
-
-
-        public const double mindecay = 0.001;
-
-
-        /*************************************************************************
-        Neural network training  using  modified  Levenberg-Marquardt  with  exact
-        Hessian calculation and regularization. Subroutine trains  neural  network
-        with restarts from random positions. Algorithm is well  suited  for  small
-        and medium scale problems (hundreds of weights).
-
-        INPUT PARAMETERS:
-            Network     -   neural network with initialized geometry
-            XY          -   training set
-            NPoints     -   training set size
-            Decay       -   weight decay constant, >=0.001
-                            Decay term 'Decay*||Weights||^2' is added to error
-                            function.
-                            If you don't know what Decay to choose, use 0.001.
-            Restarts    -   number of restarts from random position, >0.
-                            If you don't know what Restarts to choose, use 2.
-
-        OUTPUT PARAMETERS:
-            Network     -   trained neural network.
-            Info        -   return code:
-                            * -9, if internal matrix inverse subroutine failed
-                            * -2, if there is a point with class number
-                                  outside of [0..NOut-1].
-                            * -1, if wrong parameters specified
-                                  (NPoints<0, Restarts<1).
-                            *  2, if task has been solved.
-            Rep         -   training report
-
-          -- ALGLIB --
-             Copyright 10.03.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mlptrainlm(mlpbase.multilayerperceptron network,
-            double[,] xy,
-            int npoints,
-            double decay,
-            int restarts,
-            ref int info,
-            mlpreport rep)
-        {
-            int nin = 0;
-            int nout = 0;
-            int wcount = 0;
-            double lmftol = 0;
-            double lmsteptol = 0;
-            int i = 0;
-            int k = 0;
-            double v = 0;
-            double e = 0;
-            double enew = 0;
-            double xnorm2 = 0;
-            double stepnorm = 0;
-            double[] g = new double[0];
-            double[] d = new double[0];
-            double[,] h = new double[0,0];
-            double[,] hmod = new double[0,0];
-            double[,] z = new double[0,0];
-            bool spd = new bool();
-            double nu = 0;
-            double lambdav = 0;
-            double lambdaup = 0;
-            double lambdadown = 0;
-            minlbfgs.minlbfgsreport internalrep = new minlbfgs.minlbfgsreport();
-            minlbfgs.minlbfgsstate state = new minlbfgs.minlbfgsstate();
-            double[] x = new double[0];
-            double[] y = new double[0];
-            double[] wbase = new double[0];
-            double[] wdir = new double[0];
-            double[] wt = new double[0];
-            double[] wx = new double[0];
-            int pass = 0;
-            double[] wbest = new double[0];
-            double ebest = 0;
-            int invinfo = 0;
-            matinv.matinvreport invrep = new matinv.matinvreport();
-            int solverinfo = 0;
-            densesolver.densesolverreport solverrep = new densesolver.densesolverreport();
-            int i_ = 0;
-
-            info = 0;
-
-            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
-            lambdaup = 10;
-            lambdadown = 0.3;
-            lmftol = 0.001;
-            lmsteptol = 0.001;
-            
-            //
-            // Test for inputs
-            //
-            if( npoints<=0 | restarts<1 )
-            {
-                info = -1;
-                return;
-            }
-            if( mlpbase.mlpissoftmax(network) )
-            {
-                for(i=0; i<=npoints-1; i++)
-                {
-                    if( (int)Math.Round(xy[i,nin])<0 | (int)Math.Round(xy[i,nin])>=nout )
-                    {
-                        info = -2;
-                        return;
-                    }
-                }
-            }
-            decay = Math.Max(decay, mindecay);
-            info = 2;
-            
-            //
-            // Initialize data
-            //
-            rep.ngrad = 0;
-            rep.nhess = 0;
-            rep.ncholesky = 0;
-            
-            //
-            // General case.
-            // Prepare task and network. Allocate space.
-            //
-            mlpbase.mlpinitpreprocessor(network, xy, npoints);
-            g = new double[wcount-1+1];
-            h = new double[wcount-1+1, wcount-1+1];
-            hmod = new double[wcount-1+1, wcount-1+1];
-            wbase = new double[wcount-1+1];
-            wdir = new double[wcount-1+1];
-            wbest = new double[wcount-1+1];
-            wt = new double[wcount-1+1];
-            wx = new double[wcount-1+1];
-            ebest = math.maxrealnumber;
-            
-            //
-            // Multiple passes
-            //
-            for(pass=1; pass<=restarts; pass++)
-            {
-                
-                //
-                // Initialize weights
-                //
-                mlpbase.mlprandomize(network);
-                
-                //
-                // First stage of the hybrid algorithm: LBFGS
-                //
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    wbase[i_] = network.weights[i_];
-                }
-                minlbfgs.minlbfgscreate(wcount, Math.Min(wcount, 5), wbase, state);
-                minlbfgs.minlbfgssetcond(state, 0, 0, 0, Math.Max(25, wcount));
-                while( minlbfgs.minlbfgsiteration(state) )
-                {
-                    
-                    //
-                    // gradient
-                    //
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        network.weights[i_] = state.x[i_];
-                    }
-                    mlpbase.mlpgradbatch(network, xy, npoints, ref state.f, ref state.g);
-                    
-                    //
-                    // weight decay
-                    //
-                    v = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        v += network.weights[i_]*network.weights[i_];
-                    }
-                    state.f = state.f+0.5*decay*v;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        state.g[i_] = state.g[i_] + decay*network.weights[i_];
-                    }
-                    
-                    //
-                    // next iteration
-                    //
-                    rep.ngrad = rep.ngrad+1;
-                }
-                minlbfgs.minlbfgsresults(state, ref wbase, internalrep);
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    network.weights[i_] = wbase[i_];
-                }
-                
-                //
-                // Second stage of the hybrid algorithm: LM
-                //
-                // Initialize H with identity matrix,
-                // G with gradient,
-                // E with regularized error.
-                //
-                mlpbase.mlphessianbatch(network, xy, npoints, ref e, ref g, ref h);
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += network.weights[i_]*network.weights[i_];
-                }
-                e = e+0.5*decay*v;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    g[i_] = g[i_] + decay*network.weights[i_];
-                }
-                for(k=0; k<=wcount-1; k++)
-                {
-                    h[k,k] = h[k,k]+decay;
-                }
-                rep.nhess = rep.nhess+1;
-                lambdav = 0.001;
-                nu = 2;
-                while( true )
-                {
-                    
-                    //
-                    // 1. HMod = H+lambda*I
-                    // 2. Try to solve (H+Lambda*I)*dx = -g.
-                    //    Increase lambda if left part is not positive definite.
-                    //
-                    for(i=0; i<=wcount-1; i++)
-                    {
-                        for(i_=0; i_<=wcount-1;i_++)
-                        {
-                            hmod[i,i_] = h[i,i_];
-                        }
-                        hmod[i,i] = hmod[i,i]+lambdav;
-                    }
-                    spd = trfac.spdmatrixcholesky(ref hmod, wcount, true);
-                    rep.ncholesky = rep.ncholesky+1;
-                    if( !spd )
-                    {
-                        lambdav = lambdav*lambdaup*nu;
-                        nu = nu*2;
-                        continue;
-                    }
-                    densesolver.spdmatrixcholeskysolve(hmod, wcount, true, g, ref solverinfo, solverrep, ref wdir);
-                    if( solverinfo<0 )
-                    {
-                        lambdav = lambdav*lambdaup*nu;
-                        nu = nu*2;
-                        continue;
-                    }
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wdir[i_] = -1*wdir[i_];
-                    }
-                    
-                    //
-                    // Lambda found.
-                    // 1. Save old w in WBase
-                    // 1. Test some stopping criterions
-                    // 2. If error(w+wdir)>error(w), increase lambda
-                    //
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        network.weights[i_] = network.weights[i_] + wdir[i_];
-                    }
-                    xnorm2 = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        xnorm2 += network.weights[i_]*network.weights[i_];
-                    }
-                    stepnorm = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        stepnorm += wdir[i_]*wdir[i_];
-                    }
-                    stepnorm = Math.Sqrt(stepnorm);
-                    enew = mlpbase.mlperror(network, xy, npoints)+0.5*decay*xnorm2;
-                    if( (double)(stepnorm)<(double)(lmsteptol*(1+Math.Sqrt(xnorm2))) )
-                    {
-                        break;
-                    }
-                    if( (double)(enew)>(double)(e) )
-                    {
-                        lambdav = lambdav*lambdaup*nu;
-                        nu = nu*2;
-                        continue;
-                    }
-                    
-                    //
-                    // Optimize using inv(cholesky(H)) as preconditioner
-                    //
-                    matinv.rmatrixtrinverse(ref hmod, wcount, true, false, ref invinfo, invrep);
-                    if( invinfo<=0 )
-                    {
-                        
-                        //
-                        // if matrix can't be inverted then exit with errors
-                        // TODO: make WCount steps in direction suggested by HMod
-                        //
-                        info = -9;
-                        return;
-                    }
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wbase[i_] = network.weights[i_];
-                    }
-                    for(i=0; i<=wcount-1; i++)
-                    {
-                        wt[i] = 0;
-                    }
-                    minlbfgs.minlbfgscreatex(wcount, wcount, wt, 1, state);
-                    minlbfgs.minlbfgssetcond(state, 0, 0, 0, 5);
-                    while( minlbfgs.minlbfgsiteration(state) )
-                    {
-                        
-                        //
-                        // gradient
-                        //
-                        for(i=0; i<=wcount-1; i++)
-                        {
-                            v = 0.0;
-                            for(i_=i; i_<=wcount-1;i_++)
-                            {
-                                v += state.x[i_]*hmod[i,i_];
-                            }
-                            network.weights[i] = wbase[i]+v;
-                        }
-                        mlpbase.mlpgradbatch(network, xy, npoints, ref state.f, ref g);
-                        for(i=0; i<=wcount-1; i++)
-                        {
-                            state.g[i] = 0;
-                        }
-                        for(i=0; i<=wcount-1; i++)
-                        {
-                            v = g[i];
-                            for(i_=i; i_<=wcount-1;i_++)
-                            {
-                                state.g[i_] = state.g[i_] + v*hmod[i,i_];
-                            }
-                        }
-                        
-                        //
-                        // weight decay
-                        // grad(x'*x) = A'*(x0+A*t)
-                        //
-                        v = 0.0;
-                        for(i_=0; i_<=wcount-1;i_++)
-                        {
-                            v += network.weights[i_]*network.weights[i_];
-                        }
-                        state.f = state.f+0.5*decay*v;
-                        for(i=0; i<=wcount-1; i++)
-                        {
-                            v = decay*network.weights[i];
-                            for(i_=i; i_<=wcount-1;i_++)
-                            {
-                                state.g[i_] = state.g[i_] + v*hmod[i,i_];
-                            }
-                        }
-                        
-                        //
-                        // next iteration
-                        //
-                        rep.ngrad = rep.ngrad+1;
-                    }
-                    minlbfgs.minlbfgsresults(state, ref wt, internalrep);
-                    
-                    //
-                    // Accept new position.
-                    // Calculate Hessian
-                    //
-                    for(i=0; i<=wcount-1; i++)
-                    {
-                        v = 0.0;
-                        for(i_=i; i_<=wcount-1;i_++)
-                        {
-                            v += wt[i_]*hmod[i,i_];
-                        }
-                        network.weights[i] = wbase[i]+v;
-                    }
-                    mlpbase.mlphessianbatch(network, xy, npoints, ref e, ref g, ref h);
-                    v = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        v += network.weights[i_]*network.weights[i_];
-                    }
-                    e = e+0.5*decay*v;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        g[i_] = g[i_] + decay*network.weights[i_];
-                    }
-                    for(k=0; k<=wcount-1; k++)
-                    {
-                        h[k,k] = h[k,k]+decay;
-                    }
-                    rep.nhess = rep.nhess+1;
-                    
-                    //
-                    // Update lambda
-                    //
-                    lambdav = lambdav*lambdadown;
-                    nu = 2;
-                }
-                
-                //
-                // update WBest
-                //
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += network.weights[i_]*network.weights[i_];
-                }
-                e = 0.5*decay*v+mlpbase.mlperror(network, xy, npoints);
-                if( (double)(e)<(double)(ebest) )
-                {
-                    ebest = e;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wbest[i_] = network.weights[i_];
-                    }
-                }
-            }
-            
-            //
-            // copy WBest to output
-            //
-            for(i_=0; i_<=wcount-1;i_++)
-            {
-                network.weights[i_] = wbest[i_];
-            }
-        }
-
-
-        /*************************************************************************
-        Neural  network  training  using  L-BFGS  algorithm  with  regularization.
-        Subroutine  trains  neural  network  with  restarts from random positions.
-        Algorithm  is  well  suited  for  problems  of  any dimensionality (memory
-        requirements and step complexity are linear by weights number).
-
-        INPUT PARAMETERS:
-            Network     -   neural network with initialized geometry
-            XY          -   training set
-            NPoints     -   training set size
-            Decay       -   weight decay constant, >=0.001
-                            Decay term 'Decay*||Weights||^2' is added to error
-                            function.
-                            If you don't know what Decay to choose, use 0.001.
-            Restarts    -   number of restarts from random position, >0.
-                            If you don't know what Restarts to choose, use 2.
-            WStep       -   stopping criterion. Algorithm stops if  step  size  is
-                            less than WStep. Recommended value - 0.01.  Zero  step
-                            size means stopping after MaxIts iterations.
-            MaxIts      -   stopping   criterion.  Algorithm  stops  after  MaxIts
-                            iterations (NOT gradient  calculations).  Zero  MaxIts
-                            means stopping when step is sufficiently small.
-
-        OUTPUT PARAMETERS:
-            Network     -   trained neural network.
-            Info        -   return code:
-                            * -8, if both WStep=0 and MaxIts=0
-                            * -2, if there is a point with class number
-                                  outside of [0..NOut-1].
-                            * -1, if wrong parameters specified
-                                  (NPoints<0, Restarts<1).
-                            *  2, if task has been solved.
-            Rep         -   training report
-
-          -- ALGLIB --
-             Copyright 09.12.2007 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mlptrainlbfgs(mlpbase.multilayerperceptron network,
-            double[,] xy,
-            int npoints,
-            double decay,
-            int restarts,
-            double wstep,
-            int maxits,
-            ref int info,
-            mlpreport rep)
-        {
-            int i = 0;
-            int pass = 0;
-            int nin = 0;
-            int nout = 0;
-            int wcount = 0;
-            double[] w = new double[0];
-            double[] wbest = new double[0];
-            double e = 0;
-            double v = 0;
-            double ebest = 0;
-            minlbfgs.minlbfgsreport internalrep = new minlbfgs.minlbfgsreport();
-            minlbfgs.minlbfgsstate state = new minlbfgs.minlbfgsstate();
-            int i_ = 0;
-
-            info = 0;
-
-            
-            //
-            // Test inputs, parse flags, read network geometry
-            //
-            if( (double)(wstep)==(double)(0) & maxits==0 )
-            {
-                info = -8;
-                return;
-            }
-            if( ((npoints<=0 | restarts<1) | (double)(wstep)<(double)(0)) | maxits<0 )
-            {
-                info = -1;
-                return;
-            }
-            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
-            if( mlpbase.mlpissoftmax(network) )
-            {
-                for(i=0; i<=npoints-1; i++)
-                {
-                    if( (int)Math.Round(xy[i,nin])<0 | (int)Math.Round(xy[i,nin])>=nout )
-                    {
-                        info = -2;
-                        return;
-                    }
-                }
-            }
-            decay = Math.Max(decay, mindecay);
-            info = 2;
-            
-            //
-            // Prepare
-            //
-            mlpbase.mlpinitpreprocessor(network, xy, npoints);
-            w = new double[wcount-1+1];
-            wbest = new double[wcount-1+1];
-            ebest = math.maxrealnumber;
-            
-            //
-            // Multiple starts
-            //
-            rep.ncholesky = 0;
-            rep.nhess = 0;
-            rep.ngrad = 0;
-            for(pass=1; pass<=restarts; pass++)
-            {
-                
-                //
-                // Process
-                //
-                mlpbase.mlprandomize(network);
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    w[i_] = network.weights[i_];
-                }
-                minlbfgs.minlbfgscreate(wcount, Math.Min(wcount, 10), w, state);
-                minlbfgs.minlbfgssetcond(state, 0.0, 0.0, wstep, maxits);
-                while( minlbfgs.minlbfgsiteration(state) )
-                {
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        network.weights[i_] = state.x[i_];
-                    }
-                    mlpbase.mlpgradnbatch(network, xy, npoints, ref state.f, ref state.g);
-                    v = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        v += network.weights[i_]*network.weights[i_];
-                    }
-                    state.f = state.f+0.5*decay*v;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        state.g[i_] = state.g[i_] + decay*network.weights[i_];
-                    }
-                    rep.ngrad = rep.ngrad+1;
-                }
-                minlbfgs.minlbfgsresults(state, ref w, internalrep);
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    network.weights[i_] = w[i_];
-                }
-                
-                //
-                // Compare with best
-                //
-                v = 0.0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    v += network.weights[i_]*network.weights[i_];
-                }
-                e = mlpbase.mlperrorn(network, xy, npoints)+0.5*decay*v;
-                if( (double)(e)<(double)(ebest) )
-                {
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wbest[i_] = network.weights[i_];
-                    }
-                    ebest = e;
-                }
-            }
-            
-            //
-            // The best network
-            //
-            for(i_=0; i_<=wcount-1;i_++)
-            {
-                network.weights[i_] = wbest[i_];
-            }
-        }
-
-
-        /*************************************************************************
-        Neural network training using early stopping (base algorithm - L-BFGS with
-        regularization).
-
-        INPUT PARAMETERS:
-            Network     -   neural network with initialized geometry
-            TrnXY       -   training set
-            TrnSize     -   training set size
-            ValXY       -   validation set
-            ValSize     -   validation set size
-            Decay       -   weight decay constant, >=0.001
-                            Decay term 'Decay*||Weights||^2' is added to error
-                            function.
-                            If you don't know what Decay to choose, use 0.001.
-            Restarts    -   number of restarts from random position, >0.
-                            If you don't know what Restarts to choose, use 2.
-
-        OUTPUT PARAMETERS:
-            Network     -   trained neural network.
-            Info        -   return code:
-                            * -2, if there is a point with class number
-                                  outside of [0..NOut-1].
-                            * -1, if wrong parameters specified
-                                  (NPoints<0, Restarts<1, ...).
-                            *  2, task has been solved, stopping  criterion  met -
-                                  sufficiently small step size.  Not expected  (we
-                                  use  EARLY  stopping)  but  possible  and not an
-                                  error.
-                            *  6, task has been solved, stopping  criterion  met -
-                                  increasing of validation set error.
-            Rep         -   training report
-
-        NOTE:
-
-        Algorithm stops if validation set error increases for  a  long  enough  or
-        step size is small enought  (there  are  task  where  validation  set  may
-        decrease for eternity). In any case solution returned corresponds  to  the
-        minimum of validation set error.
-
-          -- ALGLIB --
-             Copyright 10.03.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mlptraines(mlpbase.multilayerperceptron network,
-            double[,] trnxy,
-            int trnsize,
-            double[,] valxy,
-            int valsize,
-            double decay,
-            int restarts,
-            ref int info,
-            mlpreport rep)
-        {
-            int i = 0;
-            int pass = 0;
-            int nin = 0;
-            int nout = 0;
-            int wcount = 0;
-            double[] w = new double[0];
-            double[] wbest = new double[0];
-            double e = 0;
-            double v = 0;
-            double ebest = 0;
-            double[] wfinal = new double[0];
-            double efinal = 0;
-            int itbest = 0;
-            minlbfgs.minlbfgsreport internalrep = new minlbfgs.minlbfgsreport();
-            minlbfgs.minlbfgsstate state = new minlbfgs.minlbfgsstate();
-            double wstep = 0;
-            int i_ = 0;
-
-            info = 0;
-
-            wstep = 0.001;
-            
-            //
-            // Test inputs, parse flags, read network geometry
-            //
-            if( ((trnsize<=0 | valsize<=0) | restarts<1) | (double)(decay)<(double)(0) )
-            {
-                info = -1;
-                return;
-            }
-            mlpbase.mlpproperties(network, ref nin, ref nout, ref wcount);
-            if( mlpbase.mlpissoftmax(network) )
-            {
-                for(i=0; i<=trnsize-1; i++)
-                {
-                    if( (int)Math.Round(trnxy[i,nin])<0 | (int)Math.Round(trnxy[i,nin])>=nout )
-                    {
-                        info = -2;
-                        return;
-                    }
-                }
-                for(i=0; i<=valsize-1; i++)
-                {
-                    if( (int)Math.Round(valxy[i,nin])<0 | (int)Math.Round(valxy[i,nin])>=nout )
-                    {
-                        info = -2;
-                        return;
-                    }
-                }
-            }
-            info = 2;
-            
-            //
-            // Prepare
-            //
-            mlpbase.mlpinitpreprocessor(network, trnxy, trnsize);
-            w = new double[wcount-1+1];
-            wbest = new double[wcount-1+1];
-            wfinal = new double[wcount-1+1];
-            efinal = math.maxrealnumber;
-            for(i=0; i<=wcount-1; i++)
-            {
-                wfinal[i] = 0;
-            }
-            
-            //
-            // Multiple starts
-            //
-            rep.ncholesky = 0;
-            rep.nhess = 0;
-            rep.ngrad = 0;
-            for(pass=1; pass<=restarts; pass++)
-            {
-                
-                //
-                // Process
-                //
-                mlpbase.mlprandomize(network);
-                ebest = mlpbase.mlperror(network, valxy, valsize);
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    wbest[i_] = network.weights[i_];
-                }
-                itbest = 0;
-                for(i_=0; i_<=wcount-1;i_++)
-                {
-                    w[i_] = network.weights[i_];
-                }
-                minlbfgs.minlbfgscreate(wcount, Math.Min(wcount, 10), w, state);
-                minlbfgs.minlbfgssetcond(state, 0.0, 0.0, wstep, 0);
-                minlbfgs.minlbfgssetxrep(state, true);
-                while( minlbfgs.minlbfgsiteration(state) )
-                {
-                    
-                    //
-                    // Calculate gradient
-                    //
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        network.weights[i_] = state.x[i_];
-                    }
-                    mlpbase.mlpgradnbatch(network, trnxy, trnsize, ref state.f, ref state.g);
-                    v = 0.0;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        v += network.weights[i_]*network.weights[i_];
-                    }
-                    state.f = state.f+0.5*decay*v;
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        state.g[i_] = state.g[i_] + decay*network.weights[i_];
-                    }
-                    rep.ngrad = rep.ngrad+1;
-                    
-                    //
-                    // Validation set
-                    //
-                    if( state.xupdated )
-                    {
-                        for(i_=0; i_<=wcount-1;i_++)
-                        {
-                            network.weights[i_] = w[i_];
-                        }
-                        e = mlpbase.mlperror(network, valxy, valsize);
-                        if( (double)(e)<(double)(ebest) )
-                        {
-                            ebest = e;
-                            for(i_=0; i_<=wcount-1;i_++)
-                            {
-                                wbest[i_] = network.weights[i_];
-                            }
-                            itbest = internalrep.iterationscount;
-                        }
-                        if( internalrep.iterationscount>30 & (double)(internalrep.iterationscount)>(double)(1.5*itbest) )
-                        {
-                            info = 6;
-                            break;
-                        }
-                    }
-                }
-                minlbfgs.minlbfgsresults(state, ref w, internalrep);
-                
-                //
-                // Compare with final answer
-                //
-                if( (double)(ebest)<(double)(efinal) )
-                {
-                    for(i_=0; i_<=wcount-1;i_++)
-                    {
-                        wfinal[i_] = wbest[i_];
-                    }
-                    efinal = ebest;
-                }
-            }
-            
-            //
-            // The best network
-            //
-            for(i_=0; i_<=wcount-1;i_++)
-            {
-                network.weights[i_] = wfinal[i_];
-            }
-        }
-
-
-        /*************************************************************************
-        Cross-validation estimate of generalization error.
-
-        Base algorithm - L-BFGS.
-
-        INPUT PARAMETERS:
-            Network     -   neural network with initialized geometry.   Network is
-                            not changed during cross-validation -  it is used only
-                            as a representative of its architecture.
-            XY          -   training set.
-            SSize       -   training set size
-            Decay       -   weight  decay, same as in MLPTrainLBFGS
-            Restarts    -   number of restarts, >0.
-                            restarts are counted for each partition separately, so
-                            total number of restarts will be Restarts*FoldsCount.
-            WStep       -   stopping criterion, same as in MLPTrainLBFGS
-            MaxIts      -   stopping criterion, same as in MLPTrainLBFGS
-            FoldsCount  -   number of folds in k-fold cross-validation,
-                            2<=FoldsCount<=SSize.
-                            recommended value: 10.
-
-        OUTPUT PARAMETERS:
-            Info        -   return code, same as in MLPTrainLBFGS
-            Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
-            CVRep       -   generalization error estimates
-
-          -- ALGLIB --
-             Copyright 09.12.2007 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mlpkfoldcvlbfgs(mlpbase.multilayerperceptron network,
-            double[,] xy,
-            int npoints,
-            double decay,
-            int restarts,
-            double wstep,
-            int maxits,
-            int foldscount,
-            ref int info,
-            mlpreport rep,
-            mlpcvreport cvrep)
-        {
-            info = 0;
-
-            mlpkfoldcvgeneral(network, xy, npoints, decay, restarts, foldscount, false, wstep, maxits, ref info, rep, cvrep);
-        }
-
-
-        /*************************************************************************
-        Cross-validation estimate of generalization error.
-
-        Base algorithm - Levenberg-Marquardt.
-
-        INPUT PARAMETERS:
-            Network     -   neural network with initialized geometry.   Network is
-                            not changed during cross-validation -  it is used only
-                            as a representative of its architecture.
-            XY          -   training set.
-            SSize       -   training set size
-            Decay       -   weight  decay, same as in MLPTrainLBFGS
-            Restarts    -   number of restarts, >0.
-                            restarts are counted for each partition separately, so
-                            total number of restarts will be Restarts*FoldsCount.
-            FoldsCount  -   number of folds in k-fold cross-validation,
-                            2<=FoldsCount<=SSize.
-                            recommended value: 10.
-
-        OUTPUT PARAMETERS:
-            Info        -   return code, same as in MLPTrainLBFGS
-            Rep         -   report, same as in MLPTrainLM/MLPTrainLBFGS
-            CVRep       -   generalization error estimates
-
-          -- ALGLIB --
-             Copyright 09.12.2007 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mlpkfoldcvlm(mlpbase.multilayerperceptron network,
-            double[,] xy,
-            int npoints,
-            double decay,
-            int restarts,
-            int foldscount,
-            ref int info,
-            mlpreport rep,
-            mlpcvreport cvrep)
-        {
-            info = 0;
-
-            mlpkfoldcvgeneral(network, xy, npoints, decay, restarts, foldscount, true, 0.0, 0, ref info, rep, cvrep);
-        }
-
-
-        /*************************************************************************
-        Internal cross-validation subroutine
-        *************************************************************************/
-        private static void mlpkfoldcvgeneral(mlpbase.multilayerperceptron n,
-            double[,] xy,
-            int npoints,
-            double decay,
-            int restarts,
-            int foldscount,
-            bool lmalgorithm,
-            double wstep,
-            int maxits,
-            ref int info,
-            mlpreport rep,
-            mlpcvreport cvrep)
-        {
-            int i = 0;
-            int fold = 0;
-            int j = 0;
-            int k = 0;
-            mlpbase.multilayerperceptron network = new mlpbase.multilayerperceptron();
-            int nin = 0;
-            int nout = 0;
-            int rowlen = 0;
-            int wcount = 0;
-            int nclasses = 0;
-            int tssize = 0;
-            int cvssize = 0;
-            double[,] cvset = new double[0,0];
-            double[,] testset = new double[0,0];
-            int[] folds = new int[0];
-            int relcnt = 0;
-            mlpreport internalrep = new mlpreport();
-            double[] x = new double[0];
-            double[] y = new double[0];
-            int i_ = 0;
-
-            info = 0;
-
-            
-            //
-            // Read network geometry, test parameters
-            //
-            mlpbase.mlpproperties(n, ref nin, ref nout, ref wcount);
-            if( mlpbase.mlpissoftmax(n) )
-            {
-                nclasses = nout;
-                rowlen = nin+1;
-            }
-            else
-            {
-                nclasses = -nout;
-                rowlen = nin+nout;
-            }
-            if( (npoints<=0 | foldscount<2) | foldscount>npoints )
-            {
-                info = -1;
-                return;
-            }
-            mlpbase.mlpcopy(n, network);
-            
-            //
-            // K-fold out cross-validation.
-            // First, estimate generalization error
-            //
-            testset = new double[npoints-1+1, rowlen-1+1];
-            cvset = new double[npoints-1+1, rowlen-1+1];
-            x = new double[nin-1+1];
-            y = new double[nout-1+1];
-            mlpkfoldsplit(xy, npoints, nclasses, foldscount, false, ref folds);
-            cvrep.relclserror = 0;
-            cvrep.avgce = 0;
-            cvrep.rmserror = 0;
-            cvrep.avgerror = 0;
-            cvrep.avgrelerror = 0;
-            rep.ngrad = 0;
-            rep.nhess = 0;
-            rep.ncholesky = 0;
-            relcnt = 0;
-            for(fold=0; fold<=foldscount-1; fold++)
-            {
-                
-                //
-                // Separate set
-                //
-                tssize = 0;
-                cvssize = 0;
-                for(i=0; i<=npoints-1; i++)
-                {
-                    if( folds[i]==fold )
-                    {
-                        for(i_=0; i_<=rowlen-1;i_++)
-                        {
-                            testset[tssize,i_] = xy[i,i_];
-                        }
-                        tssize = tssize+1;
-                    }
-                    else
-                    {
-                        for(i_=0; i_<=rowlen-1;i_++)
-                        {
-                            cvset[cvssize,i_] = xy[i,i_];
-                        }
-                        cvssize = cvssize+1;
-                    }
-                }
-                
-                //
-                // Train on CV training set
-                //
-                if( lmalgorithm )
-                {
-                    mlptrainlm(network, cvset, cvssize, decay, restarts, ref info, internalrep);
-                }
-                else
-                {
-                    mlptrainlbfgs(network, cvset, cvssize, decay, restarts, wstep, maxits, ref info, internalrep);
-                }
-                if( info<0 )
-                {
-                    cvrep.relclserror = 0;
-                    cvrep.avgce = 0;
-                    cvrep.rmserror = 0;
-                    cvrep.avgerror = 0;
-                    cvrep.avgrelerror = 0;
-                    return;
-                }
-                rep.ngrad = rep.ngrad+internalrep.ngrad;
-                rep.nhess = rep.nhess+internalrep.nhess;
-                rep.ncholesky = rep.ncholesky+internalrep.ncholesky;
-                
-                //
-                // Estimate error using CV test set
-                //
-                if( mlpbase.mlpissoftmax(network) )
-                {
-                    
-                    //
-                    // classification-only code
-                    //
-                    cvrep.relclserror = cvrep.relclserror+mlpbase.mlpclserror(network, testset, tssize);
-                    cvrep.avgce = cvrep.avgce+mlpbase.mlperrorn(network, testset, tssize);
-                }
-                for(i=0; i<=tssize-1; i++)
-                {
-                    for(i_=0; i_<=nin-1;i_++)
-                    {
-                        x[i_] = testset[i,i_];
-                    }
-                    mlpbase.mlpprocess(network, x, ref y);
-                    if( mlpbase.mlpissoftmax(network) )
-                    {
-                        
-                        //
-                        // Classification-specific code
-                        //
-                        k = (int)Math.Round(testset[i,nin]);
-                        for(j=0; j<=nout-1; j++)
-                        {
-                            if( j==k )
-                            {
-                                cvrep.rmserror = cvrep.rmserror+math.sqr(y[j]-1);
-                                cvrep.avgerror = cvrep.avgerror+Math.Abs(y[j]-1);
-                                cvrep.avgrelerror = cvrep.avgrelerror+Math.Abs(y[j]-1);
-                                relcnt = relcnt+1;
-                            }
-                            else
-                            {
-                                cvrep.rmserror = cvrep.rmserror+math.sqr(y[j]);
-                                cvrep.avgerror = cvrep.avgerror+Math.Abs(y[j]);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        
-                        //
-                        // Regression-specific code
-                        //
-                        for(j=0; j<=nout-1; j++)
-                        {
-                            cvrep.rmserror = cvrep.rmserror+math.sqr(y[j]-testset[i,nin+j]);
-                            cvrep.avgerror = cvrep.avgerror+Math.Abs(y[j]-testset[i,nin+j]);
-                            if( (double)(testset[i,nin+j])!=(double)(0) )
-                            {
-                                cvrep.avgrelerror = cvrep.avgrelerror+Math.Abs((y[j]-testset[i,nin+j])/testset[i,nin+j]);
-                                relcnt = relcnt+1;
-                            }
-                        }
-                    }
-                }
-            }
-            if( mlpbase.mlpissoftmax(network) )
-            {
-                cvrep.relclserror = cvrep.relclserror/npoints;
-                cvrep.avgce = cvrep.avgce/(Math.Log(2)*npoints);
-            }
-            cvrep.rmserror = Math.Sqrt(cvrep.rmserror/(npoints*nout));
-            cvrep.avgerror = cvrep.avgerror/(npoints*nout);
-            cvrep.avgrelerror = cvrep.avgrelerror/relcnt;
-            info = 1;
-        }
-
-
-        /*************************************************************************
-        Subroutine prepares K-fold split of the training set.
-
-        NOTES:
-            "NClasses>0" means that we have classification task.
-            "NClasses<0" means regression task with -NClasses real outputs.
-        *************************************************************************/
-        private static void mlpkfoldsplit(double[,] xy,
-            int npoints,
-            int nclasses,
-            int foldscount,
-            bool stratifiedsplits,
-            ref int[] folds)
-        {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-
-            folds = new int[0];
-
-            
-            //
-            // test parameters
-            //
-            ap.assert(npoints>0, "MLPKFoldSplit: wrong NPoints!");
-            ap.assert(nclasses>1 | nclasses<0, "MLPKFoldSplit: wrong NClasses!");
-            ap.assert(foldscount>=2 & foldscount<=npoints, "MLPKFoldSplit: wrong FoldsCount!");
-            ap.assert(!stratifiedsplits, "MLPKFoldSplit: stratified splits are not supported!");
-            
-            //
-            // Folds
-            //
-            folds = new int[npoints-1+1];
-            for(i=0; i<=npoints-1; i++)
-            {
-                folds[i] = i*foldscount/npoints;
-            }
-            for(i=0; i<=npoints-2; i++)
-            {
-                j = i+math.randominteger(npoints-i);
-                if( j!=i )
-                {
-                    k = folds[i];
-                    folds[i] = folds[j];
-                    folds[j] = k;
-                }
-            }
         }
 
 

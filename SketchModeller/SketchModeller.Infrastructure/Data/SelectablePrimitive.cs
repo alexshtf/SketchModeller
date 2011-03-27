@@ -6,6 +6,7 @@ using Microsoft.Practices.Prism.ViewModel;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class SelectablePrimitive : NotificationObject
     {
         #region IsSelected property

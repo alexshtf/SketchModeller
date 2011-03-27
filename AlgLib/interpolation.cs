@@ -25,1843 +25,215 @@ public partial class alglib
 
 
     /*************************************************************************
-    Polynomial fitting report:
-        TaskRCond       reciprocal of task's condition number
-        RMSError        RMS error
-        AvgError        average error
-        AvgRelError     average relative error (for non-zero Y[I])
-        MaxError        maximum error
+    IDW interpolant.
     *************************************************************************/
-    public class polynomialfitreport
+    public class idwinterpolant
     {
         //
         // Public declarations
         //
-        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
-        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
-        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
-        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
-        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
 
-        public polynomialfitreport()
+        public idwinterpolant()
         {
-            _innerobj = new lsfit.polynomialfitreport();
+            _innerobj = new idwint.idwinterpolant();
         }
 
         //
         // Although some of declarations below are public, you should not use them
         // They are intended for internal use only
         //
-        private lsfit.polynomialfitreport _innerobj;
-        public lsfit.polynomialfitreport innerobj { get { return _innerobj; } }
-        public polynomialfitreport(lsfit.polynomialfitreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-    Barycentric fitting report:
-        RMSError        RMS error
-        AvgError        average error
-        AvgRelError     average relative error (for non-zero Y[I])
-        MaxError        maximum error
-        TaskRCond       reciprocal of task's condition number
-    *************************************************************************/
-    public class barycentricfitreport
-    {
-        //
-        // Public declarations
-        //
-        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
-        public int dbest { get { return _innerobj.dbest; } set { _innerobj.dbest = value; } }
-        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
-        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
-        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
-        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
-
-        public barycentricfitreport()
-        {
-            _innerobj = new lsfit.barycentricfitreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private lsfit.barycentricfitreport _innerobj;
-        public lsfit.barycentricfitreport innerobj { get { return _innerobj; } }
-        public barycentricfitreport(lsfit.barycentricfitreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-    Spline fitting report:
-        RMSError        RMS error
-        AvgError        average error
-        AvgRelError     average relative error (for non-zero Y[I])
-        MaxError        maximum error
-
-    Fields  below are  filled  by   obsolete    functions   (Spline1DFitCubic,
-    Spline1DFitHermite). Modern fitting functions do NOT fill these fields:
-        TaskRCond       reciprocal of task's condition number
-    *************************************************************************/
-    public class spline1dfitreport
-    {
-        //
-        // Public declarations
-        //
-        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
-        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
-        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
-        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
-        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
-
-        public spline1dfitreport()
-        {
-            _innerobj = new lsfit.spline1dfitreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private lsfit.spline1dfitreport _innerobj;
-        public lsfit.spline1dfitreport innerobj { get { return _innerobj; } }
-        public spline1dfitreport(lsfit.spline1dfitreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-    Least squares fitting report:
-        TaskRCond       reciprocal of task's condition number
-        RMSError        RMS error
-        AvgError        average error
-        AvgRelError     average relative error (for non-zero Y[I])
-        MaxError        maximum error
-    *************************************************************************/
-    public class lsfitreport
-    {
-        //
-        // Public declarations
-        //
-        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
-        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
-        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
-        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
-        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
-
-        public lsfitreport()
-        {
-            _innerobj = new lsfit.lsfitreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private lsfit.lsfitreport _innerobj;
-        public lsfit.lsfitreport innerobj { get { return _innerobj; } }
-        public lsfitreport(lsfit.lsfitreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-    Nonlinear fitter.
-
-    You should use ALGLIB functions to work with fitter.
-    Never try to access its fields directly!
-    *************************************************************************/
-    public class lsfitstate
-    {
-        //
-        // Public declarations
-        //
-        public bool needf { get { return _innerobj.needf; } set { _innerobj.needf = value; } }
-        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
-        public bool needfgh { get { return _innerobj.needfgh; } set { _innerobj.needfgh = value; } }
-        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
-        public double[] c { get { return _innerobj.c; } }
-        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
-        public double[] g { get { return _innerobj.g; } }
-        public double[,] h { get { return _innerobj.h; } }
-        public double[] x { get { return _innerobj.x; } }
-
-        public lsfitstate()
-        {
-            _innerobj = new lsfit.lsfitstate();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private lsfit.lsfitstate _innerobj;
-        public lsfit.lsfitstate innerobj { get { return _innerobj; } }
-        public lsfitstate(lsfit.lsfitstate obj)
+        private idwint.idwinterpolant _innerobj;
+        public idwint.idwinterpolant innerobj { get { return _innerobj; } }
+        public idwinterpolant(idwint.idwinterpolant obj)
         {
             _innerobj = obj;
         }
     }
 
     /*************************************************************************
-    Fitting by polynomials in barycentric form. This function provides  simple
-    unterface for unconstrained unweighted fitting. See  PolynomialFitWC()  if
-    you need constrained fitting.
-
-    Task is linear, so linear least squares solver is used. Complexity of this
-    computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-    SEE ALSO:
-        PolynomialFitWC()
+    IDW interpolation
 
     INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        N   -   number of points, N>0
-                * if given, only leading N elements of X/Y are used
-                * if not given, automatically determined from sizes of X/Y
-        M   -   number of basis functions (= polynomial_degree + 1), M>=1
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearW() subroutine:
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-        P   -   interpolant in barycentric form.
-        Rep -   report, same format as in LSFitLinearW() subroutine.
-                Following fields are set:
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-    NOTES:
-        you can convert P from barycentric form  to  the  power  or  Chebyshev
-        basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
-        POLINT subpackage.
-
-      -- ALGLIB PROJECT --
-         Copyright 10.12.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void polynomialfit(double[] x, double[] y, int n, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
-    {
-        info = 0;
-        p = new barycentricinterpolant();
-        rep = new polynomialfitreport();
-        lsfit.polynomialfit(x, y, n, m, ref info, p.innerobj, rep.innerobj);
-        return;
-    }
-    public static void polynomialfit(double[] x, double[] y, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
-    {
-        int n;
-        if( (ap.len(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'polynomialfit': looks like one of arguments has wrong size");
-        info = 0;
-        p = new barycentricinterpolant();
-        rep = new polynomialfitreport();
-        n = ap.len(x);
-        lsfit.polynomialfit(x, y, n, m, ref info, p.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted  fitting by polynomials in barycentric form, with constraints  on
-    function values or first derivatives.
-
-    Small regularizing term is used when solving constrained tasks (to improve
-    stability).
-
-    Task is linear, so linear least squares solver is used. Complexity of this
-    computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-    SEE ALSO:
-        PolynomialFit()
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        W   -   weights, array[0..N-1]
-                Each summand in square  sum  of  approximation deviations from
-                given  values  is  multiplied  by  the square of corresponding
-                weight. Fill it by 1's if you don't  want  to  solve  weighted
-                task.
-        N   -   number of points, N>0.
-                * if given, only leading N elements of X/Y/W are used
-                * if not given, automatically determined from sizes of X/Y/W
-        XC  -   points where polynomial values/derivatives are constrained,
-                array[0..K-1].
-        YC  -   values of constraints, array[0..K-1]
-        DC  -   array[0..K-1], types of constraints:
-                * DC[i]=0   means that P(XC[i])=YC[i]
-                * DC[i]=1   means that P'(XC[i])=YC[i]
-                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-        K   -   number of constraints, 0<=K<M.
-                K=0 means no constraints (XC/YC/DC are not used in such cases)
-        M   -   number of basis functions (= polynomial_degree + 1), M>=1
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearW() subroutine:
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-                            -3 means inconsistent constraints
-        P   -   interpolant in barycentric form.
-        Rep -   report, same format as in LSFitLinearW() subroutine.
-                Following fields are set:
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroitine doesn't calculate task's condition number for K<>0.
-
-    NOTES:
-        you can convert P from barycentric form  to  the  power  or  Chebyshev
-        basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
-        POLINT subpackage.
-
-    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-    Setting constraints can lead  to undesired  results,  like ill-conditioned
-    behavior, or inconsistency being detected. From the other side,  it allows
-    us to improve quality of the fit. Here we summarize  our  experience  with
-    constrained regression splines:
-    * even simple constraints can be inconsistent, see  Wikipedia  article  on
-      this subject: http://en.wikipedia.org/wiki/Birkhoff_interpolation
-    * the  greater  is  M (given  fixed  constraints),  the  more chances that
-      constraints will be consistent
-    * in the general case, consistency of constraints is NOT GUARANTEED.
-    * in the one special cases, however, we can  guarantee  consistency.  This
-      case  is:  M>1  and constraints on the function values (NOT DERIVATIVES)
-
-    Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
-    can't solve your task without them. Anything beyond  special  cases  given
-    above is not guaranteed and may result in inconsistency.
-
-      -- ALGLIB PROJECT --
-         Copyright 10.12.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void polynomialfitwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
-    {
-        info = 0;
-        p = new barycentricinterpolant();
-        rep = new polynomialfitreport();
-        lsfit.polynomialfitwc(x, y, w, n, xc, yc, dc, k, m, ref info, p.innerobj, rep.innerobj);
-        return;
-    }
-    public static void polynomialfitwc(double[] x, double[] y, double[] w, double[] xc, double[] yc, int[] dc, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
-    {
-        int n;
-        int k;
-        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'polynomialfitwc': looks like one of arguments has wrong size");
-        if( (ap.len(xc)!=ap.len(yc)) || (ap.len(xc)!=ap.len(dc)))
-            throw new alglibexception("Error while calling 'polynomialfitwc': looks like one of arguments has wrong size");
-        info = 0;
-        p = new barycentricinterpolant();
-        rep = new polynomialfitreport();
-        n = ap.len(x);
-        k = ap.len(xc);
-        lsfit.polynomialfitwc(x, y, w, n, xc, yc, dc, k, m, ref info, p.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weghted rational least  squares  fitting  using  Floater-Hormann  rational
-    functions  with  optimal  D  chosen  from  [0,9],  with  constraints   and
-    individual weights.
-
-    Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
-    functions. Different values of D are tried, optimal D (least WEIGHTED root
-    mean square error) is chosen.  Task  is  linear,  so  linear least squares
-    solver  is  used.  Complexity  of  this  computational  scheme is O(N*M^2)
-    (mostly dominated by the least squares solver).
-
-    SEE ALSO
-    * BarycentricFitFloaterHormann(), "lightweight" fitting without invididual
-      weights and constraints.
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        W   -   weights, array[0..N-1]
-                Each summand in square  sum  of  approximation deviations from
-                given  values  is  multiplied  by  the square of corresponding
-                weight. Fill it by 1's if you don't  want  to  solve  weighted
-                task.
-        N   -   number of points, N>0.
-        XC  -   points where function values/derivatives are constrained,
-                array[0..K-1].
-        YC  -   values of constraints, array[0..K-1]
-        DC  -   array[0..K-1], types of constraints:
-                * DC[i]=0   means that S(XC[i])=YC[i]
-                * DC[i]=1   means that S'(XC[i])=YC[i]
-                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-        K   -   number of constraints, 0<=K<M.
-                K=0 means no constraints (XC/YC/DC are not used in such cases)
-        M   -   number of basis functions ( = number_of_nodes), M>=2.
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearWC() subroutine.
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-                            -3 means inconsistent constraints
-                            -1 means another errors in parameters passed
-                               (N<=0, for example)
-        B   -   barycentric interpolant.
-        Rep -   report, same format as in LSFitLinearWC() subroutine.
-                Following fields are set:
-                * DBest         best value of the D parameter
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroutine doesn't calculate task's condition number for K<>0.
-
-    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-    Setting constraints can lead  to undesired  results,  like ill-conditioned
-    behavior, or inconsistency being detected. From the other side,  it allows
-    us to improve quality of the fit. Here we summarize  our  experience  with
-    constrained barycentric interpolants:
-    * excessive  constraints  can  be  inconsistent.   Floater-Hormann   basis
-      functions aren't as flexible as splines (although they are very smooth).
-    * the more evenly constraints are spread across [min(x),max(x)],  the more
-      chances that they will be consistent
-    * the  greater  is  M (given  fixed  constraints),  the  more chances that
-      constraints will be consistent
-    * in the general case, consistency of constraints IS NOT GUARANTEED.
-    * in the several special cases, however, we CAN guarantee consistency.
-    * one of this cases is constraints on the function  VALUES at the interval
-      boundaries. Note that consustency of the  constraints  on  the  function
-      DERIVATIVES is NOT guaranteed (you can use in such cases  cubic  splines
-      which are more flexible).
-    * another  special  case  is ONE constraint on the function value (OR, but
-      not AND, derivative) anywhere in the interval
-
-    Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
-    can't solve your task without them. Anything beyond  special  cases  given
-    above is not guaranteed and may result in inconsistency.
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void barycentricfitfloaterhormannwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out barycentricinterpolant b, out barycentricfitreport rep)
-    {
-        info = 0;
-        b = new barycentricinterpolant();
-        rep = new barycentricfitreport();
-        lsfit.barycentricfitfloaterhormannwc(x, y, w, n, xc, yc, dc, k, m, ref info, b.innerobj, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Rational least squares fitting using  Floater-Hormann  rational  functions
-    with optimal D chosen from [0,9].
-
-    Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
-    functions. Different values of D are tried, optimal  D  (least  root  mean
-    square error) is chosen.  Task  is  linear, so linear least squares solver
-    is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
-    dominated by the least squares solver).
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        N   -   number of points, N>0.
-        M   -   number of basis functions ( = number_of_nodes), M>=2.
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearWC() subroutine.
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-                            -3 means inconsistent constraints
-        B   -   barycentric interpolant.
-        Rep -   report, same format as in LSFitLinearWC() subroutine.
-                Following fields are set:
-                * DBest         best value of the D parameter
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void barycentricfitfloaterhormann(double[] x, double[] y, int n, int m, out int info, out barycentricinterpolant b, out barycentricfitreport rep)
-    {
-        info = 0;
-        b = new barycentricinterpolant();
-        rep = new barycentricfitreport();
-        lsfit.barycentricfitfloaterhormann(x, y, n, m, ref info, b.innerobj, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Rational least squares fitting using  Floater-Hormann  rational  functions
-    with optimal D chosen from [0,9].
-
-    Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
-    functions. Different values of D are tried, optimal  D  (least  root  mean
-    square error) is chosen.  Task  is  linear, so linear least squares solver
-    is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
-    dominated by the least squares solver).
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        N   -   number of points, N>0.
-        M   -   number of basis functions ( = number_of_nodes), M>=2.
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearWC() subroutine.
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-                            -3 means inconsistent constraints
-        B   -   barycentric interpolant.
-        Rep -   report, same format as in LSFitLinearWC() subroutine.
-                Following fields are set:
-                * DBest         best value of the D parameter
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        lsfit.spline1dfitpenalized(x, y, n, m, rho, ref info, s.innerobj, rep.innerobj);
-        return;
-    }
-    public static void spline1dfitpenalized(double[] x, double[] y, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        int n;
-        if( (ap.len(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        n = ap.len(x);
-        lsfit.spline1dfitpenalized(x, y, n, m, rho, ref info, s.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted fitting by penalized cubic spline.
-
-    Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
-    basis functions. Basis functions are cubic splines with  natural  boundary
-    conditions. Problem is regularized by  adding non-linearity penalty to the
-    usual least squares penalty function:
-
-        S(x) = arg min { LS + P }, where
-        LS   = SUM { w[i]^2*(y[i] - S(x[i]))^2 } - least squares penalty
-        P    = C*10^rho*integral{ S''(x)^2*dx } - non-linearity penalty
-        rho  - tunable constant given by user
-        C    - automatically determined scale parameter,
-               makes penalty invariant with respect to scaling of X, Y, W.
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        W   -   weights, array[0..N-1]
-                Each summand in square  sum  of  approximation deviations from
-                given  values  is  multiplied  by  the square of corresponding
-                weight. Fill it by 1's if you don't  want  to  solve  weighted
-                problem.
-        N   -   number of points (optional):
-                * N>0
-                * if given, only first N elements of X/Y/W are processed
-                * if not given, automatically determined from X/Y/W sizes
-        M   -   number of basis functions ( = number_of_nodes), M>=4.
-        Rho -   regularization  constant  passed   by   user.   It   penalizes
-                nonlinearity in the regression spline. It  is  logarithmically
-                scaled,  i.e.  actual  value  of  regularization  constant  is
-                calculated as 10^Rho. It is automatically scaled so that:
-                * Rho=2.0 corresponds to moderate amount of nonlinearity
-                * generally, it should be somewhere in the [-8.0,+8.0]
-                If you do not want to penalize nonlineary,
-                pass small Rho. Values as low as -15 should work.
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearWC() subroutine.
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD or
-                               Cholesky decomposition; problem may be
-                               too ill-conditioned (very rare)
-        S   -   spline interpolant.
-        Rep -   Following fields are set:
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroitine doesn't calculate task's condition number for K<>0.
-
-    NOTE 1: additional nodes are added to the spline outside  of  the  fitting
-    interval to force linearity when x<min(x,xc) or x>max(x,xc).  It  is  done
-    for consistency - we penalize non-linearity  at [min(x,xc),max(x,xc)],  so
-    it is natural to force linearity outside of this interval.
-
-    NOTE 2: function automatically sorts points,  so  caller may pass unsorted
-    array.
-
-      -- ALGLIB PROJECT --
-         Copyright 19.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        lsfit.spline1dfitpenalizedw(x, y, w, n, m, rho, ref info, s.innerobj, rep.innerobj);
-        return;
-    }
-    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        int n;
-        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        n = ap.len(x);
-        lsfit.spline1dfitpenalizedw(x, y, w, n, m, rho, ref info, s.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted fitting by cubic  spline,  with constraints on function values or
-    derivatives.
-
-    Equidistant grid with M-2 nodes on [min(x,xc),max(x,xc)] is  used to build
-    basis functions. Basis functions are cubic splines with continuous  second
-    derivatives  and  non-fixed first  derivatives  at  interval  ends.  Small
-    regularizing term is used  when  solving  constrained  tasks  (to  improve
-    stability).
-
-    Task is linear, so linear least squares solver is used. Complexity of this
-    computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-    SEE ALSO
-        Spline1DFitHermiteWC()  -   fitting by Hermite splines (more flexible,
-                                    less smooth)
-        Spline1DFitCubic()      -   "lightweight" fitting  by  cubic  splines,
-                                    without invididual weights and constraints
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        W   -   weights, array[0..N-1]
-                Each summand in square  sum  of  approximation deviations from
-                given  values  is  multiplied  by  the square of corresponding
-                weight. Fill it by 1's if you don't  want  to  solve  weighted
-                task.
-        N   -   number of points (optional):
-                * N>0
-                * if given, only first N elements of X/Y/W are processed
-                * if not given, automatically determined from X/Y/W sizes
-        XC  -   points where spline values/derivatives are constrained,
-                array[0..K-1].
-        YC  -   values of constraints, array[0..K-1]
-        DC  -   array[0..K-1], types of constraints:
-                * DC[i]=0   means that S(XC[i])=YC[i]
-                * DC[i]=1   means that S'(XC[i])=YC[i]
-                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-        K   -   number of constraints (optional):
-                * 0<=K<M.
-                * K=0 means no constraints (XC/YC/DC are not used)
-                * if given, only first K elements of XC/YC/DC are used
-                * if not given, automatically determined from XC/YC/DC
-        M   -   number of basis functions ( = number_of_nodes+2), M>=4.
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearWC() subroutine.
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-                            -3 means inconsistent constraints
-        S   -   spline interpolant.
-        Rep -   report, same format as in LSFitLinearWC() subroutine.
-                Following fields are set:
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroitine doesn't calculate task's condition number for K<>0.
-
-
-    ORDER OF POINTS
-
-    Subroutine automatically sorts points, so caller may pass unsorted array.
-
-    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-    Setting constraints can lead  to undesired  results,  like ill-conditioned
-    behavior, or inconsistency being detected. From the other side,  it allows
-    us to improve quality of the fit. Here we summarize  our  experience  with
-    constrained regression splines:
-    * excessive constraints can be inconsistent. Splines are  piecewise  cubic
-      functions, and it is easy to create an example, where  large  number  of
-      constraints  concentrated  in  small  area will result in inconsistency.
-      Just because spline is not flexible enough to satisfy all of  them.  And
-      same constraints spread across the  [min(x),max(x)]  will  be  perfectly
-      consistent.
-    * the more evenly constraints are spread across [min(x),max(x)],  the more
-      chances that they will be consistent
-    * the  greater  is  M (given  fixed  constraints),  the  more chances that
-      constraints will be consistent
-    * in the general case, consistency of constraints IS NOT GUARANTEED.
-    * in the several special cases, however, we CAN guarantee consistency.
-    * one of this cases is constraints  on  the  function  values  AND/OR  its
-      derivatives at the interval boundaries.
-    * another  special  case  is ONE constraint on the function value (OR, but
-      not AND, derivative) anywhere in the interval
-
-    Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
-    can't solve your task without them. Anything beyond  special  cases  given
-    above is not guaranteed and may result in inconsistency.
-
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline1dfitcubicwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        lsfit.spline1dfitcubicwc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
-        return;
-    }
-    public static void spline1dfitcubicwc(double[] x, double[] y, double[] w, double[] xc, double[] yc, int[] dc, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        int n;
-        int k;
-        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'spline1dfitcubicwc': looks like one of arguments has wrong size");
-        if( (ap.len(xc)!=ap.len(yc)) || (ap.len(xc)!=ap.len(dc)))
-            throw new alglibexception("Error while calling 'spline1dfitcubicwc': looks like one of arguments has wrong size");
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        n = ap.len(x);
-        k = ap.len(xc);
-        lsfit.spline1dfitcubicwc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted  fitting  by Hermite spline,  with constraints on function values
-    or first derivatives.
-
-    Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
-    basis functions. Basis functions are Hermite splines.  Small  regularizing
-    term is used when solving constrained tasks (to improve stability).
-
-    Task is linear, so linear least squares solver is used. Complexity of this
-    computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-    SEE ALSO
-        Spline1DFitCubicWC()    -   fitting by Cubic splines (less flexible,
-                                    more smooth)
-        Spline1DFitHermite()    -   "lightweight" Hermite fitting, without
-                                    invididual weights and constraints
-
-    INPUT PARAMETERS:
-        X   -   points, array[0..N-1].
-        Y   -   function values, array[0..N-1].
-        W   -   weights, array[0..N-1]
-                Each summand in square  sum  of  approximation deviations from
-                given  values  is  multiplied  by  the square of corresponding
-                weight. Fill it by 1's if you don't  want  to  solve  weighted
-                task.
-        N   -   number of points (optional):
-                * N>0
-                * if given, only first N elements of X/Y/W are processed
-                * if not given, automatically determined from X/Y/W sizes
-        XC  -   points where spline values/derivatives are constrained,
-                array[0..K-1].
-        YC  -   values of constraints, array[0..K-1]
-        DC  -   array[0..K-1], types of constraints:
-                * DC[i]=0   means that S(XC[i])=YC[i]
-                * DC[i]=1   means that S'(XC[i])=YC[i]
-                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-        K   -   number of constraints (optional):
-                * 0<=K<M.
-                * K=0 means no constraints (XC/YC/DC are not used)
-                * if given, only first K elements of XC/YC/DC are used
-                * if not given, automatically determined from XC/YC/DC
-        M   -   number of basis functions (= 2 * number of nodes),
-                M>=4,
-                M IS EVEN!
-
-    OUTPUT PARAMETERS:
-        Info-   same format as in LSFitLinearW() subroutine:
-                * Info>0    task is solved
-                * Info<=0   an error occured:
-                            -4 means inconvergence of internal SVD
-                            -3 means inconsistent constraints
-                            -2 means odd M was passed (which is not supported)
-                            -1 means another errors in parameters passed
-                               (N<=0, for example)
-        S   -   spline interpolant.
-        Rep -   report, same format as in LSFitLinearW() subroutine.
-                Following fields are set:
-                * RMSError      rms error on the (X,Y).
-                * AvgError      average error on the (X,Y).
-                * AvgRelError   average relative error on the non-zero Y
-                * MaxError      maximum error
-                                NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroitine doesn't calculate task's condition number for K<>0.
-
-    IMPORTANT:
-        this subroitine supports only even M's
-
-
-    ORDER OF POINTS
-
-    Subroutine automatically sorts points, so caller may pass unsorted array.
-
-    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-    Setting constraints can lead  to undesired  results,  like ill-conditioned
-    behavior, or inconsistency being detected. From the other side,  it allows
-    us to improve quality of the fit. Here we summarize  our  experience  with
-    constrained regression splines:
-    * excessive constraints can be inconsistent. Splines are  piecewise  cubic
-      functions, and it is easy to create an example, where  large  number  of
-      constraints  concentrated  in  small  area will result in inconsistency.
-      Just because spline is not flexible enough to satisfy all of  them.  And
-      same constraints spread across the  [min(x),max(x)]  will  be  perfectly
-      consistent.
-    * the more evenly constraints are spread across [min(x),max(x)],  the more
-      chances that they will be consistent
-    * the  greater  is  M (given  fixed  constraints),  the  more chances that
-      constraints will be consistent
-    * in the general case, consistency of constraints is NOT GUARANTEED.
-    * in the several special cases, however, we can guarantee consistency.
-    * one of this cases is  M>=4  and   constraints  on   the  function  value
-      (AND/OR its derivative) at the interval boundaries.
-    * another special case is M>=4  and  ONE  constraint on the function value
-      (OR, BUT NOT AND, derivative) anywhere in [min(x),max(x)]
-
-    Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
-    can't solve your task without them. Anything beyond  special  cases  given
-    above is not guaranteed and may result in inconsistency.
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline1dfithermitewc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        lsfit.spline1dfithermitewc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
-        return;
-    }
-    public static void spline1dfithermitewc(double[] x, double[] y, double[] w, double[] xc, double[] yc, int[] dc, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        int n;
-        int k;
-        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'spline1dfithermitewc': looks like one of arguments has wrong size");
-        if( (ap.len(xc)!=ap.len(yc)) || (ap.len(xc)!=ap.len(dc)))
-            throw new alglibexception("Error while calling 'spline1dfithermitewc': looks like one of arguments has wrong size");
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        n = ap.len(x);
-        k = ap.len(xc);
-        lsfit.spline1dfithermitewc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Least squares fitting by cubic spline.
-
-    This subroutine is "lightweight" alternative for more complex and feature-
-    rich Spline1DFitCubicWC().  See  Spline1DFitCubicWC() for more information
-    about subroutine parameters (we don't duplicate it here because of length)
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline1dfitcubic(double[] x, double[] y, int n, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        lsfit.spline1dfitcubic(x, y, n, m, ref info, s.innerobj, rep.innerobj);
-        return;
-    }
-    public static void spline1dfitcubic(double[] x, double[] y, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        int n;
-        if( (ap.len(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'spline1dfitcubic': looks like one of arguments has wrong size");
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        n = ap.len(x);
-        lsfit.spline1dfitcubic(x, y, n, m, ref info, s.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Least squares fitting by Hermite spline.
-
-    This subroutine is "lightweight" alternative for more complex and feature-
-    rich Spline1DFitHermiteWC().  See Spline1DFitHermiteWC()  description  for
-    more information about subroutine parameters (we don't duplicate  it  here
-    because of length).
-
-      -- ALGLIB PROJECT --
-         Copyright 18.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline1dfithermite(double[] x, double[] y, int n, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        lsfit.spline1dfithermite(x, y, n, m, ref info, s.innerobj, rep.innerobj);
-        return;
-    }
-    public static void spline1dfithermite(double[] x, double[] y, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-        int n;
-        if( (ap.len(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'spline1dfithermite': looks like one of arguments has wrong size");
-        info = 0;
-        s = new spline1dinterpolant();
-        rep = new spline1dfitreport();
-        n = ap.len(x);
-        lsfit.spline1dfithermite(x, y, n, m, ref info, s.innerobj, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted linear least squares fitting.
-
-    QR decomposition is used to reduce task to MxM, then triangular solver  or
-    SVD-based solver is used depending on condition number of the  system.  It
-    allows to maximize speed and retain decent accuracy.
-
-    INPUT PARAMETERS:
-        Y       -   array[0..N-1] Function values in  N  points.
-        W       -   array[0..N-1]  Weights  corresponding to function  values.
-                    Each summand in square  sum  of  approximation  deviations
-                    from  given  values  is  multiplied  by  the   square   of
-                    corresponding weight.
-        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                    FMatrix[I, J] - value of J-th basis function in I-th point.
-        N       -   number of points used. N>=1.
-        M       -   number of basis functions, M>=1.
-
-    OUTPUT PARAMETERS:
-        Info    -   error code:
-                    * -4    internal SVD decomposition subroutine failed (very
-                            rare and for degenerate systems only)
-                    * -1    incorrect N/M were specified
-                    *  1    task is solved
-        C       -   decomposition coefficients, array[0..M-1]
-        Rep     -   fitting report. Following fields are set:
-                    * Rep.TaskRCond     reciprocal of condition number
-                    * RMSError          rms error on the (X,Y).
-                    * AvgError          average error on the (X,Y).
-                    * AvgRelError       average relative error on the non-zero Y
-                    * MaxError          maximum error
-                                        NON-WEIGHTED ERRORS ARE CALCULATED
+        Z   -   IDW interpolant built with one of model building
+                subroutines.
+        X   -   array[0..NX-1], interpolation point
+
+    Result:
+        IDW interpolant Z(X)
 
       -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
+         Copyright 02.03.2010 by Bochkanov Sergey
     *************************************************************************/
-    public static void lsfitlinearw(double[] y, double[] w, double[,] fmatrix, int n, int m, out int info, out double[] c, out lsfitreport rep)
-    {
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        lsfit.lsfitlinearw(y, w, fmatrix, n, m, ref info, ref c, rep.innerobj);
-        return;
-    }
-    public static void lsfitlinearw(double[] y, double[] w, double[,] fmatrix, out int info, out double[] c, out lsfitreport rep)
-    {
-        int n;
-        int m;
-        if( (ap.len(y)!=ap.len(w)) || (ap.len(y)!=ap.rows(fmatrix)))
-            throw new alglibexception("Error while calling 'lsfitlinearw': looks like one of arguments has wrong size");
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        n = ap.len(y);
-        m = ap.cols(fmatrix);
-        lsfit.lsfitlinearw(y, w, fmatrix, n, m, ref info, ref c, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted constained linear least squares fitting.
-
-    This  is  variation  of LSFitLinearW(), which searchs for min|A*x=b| given
-    that  K  additional  constaints  C*x=bc are satisfied. It reduces original
-    task to modified one: min|B*y-d| WITHOUT constraints,  then LSFitLinearW()
-    is called.
-
-    INPUT PARAMETERS:
-        Y       -   array[0..N-1] Function values in  N  points.
-        W       -   array[0..N-1]  Weights  corresponding to function  values.
-                    Each summand in square  sum  of  approximation  deviations
-                    from  given  values  is  multiplied  by  the   square   of
-                    corresponding weight.
-        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                    FMatrix[I,J] - value of J-th basis function in I-th point.
-        CMatrix -   a table of constaints, array[0..K-1,0..M].
-                    I-th row of CMatrix corresponds to I-th linear constraint:
-                    CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
-        N       -   number of points used. N>=1.
-        M       -   number of basis functions, M>=1.
-        K       -   number of constraints, 0 <= K < M
-                    K=0 corresponds to absence of constraints.
-
-    OUTPUT PARAMETERS:
-        Info    -   error code:
-                    * -4    internal SVD decomposition subroutine failed (very
-                            rare and for degenerate systems only)
-                    * -3    either   too   many  constraints  (M   or   more),
-                            degenerate  constraints   (some   constraints  are
-                            repetead twice) or inconsistent  constraints  were
-                            specified.
-                    *  1    task is solved
-        C       -   decomposition coefficients, array[0..M-1]
-        Rep     -   fitting report. Following fields are set:
-                    * RMSError          rms error on the (X,Y).
-                    * AvgError          average error on the (X,Y).
-                    * AvgRelError       average relative error on the non-zero Y
-                    * MaxError          maximum error
-                                        NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroitine doesn't calculate task's condition number for K<>0.
-
-      -- ALGLIB --
-         Copyright 07.09.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitlinearwc(double[] y, double[] w, double[,] fmatrix, double[,] cmatrix, int n, int m, int k, out int info, out double[] c, out lsfitreport rep)
-    {
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        lsfit.lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
-        return;
-    }
-    public static void lsfitlinearwc(double[] y, double[] w, double[,] fmatrix, double[,] cmatrix, out int info, out double[] c, out lsfitreport rep)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.len(y)!=ap.len(w)) || (ap.len(y)!=ap.rows(fmatrix)))
-            throw new alglibexception("Error while calling 'lsfitlinearwc': looks like one of arguments has wrong size");
-        if( (ap.cols(fmatrix)!=ap.cols(cmatrix)-1))
-            throw new alglibexception("Error while calling 'lsfitlinearwc': looks like one of arguments has wrong size");
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        n = ap.len(y);
-        m = ap.cols(fmatrix);
-        k = ap.rows(cmatrix);
-        lsfit.lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Linear least squares fitting.
-
-    QR decomposition is used to reduce task to MxM, then triangular solver  or
-    SVD-based solver is used depending on condition number of the  system.  It
-    allows to maximize speed and retain decent accuracy.
-
-    INPUT PARAMETERS:
-        Y       -   array[0..N-1] Function values in  N  points.
-        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                    FMatrix[I, J] - value of J-th basis function in I-th point.
-        N       -   number of points used. N>=1.
-        M       -   number of basis functions, M>=1.
-
-    OUTPUT PARAMETERS:
-        Info    -   error code:
-                    * -4    internal SVD decomposition subroutine failed (very
-                            rare and for degenerate systems only)
-                    *  1    task is solved
-        C       -   decomposition coefficients, array[0..M-1]
-        Rep     -   fitting report. Following fields are set:
-                    * Rep.TaskRCond     reciprocal of condition number
-                    * RMSError          rms error on the (X,Y).
-                    * AvgError          average error on the (X,Y).
-                    * AvgRelError       average relative error on the non-zero Y
-                    * MaxError          maximum error
-                                        NON-WEIGHTED ERRORS ARE CALCULATED
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitlinear(double[] y, double[,] fmatrix, int n, int m, out int info, out double[] c, out lsfitreport rep)
-    {
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        lsfit.lsfitlinear(y, fmatrix, n, m, ref info, ref c, rep.innerobj);
-        return;
-    }
-    public static void lsfitlinear(double[] y, double[,] fmatrix, out int info, out double[] c, out lsfitreport rep)
-    {
-        int n;
-        int m;
-        if( (ap.len(y)!=ap.rows(fmatrix)))
-            throw new alglibexception("Error while calling 'lsfitlinear': looks like one of arguments has wrong size");
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        n = ap.len(y);
-        m = ap.cols(fmatrix);
-        lsfit.lsfitlinear(y, fmatrix, n, m, ref info, ref c, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Constained linear least squares fitting.
-
-    This  is  variation  of LSFitLinear(),  which searchs for min|A*x=b| given
-    that  K  additional  constaints  C*x=bc are satisfied. It reduces original
-    task to modified one: min|B*y-d| WITHOUT constraints,  then  LSFitLinear()
-    is called.
-
-    INPUT PARAMETERS:
-        Y       -   array[0..N-1] Function values in  N  points.
-        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                    FMatrix[I,J] - value of J-th basis function in I-th point.
-        CMatrix -   a table of constaints, array[0..K-1,0..M].
-                    I-th row of CMatrix corresponds to I-th linear constraint:
-                    CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
-        N       -   number of points used. N>=1.
-        M       -   number of basis functions, M>=1.
-        K       -   number of constraints, 0 <= K < M
-                    K=0 corresponds to absence of constraints.
-
-    OUTPUT PARAMETERS:
-        Info    -   error code:
-                    * -4    internal SVD decomposition subroutine failed (very
-                            rare and for degenerate systems only)
-                    * -3    either   too   many  constraints  (M   or   more),
-                            degenerate  constraints   (some   constraints  are
-                            repetead twice) or inconsistent  constraints  were
-                            specified.
-                    *  1    task is solved
-        C       -   decomposition coefficients, array[0..M-1]
-        Rep     -   fitting report. Following fields are set:
-                    * RMSError          rms error on the (X,Y).
-                    * AvgError          average error on the (X,Y).
-                    * AvgRelError       average relative error on the non-zero Y
-                    * MaxError          maximum error
-                                        NON-WEIGHTED ERRORS ARE CALCULATED
-
-    IMPORTANT:
-        this subroitine doesn't calculate task's condition number for K<>0.
-
-      -- ALGLIB --
-         Copyright 07.09.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitlinearc(double[] y, double[,] fmatrix, double[,] cmatrix, int n, int m, int k, out int info, out double[] c, out lsfitreport rep)
-    {
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        lsfit.lsfitlinearc(y, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
-        return;
-    }
-    public static void lsfitlinearc(double[] y, double[,] fmatrix, double[,] cmatrix, out int info, out double[] c, out lsfitreport rep)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.len(y)!=ap.rows(fmatrix)))
-            throw new alglibexception("Error while calling 'lsfitlinearc': looks like one of arguments has wrong size");
-        if( (ap.cols(fmatrix)!=ap.cols(cmatrix)-1))
-            throw new alglibexception("Error while calling 'lsfitlinearc': looks like one of arguments has wrong size");
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        n = ap.len(y);
-        m = ap.cols(fmatrix);
-        k = ap.rows(cmatrix);
-        lsfit.lsfitlinearc(y, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted nonlinear least squares fitting using function values only.
-
-    Combination of numerical differentiation and secant updates is used to
-    obtain function Jacobian.
-
-    Nonlinear task min(F(c)) is solved, where
-
-        F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-
-        * N is a number of points,
-        * M is a dimension of a space points belong to,
-        * K is a dimension of a space of parameters being fitted,
-        * w is an N-dimensional vector of weight coefficients,
-        * x is a set of N points, each of them is an M-dimensional vector,
-        * c is a K-dimensional vector of parameters being fitted
-
-    This subroutine uses only f(c,x[i]).
-
-    INPUT PARAMETERS:
-        X       -   array[0..N-1,0..M-1], points (one row = one point)
-        Y       -   array[0..N-1], function values.
-        W       -   weights, array[0..N-1]
-        C       -   array[0..K-1], initial approximation to the solution,
-        N       -   number of points, N>1
-        M       -   dimension of space
-        K       -   number of parameters being fitted
-        DiffStep-   numerical differentiation step;
-                    should not be very small or large;
-                    large = loss of accuracy
-                    small = growth of round-off errors
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 18.10.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitcreatewf(double[,] x, double[] y, double[] w, double[] c, int n, int m, int k, double diffstep, out lsfitstate state)
-    {
-        state = new lsfitstate();
-        lsfit.lsfitcreatewf(x, y, w, c, n, m, k, diffstep, state.innerobj);
-        return;
-    }
-    public static void lsfitcreatewf(double[,] x, double[] y, double[] w, double[] c, double diffstep, out lsfitstate state)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.rows(x)!=ap.len(y)) || (ap.rows(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'lsfitcreatewf': looks like one of arguments has wrong size");
-        state = new lsfitstate();
-        n = ap.rows(x);
-        m = ap.cols(x);
-        k = ap.len(c);
-        lsfit.lsfitcreatewf(x, y, w, c, n, m, k, diffstep, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Nonlinear least squares fitting using function values only.
-
-    Combination of numerical differentiation and secant updates is used to
-    obtain function Jacobian.
-
-    Nonlinear task min(F(c)) is solved, where
-
-        F(c) = (f(c,x[0])-y[0])^2 + ... + (f(c,x[n-1])-y[n-1])^2,
-
-        * N is a number of points,
-        * M is a dimension of a space points belong to,
-        * K is a dimension of a space of parameters being fitted,
-        * w is an N-dimensional vector of weight coefficients,
-        * x is a set of N points, each of them is an M-dimensional vector,
-        * c is a K-dimensional vector of parameters being fitted
-
-    This subroutine uses only f(c,x[i]).
-
-    INPUT PARAMETERS:
-        X       -   array[0..N-1,0..M-1], points (one row = one point)
-        Y       -   array[0..N-1], function values.
-        C       -   array[0..K-1], initial approximation to the solution,
-        N       -   number of points, N>1
-        M       -   dimension of space
-        K       -   number of parameters being fitted
-        DiffStep-   numerical differentiation step;
-                    should not be very small or large;
-                    large = loss of accuracy
-                    small = growth of round-off errors
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 18.10.2008 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitcreatef(double[,] x, double[] y, double[] c, int n, int m, int k, double diffstep, out lsfitstate state)
-    {
-        state = new lsfitstate();
-        lsfit.lsfitcreatef(x, y, c, n, m, k, diffstep, state.innerobj);
-        return;
-    }
-    public static void lsfitcreatef(double[,] x, double[] y, double[] c, double diffstep, out lsfitstate state)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.rows(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'lsfitcreatef': looks like one of arguments has wrong size");
-        state = new lsfitstate();
-        n = ap.rows(x);
-        m = ap.cols(x);
-        k = ap.len(c);
-        lsfit.lsfitcreatef(x, y, c, n, m, k, diffstep, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted nonlinear least squares fitting using gradient only.
-
-    Nonlinear task min(F(c)) is solved, where
-
-        F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-
-        * N is a number of points,
-        * M is a dimension of a space points belong to,
-        * K is a dimension of a space of parameters being fitted,
-        * w is an N-dimensional vector of weight coefficients,
-        * x is a set of N points, each of them is an M-dimensional vector,
-        * c is a K-dimensional vector of parameters being fitted
-
-    This subroutine uses only f(c,x[i]) and its gradient.
-
-    INPUT PARAMETERS:
-        X       -   array[0..N-1,0..M-1], points (one row = one point)
-        Y       -   array[0..N-1], function values.
-        W       -   weights, array[0..N-1]
-        C       -   array[0..K-1], initial approximation to the solution,
-        N       -   number of points, N>1
-        M       -   dimension of space
-        K       -   number of parameters being fitted
-        CheapFG -   boolean flag, which is:
-                    * True  if both function and gradient calculation complexity
-                            are less than O(M^2).  An improved  algorithm  can
-                            be  used  which corresponds  to  FGJ  scheme  from
-                            MINLM unit.
-                    * False otherwise.
-                            Standard Jacibian-bases  Levenberg-Marquardt  algo
-                            will be used (FJ scheme).
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-    See also:
-        LSFitResults
-        LSFitCreateFG (fitting without weights)
-        LSFitCreateWFGH (fitting using Hessian)
-        LSFitCreateFGH (fitting using Hessian, without weights)
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitcreatewfg(double[,] x, double[] y, double[] w, double[] c, int n, int m, int k, bool cheapfg, out lsfitstate state)
-    {
-        state = new lsfitstate();
-        lsfit.lsfitcreatewfg(x, y, w, c, n, m, k, cheapfg, state.innerobj);
-        return;
-    }
-    public static void lsfitcreatewfg(double[,] x, double[] y, double[] w, double[] c, bool cheapfg, out lsfitstate state)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.rows(x)!=ap.len(y)) || (ap.rows(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'lsfitcreatewfg': looks like one of arguments has wrong size");
-        state = new lsfitstate();
-        n = ap.rows(x);
-        m = ap.cols(x);
-        k = ap.len(c);
-        lsfit.lsfitcreatewfg(x, y, w, c, n, m, k, cheapfg, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Nonlinear least squares fitting using gradient only, without individual
-    weights.
-
-    Nonlinear task min(F(c)) is solved, where
-
-        F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
-
-        * N is a number of points,
-        * M is a dimension of a space points belong to,
-        * K is a dimension of a space of parameters being fitted,
-        * x is a set of N points, each of them is an M-dimensional vector,
-        * c is a K-dimensional vector of parameters being fitted
-
-    This subroutine uses only f(c,x[i]) and its gradient.
-
-    INPUT PARAMETERS:
-        X       -   array[0..N-1,0..M-1], points (one row = one point)
-        Y       -   array[0..N-1], function values.
-        C       -   array[0..K-1], initial approximation to the solution,
-        N       -   number of points, N>1
-        M       -   dimension of space
-        K       -   number of parameters being fitted
-        CheapFG -   boolean flag, which is:
-                    * True  if both function and gradient calculation complexity
-                            are less than O(M^2).  An improved  algorithm  can
-                            be  used  which corresponds  to  FGJ  scheme  from
-                            MINLM unit.
-                    * False otherwise.
-                            Standard Jacibian-bases  Levenberg-Marquardt  algo
-                            will be used (FJ scheme).
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitcreatefg(double[,] x, double[] y, double[] c, int n, int m, int k, bool cheapfg, out lsfitstate state)
-    {
-        state = new lsfitstate();
-        lsfit.lsfitcreatefg(x, y, c, n, m, k, cheapfg, state.innerobj);
-        return;
-    }
-    public static void lsfitcreatefg(double[,] x, double[] y, double[] c, bool cheapfg, out lsfitstate state)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.rows(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'lsfitcreatefg': looks like one of arguments has wrong size");
-        state = new lsfitstate();
-        n = ap.rows(x);
-        m = ap.cols(x);
-        k = ap.len(c);
-        lsfit.lsfitcreatefg(x, y, c, n, m, k, cheapfg, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Weighted nonlinear least squares fitting using gradient/Hessian.
-
-    Nonlinear task min(F(c)) is solved, where
-
-        F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-
-        * N is a number of points,
-        * M is a dimension of a space points belong to,
-        * K is a dimension of a space of parameters being fitted,
-        * w is an N-dimensional vector of weight coefficients,
-        * x is a set of N points, each of them is an M-dimensional vector,
-        * c is a K-dimensional vector of parameters being fitted
-
-    This subroutine uses f(c,x[i]), its gradient and its Hessian.
-
-    INPUT PARAMETERS:
-        X       -   array[0..N-1,0..M-1], points (one row = one point)
-        Y       -   array[0..N-1], function values.
-        W       -   weights, array[0..N-1]
-        C       -   array[0..K-1], initial approximation to the solution,
-        N       -   number of points, N>1
-        M       -   dimension of space
-        K       -   number of parameters being fitted
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitcreatewfgh(double[,] x, double[] y, double[] w, double[] c, int n, int m, int k, out lsfitstate state)
-    {
-        state = new lsfitstate();
-        lsfit.lsfitcreatewfgh(x, y, w, c, n, m, k, state.innerobj);
-        return;
-    }
-    public static void lsfitcreatewfgh(double[,] x, double[] y, double[] w, double[] c, out lsfitstate state)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.rows(x)!=ap.len(y)) || (ap.rows(x)!=ap.len(w)))
-            throw new alglibexception("Error while calling 'lsfitcreatewfgh': looks like one of arguments has wrong size");
-        state = new lsfitstate();
-        n = ap.rows(x);
-        m = ap.cols(x);
-        k = ap.len(c);
-        lsfit.lsfitcreatewfgh(x, y, w, c, n, m, k, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Nonlinear least squares fitting using gradient/Hessian, without individial
-    weights.
-
-    Nonlinear task min(F(c)) is solved, where
-
-        F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
-
-        * N is a number of points,
-        * M is a dimension of a space points belong to,
-        * K is a dimension of a space of parameters being fitted,
-        * x is a set of N points, each of them is an M-dimensional vector,
-        * c is a K-dimensional vector of parameters being fitted
-
-    This subroutine uses f(c,x[i]), its gradient and its Hessian.
-
-    INPUT PARAMETERS:
-        X       -   array[0..N-1,0..M-1], points (one row = one point)
-        Y       -   array[0..N-1], function values.
-        C       -   array[0..K-1], initial approximation to the solution,
-        N       -   number of points, N>1
-        M       -   dimension of space
-        K       -   number of parameters being fitted
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitcreatefgh(double[,] x, double[] y, double[] c, int n, int m, int k, out lsfitstate state)
-    {
-        state = new lsfitstate();
-        lsfit.lsfitcreatefgh(x, y, c, n, m, k, state.innerobj);
-        return;
-    }
-    public static void lsfitcreatefgh(double[,] x, double[] y, double[] c, out lsfitstate state)
-    {
-        int n;
-        int m;
-        int k;
-        if( (ap.rows(x)!=ap.len(y)))
-            throw new alglibexception("Error while calling 'lsfitcreatefgh': looks like one of arguments has wrong size");
-        state = new lsfitstate();
-        n = ap.rows(x);
-        m = ap.cols(x);
-        k = ap.len(c);
-        lsfit.lsfitcreatefgh(x, y, c, n, m, k, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    Stopping conditions for nonlinear least squares fitting.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        EpsF    -   stopping criterion. Algorithm stops if
-                    |F(k+1)-F(k)| <= EpsF*max{|F(k)|, |F(k+1)|, 1}
-        EpsX    -   stopping criterion. Algorithm stops if
-                    |X(k+1)-X(k)| <= EpsX*(1+|X(k)|)
-        MaxIts  -   stopping criterion. Algorithm stops after MaxIts iterations.
-                    MaxIts=0 means no stopping criterion.
-
-    NOTE
-
-    Passing EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to automatic
-    stopping criterion selection (according to the scheme used by MINLM unit).
-
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitsetcond(lsfitstate state, double epsf, double epsx, int maxits)
+    public static double idwcalc(idwinterpolant z, double[] x)
     {
 
-        lsfit.lsfitsetcond(state.innerobj, epsf, epsx, maxits);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets maximum step length
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                    want to limit step length.
-
-    Use this subroutine when you optimize target function which contains exp()
-    or  other  fast  growing  functions,  and optimization algorithm makes too
-    large  steps  which  leads  to overflow. This function allows us to reject
-    steps  that  are  too  large  (and  therefore  expose  us  to the possible
-    overflow) without actually calculating function value at the x+stp*d.
-
-    NOTE: non-zero StpMax leads to moderate  performance  degradation  because
-    intermediate  step  of  preconditioned L-BFGS optimization is incompatible
-    with limits on step size.
-
-      -- ALGLIB --
-         Copyright 02.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitsetstpmax(lsfitstate state, double stpmax)
-    {
-
-        lsfit.lsfitsetstpmax(state.innerobj, stpmax);
-        return;
-    }
-
-    /*************************************************************************
-    This function turns on/off reporting.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        NeedXRep-   whether iteration reports are needed or not
-
-    When reports are needed, State.C (current parameters) and State.F (current
-    value of fitting function) are reported.
-
-
-      -- ALGLIB --
-         Copyright 15.08.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void lsfitsetxrep(lsfitstate state, bool needxrep)
-    {
-
-        lsfit.lsfitsetxrep(state.innerobj, needxrep);
-        return;
-    }
-
-    /*************************************************************************
-    This function provides reverse communication interface
-    Reverse communication interface is not documented or recommended to use.
-    See below for functions which provide better documented API
-    *************************************************************************/
-    public static bool lsfititeration(lsfitstate state)
-    {
-
-        bool result = lsfit.lsfititeration(state.innerobj);
+        double result = idwint.idwcalc(z.innerobj, x);
         return result;
     }
-    /*************************************************************************
-    This family of functions is used to launcn iterations of nonlinear fitter
-
-    These functions accept following parameters:
-        func    -   callback which calculates function (or merit function)
-                    value func at given point x
-        grad    -   callback which calculates function (or merit function)
-                    value func and gradient grad at given point x
-        hess    -   callback which calculates function (or merit function)
-                    value func, gradient grad and Hessian hess at given point x
-        rep     -   optional callback which is called after each iteration
-                    can be null
-        obj     -   optional object which is passed to func/grad/hess/jac/rep
-                    can be null
-
-    NOTES:
-
-    1. this algorithm is somewhat unusual because it works with  parameterized
-       function f(C,X), where X is a function argument (we  have  many  points
-       which are characterized by different  argument  values),  and  C  is  a
-       parameter to fit.
-
-       For example, if we want to do linear fit by f(c0,c1,x) = c0*x+c1,  then
-       x will be argument, and {c0,c1} will be parameters.
-
-       It is important to understand that this algorithm finds minimum in  the
-       space of function PARAMETERS (not arguments), so it  needs  derivatives
-       of f() with respect to C, not X.
-
-       In the example above it will need f=c0*x+c1 and {df/dc0,df/dc1} = {x,1}
-       instead of {df/dx} = {c0}.
-
-    2. Callback functions accept C as the first parameter, and X as the second
-
-    3. If  state  was  created  with  LSFitCreateFG(),  algorithm  needs  just
-       function   and   its   gradient,   but   if   state   was  created with
-       LSFitCreateFGH(), algorithm will need function, gradient and Hessian.
-
-       According  to  the  said  above,  there  ase  several  versions of this
-       function, which accept different sets of callbacks.
-
-       This flexibility opens way to subtle errors - you may create state with
-       LSFitCreateFGH() (optimization using Hessian), but call function  which
-       does not accept Hessian. So when algorithm will request Hessian,  there
-       will be no callback to call. In this case exception will be thrown.
-
-       Be careful to avoid such errors because there is no way to find them at
-       compile time - you can see them at runtime only.
-
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
-
-    *************************************************************************/
-    public static void lsfitfit(lsfitstate state, ndimensional_pfunc func, ndimensional_rep rep, object obj)
-    {
-        if( func==null )
-            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (func is null)");
-        while( alglib.lsfititeration(state) )
-        {
-            if( state.needf )
-            {
-                func(state.c, state.x, ref state.innerobj.f, obj);
-                continue;
-            }
-            if( state.innerobj.xupdated )
-            {
-                if( rep!=null )
-                    rep(state.innerobj.x, state.innerobj.f, obj);
-                continue;
-            }
-            throw new alglibexception("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
-        }
-    }
-
-
-    public static void lsfitfit(lsfitstate state, ndimensional_pfunc func, ndimensional_pgrad grad, ndimensional_rep rep, object obj)
-    {
-        if( func==null )
-            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (func is null)");
-        if( grad==null )
-            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (grad is null)");
-        while( alglib.lsfititeration(state) )
-        {
-            if( state.needf )
-            {
-                func(state.c, state.x, ref state.innerobj.f, obj);
-                continue;
-            }
-            if( state.needfg )
-            {
-                grad(state.c, state.x, ref state.innerobj.f, state.innerobj.g, obj);
-                continue;
-            }
-            if( state.innerobj.xupdated )
-            {
-                if( rep!=null )
-                    rep(state.innerobj.x, state.innerobj.f, obj);
-                continue;
-            }
-            throw new alglibexception("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
-        }
-    }
-
-
-    public static void lsfitfit(lsfitstate state, ndimensional_pfunc func, ndimensional_pgrad grad, ndimensional_phess hess, ndimensional_rep rep, object obj)
-    {
-        if( func==null )
-            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (func is null)");
-        if( grad==null )
-            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (grad is null)");
-        if( hess==null )
-            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (hess is null)");
-        while( alglib.lsfititeration(state) )
-        {
-            if( state.needf )
-            {
-                func(state.c, state.x, ref state.innerobj.f, obj);
-                continue;
-            }
-            if( state.needfg )
-            {
-                grad(state.c, state.x, ref state.innerobj.f, state.innerobj.g, obj);
-                continue;
-            }
-            if( state.needfgh )
-            {
-                hess(state.c, state.x, ref state.innerobj.f, state.innerobj.g, state.innerobj.h, obj);
-                continue;
-            }
-            if( state.innerobj.xupdated )
-            {
-                if( rep!=null )
-                    rep(state.innerobj.x, state.innerobj.f, obj);
-                continue;
-            }
-            throw new alglibexception("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
-        }
-    }
-
-
 
     /*************************************************************************
-    Nonlinear least squares fitting results.
-
-    Called after return from LSFitFit().
+    IDW interpolant using modified Shepard method for uniform point
+    distributions.
 
     INPUT PARAMETERS:
-        State   -   algorithm state
+        XY  -   X and Y values, array[0..N-1,0..NX].
+                First NX columns contain X-values, last column contain
+                Y-values.
+        N   -   number of nodes, N>0.
+        NX  -   space dimension, NX>=1.
+        D   -   nodal function type, either:
+                * 0     constant  model.  Just  for  demonstration only, worst
+                        model ever.
+                * 1     linear model, least squares fitting. Simpe  model  for
+                        datasets too small for quadratic models
+                * 2     quadratic  model,  least  squares  fitting. Best model
+                        available (if your dataset is large enough).
+                * -1    "fast"  linear  model,  use  with  caution!!!   It  is
+                        significantly  faster than linear/quadratic and better
+                        than constant model. But it is less robust (especially
+                        in the presence of noise).
+        NQ  -   number of points used to calculate  nodal  functions  (ignored
+                for constant models). NQ should be LARGER than:
+                * max(1.5*(1+NX),2^NX+1) for linear model,
+                * max(3/4*(NX+2)*(NX+1),2^NX+1) for quadratic model.
+                Values less than this threshold will be silently increased.
+        NW  -   number of points used to calculate weights and to interpolate.
+                Required: >=2^NX+1, values less than this  threshold  will  be
+                silently increased.
+                Recommended value: about 2*NQ
 
     OUTPUT PARAMETERS:
-        Info    -   completetion code:
-                        *  1    relative function improvement is no more than
-                                EpsF.
-                        *  2    relative step is no more than EpsX.
-                        *  4    gradient norm is no more than EpsG
-                        *  5    MaxIts steps was taken
-                        *  7    stopping conditions are too stringent,
-                                further improvement is impossible
-        C       -   array[0..K-1], solution
-        Rep     -   optimization report. Following fields are set:
-                    * Rep.TerminationType completetion code:
-                    * RMSError          rms error on the (X,Y).
-                    * AvgError          average error on the (X,Y).
-                    * AvgRelError       average relative error on the non-zero Y
-                    * MaxError          maximum error
-                                        NON-WEIGHTED ERRORS ARE CALCULATED
+        Z   -   IDW interpolant.
+
+    NOTES:
+      * best results are obtained with quadratic models, worst - with constant
+        models
+      * when N is large, NQ and NW must be significantly smaller than  N  both
+        to obtain optimal performance and to obtain optimal accuracy. In 2  or
+        3-dimensional tasks NQ=15 and NW=25 are good values to start with.
+      * NQ  and  NW  may  be  greater  than  N.  In  such  cases  they will be
+        automatically decreased.
+      * this subroutine is always succeeds (as long as correct parameters  are
+        passed).
+      * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
+        Robert J. Renka for more information on this algorithm.
+      * this subroutine assumes that point distribution is uniform at the small
+        scales.  If  it  isn't  -  for  example,  points are concentrated along
+        "lines", but "lines" distribution is uniform at the larger scale - then
+        you should use IDWBuildModifiedShepardR()
 
 
-      -- ALGLIB --
-         Copyright 17.08.2009 by Bochkanov Sergey
+      -- ALGLIB PROJECT --
+         Copyright 02.03.2010 by Bochkanov Sergey
     *************************************************************************/
-    public static void lsfitresults(lsfitstate state, out int info, out double[] c, out lsfitreport rep)
+    public static void idwbuildmodifiedshepard(double[,] xy, int n, int nx, int d, int nq, int nw, out idwinterpolant z)
     {
-        info = 0;
-        c = new double[0];
-        rep = new lsfitreport();
-        lsfit.lsfitresults(state.innerobj, ref info, ref c, rep.innerobj);
+        z = new idwinterpolant();
+        idwint.idwbuildmodifiedshepard(xy, n, nx, d, nq, nw, z.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    IDW interpolant using modified Shepard method for non-uniform datasets.
+
+    This type of model uses  constant  nodal  functions and interpolates using
+    all nodes which are closer than user-specified radius R. It  may  be  used
+    when points distribution is non-uniform at the small scale, but it  is  at
+    the distances as large as R.
+
+    INPUT PARAMETERS:
+        XY  -   X and Y values, array[0..N-1,0..NX].
+                First NX columns contain X-values, last column contain
+                Y-values.
+        N   -   number of nodes, N>0.
+        NX  -   space dimension, NX>=1.
+        R   -   radius, R>0
+
+    OUTPUT PARAMETERS:
+        Z   -   IDW interpolant.
+
+    NOTES:
+    * if there is less than IDWKMin points within  R-ball,  algorithm  selects
+      IDWKMin closest ones, so that continuity properties of  interpolant  are
+      preserved even far from points.
+
+      -- ALGLIB PROJECT --
+         Copyright 11.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void idwbuildmodifiedshepardr(double[,] xy, int n, int nx, double r, out idwinterpolant z)
+    {
+        z = new idwinterpolant();
+        idwint.idwbuildmodifiedshepardr(xy, n, nx, r, z.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    IDW model for noisy data.
+
+    This subroutine may be used to handle noisy data, i.e. data with noise  in
+    OUTPUT values.  It differs from IDWBuildModifiedShepard() in the following
+    aspects:
+    * nodal functions are not constrained to pass through  nodes:  Qi(xi)<>yi,
+      i.e. we have fitting  instead  of  interpolation.
+    * weights which are used during least  squares fitting stage are all equal
+      to 1.0 (independently of distance)
+    * "fast"-linear or constant nodal functions are not supported (either  not
+      robust enough or too rigid)
+
+    This problem require far more complex tuning than interpolation  problems.
+    Below you can find some recommendations regarding this problem:
+    * focus on tuning NQ; it controls noise reduction. As for NW, you can just
+      make it equal to 2*NQ.
+    * you can use cross-validation to determine optimal NQ.
+    * optimal NQ is a result of complex tradeoff  between  noise  level  (more
+      noise = larger NQ required) and underlying  function  complexity  (given
+      fixed N, larger NQ means smoothing of compex features in the data).  For
+      example, NQ=N will reduce noise to the minimum level possible,  but  you
+      will end up with just constant/linear/quadratic (depending on  D)  least
+      squares model for the whole dataset.
+
+    INPUT PARAMETERS:
+        XY  -   X and Y values, array[0..N-1,0..NX].
+                First NX columns contain X-values, last column contain
+                Y-values.
+        N   -   number of nodes, N>0.
+        NX  -   space dimension, NX>=1.
+        D   -   nodal function degree, either:
+                * 1     linear model, least squares fitting. Simpe  model  for
+                        datasets too small for quadratic models (or  for  very
+                        noisy problems).
+                * 2     quadratic  model,  least  squares  fitting. Best model
+                        available (if your dataset is large enough).
+        NQ  -   number of points used to calculate nodal functions.  NQ should
+                be  significantly   larger   than  1.5  times  the  number  of
+                coefficients in a nodal function to overcome effects of noise:
+                * larger than 1.5*(1+NX) for linear model,
+                * larger than 3/4*(NX+2)*(NX+1) for quadratic model.
+                Values less than this threshold will be silently increased.
+        NW  -   number of points used to calculate weights and to interpolate.
+                Required: >=2^NX+1, values less than this  threshold  will  be
+                silently increased.
+                Recommended value: about 2*NQ or larger
+
+    OUTPUT PARAMETERS:
+        Z   -   IDW interpolant.
+
+    NOTES:
+      * best results are obtained with quadratic models, linear models are not
+        recommended to use unless you are pretty sure that it is what you want
+      * this subroutine is always succeeds (as long as correct parameters  are
+        passed).
+      * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
+        Robert J. Renka for more information on this algorithm.
+
+
+      -- ALGLIB PROJECT --
+         Copyright 02.03.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void idwbuildnoisy(double[,] xy, int n, int nx, int d, int nq, int nw, out idwinterpolant z)
+    {
+        z = new idwinterpolant();
+        idwint.idwbuildnoisy(xy, n, nx, d, nq, nw, z.innerobj);
         return;
     }
 
@@ -3468,472 +1840,1927 @@ public partial class alglib
 
 
     /*************************************************************************
-    2-dimensional spline inteprolant
+    Polynomial fitting report:
+        TaskRCond       reciprocal of task's condition number
+        RMSError        RMS error
+        AvgError        average error
+        AvgRelError     average relative error (for non-zero Y[I])
+        MaxError        maximum error
     *************************************************************************/
-    public class spline2dinterpolant
+    public class polynomialfitreport
     {
         //
         // Public declarations
         //
+        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
+        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
+        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
+        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
+        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
 
-        public spline2dinterpolant()
+        public polynomialfitreport()
         {
-            _innerobj = new spline2d.spline2dinterpolant();
+            _innerobj = new lsfit.polynomialfitreport();
         }
 
         //
         // Although some of declarations below are public, you should not use them
         // They are intended for internal use only
         //
-        private spline2d.spline2dinterpolant _innerobj;
-        public spline2d.spline2dinterpolant innerobj { get { return _innerobj; } }
-        public spline2dinterpolant(spline2d.spline2dinterpolant obj)
+        private lsfit.polynomialfitreport _innerobj;
+        public lsfit.polynomialfitreport innerobj { get { return _innerobj; } }
+        public polynomialfitreport(lsfit.polynomialfitreport obj)
         {
             _innerobj = obj;
         }
     }
 
-    /*************************************************************************
-    This subroutine builds bilinear spline coefficients table.
-
-    Input parameters:
-        X   -   spline abscissas, array[0..N-1]
-        Y   -   spline ordinates, array[0..M-1]
-        F   -   function values, array[0..M-1,0..N-1]
-        M,N -   grid size, M>=2, N>=2
-
-    Output parameters:
-        C   -   spline interpolant
-
-      -- ALGLIB PROJECT --
-         Copyright 05.07.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2dbuildbilinear(double[] x, double[] y, double[,] f, int m, int n, out spline2dinterpolant c)
-    {
-        c = new spline2dinterpolant();
-        spline2d.spline2dbuildbilinear(x, y, f, m, n, c.innerobj);
-        return;
-    }
 
     /*************************************************************************
-    This subroutine builds bicubic spline coefficients table.
-
-    Input parameters:
-        X   -   spline abscissas, array[0..N-1]
-        Y   -   spline ordinates, array[0..M-1]
-        F   -   function values, array[0..M-1,0..N-1]
-        M,N -   grid size, M>=2, N>=2
-
-    Output parameters:
-        C   -   spline interpolant
-
-      -- ALGLIB PROJECT --
-         Copyright 05.07.2007 by Bochkanov Sergey
+    Barycentric fitting report:
+        RMSError        RMS error
+        AvgError        average error
+        AvgRelError     average relative error (for non-zero Y[I])
+        MaxError        maximum error
+        TaskRCond       reciprocal of task's condition number
     *************************************************************************/
-    public static void spline2dbuildbicubic(double[] x, double[] y, double[,] f, int m, int n, out spline2dinterpolant c)
-    {
-        c = new spline2dinterpolant();
-        spline2d.spline2dbuildbicubic(x, y, f, m, n, c.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    This subroutine calculates the value of the bilinear or bicubic spline  at
-    the given point X.
-
-    Input parameters:
-        C   -   coefficients table.
-                Built by BuildBilinearSpline or BuildBicubicSpline.
-        X, Y-   point
-
-    Result:
-        S(x,y)
-
-      -- ALGLIB PROJECT --
-         Copyright 05.07.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static double spline2dcalc(spline2dinterpolant c, double x, double y)
-    {
-
-        double result = spline2d.spline2dcalc(c.innerobj, x, y);
-        return result;
-    }
-
-    /*************************************************************************
-    This subroutine calculates the value of the bilinear or bicubic spline  at
-    the given point X and its derivatives.
-
-    Input parameters:
-        C   -   spline interpolant.
-        X, Y-   point
-
-    Output parameters:
-        F   -   S(x,y)
-        FX  -   dS(x,y)/dX
-        FY  -   dS(x,y)/dY
-        FXY -   d2S(x,y)/dXdY
-
-      -- ALGLIB PROJECT --
-         Copyright 05.07.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2ddiff(spline2dinterpolant c, double x, double y, out double f, out double fx, out double fy, out double fxy)
-    {
-        f = 0;
-        fx = 0;
-        fy = 0;
-        fxy = 0;
-        spline2d.spline2ddiff(c.innerobj, x, y, ref f, ref fx, ref fy, ref fxy);
-        return;
-    }
-
-    /*************************************************************************
-    This subroutine unpacks two-dimensional spline into the coefficients table
-
-    Input parameters:
-        C   -   spline interpolant.
-
-    Result:
-        M, N-   grid size (x-axis and y-axis)
-        Tbl -   coefficients table, unpacked format,
-                [0..(N-1)*(M-1)-1, 0..19].
-                For I = 0...M-2, J=0..N-2:
-                    K =  I*(N-1)+J
-                    Tbl[K,0] = X[j]
-                    Tbl[K,1] = X[j+1]
-                    Tbl[K,2] = Y[i]
-                    Tbl[K,3] = Y[i+1]
-                    Tbl[K,4] = C00
-                    Tbl[K,5] = C01
-                    Tbl[K,6] = C02
-                    Tbl[K,7] = C03
-                    Tbl[K,8] = C10
-                    Tbl[K,9] = C11
-                    ...
-                    Tbl[K,19] = C33
-                On each grid square spline is equals to:
-                    S(x) = SUM(c[i,j]*(x^i)*(y^j), i=0..3, j=0..3)
-                    t = x-x[j]
-                    u = y-y[i]
-
-      -- ALGLIB PROJECT --
-         Copyright 29.06.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2dunpack(spline2dinterpolant c, out int m, out int n, out double[,] tbl)
-    {
-        m = 0;
-        n = 0;
-        tbl = new double[0,0];
-        spline2d.spline2dunpack(c.innerobj, ref m, ref n, ref tbl);
-        return;
-    }
-
-    /*************************************************************************
-    This subroutine performs linear transformation of the spline argument.
-
-    Input parameters:
-        C       -   spline interpolant
-        AX, BX  -   transformation coefficients: x = A*t + B
-        AY, BY  -   transformation coefficients: y = A*u + B
-    Result:
-        C   -   transformed spline
-
-      -- ALGLIB PROJECT --
-         Copyright 30.06.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2dlintransxy(spline2dinterpolant c, double ax, double bx, double ay, double by)
-    {
-
-        spline2d.spline2dlintransxy(c.innerobj, ax, bx, ay, by);
-        return;
-    }
-
-    /*************************************************************************
-    This subroutine performs linear transformation of the spline.
-
-    Input parameters:
-        C   -   spline interpolant.
-        A, B-   transformation coefficients: S2(x,y) = A*S(x,y) + B
-
-    Output parameters:
-        C   -   transformed spline
-
-      -- ALGLIB PROJECT --
-         Copyright 30.06.2007 by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2dlintransf(spline2dinterpolant c, double a, double b)
-    {
-
-        spline2d.spline2dlintransf(c.innerobj, a, b);
-        return;
-    }
-
-    /*************************************************************************
-    Bicubic spline resampling
-
-    Input parameters:
-        A           -   function values at the old grid,
-                        array[0..OldHeight-1, 0..OldWidth-1]
-        OldHeight   -   old grid height, OldHeight>1
-        OldWidth    -   old grid width, OldWidth>1
-        NewHeight   -   new grid height, NewHeight>1
-        NewWidth    -   new grid width, NewWidth>1
-
-    Output parameters:
-        B           -   function values at the new grid,
-                        array[0..NewHeight-1, 0..NewWidth-1]
-
-      -- ALGLIB routine --
-         15 May, 2007
-         Copyright by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2dresamplebicubic(double[,] a, int oldheight, int oldwidth, out double[,] b, int newheight, int newwidth)
-    {
-        b = new double[0,0];
-        spline2d.spline2dresamplebicubic(a, oldheight, oldwidth, ref b, newheight, newwidth);
-        return;
-    }
-
-    /*************************************************************************
-    Bilinear spline resampling
-
-    Input parameters:
-        A           -   function values at the old grid,
-                        array[0..OldHeight-1, 0..OldWidth-1]
-        OldHeight   -   old grid height, OldHeight>1
-        OldWidth    -   old grid width, OldWidth>1
-        NewHeight   -   new grid height, NewHeight>1
-        NewWidth    -   new grid width, NewWidth>1
-
-    Output parameters:
-        B           -   function values at the new grid,
-                        array[0..NewHeight-1, 0..NewWidth-1]
-
-      -- ALGLIB routine --
-         09.07.2007
-         Copyright by Bochkanov Sergey
-    *************************************************************************/
-    public static void spline2dresamplebilinear(double[,] a, int oldheight, int oldwidth, out double[,] b, int newheight, int newwidth)
-    {
-        b = new double[0,0];
-        spline2d.spline2dresamplebilinear(a, oldheight, oldwidth, ref b, newheight, newwidth);
-        return;
-    }
-
-}
-public partial class alglib
-{
-
-
-    /*************************************************************************
-    IDW interpolant.
-    *************************************************************************/
-    public class idwinterpolant
+    public class barycentricfitreport
     {
         //
         // Public declarations
         //
+        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
+        public int dbest { get { return _innerobj.dbest; } set { _innerobj.dbest = value; } }
+        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
+        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
+        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
+        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
 
-        public idwinterpolant()
+        public barycentricfitreport()
         {
-            _innerobj = new idwint.idwinterpolant();
+            _innerobj = new lsfit.barycentricfitreport();
         }
 
         //
         // Although some of declarations below are public, you should not use them
         // They are intended for internal use only
         //
-        private idwint.idwinterpolant _innerobj;
-        public idwint.idwinterpolant innerobj { get { return _innerobj; } }
-        public idwinterpolant(idwint.idwinterpolant obj)
+        private lsfit.barycentricfitreport _innerobj;
+        public lsfit.barycentricfitreport innerobj { get { return _innerobj; } }
+        public barycentricfitreport(lsfit.barycentricfitreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    Spline fitting report:
+        RMSError        RMS error
+        AvgError        average error
+        AvgRelError     average relative error (for non-zero Y[I])
+        MaxError        maximum error
+
+    Fields  below are  filled  by   obsolete    functions   (Spline1DFitCubic,
+    Spline1DFitHermite). Modern fitting functions do NOT fill these fields:
+        TaskRCond       reciprocal of task's condition number
+    *************************************************************************/
+    public class spline1dfitreport
+    {
+        //
+        // Public declarations
+        //
+        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
+        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
+        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
+        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
+        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
+
+        public spline1dfitreport()
+        {
+            _innerobj = new lsfit.spline1dfitreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private lsfit.spline1dfitreport _innerobj;
+        public lsfit.spline1dfitreport innerobj { get { return _innerobj; } }
+        public spline1dfitreport(lsfit.spline1dfitreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    Least squares fitting report:
+        TaskRCond       reciprocal of task's condition number
+        IterationsCount number of internal iterations
+
+        RMSError        RMS error
+        AvgError        average error
+        AvgRelError     average relative error (for non-zero Y[I])
+        MaxError        maximum error
+
+        WRMSError       weighted RMS error
+    *************************************************************************/
+    public class lsfitreport
+    {
+        //
+        // Public declarations
+        //
+        public double taskrcond { get { return _innerobj.taskrcond; } set { _innerobj.taskrcond = value; } }
+        public int iterationscount { get { return _innerobj.iterationscount; } set { _innerobj.iterationscount = value; } }
+        public double rmserror { get { return _innerobj.rmserror; } set { _innerobj.rmserror = value; } }
+        public double avgerror { get { return _innerobj.avgerror; } set { _innerobj.avgerror = value; } }
+        public double avgrelerror { get { return _innerobj.avgrelerror; } set { _innerobj.avgrelerror = value; } }
+        public double maxerror { get { return _innerobj.maxerror; } set { _innerobj.maxerror = value; } }
+        public double wrmserror { get { return _innerobj.wrmserror; } set { _innerobj.wrmserror = value; } }
+
+        public lsfitreport()
+        {
+            _innerobj = new lsfit.lsfitreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private lsfit.lsfitreport _innerobj;
+        public lsfit.lsfitreport innerobj { get { return _innerobj; } }
+        public lsfitreport(lsfit.lsfitreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    Nonlinear fitter.
+
+    You should use ALGLIB functions to work with fitter.
+    Never try to access its fields directly!
+    *************************************************************************/
+    public class lsfitstate
+    {
+        //
+        // Public declarations
+        //
+        public bool needf { get { return _innerobj.needf; } set { _innerobj.needf = value; } }
+        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
+        public bool needfgh { get { return _innerobj.needfgh; } set { _innerobj.needfgh = value; } }
+        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
+        public double[] c { get { return _innerobj.c; } }
+        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
+        public double[] g { get { return _innerobj.g; } }
+        public double[,] h { get { return _innerobj.h; } }
+        public double[] x { get { return _innerobj.x; } }
+
+        public lsfitstate()
+        {
+            _innerobj = new lsfit.lsfitstate();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private lsfit.lsfitstate _innerobj;
+        public lsfit.lsfitstate innerobj { get { return _innerobj; } }
+        public lsfitstate(lsfit.lsfitstate obj)
         {
             _innerobj = obj;
         }
     }
 
     /*************************************************************************
-    IDW interpolation
+    Fitting by polynomials in barycentric form. This function provides  simple
+    unterface for unconstrained unweighted fitting. See  PolynomialFitWC()  if
+    you need constrained fitting.
+
+    Task is linear, so linear least squares solver is used. Complexity of this
+    computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+    SEE ALSO:
+        PolynomialFitWC()
 
     INPUT PARAMETERS:
-        Z   -   IDW interpolant built with one of model building
-                subroutines.
-        X   -   array[0..NX-1], interpolation point
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        N   -   number of points, N>0
+                * if given, only leading N elements of X/Y are used
+                * if not given, automatically determined from sizes of X/Y
+        M   -   number of basis functions (= polynomial_degree + 1), M>=1
 
-    Result:
-        IDW interpolant Z(X)
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearW() subroutine:
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+        P   -   interpolant in barycentric form.
+        Rep -   report, same format as in LSFitLinearW() subroutine.
+                Following fields are set:
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+    NOTES:
+        you can convert P from barycentric form  to  the  power  or  Chebyshev
+        basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
+        POLINT subpackage.
+
+      -- ALGLIB PROJECT --
+         Copyright 10.12.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void polynomialfit(double[] x, double[] y, int n, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
+    {
+        info = 0;
+        p = new barycentricinterpolant();
+        rep = new polynomialfitreport();
+        lsfit.polynomialfit(x, y, n, m, ref info, p.innerobj, rep.innerobj);
+        return;
+    }
+    public static void polynomialfit(double[] x, double[] y, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
+    {
+        int n;
+        if( (ap.len(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'polynomialfit': looks like one of arguments has wrong size");
+        info = 0;
+        p = new barycentricinterpolant();
+        rep = new polynomialfitreport();
+        n = ap.len(x);
+        lsfit.polynomialfit(x, y, n, m, ref info, p.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted  fitting by polynomials in barycentric form, with constraints  on
+    function values or first derivatives.
+
+    Small regularizing term is used when solving constrained tasks (to improve
+    stability).
+
+    Task is linear, so linear least squares solver is used. Complexity of this
+    computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+    SEE ALSO:
+        PolynomialFit()
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        W   -   weights, array[0..N-1]
+                Each summand in square  sum  of  approximation deviations from
+                given  values  is  multiplied  by  the square of corresponding
+                weight. Fill it by 1's if you don't  want  to  solve  weighted
+                task.
+        N   -   number of points, N>0.
+                * if given, only leading N elements of X/Y/W are used
+                * if not given, automatically determined from sizes of X/Y/W
+        XC  -   points where polynomial values/derivatives are constrained,
+                array[0..K-1].
+        YC  -   values of constraints, array[0..K-1]
+        DC  -   array[0..K-1], types of constraints:
+                * DC[i]=0   means that P(XC[i])=YC[i]
+                * DC[i]=1   means that P'(XC[i])=YC[i]
+                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+        K   -   number of constraints, 0<=K<M.
+                K=0 means no constraints (XC/YC/DC are not used in such cases)
+        M   -   number of basis functions (= polynomial_degree + 1), M>=1
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearW() subroutine:
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+                            -3 means inconsistent constraints
+        P   -   interpolant in barycentric form.
+        Rep -   report, same format as in LSFitLinearW() subroutine.
+                Following fields are set:
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroitine doesn't calculate task's condition number for K<>0.
+
+    NOTES:
+        you can convert P from barycentric form  to  the  power  or  Chebyshev
+        basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
+        POLINT subpackage.
+
+    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+    Setting constraints can lead  to undesired  results,  like ill-conditioned
+    behavior, or inconsistency being detected. From the other side,  it allows
+    us to improve quality of the fit. Here we summarize  our  experience  with
+    constrained regression splines:
+    * even simple constraints can be inconsistent, see  Wikipedia  article  on
+      this subject: http://en.wikipedia.org/wiki/Birkhoff_interpolation
+    * the  greater  is  M (given  fixed  constraints),  the  more chances that
+      constraints will be consistent
+    * in the general case, consistency of constraints is NOT GUARANTEED.
+    * in the one special cases, however, we can  guarantee  consistency.  This
+      case  is:  M>1  and constraints on the function values (NOT DERIVATIVES)
+
+    Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
+    can't solve your task without them. Anything beyond  special  cases  given
+    above is not guaranteed and may result in inconsistency.
+
+      -- ALGLIB PROJECT --
+         Copyright 10.12.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void polynomialfitwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
+    {
+        info = 0;
+        p = new barycentricinterpolant();
+        rep = new polynomialfitreport();
+        lsfit.polynomialfitwc(x, y, w, n, xc, yc, dc, k, m, ref info, p.innerobj, rep.innerobj);
+        return;
+    }
+    public static void polynomialfitwc(double[] x, double[] y, double[] w, double[] xc, double[] yc, int[] dc, int m, out int info, out barycentricinterpolant p, out polynomialfitreport rep)
+    {
+        int n;
+        int k;
+        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'polynomialfitwc': looks like one of arguments has wrong size");
+        if( (ap.len(xc)!=ap.len(yc)) || (ap.len(xc)!=ap.len(dc)))
+            throw new alglibexception("Error while calling 'polynomialfitwc': looks like one of arguments has wrong size");
+        info = 0;
+        p = new barycentricinterpolant();
+        rep = new polynomialfitreport();
+        n = ap.len(x);
+        k = ap.len(xc);
+        lsfit.polynomialfitwc(x, y, w, n, xc, yc, dc, k, m, ref info, p.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weghted rational least  squares  fitting  using  Floater-Hormann  rational
+    functions  with  optimal  D  chosen  from  [0,9],  with  constraints   and
+    individual weights.
+
+    Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
+    functions. Different values of D are tried, optimal D (least WEIGHTED root
+    mean square error) is chosen.  Task  is  linear,  so  linear least squares
+    solver  is  used.  Complexity  of  this  computational  scheme is O(N*M^2)
+    (mostly dominated by the least squares solver).
+
+    SEE ALSO
+    * BarycentricFitFloaterHormann(), "lightweight" fitting without invididual
+      weights and constraints.
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        W   -   weights, array[0..N-1]
+                Each summand in square  sum  of  approximation deviations from
+                given  values  is  multiplied  by  the square of corresponding
+                weight. Fill it by 1's if you don't  want  to  solve  weighted
+                task.
+        N   -   number of points, N>0.
+        XC  -   points where function values/derivatives are constrained,
+                array[0..K-1].
+        YC  -   values of constraints, array[0..K-1]
+        DC  -   array[0..K-1], types of constraints:
+                * DC[i]=0   means that S(XC[i])=YC[i]
+                * DC[i]=1   means that S'(XC[i])=YC[i]
+                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+        K   -   number of constraints, 0<=K<M.
+                K=0 means no constraints (XC/YC/DC are not used in such cases)
+        M   -   number of basis functions ( = number_of_nodes), M>=2.
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearWC() subroutine.
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+                            -3 means inconsistent constraints
+                            -1 means another errors in parameters passed
+                               (N<=0, for example)
+        B   -   barycentric interpolant.
+        Rep -   report, same format as in LSFitLinearWC() subroutine.
+                Following fields are set:
+                * DBest         best value of the D parameter
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroutine doesn't calculate task's condition number for K<>0.
+
+    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+    Setting constraints can lead  to undesired  results,  like ill-conditioned
+    behavior, or inconsistency being detected. From the other side,  it allows
+    us to improve quality of the fit. Here we summarize  our  experience  with
+    constrained barycentric interpolants:
+    * excessive  constraints  can  be  inconsistent.   Floater-Hormann   basis
+      functions aren't as flexible as splines (although they are very smooth).
+    * the more evenly constraints are spread across [min(x),max(x)],  the more
+      chances that they will be consistent
+    * the  greater  is  M (given  fixed  constraints),  the  more chances that
+      constraints will be consistent
+    * in the general case, consistency of constraints IS NOT GUARANTEED.
+    * in the several special cases, however, we CAN guarantee consistency.
+    * one of this cases is constraints on the function  VALUES at the interval
+      boundaries. Note that consustency of the  constraints  on  the  function
+      DERIVATIVES is NOT guaranteed (you can use in such cases  cubic  splines
+      which are more flexible).
+    * another  special  case  is ONE constraint on the function value (OR, but
+      not AND, derivative) anywhere in the interval
+
+    Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
+    can't solve your task without them. Anything beyond  special  cases  given
+    above is not guaranteed and may result in inconsistency.
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void barycentricfitfloaterhormannwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out barycentricinterpolant b, out barycentricfitreport rep)
+    {
+        info = 0;
+        b = new barycentricinterpolant();
+        rep = new barycentricfitreport();
+        lsfit.barycentricfitfloaterhormannwc(x, y, w, n, xc, yc, dc, k, m, ref info, b.innerobj, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Rational least squares fitting using  Floater-Hormann  rational  functions
+    with optimal D chosen from [0,9].
+
+    Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
+    functions. Different values of D are tried, optimal  D  (least  root  mean
+    square error) is chosen.  Task  is  linear, so linear least squares solver
+    is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
+    dominated by the least squares solver).
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        N   -   number of points, N>0.
+        M   -   number of basis functions ( = number_of_nodes), M>=2.
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearWC() subroutine.
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+                            -3 means inconsistent constraints
+        B   -   barycentric interpolant.
+        Rep -   report, same format as in LSFitLinearWC() subroutine.
+                Following fields are set:
+                * DBest         best value of the D parameter
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void barycentricfitfloaterhormann(double[] x, double[] y, int n, int m, out int info, out barycentricinterpolant b, out barycentricfitreport rep)
+    {
+        info = 0;
+        b = new barycentricinterpolant();
+        rep = new barycentricfitreport();
+        lsfit.barycentricfitfloaterhormann(x, y, n, m, ref info, b.innerobj, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Rational least squares fitting using  Floater-Hormann  rational  functions
+    with optimal D chosen from [0,9].
+
+    Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
+    functions. Different values of D are tried, optimal  D  (least  root  mean
+    square error) is chosen.  Task  is  linear, so linear least squares solver
+    is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
+    dominated by the least squares solver).
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        N   -   number of points, N>0.
+        M   -   number of basis functions ( = number_of_nodes), M>=2.
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearWC() subroutine.
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+                            -3 means inconsistent constraints
+        B   -   barycentric interpolant.
+        Rep -   report, same format as in LSFitLinearWC() subroutine.
+                Following fields are set:
+                * DBest         best value of the D parameter
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        lsfit.spline1dfitpenalized(x, y, n, m, rho, ref info, s.innerobj, rep.innerobj);
+        return;
+    }
+    public static void spline1dfitpenalized(double[] x, double[] y, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        int n;
+        if( (ap.len(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        n = ap.len(x);
+        lsfit.spline1dfitpenalized(x, y, n, m, rho, ref info, s.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted fitting by penalized cubic spline.
+
+    Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
+    basis functions. Basis functions are cubic splines with  natural  boundary
+    conditions. Problem is regularized by  adding non-linearity penalty to the
+    usual least squares penalty function:
+
+        S(x) = arg min { LS + P }, where
+        LS   = SUM { w[i]^2*(y[i] - S(x[i]))^2 } - least squares penalty
+        P    = C*10^rho*integral{ S''(x)^2*dx } - non-linearity penalty
+        rho  - tunable constant given by user
+        C    - automatically determined scale parameter,
+               makes penalty invariant with respect to scaling of X, Y, W.
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        W   -   weights, array[0..N-1]
+                Each summand in square  sum  of  approximation deviations from
+                given  values  is  multiplied  by  the square of corresponding
+                weight. Fill it by 1's if you don't  want  to  solve  weighted
+                problem.
+        N   -   number of points (optional):
+                * N>0
+                * if given, only first N elements of X/Y/W are processed
+                * if not given, automatically determined from X/Y/W sizes
+        M   -   number of basis functions ( = number_of_nodes), M>=4.
+        Rho -   regularization  constant  passed   by   user.   It   penalizes
+                nonlinearity in the regression spline. It  is  logarithmically
+                scaled,  i.e.  actual  value  of  regularization  constant  is
+                calculated as 10^Rho. It is automatically scaled so that:
+                * Rho=2.0 corresponds to moderate amount of nonlinearity
+                * generally, it should be somewhere in the [-8.0,+8.0]
+                If you do not want to penalize nonlineary,
+                pass small Rho. Values as low as -15 should work.
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearWC() subroutine.
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD or
+                               Cholesky decomposition; problem may be
+                               too ill-conditioned (very rare)
+        S   -   spline interpolant.
+        Rep -   Following fields are set:
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroitine doesn't calculate task's condition number for K<>0.
+
+    NOTE 1: additional nodes are added to the spline outside  of  the  fitting
+    interval to force linearity when x<min(x,xc) or x>max(x,xc).  It  is  done
+    for consistency - we penalize non-linearity  at [min(x,xc),max(x,xc)],  so
+    it is natural to force linearity outside of this interval.
+
+    NOTE 2: function automatically sorts points,  so  caller may pass unsorted
+    array.
+
+      -- ALGLIB PROJECT --
+         Copyright 19.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        lsfit.spline1dfitpenalizedw(x, y, w, n, m, rho, ref info, s.innerobj, rep.innerobj);
+        return;
+    }
+    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        int n;
+        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        n = ap.len(x);
+        lsfit.spline1dfitpenalizedw(x, y, w, n, m, rho, ref info, s.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted fitting by cubic  spline,  with constraints on function values or
+    derivatives.
+
+    Equidistant grid with M-2 nodes on [min(x,xc),max(x,xc)] is  used to build
+    basis functions. Basis functions are cubic splines with continuous  second
+    derivatives  and  non-fixed first  derivatives  at  interval  ends.  Small
+    regularizing term is used  when  solving  constrained  tasks  (to  improve
+    stability).
+
+    Task is linear, so linear least squares solver is used. Complexity of this
+    computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+    SEE ALSO
+        Spline1DFitHermiteWC()  -   fitting by Hermite splines (more flexible,
+                                    less smooth)
+        Spline1DFitCubic()      -   "lightweight" fitting  by  cubic  splines,
+                                    without invididual weights and constraints
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        W   -   weights, array[0..N-1]
+                Each summand in square  sum  of  approximation deviations from
+                given  values  is  multiplied  by  the square of corresponding
+                weight. Fill it by 1's if you don't  want  to  solve  weighted
+                task.
+        N   -   number of points (optional):
+                * N>0
+                * if given, only first N elements of X/Y/W are processed
+                * if not given, automatically determined from X/Y/W sizes
+        XC  -   points where spline values/derivatives are constrained,
+                array[0..K-1].
+        YC  -   values of constraints, array[0..K-1]
+        DC  -   array[0..K-1], types of constraints:
+                * DC[i]=0   means that S(XC[i])=YC[i]
+                * DC[i]=1   means that S'(XC[i])=YC[i]
+                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+        K   -   number of constraints (optional):
+                * 0<=K<M.
+                * K=0 means no constraints (XC/YC/DC are not used)
+                * if given, only first K elements of XC/YC/DC are used
+                * if not given, automatically determined from XC/YC/DC
+        M   -   number of basis functions ( = number_of_nodes+2), M>=4.
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearWC() subroutine.
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+                            -3 means inconsistent constraints
+        S   -   spline interpolant.
+        Rep -   report, same format as in LSFitLinearWC() subroutine.
+                Following fields are set:
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroitine doesn't calculate task's condition number for K<>0.
+
+
+    ORDER OF POINTS
+
+    Subroutine automatically sorts points, so caller may pass unsorted array.
+
+    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+    Setting constraints can lead  to undesired  results,  like ill-conditioned
+    behavior, or inconsistency being detected. From the other side,  it allows
+    us to improve quality of the fit. Here we summarize  our  experience  with
+    constrained regression splines:
+    * excessive constraints can be inconsistent. Splines are  piecewise  cubic
+      functions, and it is easy to create an example, where  large  number  of
+      constraints  concentrated  in  small  area will result in inconsistency.
+      Just because spline is not flexible enough to satisfy all of  them.  And
+      same constraints spread across the  [min(x),max(x)]  will  be  perfectly
+      consistent.
+    * the more evenly constraints are spread across [min(x),max(x)],  the more
+      chances that they will be consistent
+    * the  greater  is  M (given  fixed  constraints),  the  more chances that
+      constraints will be consistent
+    * in the general case, consistency of constraints IS NOT GUARANTEED.
+    * in the several special cases, however, we CAN guarantee consistency.
+    * one of this cases is constraints  on  the  function  values  AND/OR  its
+      derivatives at the interval boundaries.
+    * another  special  case  is ONE constraint on the function value (OR, but
+      not AND, derivative) anywhere in the interval
+
+    Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
+    can't solve your task without them. Anything beyond  special  cases  given
+    above is not guaranteed and may result in inconsistency.
+
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline1dfitcubicwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        lsfit.spline1dfitcubicwc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
+        return;
+    }
+    public static void spline1dfitcubicwc(double[] x, double[] y, double[] w, double[] xc, double[] yc, int[] dc, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        int n;
+        int k;
+        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'spline1dfitcubicwc': looks like one of arguments has wrong size");
+        if( (ap.len(xc)!=ap.len(yc)) || (ap.len(xc)!=ap.len(dc)))
+            throw new alglibexception("Error while calling 'spline1dfitcubicwc': looks like one of arguments has wrong size");
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        n = ap.len(x);
+        k = ap.len(xc);
+        lsfit.spline1dfitcubicwc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted  fitting  by Hermite spline,  with constraints on function values
+    or first derivatives.
+
+    Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
+    basis functions. Basis functions are Hermite splines.  Small  regularizing
+    term is used when solving constrained tasks (to improve stability).
+
+    Task is linear, so linear least squares solver is used. Complexity of this
+    computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+    SEE ALSO
+        Spline1DFitCubicWC()    -   fitting by Cubic splines (less flexible,
+                                    more smooth)
+        Spline1DFitHermite()    -   "lightweight" Hermite fitting, without
+                                    invididual weights and constraints
+
+    INPUT PARAMETERS:
+        X   -   points, array[0..N-1].
+        Y   -   function values, array[0..N-1].
+        W   -   weights, array[0..N-1]
+                Each summand in square  sum  of  approximation deviations from
+                given  values  is  multiplied  by  the square of corresponding
+                weight. Fill it by 1's if you don't  want  to  solve  weighted
+                task.
+        N   -   number of points (optional):
+                * N>0
+                * if given, only first N elements of X/Y/W are processed
+                * if not given, automatically determined from X/Y/W sizes
+        XC  -   points where spline values/derivatives are constrained,
+                array[0..K-1].
+        YC  -   values of constraints, array[0..K-1]
+        DC  -   array[0..K-1], types of constraints:
+                * DC[i]=0   means that S(XC[i])=YC[i]
+                * DC[i]=1   means that S'(XC[i])=YC[i]
+                SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+        K   -   number of constraints (optional):
+                * 0<=K<M.
+                * K=0 means no constraints (XC/YC/DC are not used)
+                * if given, only first K elements of XC/YC/DC are used
+                * if not given, automatically determined from XC/YC/DC
+        M   -   number of basis functions (= 2 * number of nodes),
+                M>=4,
+                M IS EVEN!
+
+    OUTPUT PARAMETERS:
+        Info-   same format as in LSFitLinearW() subroutine:
+                * Info>0    task is solved
+                * Info<=0   an error occured:
+                            -4 means inconvergence of internal SVD
+                            -3 means inconsistent constraints
+                            -2 means odd M was passed (which is not supported)
+                            -1 means another errors in parameters passed
+                               (N<=0, for example)
+        S   -   spline interpolant.
+        Rep -   report, same format as in LSFitLinearW() subroutine.
+                Following fields are set:
+                * RMSError      rms error on the (X,Y).
+                * AvgError      average error on the (X,Y).
+                * AvgRelError   average relative error on the non-zero Y
+                * MaxError      maximum error
+                                NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroitine doesn't calculate task's condition number for K<>0.
+
+    IMPORTANT:
+        this subroitine supports only even M's
+
+
+    ORDER OF POINTS
+
+    Subroutine automatically sorts points, so caller may pass unsorted array.
+
+    SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+    Setting constraints can lead  to undesired  results,  like ill-conditioned
+    behavior, or inconsistency being detected. From the other side,  it allows
+    us to improve quality of the fit. Here we summarize  our  experience  with
+    constrained regression splines:
+    * excessive constraints can be inconsistent. Splines are  piecewise  cubic
+      functions, and it is easy to create an example, where  large  number  of
+      constraints  concentrated  in  small  area will result in inconsistency.
+      Just because spline is not flexible enough to satisfy all of  them.  And
+      same constraints spread across the  [min(x),max(x)]  will  be  perfectly
+      consistent.
+    * the more evenly constraints are spread across [min(x),max(x)],  the more
+      chances that they will be consistent
+    * the  greater  is  M (given  fixed  constraints),  the  more chances that
+      constraints will be consistent
+    * in the general case, consistency of constraints is NOT GUARANTEED.
+    * in the several special cases, however, we can guarantee consistency.
+    * one of this cases is  M>=4  and   constraints  on   the  function  value
+      (AND/OR its derivative) at the interval boundaries.
+    * another special case is M>=4  and  ONE  constraint on the function value
+      (OR, BUT NOT AND, derivative) anywhere in [min(x),max(x)]
+
+    Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
+    can't solve your task without them. Anything beyond  special  cases  given
+    above is not guaranteed and may result in inconsistency.
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline1dfithermitewc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        lsfit.spline1dfithermitewc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
+        return;
+    }
+    public static void spline1dfithermitewc(double[] x, double[] y, double[] w, double[] xc, double[] yc, int[] dc, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        int n;
+        int k;
+        if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'spline1dfithermitewc': looks like one of arguments has wrong size");
+        if( (ap.len(xc)!=ap.len(yc)) || (ap.len(xc)!=ap.len(dc)))
+            throw new alglibexception("Error while calling 'spline1dfithermitewc': looks like one of arguments has wrong size");
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        n = ap.len(x);
+        k = ap.len(xc);
+        lsfit.spline1dfithermitewc(x, y, w, n, xc, yc, dc, k, m, ref info, s.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Least squares fitting by cubic spline.
+
+    This subroutine is "lightweight" alternative for more complex and feature-
+    rich Spline1DFitCubicWC().  See  Spline1DFitCubicWC() for more information
+    about subroutine parameters (we don't duplicate it here because of length)
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline1dfitcubic(double[] x, double[] y, int n, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        lsfit.spline1dfitcubic(x, y, n, m, ref info, s.innerobj, rep.innerobj);
+        return;
+    }
+    public static void spline1dfitcubic(double[] x, double[] y, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        int n;
+        if( (ap.len(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'spline1dfitcubic': looks like one of arguments has wrong size");
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        n = ap.len(x);
+        lsfit.spline1dfitcubic(x, y, n, m, ref info, s.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Least squares fitting by Hermite spline.
+
+    This subroutine is "lightweight" alternative for more complex and feature-
+    rich Spline1DFitHermiteWC().  See Spline1DFitHermiteWC()  description  for
+    more information about subroutine parameters (we don't duplicate  it  here
+    because of length).
+
+      -- ALGLIB PROJECT --
+         Copyright 18.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline1dfithermite(double[] x, double[] y, int n, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        lsfit.spline1dfithermite(x, y, n, m, ref info, s.innerobj, rep.innerobj);
+        return;
+    }
+    public static void spline1dfithermite(double[] x, double[] y, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+        int n;
+        if( (ap.len(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'spline1dfithermite': looks like one of arguments has wrong size");
+        info = 0;
+        s = new spline1dinterpolant();
+        rep = new spline1dfitreport();
+        n = ap.len(x);
+        lsfit.spline1dfithermite(x, y, n, m, ref info, s.innerobj, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted linear least squares fitting.
+
+    QR decomposition is used to reduce task to MxM, then triangular solver  or
+    SVD-based solver is used depending on condition number of the  system.  It
+    allows to maximize speed and retain decent accuracy.
+
+    INPUT PARAMETERS:
+        Y       -   array[0..N-1] Function values in  N  points.
+        W       -   array[0..N-1]  Weights  corresponding to function  values.
+                    Each summand in square  sum  of  approximation  deviations
+                    from  given  values  is  multiplied  by  the   square   of
+                    corresponding weight.
+        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                    FMatrix[I, J] - value of J-th basis function in I-th point.
+        N       -   number of points used. N>=1.
+        M       -   number of basis functions, M>=1.
+
+    OUTPUT PARAMETERS:
+        Info    -   error code:
+                    * -4    internal SVD decomposition subroutine failed (very
+                            rare and for degenerate systems only)
+                    * -1    incorrect N/M were specified
+                    *  1    task is solved
+        C       -   decomposition coefficients, array[0..M-1]
+        Rep     -   fitting report. Following fields are set:
+                    * Rep.TaskRCond     reciprocal of condition number
+                    * RMSError          rms error on the (X,Y).
+                    * AvgError          average error on the (X,Y).
+                    * AvgRelError       average relative error on the non-zero Y
+                    * MaxError          maximum error
+                                        NON-WEIGHTED ERRORS ARE CALCULATED
 
       -- ALGLIB --
-         Copyright 02.03.2010 by Bochkanov Sergey
+         Copyright 17.08.2009 by Bochkanov Sergey
     *************************************************************************/
-    public static double idwcalc(idwinterpolant z, double[] x)
+    public static void lsfitlinearw(double[] y, double[] w, double[,] fmatrix, int n, int m, out int info, out double[] c, out lsfitreport rep)
+    {
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        lsfit.lsfitlinearw(y, w, fmatrix, n, m, ref info, ref c, rep.innerobj);
+        return;
+    }
+    public static void lsfitlinearw(double[] y, double[] w, double[,] fmatrix, out int info, out double[] c, out lsfitreport rep)
+    {
+        int n;
+        int m;
+        if( (ap.len(y)!=ap.len(w)) || (ap.len(y)!=ap.rows(fmatrix)))
+            throw new alglibexception("Error while calling 'lsfitlinearw': looks like one of arguments has wrong size");
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        n = ap.len(y);
+        m = ap.cols(fmatrix);
+        lsfit.lsfitlinearw(y, w, fmatrix, n, m, ref info, ref c, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted constained linear least squares fitting.
+
+    This  is  variation  of LSFitLinearW(), which searchs for min|A*x=b| given
+    that  K  additional  constaints  C*x=bc are satisfied. It reduces original
+    task to modified one: min|B*y-d| WITHOUT constraints,  then LSFitLinearW()
+    is called.
+
+    INPUT PARAMETERS:
+        Y       -   array[0..N-1] Function values in  N  points.
+        W       -   array[0..N-1]  Weights  corresponding to function  values.
+                    Each summand in square  sum  of  approximation  deviations
+                    from  given  values  is  multiplied  by  the   square   of
+                    corresponding weight.
+        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                    FMatrix[I,J] - value of J-th basis function in I-th point.
+        CMatrix -   a table of constaints, array[0..K-1,0..M].
+                    I-th row of CMatrix corresponds to I-th linear constraint:
+                    CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
+        N       -   number of points used. N>=1.
+        M       -   number of basis functions, M>=1.
+        K       -   number of constraints, 0 <= K < M
+                    K=0 corresponds to absence of constraints.
+
+    OUTPUT PARAMETERS:
+        Info    -   error code:
+                    * -4    internal SVD decomposition subroutine failed (very
+                            rare and for degenerate systems only)
+                    * -3    either   too   many  constraints  (M   or   more),
+                            degenerate  constraints   (some   constraints  are
+                            repetead twice) or inconsistent  constraints  were
+                            specified.
+                    *  1    task is solved
+        C       -   decomposition coefficients, array[0..M-1]
+        Rep     -   fitting report. Following fields are set:
+                    * RMSError          rms error on the (X,Y).
+                    * AvgError          average error on the (X,Y).
+                    * AvgRelError       average relative error on the non-zero Y
+                    * MaxError          maximum error
+                                        NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroitine doesn't calculate task's condition number for K<>0.
+
+      -- ALGLIB --
+         Copyright 07.09.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitlinearwc(double[] y, double[] w, double[,] fmatrix, double[,] cmatrix, int n, int m, int k, out int info, out double[] c, out lsfitreport rep)
+    {
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        lsfit.lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
+        return;
+    }
+    public static void lsfitlinearwc(double[] y, double[] w, double[,] fmatrix, double[,] cmatrix, out int info, out double[] c, out lsfitreport rep)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.len(y)!=ap.len(w)) || (ap.len(y)!=ap.rows(fmatrix)))
+            throw new alglibexception("Error while calling 'lsfitlinearwc': looks like one of arguments has wrong size");
+        if( (ap.cols(fmatrix)!=ap.cols(cmatrix)-1))
+            throw new alglibexception("Error while calling 'lsfitlinearwc': looks like one of arguments has wrong size");
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        n = ap.len(y);
+        m = ap.cols(fmatrix);
+        k = ap.rows(cmatrix);
+        lsfit.lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Linear least squares fitting.
+
+    QR decomposition is used to reduce task to MxM, then triangular solver  or
+    SVD-based solver is used depending on condition number of the  system.  It
+    allows to maximize speed and retain decent accuracy.
+
+    INPUT PARAMETERS:
+        Y       -   array[0..N-1] Function values in  N  points.
+        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                    FMatrix[I, J] - value of J-th basis function in I-th point.
+        N       -   number of points used. N>=1.
+        M       -   number of basis functions, M>=1.
+
+    OUTPUT PARAMETERS:
+        Info    -   error code:
+                    * -4    internal SVD decomposition subroutine failed (very
+                            rare and for degenerate systems only)
+                    *  1    task is solved
+        C       -   decomposition coefficients, array[0..M-1]
+        Rep     -   fitting report. Following fields are set:
+                    * Rep.TaskRCond     reciprocal of condition number
+                    * RMSError          rms error on the (X,Y).
+                    * AvgError          average error on the (X,Y).
+                    * AvgRelError       average relative error on the non-zero Y
+                    * MaxError          maximum error
+                                        NON-WEIGHTED ERRORS ARE CALCULATED
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitlinear(double[] y, double[,] fmatrix, int n, int m, out int info, out double[] c, out lsfitreport rep)
+    {
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        lsfit.lsfitlinear(y, fmatrix, n, m, ref info, ref c, rep.innerobj);
+        return;
+    }
+    public static void lsfitlinear(double[] y, double[,] fmatrix, out int info, out double[] c, out lsfitreport rep)
+    {
+        int n;
+        int m;
+        if( (ap.len(y)!=ap.rows(fmatrix)))
+            throw new alglibexception("Error while calling 'lsfitlinear': looks like one of arguments has wrong size");
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        n = ap.len(y);
+        m = ap.cols(fmatrix);
+        lsfit.lsfitlinear(y, fmatrix, n, m, ref info, ref c, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Constained linear least squares fitting.
+
+    This  is  variation  of LSFitLinear(),  which searchs for min|A*x=b| given
+    that  K  additional  constaints  C*x=bc are satisfied. It reduces original
+    task to modified one: min|B*y-d| WITHOUT constraints,  then  LSFitLinear()
+    is called.
+
+    INPUT PARAMETERS:
+        Y       -   array[0..N-1] Function values in  N  points.
+        FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                    FMatrix[I,J] - value of J-th basis function in I-th point.
+        CMatrix -   a table of constaints, array[0..K-1,0..M].
+                    I-th row of CMatrix corresponds to I-th linear constraint:
+                    CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
+        N       -   number of points used. N>=1.
+        M       -   number of basis functions, M>=1.
+        K       -   number of constraints, 0 <= K < M
+                    K=0 corresponds to absence of constraints.
+
+    OUTPUT PARAMETERS:
+        Info    -   error code:
+                    * -4    internal SVD decomposition subroutine failed (very
+                            rare and for degenerate systems only)
+                    * -3    either   too   many  constraints  (M   or   more),
+                            degenerate  constraints   (some   constraints  are
+                            repetead twice) or inconsistent  constraints  were
+                            specified.
+                    *  1    task is solved
+        C       -   decomposition coefficients, array[0..M-1]
+        Rep     -   fitting report. Following fields are set:
+                    * RMSError          rms error on the (X,Y).
+                    * AvgError          average error on the (X,Y).
+                    * AvgRelError       average relative error on the non-zero Y
+                    * MaxError          maximum error
+                                        NON-WEIGHTED ERRORS ARE CALCULATED
+
+    IMPORTANT:
+        this subroitine doesn't calculate task's condition number for K<>0.
+
+      -- ALGLIB --
+         Copyright 07.09.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitlinearc(double[] y, double[,] fmatrix, double[,] cmatrix, int n, int m, int k, out int info, out double[] c, out lsfitreport rep)
+    {
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        lsfit.lsfitlinearc(y, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
+        return;
+    }
+    public static void lsfitlinearc(double[] y, double[,] fmatrix, double[,] cmatrix, out int info, out double[] c, out lsfitreport rep)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.len(y)!=ap.rows(fmatrix)))
+            throw new alglibexception("Error while calling 'lsfitlinearc': looks like one of arguments has wrong size");
+        if( (ap.cols(fmatrix)!=ap.cols(cmatrix)-1))
+            throw new alglibexception("Error while calling 'lsfitlinearc': looks like one of arguments has wrong size");
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        n = ap.len(y);
+        m = ap.cols(fmatrix);
+        k = ap.rows(cmatrix);
+        lsfit.lsfitlinearc(y, fmatrix, cmatrix, n, m, k, ref info, ref c, rep.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted nonlinear least squares fitting using function values only.
+
+    Combination of numerical differentiation and secant updates is used to
+    obtain function Jacobian.
+
+    Nonlinear task min(F(c)) is solved, where
+
+        F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
+
+        * N is a number of points,
+        * M is a dimension of a space points belong to,
+        * K is a dimension of a space of parameters being fitted,
+        * w is an N-dimensional vector of weight coefficients,
+        * x is a set of N points, each of them is an M-dimensional vector,
+        * c is a K-dimensional vector of parameters being fitted
+
+    This subroutine uses only f(c,x[i]).
+
+    INPUT PARAMETERS:
+        X       -   array[0..N-1,0..M-1], points (one row = one point)
+        Y       -   array[0..N-1], function values.
+        W       -   weights, array[0..N-1]
+        C       -   array[0..K-1], initial approximation to the solution,
+        N       -   number of points, N>1
+        M       -   dimension of space
+        K       -   number of parameters being fitted
+        DiffStep-   numerical differentiation step;
+                    should not be very small or large;
+                    large = loss of accuracy
+                    small = growth of round-off errors
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 18.10.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitcreatewf(double[,] x, double[] y, double[] w, double[] c, int n, int m, int k, double diffstep, out lsfitstate state)
+    {
+        state = new lsfitstate();
+        lsfit.lsfitcreatewf(x, y, w, c, n, m, k, diffstep, state.innerobj);
+        return;
+    }
+    public static void lsfitcreatewf(double[,] x, double[] y, double[] w, double[] c, double diffstep, out lsfitstate state)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.rows(x)!=ap.len(y)) || (ap.rows(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'lsfitcreatewf': looks like one of arguments has wrong size");
+        state = new lsfitstate();
+        n = ap.rows(x);
+        m = ap.cols(x);
+        k = ap.len(c);
+        lsfit.lsfitcreatewf(x, y, w, c, n, m, k, diffstep, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Nonlinear least squares fitting using function values only.
+
+    Combination of numerical differentiation and secant updates is used to
+    obtain function Jacobian.
+
+    Nonlinear task min(F(c)) is solved, where
+
+        F(c) = (f(c,x[0])-y[0])^2 + ... + (f(c,x[n-1])-y[n-1])^2,
+
+        * N is a number of points,
+        * M is a dimension of a space points belong to,
+        * K is a dimension of a space of parameters being fitted,
+        * w is an N-dimensional vector of weight coefficients,
+        * x is a set of N points, each of them is an M-dimensional vector,
+        * c is a K-dimensional vector of parameters being fitted
+
+    This subroutine uses only f(c,x[i]).
+
+    INPUT PARAMETERS:
+        X       -   array[0..N-1,0..M-1], points (one row = one point)
+        Y       -   array[0..N-1], function values.
+        C       -   array[0..K-1], initial approximation to the solution,
+        N       -   number of points, N>1
+        M       -   dimension of space
+        K       -   number of parameters being fitted
+        DiffStep-   numerical differentiation step;
+                    should not be very small or large;
+                    large = loss of accuracy
+                    small = growth of round-off errors
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 18.10.2008 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitcreatef(double[,] x, double[] y, double[] c, int n, int m, int k, double diffstep, out lsfitstate state)
+    {
+        state = new lsfitstate();
+        lsfit.lsfitcreatef(x, y, c, n, m, k, diffstep, state.innerobj);
+        return;
+    }
+    public static void lsfitcreatef(double[,] x, double[] y, double[] c, double diffstep, out lsfitstate state)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.rows(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'lsfitcreatef': looks like one of arguments has wrong size");
+        state = new lsfitstate();
+        n = ap.rows(x);
+        m = ap.cols(x);
+        k = ap.len(c);
+        lsfit.lsfitcreatef(x, y, c, n, m, k, diffstep, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted nonlinear least squares fitting using gradient only.
+
+    Nonlinear task min(F(c)) is solved, where
+
+        F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
+
+        * N is a number of points,
+        * M is a dimension of a space points belong to,
+        * K is a dimension of a space of parameters being fitted,
+        * w is an N-dimensional vector of weight coefficients,
+        * x is a set of N points, each of them is an M-dimensional vector,
+        * c is a K-dimensional vector of parameters being fitted
+
+    This subroutine uses only f(c,x[i]) and its gradient.
+
+    INPUT PARAMETERS:
+        X       -   array[0..N-1,0..M-1], points (one row = one point)
+        Y       -   array[0..N-1], function values.
+        W       -   weights, array[0..N-1]
+        C       -   array[0..K-1], initial approximation to the solution,
+        N       -   number of points, N>1
+        M       -   dimension of space
+        K       -   number of parameters being fitted
+        CheapFG -   boolean flag, which is:
+                    * True  if both function and gradient calculation complexity
+                            are less than O(M^2).  An improved  algorithm  can
+                            be  used  which corresponds  to  FGJ  scheme  from
+                            MINLM unit.
+                    * False otherwise.
+                            Standard Jacibian-bases  Levenberg-Marquardt  algo
+                            will be used (FJ scheme).
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+    See also:
+        LSFitResults
+        LSFitCreateFG (fitting without weights)
+        LSFitCreateWFGH (fitting using Hessian)
+        LSFitCreateFGH (fitting using Hessian, without weights)
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitcreatewfg(double[,] x, double[] y, double[] w, double[] c, int n, int m, int k, bool cheapfg, out lsfitstate state)
+    {
+        state = new lsfitstate();
+        lsfit.lsfitcreatewfg(x, y, w, c, n, m, k, cheapfg, state.innerobj);
+        return;
+    }
+    public static void lsfitcreatewfg(double[,] x, double[] y, double[] w, double[] c, bool cheapfg, out lsfitstate state)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.rows(x)!=ap.len(y)) || (ap.rows(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'lsfitcreatewfg': looks like one of arguments has wrong size");
+        state = new lsfitstate();
+        n = ap.rows(x);
+        m = ap.cols(x);
+        k = ap.len(c);
+        lsfit.lsfitcreatewfg(x, y, w, c, n, m, k, cheapfg, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Nonlinear least squares fitting using gradient only, without individual
+    weights.
+
+    Nonlinear task min(F(c)) is solved, where
+
+        F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
+
+        * N is a number of points,
+        * M is a dimension of a space points belong to,
+        * K is a dimension of a space of parameters being fitted,
+        * x is a set of N points, each of them is an M-dimensional vector,
+        * c is a K-dimensional vector of parameters being fitted
+
+    This subroutine uses only f(c,x[i]) and its gradient.
+
+    INPUT PARAMETERS:
+        X       -   array[0..N-1,0..M-1], points (one row = one point)
+        Y       -   array[0..N-1], function values.
+        C       -   array[0..K-1], initial approximation to the solution,
+        N       -   number of points, N>1
+        M       -   dimension of space
+        K       -   number of parameters being fitted
+        CheapFG -   boolean flag, which is:
+                    * True  if both function and gradient calculation complexity
+                            are less than O(M^2).  An improved  algorithm  can
+                            be  used  which corresponds  to  FGJ  scheme  from
+                            MINLM unit.
+                    * False otherwise.
+                            Standard Jacibian-bases  Levenberg-Marquardt  algo
+                            will be used (FJ scheme).
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitcreatefg(double[,] x, double[] y, double[] c, int n, int m, int k, bool cheapfg, out lsfitstate state)
+    {
+        state = new lsfitstate();
+        lsfit.lsfitcreatefg(x, y, c, n, m, k, cheapfg, state.innerobj);
+        return;
+    }
+    public static void lsfitcreatefg(double[,] x, double[] y, double[] c, bool cheapfg, out lsfitstate state)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.rows(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'lsfitcreatefg': looks like one of arguments has wrong size");
+        state = new lsfitstate();
+        n = ap.rows(x);
+        m = ap.cols(x);
+        k = ap.len(c);
+        lsfit.lsfitcreatefg(x, y, c, n, m, k, cheapfg, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Weighted nonlinear least squares fitting using gradient/Hessian.
+
+    Nonlinear task min(F(c)) is solved, where
+
+        F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
+
+        * N is a number of points,
+        * M is a dimension of a space points belong to,
+        * K is a dimension of a space of parameters being fitted,
+        * w is an N-dimensional vector of weight coefficients,
+        * x is a set of N points, each of them is an M-dimensional vector,
+        * c is a K-dimensional vector of parameters being fitted
+
+    This subroutine uses f(c,x[i]), its gradient and its Hessian.
+
+    INPUT PARAMETERS:
+        X       -   array[0..N-1,0..M-1], points (one row = one point)
+        Y       -   array[0..N-1], function values.
+        W       -   weights, array[0..N-1]
+        C       -   array[0..K-1], initial approximation to the solution,
+        N       -   number of points, N>1
+        M       -   dimension of space
+        K       -   number of parameters being fitted
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitcreatewfgh(double[,] x, double[] y, double[] w, double[] c, int n, int m, int k, out lsfitstate state)
+    {
+        state = new lsfitstate();
+        lsfit.lsfitcreatewfgh(x, y, w, c, n, m, k, state.innerobj);
+        return;
+    }
+    public static void lsfitcreatewfgh(double[,] x, double[] y, double[] w, double[] c, out lsfitstate state)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.rows(x)!=ap.len(y)) || (ap.rows(x)!=ap.len(w)))
+            throw new alglibexception("Error while calling 'lsfitcreatewfgh': looks like one of arguments has wrong size");
+        state = new lsfitstate();
+        n = ap.rows(x);
+        m = ap.cols(x);
+        k = ap.len(c);
+        lsfit.lsfitcreatewfgh(x, y, w, c, n, m, k, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Nonlinear least squares fitting using gradient/Hessian, without individial
+    weights.
+
+    Nonlinear task min(F(c)) is solved, where
+
+        F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
+
+        * N is a number of points,
+        * M is a dimension of a space points belong to,
+        * K is a dimension of a space of parameters being fitted,
+        * x is a set of N points, each of them is an M-dimensional vector,
+        * c is a K-dimensional vector of parameters being fitted
+
+    This subroutine uses f(c,x[i]), its gradient and its Hessian.
+
+    INPUT PARAMETERS:
+        X       -   array[0..N-1,0..M-1], points (one row = one point)
+        Y       -   array[0..N-1], function values.
+        C       -   array[0..K-1], initial approximation to the solution,
+        N       -   number of points, N>1
+        M       -   dimension of space
+        K       -   number of parameters being fitted
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitcreatefgh(double[,] x, double[] y, double[] c, int n, int m, int k, out lsfitstate state)
+    {
+        state = new lsfitstate();
+        lsfit.lsfitcreatefgh(x, y, c, n, m, k, state.innerobj);
+        return;
+    }
+    public static void lsfitcreatefgh(double[,] x, double[] y, double[] c, out lsfitstate state)
+    {
+        int n;
+        int m;
+        int k;
+        if( (ap.rows(x)!=ap.len(y)))
+            throw new alglibexception("Error while calling 'lsfitcreatefgh': looks like one of arguments has wrong size");
+        state = new lsfitstate();
+        n = ap.rows(x);
+        m = ap.cols(x);
+        k = ap.len(c);
+        lsfit.lsfitcreatefgh(x, y, c, n, m, k, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    Stopping conditions for nonlinear least squares fitting.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        EpsF    -   stopping criterion. Algorithm stops if
+                    |F(k+1)-F(k)| <= EpsF*max{|F(k)|, |F(k+1)|, 1}
+        EpsX    -   >=0
+                    The subroutine finishes its work if  on  k+1-th  iteration
+                    the condition |v|<=EpsX is fulfilled, where:
+                    * |.| means Euclidian norm
+                    * v - scaled step vector, v[i]=dx[i]/s[i]
+                    * dx - ste pvector, dx=X(k+1)-X(k)
+                    * s - scaling coefficients set by LSFitSetScale()
+        MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
+                    iterations   is    unlimited.   Only   Levenberg-Marquardt
+                    iterations  are  counted  (L-BFGS/CG  iterations  are  NOT
+                    counted because their cost is very low compared to that of
+                    LM).
+
+    NOTE
+
+    Passing EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to automatic
+    stopping criterion selection (according to the scheme used by MINLM unit).
+
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitsetcond(lsfitstate state, double epsf, double epsx, int maxits)
     {
 
-        double result = idwint.idwcalc(z.innerobj, x);
+        lsfit.lsfitsetcond(state.innerobj, epsf, epsx, maxits);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets maximum step length
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
+                    want to limit step length.
+
+    Use this subroutine when you optimize target function which contains exp()
+    or  other  fast  growing  functions,  and optimization algorithm makes too
+    large  steps  which  leads  to overflow. This function allows us to reject
+    steps  that  are  too  large  (and  therefore  expose  us  to the possible
+    overflow) without actually calculating function value at the x+stp*d.
+
+    NOTE: non-zero StpMax leads to moderate  performance  degradation  because
+    intermediate  step  of  preconditioned L-BFGS optimization is incompatible
+    with limits on step size.
+
+      -- ALGLIB --
+         Copyright 02.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitsetstpmax(lsfitstate state, double stpmax)
+    {
+
+        lsfit.lsfitsetstpmax(state.innerobj, stpmax);
+        return;
+    }
+
+    /*************************************************************************
+    This function turns on/off reporting.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        NeedXRep-   whether iteration reports are needed or not
+
+    When reports are needed, State.C (current parameters) and State.F (current
+    value of fitting function) are reported.
+
+
+      -- ALGLIB --
+         Copyright 15.08.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitsetxrep(lsfitstate state, bool needxrep)
+    {
+
+        lsfit.lsfitsetxrep(state.innerobj, needxrep);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets scaling coefficients for underlying optimizer.
+
+    ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
+    size and gradient are scaled before comparison with tolerances).  Scale of
+    the I-th variable is a translation invariant measure of:
+    a) "how large" the variable is
+    b) how large the step should be to make significant changes in the function
+
+    Generally, scale is NOT considered to be a form of preconditioner.  But LM
+    optimizer is unique in that it uses scaling matrix both  in  the  stopping
+    condition tests and as Marquardt damping factor.
+
+    Proper scaling is very important for the algorithm performance. It is less
+    important for the quality of results, but still has some influence (it  is
+    easier  to  converge  when  variables  are  properly  scaled, so premature
+    stopping is possible when very badly scalled variables are  combined  with
+    relaxed stopping conditions).
+
+    INPUT PARAMETERS:
+        State   -   structure stores algorithm state
+        S       -   array[N], non-zero scaling coefficients
+                    S[i] may be negative, sign doesn't matter.
+
+      -- ALGLIB --
+         Copyright 14.01.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitsetscale(lsfitstate state, double[] s)
+    {
+
+        lsfit.lsfitsetscale(state.innerobj, s);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets boundary constraints for underlying optimizer
+
+    Boundary constraints are inactive by default (after initial creation).
+    They are preserved until explicitly turned off with another SetBC() call.
+
+    INPUT PARAMETERS:
+        State   -   structure stores algorithm state
+        BndL    -   lower bounds, array[K].
+                    If some (all) variables are unbounded, you may specify
+                    very small number or -INF (latter is recommended because
+                    it will allow solver to use better algorithm).
+        BndU    -   upper bounds, array[K].
+                    If some (all) variables are unbounded, you may specify
+                    very large number or +INF (latter is recommended because
+                    it will allow solver to use better algorithm).
+
+    NOTE 1: it is possible to specify BndL[i]=BndU[i]. In this case I-th
+    variable will be "frozen" at X[i]=BndL[i]=BndU[i].
+
+    NOTE 2: unlike other constrained optimization algorithms, this solver  has
+    following useful properties:
+    * bound constraints are always satisfied exactly
+    * function is evaluated only INSIDE area specified by bound constraints
+
+      -- ALGLIB --
+         Copyright 14.01.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void lsfitsetbc(lsfitstate state, double[] bndl, double[] bndu)
+    {
+
+        lsfit.lsfitsetbc(state.innerobj, bndl, bndu);
+        return;
+    }
+
+    /*************************************************************************
+    This function provides reverse communication interface
+    Reverse communication interface is not documented or recommended to use.
+    See below for functions which provide better documented API
+    *************************************************************************/
+    public static bool lsfititeration(lsfitstate state)
+    {
+
+        bool result = lsfit.lsfititeration(state.innerobj);
         return result;
     }
-
     /*************************************************************************
-    IDW interpolant using modified Shepard method for uniform point
-    distributions.
+    This family of functions is used to launcn iterations of nonlinear fitter
 
-    INPUT PARAMETERS:
-        XY  -   X and Y values, array[0..N-1,0..NX].
-                First NX columns contain X-values, last column contain
-                Y-values.
-        N   -   number of nodes, N>0.
-        NX  -   space dimension, NX>=1.
-        D   -   nodal function type, either:
-                * 0     constant  model.  Just  for  demonstration only, worst
-                        model ever.
-                * 1     linear model, least squares fitting. Simpe  model  for
-                        datasets too small for quadratic models
-                * 2     quadratic  model,  least  squares  fitting. Best model
-                        available (if your dataset is large enough).
-                * -1    "fast"  linear  model,  use  with  caution!!!   It  is
-                        significantly  faster than linear/quadratic and better
-                        than constant model. But it is less robust (especially
-                        in the presence of noise).
-        NQ  -   number of points used to calculate  nodal  functions  (ignored
-                for constant models). NQ should be LARGER than:
-                * max(1.5*(1+NX),2^NX+1) for linear model,
-                * max(3/4*(NX+2)*(NX+1),2^NX+1) for quadratic model.
-                Values less than this threshold will be silently increased.
-        NW  -   number of points used to calculate weights and to interpolate.
-                Required: >=2^NX+1, values less than this  threshold  will  be
-                silently increased.
-                Recommended value: about 2*NQ
-
-    OUTPUT PARAMETERS:
-        Z   -   IDW interpolant.
+    These functions accept following parameters:
+        func    -   callback which calculates function (or merit function)
+                    value func at given point x
+        grad    -   callback which calculates function (or merit function)
+                    value func and gradient grad at given point x
+        hess    -   callback which calculates function (or merit function)
+                    value func, gradient grad and Hessian hess at given point x
+        rep     -   optional callback which is called after each iteration
+                    can be null
+        obj     -   optional object which is passed to func/grad/hess/jac/rep
+                    can be null
 
     NOTES:
-      * best results are obtained with quadratic models, worst - with constant
-        models
-      * when N is large, NQ and NW must be significantly smaller than  N  both
-        to obtain optimal performance and to obtain optimal accuracy. In 2  or
-        3-dimensional tasks NQ=15 and NW=25 are good values to start with.
-      * NQ  and  NW  may  be  greater  than  N.  In  such  cases  they will be
-        automatically decreased.
-      * this subroutine is always succeeds (as long as correct parameters  are
-        passed).
-      * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
-        Robert J. Renka for more information on this algorithm.
-      * this subroutine assumes that point distribution is uniform at the small
-        scales.  If  it  isn't  -  for  example,  points are concentrated along
-        "lines", but "lines" distribution is uniform at the larger scale - then
-        you should use IDWBuildModifiedShepardR()
 
+    1. this algorithm is somewhat unusual because it works with  parameterized
+       function f(C,X), where X is a function argument (we  have  many  points
+       which are characterized by different  argument  values),  and  C  is  a
+       parameter to fit.
 
-      -- ALGLIB PROJECT --
-         Copyright 02.03.2010 by Bochkanov Sergey
+       For example, if we want to do linear fit by f(c0,c1,x) = c0*x+c1,  then
+       x will be argument, and {c0,c1} will be parameters.
+
+       It is important to understand that this algorithm finds minimum in  the
+       space of function PARAMETERS (not arguments), so it  needs  derivatives
+       of f() with respect to C, not X.
+
+       In the example above it will need f=c0*x+c1 and {df/dc0,df/dc1} = {x,1}
+       instead of {df/dx} = {c0}.
+
+    2. Callback functions accept C as the first parameter, and X as the second
+
+    3. If  state  was  created  with  LSFitCreateFG(),  algorithm  needs  just
+       function   and   its   gradient,   but   if   state   was  created with
+       LSFitCreateFGH(), algorithm will need function, gradient and Hessian.
+
+       According  to  the  said  above,  there  ase  several  versions of this
+       function, which accept different sets of callbacks.
+
+       This flexibility opens way to subtle errors - you may create state with
+       LSFitCreateFGH() (optimization using Hessian), but call function  which
+       does not accept Hessian. So when algorithm will request Hessian,  there
+       will be no callback to call. In this case exception will be thrown.
+
+       Be careful to avoid such errors because there is no way to find them at
+       compile time - you can see them at runtime only.
+
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
+
     *************************************************************************/
-    public static void idwbuildmodifiedshepard(double[,] xy, int n, int nx, int d, int nq, int nw, out idwinterpolant z)
+    public static void lsfitfit(lsfitstate state, ndimensional_pfunc func, ndimensional_rep rep, object obj)
     {
-        z = new idwinterpolant();
-        idwint.idwbuildmodifiedshepard(xy, n, nx, d, nq, nw, z.innerobj);
-        return;
+        if( func==null )
+            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (func is null)");
+        while( alglib.lsfititeration(state) )
+        {
+            if( state.needf )
+            {
+                func(state.c, state.x, ref state.innerobj.f, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.c, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
+        }
     }
 
-    /*************************************************************************
-    IDW interpolant using modified Shepard method for non-uniform datasets.
 
-    This type of model uses  constant  nodal  functions and interpolates using
-    all nodes which are closer than user-specified radius R. It  may  be  used
-    when points distribution is non-uniform at the small scale, but it  is  at
-    the distances as large as R.
-
-    INPUT PARAMETERS:
-        XY  -   X and Y values, array[0..N-1,0..NX].
-                First NX columns contain X-values, last column contain
-                Y-values.
-        N   -   number of nodes, N>0.
-        NX  -   space dimension, NX>=1.
-        R   -   radius, R>0
-
-    OUTPUT PARAMETERS:
-        Z   -   IDW interpolant.
-
-    NOTES:
-    * if there is less than IDWKMin points within  R-ball,  algorithm  selects
-      IDWKMin closest ones, so that continuity properties of  interpolant  are
-      preserved even far from points.
-
-      -- ALGLIB PROJECT --
-         Copyright 11.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void idwbuildmodifiedshepardr(double[,] xy, int n, int nx, double r, out idwinterpolant z)
+    public static void lsfitfit(lsfitstate state, ndimensional_pfunc func, ndimensional_pgrad grad, ndimensional_rep rep, object obj)
     {
-        z = new idwinterpolant();
-        idwint.idwbuildmodifiedshepardr(xy, n, nx, r, z.innerobj);
-        return;
+        if( func==null )
+            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (func is null)");
+        if( grad==null )
+            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (grad is null)");
+        while( alglib.lsfititeration(state) )
+        {
+            if( state.needf )
+            {
+                func(state.c, state.x, ref state.innerobj.f, obj);
+                continue;
+            }
+            if( state.needfg )
+            {
+                grad(state.c, state.x, ref state.innerobj.f, state.innerobj.g, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.c, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
+        }
     }
 
+
+    public static void lsfitfit(lsfitstate state, ndimensional_pfunc func, ndimensional_pgrad grad, ndimensional_phess hess, ndimensional_rep rep, object obj)
+    {
+        if( func==null )
+            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (func is null)");
+        if( grad==null )
+            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (grad is null)");
+        if( hess==null )
+            throw new alglibexception("ALGLIB: error in 'lsfitfit()' (hess is null)");
+        while( alglib.lsfititeration(state) )
+        {
+            if( state.needf )
+            {
+                func(state.c, state.x, ref state.innerobj.f, obj);
+                continue;
+            }
+            if( state.needfg )
+            {
+                grad(state.c, state.x, ref state.innerobj.f, state.innerobj.g, obj);
+                continue;
+            }
+            if( state.needfgh )
+            {
+                hess(state.c, state.x, ref state.innerobj.f, state.innerobj.g, state.innerobj.h, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.c, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
+        }
+    }
+
+
+
     /*************************************************************************
-    IDW model for noisy data.
+    Nonlinear least squares fitting results.
 
-    This subroutine may be used to handle noisy data, i.e. data with noise  in
-    OUTPUT values.  It differs from IDWBuildModifiedShepard() in the following
-    aspects:
-    * nodal functions are not constrained to pass through  nodes:  Qi(xi)<>yi,
-      i.e. we have fitting  instead  of  interpolation.
-    * weights which are used during least  squares fitting stage are all equal
-      to 1.0 (independently of distance)
-    * "fast"-linear or constant nodal functions are not supported (either  not
-      robust enough or too rigid)
-
-    This problem require far more complex tuning than interpolation  problems.
-    Below you can find some recommendations regarding this problem:
-    * focus on tuning NQ; it controls noise reduction. As for NW, you can just
-      make it equal to 2*NQ.
-    * you can use cross-validation to determine optimal NQ.
-    * optimal NQ is a result of complex tradeoff  between  noise  level  (more
-      noise = larger NQ required) and underlying  function  complexity  (given
-      fixed N, larger NQ means smoothing of compex features in the data).  For
-      example, NQ=N will reduce noise to the minimum level possible,  but  you
-      will end up with just constant/linear/quadratic (depending on  D)  least
-      squares model for the whole dataset.
+    Called after return from LSFitFit().
 
     INPUT PARAMETERS:
-        XY  -   X and Y values, array[0..N-1,0..NX].
-                First NX columns contain X-values, last column contain
-                Y-values.
-        N   -   number of nodes, N>0.
-        NX  -   space dimension, NX>=1.
-        D   -   nodal function degree, either:
-                * 1     linear model, least squares fitting. Simpe  model  for
-                        datasets too small for quadratic models (or  for  very
-                        noisy problems).
-                * 2     quadratic  model,  least  squares  fitting. Best model
-                        available (if your dataset is large enough).
-        NQ  -   number of points used to calculate nodal functions.  NQ should
-                be  significantly   larger   than  1.5  times  the  number  of
-                coefficients in a nodal function to overcome effects of noise:
-                * larger than 1.5*(1+NX) for linear model,
-                * larger than 3/4*(NX+2)*(NX+1) for quadratic model.
-                Values less than this threshold will be silently increased.
-        NW  -   number of points used to calculate weights and to interpolate.
-                Required: >=2^NX+1, values less than this  threshold  will  be
-                silently increased.
-                Recommended value: about 2*NQ or larger
+        State   -   algorithm state
 
     OUTPUT PARAMETERS:
-        Z   -   IDW interpolant.
+        Info    -   completetion code:
+                        *  1    relative function improvement is no more than
+                                EpsF.
+                        *  2    relative step is no more than EpsX.
+                        *  4    gradient norm is no more than EpsG
+                        *  5    MaxIts steps was taken
+                        *  7    stopping conditions are too stringent,
+                                further improvement is impossible
+        C       -   array[0..K-1], solution
+        Rep     -   optimization report. Following fields are set:
+                    * Rep.TerminationType completetion code:
+                    * RMSError          rms error on the (X,Y).
+                    * AvgError          average error on the (X,Y).
+                    * AvgRelError       average relative error on the non-zero Y
+                    * MaxError          maximum error
+                                        NON-WEIGHTED ERRORS ARE CALCULATED
+                    * WRMSError         weighted rms error on the (X,Y).
 
-    NOTES:
-      * best results are obtained with quadratic models, linear models are not
-        recommended to use unless you are pretty sure that it is what you want
-      * this subroutine is always succeeds (as long as correct parameters  are
-        passed).
-      * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
-        Robert J. Renka for more information on this algorithm.
 
-
-      -- ALGLIB PROJECT --
-         Copyright 02.03.2010 by Bochkanov Sergey
+      -- ALGLIB --
+         Copyright 17.08.2009 by Bochkanov Sergey
     *************************************************************************/
-    public static void idwbuildnoisy(double[,] xy, int n, int nx, int d, int nq, int nw, out idwinterpolant z)
+    public static void lsfitresults(lsfitstate state, out int info, out double[] c, out lsfitreport rep)
     {
-        z = new idwinterpolant();
-        idwint.idwbuildnoisy(xy, n, nx, d, nq, nw, z.innerobj);
+        info = 0;
+        c = new double[0];
+        rep = new lsfitreport();
+        lsfit.lsfitresults(state.innerobj, ref info, ref c, rep.innerobj);
         return;
     }
 
@@ -4486,619 +4313,795 @@ public partial class alglib
 }
 public partial class alglib
 {
-    public class lsfit
+
+
+    /*************************************************************************
+    2-dimensional spline inteprolant
+    *************************************************************************/
+    public class spline2dinterpolant
+    {
+        //
+        // Public declarations
+        //
+
+        public spline2dinterpolant()
+        {
+            _innerobj = new spline2d.spline2dinterpolant();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private spline2d.spline2dinterpolant _innerobj;
+        public spline2d.spline2dinterpolant innerobj { get { return _innerobj; } }
+        public spline2dinterpolant(spline2d.spline2dinterpolant obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
+    This subroutine builds bilinear spline coefficients table.
+
+    Input parameters:
+        X   -   spline abscissas, array[0..N-1]
+        Y   -   spline ordinates, array[0..M-1]
+        F   -   function values, array[0..M-1,0..N-1]
+        M,N -   grid size, M>=2, N>=2
+
+    Output parameters:
+        C   -   spline interpolant
+
+      -- ALGLIB PROJECT --
+         Copyright 05.07.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dbuildbilinear(double[] x, double[] y, double[,] f, int m, int n, out spline2dinterpolant c)
+    {
+        c = new spline2dinterpolant();
+        spline2d.spline2dbuildbilinear(x, y, f, m, n, c.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine builds bicubic spline coefficients table.
+
+    Input parameters:
+        X   -   spline abscissas, array[0..N-1]
+        Y   -   spline ordinates, array[0..M-1]
+        F   -   function values, array[0..M-1,0..N-1]
+        M,N -   grid size, M>=2, N>=2
+
+    Output parameters:
+        C   -   spline interpolant
+
+      -- ALGLIB PROJECT --
+         Copyright 05.07.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dbuildbicubic(double[] x, double[] y, double[,] f, int m, int n, out spline2dinterpolant c)
+    {
+        c = new spline2dinterpolant();
+        spline2d.spline2dbuildbicubic(x, y, f, m, n, c.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine calculates the value of the bilinear or bicubic spline  at
+    the given point X.
+
+    Input parameters:
+        C   -   coefficients table.
+                Built by BuildBilinearSpline or BuildBicubicSpline.
+        X, Y-   point
+
+    Result:
+        S(x,y)
+
+      -- ALGLIB PROJECT --
+         Copyright 05.07.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static double spline2dcalc(spline2dinterpolant c, double x, double y)
+    {
+
+        double result = spline2d.spline2dcalc(c.innerobj, x, y);
+        return result;
+    }
+
+    /*************************************************************************
+    This subroutine calculates the value of the bilinear or bicubic spline  at
+    the given point X and its derivatives.
+
+    Input parameters:
+        C   -   spline interpolant.
+        X, Y-   point
+
+    Output parameters:
+        F   -   S(x,y)
+        FX  -   dS(x,y)/dX
+        FY  -   dS(x,y)/dY
+        FXY -   d2S(x,y)/dXdY
+
+      -- ALGLIB PROJECT --
+         Copyright 05.07.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2ddiff(spline2dinterpolant c, double x, double y, out double f, out double fx, out double fy, out double fxy)
+    {
+        f = 0;
+        fx = 0;
+        fy = 0;
+        fxy = 0;
+        spline2d.spline2ddiff(c.innerobj, x, y, ref f, ref fx, ref fy, ref fxy);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine unpacks two-dimensional spline into the coefficients table
+
+    Input parameters:
+        C   -   spline interpolant.
+
+    Result:
+        M, N-   grid size (x-axis and y-axis)
+        Tbl -   coefficients table, unpacked format,
+                [0..(N-1)*(M-1)-1, 0..19].
+                For I = 0...M-2, J=0..N-2:
+                    K =  I*(N-1)+J
+                    Tbl[K,0] = X[j]
+                    Tbl[K,1] = X[j+1]
+                    Tbl[K,2] = Y[i]
+                    Tbl[K,3] = Y[i+1]
+                    Tbl[K,4] = C00
+                    Tbl[K,5] = C01
+                    Tbl[K,6] = C02
+                    Tbl[K,7] = C03
+                    Tbl[K,8] = C10
+                    Tbl[K,9] = C11
+                    ...
+                    Tbl[K,19] = C33
+                On each grid square spline is equals to:
+                    S(x) = SUM(c[i,j]*(x^i)*(y^j), i=0..3, j=0..3)
+                    t = x-x[j]
+                    u = y-y[i]
+
+      -- ALGLIB PROJECT --
+         Copyright 29.06.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dunpack(spline2dinterpolant c, out int m, out int n, out double[,] tbl)
+    {
+        m = 0;
+        n = 0;
+        tbl = new double[0,0];
+        spline2d.spline2dunpack(c.innerobj, ref m, ref n, ref tbl);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine performs linear transformation of the spline argument.
+
+    Input parameters:
+        C       -   spline interpolant
+        AX, BX  -   transformation coefficients: x = A*t + B
+        AY, BY  -   transformation coefficients: y = A*u + B
+    Result:
+        C   -   transformed spline
+
+      -- ALGLIB PROJECT --
+         Copyright 30.06.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dlintransxy(spline2dinterpolant c, double ax, double bx, double ay, double by)
+    {
+
+        spline2d.spline2dlintransxy(c.innerobj, ax, bx, ay, by);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine performs linear transformation of the spline.
+
+    Input parameters:
+        C   -   spline interpolant.
+        A, B-   transformation coefficients: S2(x,y) = A*S(x,y) + B
+
+    Output parameters:
+        C   -   transformed spline
+
+      -- ALGLIB PROJECT --
+         Copyright 30.06.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dlintransf(spline2dinterpolant c, double a, double b)
+    {
+
+        spline2d.spline2dlintransf(c.innerobj, a, b);
+        return;
+    }
+
+    /*************************************************************************
+    Bicubic spline resampling
+
+    Input parameters:
+        A           -   function values at the old grid,
+                        array[0..OldHeight-1, 0..OldWidth-1]
+        OldHeight   -   old grid height, OldHeight>1
+        OldWidth    -   old grid width, OldWidth>1
+        NewHeight   -   new grid height, NewHeight>1
+        NewWidth    -   new grid width, NewWidth>1
+
+    Output parameters:
+        B           -   function values at the new grid,
+                        array[0..NewHeight-1, 0..NewWidth-1]
+
+      -- ALGLIB routine --
+         15 May, 2007
+         Copyright by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dresamplebicubic(double[,] a, int oldheight, int oldwidth, out double[,] b, int newheight, int newwidth)
+    {
+        b = new double[0,0];
+        spline2d.spline2dresamplebicubic(a, oldheight, oldwidth, ref b, newheight, newwidth);
+        return;
+    }
+
+    /*************************************************************************
+    Bilinear spline resampling
+
+    Input parameters:
+        A           -   function values at the old grid,
+                        array[0..OldHeight-1, 0..OldWidth-1]
+        OldHeight   -   old grid height, OldHeight>1
+        OldWidth    -   old grid width, OldWidth>1
+        NewHeight   -   new grid height, NewHeight>1
+        NewWidth    -   new grid width, NewWidth>1
+
+    Output parameters:
+        B           -   function values at the new grid,
+                        array[0..NewHeight-1, 0..NewWidth-1]
+
+      -- ALGLIB routine --
+         09.07.2007
+         Copyright by Bochkanov Sergey
+    *************************************************************************/
+    public static void spline2dresamplebilinear(double[,] a, int oldheight, int oldwidth, out double[,] b, int newheight, int newwidth)
+    {
+        b = new double[0,0];
+        spline2d.spline2dresamplebilinear(a, oldheight, oldwidth, ref b, newheight, newwidth);
+        return;
+    }
+
+}
+public partial class alglib
+{
+    public class idwint
     {
         /*************************************************************************
-        Polynomial fitting report:
-            TaskRCond       reciprocal of task's condition number
-            RMSError        RMS error
-            AvgError        average error
-            AvgRelError     average relative error (for non-zero Y[I])
-            MaxError        maximum error
+        IDW interpolant.
         *************************************************************************/
-        public class polynomialfitreport
-        {
-            public double taskrcond;
-            public double rmserror;
-            public double avgerror;
-            public double avgrelerror;
-            public double maxerror;
-        };
-
-
-        /*************************************************************************
-        Barycentric fitting report:
-            RMSError        RMS error
-            AvgError        average error
-            AvgRelError     average relative error (for non-zero Y[I])
-            MaxError        maximum error
-            TaskRCond       reciprocal of task's condition number
-        *************************************************************************/
-        public class barycentricfitreport
-        {
-            public double taskrcond;
-            public int dbest;
-            public double rmserror;
-            public double avgerror;
-            public double avgrelerror;
-            public double maxerror;
-        };
-
-
-        /*************************************************************************
-        Spline fitting report:
-            RMSError        RMS error
-            AvgError        average error
-            AvgRelError     average relative error (for non-zero Y[I])
-            MaxError        maximum error
-            
-        Fields  below are  filled  by   obsolete    functions   (Spline1DFitCubic,
-        Spline1DFitHermite). Modern fitting functions do NOT fill these fields:
-            TaskRCond       reciprocal of task's condition number
-        *************************************************************************/
-        public class spline1dfitreport
-        {
-            public double taskrcond;
-            public double rmserror;
-            public double avgerror;
-            public double avgrelerror;
-            public double maxerror;
-        };
-
-
-        /*************************************************************************
-        Least squares fitting report:
-            TaskRCond       reciprocal of task's condition number
-            RMSError        RMS error
-            AvgError        average error
-            AvgRelError     average relative error (for non-zero Y[I])
-            MaxError        maximum error
-        *************************************************************************/
-        public class lsfitreport
-        {
-            public double taskrcond;
-            public double rmserror;
-            public double avgerror;
-            public double avgrelerror;
-            public double maxerror;
-        };
-
-
-        /*************************************************************************
-        Nonlinear fitter.
-
-        You should use ALGLIB functions to work with fitter.
-        Never try to access its fields directly!
-        *************************************************************************/
-        public class lsfitstate
+        public class idwinterpolant
         {
             public int n;
-            public int m;
-            public int k;
-            public double epsf;
-            public double epsx;
-            public int maxits;
-            public double stpmax;
-            public bool xrep;
-            public double[,] taskx;
-            public double[] tasky;
-            public double[] w;
-            public bool xupdated;
-            public bool needf;
-            public bool needfg;
-            public bool needfgh;
-            public int pointindex;
-            public double[] x;
-            public double[] c;
-            public double f;
-            public double[] g;
-            public double[,] h;
-            public int repterminationtype;
-            public double reprmserror;
-            public double repavgerror;
-            public double repavgrelerror;
-            public double repmaxerror;
-            public minlm.minlmstate optstate;
-            public minlm.minlmreport optrep;
-            public rcommstate rstate;
-            public lsfitstate()
+            public int nx;
+            public int d;
+            public double r;
+            public int nw;
+            public nearestneighbor.kdtree tree;
+            public int modeltype;
+            public double[,] q;
+            public double[] xbuf;
+            public int[] tbuf;
+            public double[] rbuf;
+            public double[,] xybuf;
+            public int debugsolverfailures;
+            public double debugworstrcond;
+            public double debugbestrcond;
+            public idwinterpolant()
             {
-                taskx = new double[0,0];
-                tasky = new double[0];
-                w = new double[0];
-                x = new double[0];
-                c = new double[0];
-                g = new double[0];
-                h = new double[0,0];
-                optstate = new minlm.minlmstate();
-                optrep = new minlm.minlmreport();
-                rstate = new rcommstate();
+                tree = new nearestneighbor.kdtree();
+                q = new double[0,0];
+                xbuf = new double[0];
+                tbuf = new int[0];
+                rbuf = new double[0];
+                xybuf = new double[0,0];
             }
         };
 
 
 
 
-        public const int rfsmax = 10;
+        public const double idwqfactor = 1.5;
+        public const int idwkmin = 5;
 
 
         /*************************************************************************
-        Fitting by polynomials in barycentric form. This function provides  simple
-        unterface for unconstrained unweighted fitting. See  PolynomialFitWC()  if
-        you need constrained fitting.
-
-        Task is linear, so linear least squares solver is used. Complexity of this
-        computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-        SEE ALSO:
-            PolynomialFitWC()
+        IDW interpolation
 
         INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            N   -   number of points, N>0
-                    * if given, only leading N elements of X/Y are used
-                    * if not given, automatically determined from sizes of X/Y
-            M   -   number of basis functions (= polynomial_degree + 1), M>=1
+            Z   -   IDW interpolant built with one of model building
+                    subroutines.
+            X   -   array[0..NX-1], interpolation point
 
-        OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearW() subroutine:
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-            P   -   interpolant in barycentric form.
-            Rep -   report, same format as in LSFitLinearW() subroutine.
-                    Following fields are set:
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
+        Result:
+            IDW interpolant Z(X)
 
-        NOTES:
-            you can convert P from barycentric form  to  the  power  or  Chebyshev
-            basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
-            POLINT subpackage.
-
-          -- ALGLIB PROJECT --
-             Copyright 10.12.2009 by Bochkanov Sergey
+          -- ALGLIB --
+             Copyright 02.03.2010 by Bochkanov Sergey
         *************************************************************************/
-        public static void polynomialfit(double[] x,
-            double[] y,
-            int n,
-            int m,
-            ref int info,
-            ratint.barycentricinterpolant p,
-            polynomialfitreport rep)
+        public static double idwcalc(idwinterpolant z,
+            double[] x)
         {
+            double result = 0;
+            int nx = 0;
             int i = 0;
-            double[] w = new double[0];
-            double[] xc = new double[0];
-            double[] yc = new double[0];
-            int[] dc = new int[0];
+            int k = 0;
+            double r = 0;
+            double s = 0;
+            double w = 0;
+            double v1 = 0;
+            double v2 = 0;
+            double d0 = 0;
+            double di = 0;
 
-            info = 0;
-
-            ap.assert(n>0, "PolynomialFit: N<=0!");
-            ap.assert(m>0, "PolynomialFit: M<=0!");
-            ap.assert(ap.len(x)>=n, "PolynomialFit: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "PolynomialFit: Length(Y)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "PolynomialFit: X contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(y, n), "PolynomialFit: Y contains infinite or NaN values!");
-            w = new double[n];
-            for(i=0; i<=n-1; i++)
+            
+            //
+            // these initializers are not really necessary,
+            // but without them compiler complains about uninitialized locals
+            //
+            k = 0;
+            
+            //
+            // Query
+            //
+            if( z.modeltype==0 )
             {
-                w[i] = 1;
+                
+                //
+                // NQ/NW-based model
+                //
+                nx = z.nx;
+                k = nearestneighbor.kdtreequeryknn(z.tree, x, z.nw, true);
+                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref z.rbuf);
+                nearestneighbor.kdtreequeryresultstags(z.tree, ref z.tbuf);
             }
-            polynomialfitwc(x, y, w, n, xc, yc, dc, 0, m, ref info, p, rep);
+            if( z.modeltype==1 )
+            {
+                
+                //
+                // R-based model
+                //
+                nx = z.nx;
+                k = nearestneighbor.kdtreequeryrnn(z.tree, x, z.r, true);
+                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref z.rbuf);
+                nearestneighbor.kdtreequeryresultstags(z.tree, ref z.tbuf);
+                if( k<idwkmin )
+                {
+                    
+                    //
+                    // we need at least IDWKMin points
+                    //
+                    k = nearestneighbor.kdtreequeryknn(z.tree, x, idwkmin, true);
+                    nearestneighbor.kdtreequeryresultsdistances(z.tree, ref z.rbuf);
+                    nearestneighbor.kdtreequeryresultstags(z.tree, ref z.tbuf);
+                }
+            }
+            
+            //
+            // initialize weights for linear/quadratic members calculation.
+            //
+            // NOTE 1: weights are calculated using NORMALIZED modified
+            // Shepard's formula. Original formula gives w(i) = sqr((R-di)/(R*di)),
+            // where di is i-th distance, R is max(di). Modified formula have
+            // following form:
+            //     w_mod(i) = 1, if di=d0
+            //     w_mod(i) = w(i)/w(0), if di<>d0
+            //
+            // NOTE 2: self-match is USED for this query
+            //
+            // NOTE 3: last point almost always gain zero weight, but it MUST
+            // be used for fitting because sometimes it will gain NON-ZERO
+            // weight - for example, when all distances are equal.
+            //
+            r = z.rbuf[k-1];
+            d0 = z.rbuf[0];
+            result = 0;
+            s = 0;
+            for(i=0; i<=k-1; i++)
+            {
+                di = z.rbuf[i];
+                if( (double)(di)==(double)(d0) )
+                {
+                    
+                    //
+                    // distance is equal to shortest, set it 1.0
+                    // without explicitly calculating (which would give
+                    // us same result, but 'll expose us to the risk of
+                    // division by zero).
+                    //
+                    w = 1;
+                }
+                else
+                {
+                    
+                    //
+                    // use normalized formula
+                    //
+                    v1 = (r-di)/(r-d0);
+                    v2 = d0/di;
+                    w = math.sqr(v1*v2);
+                }
+                result = result+w*idwcalcq(z, x, z.tbuf[i]);
+                s = s+w;
+            }
+            result = result/s;
+            return result;
         }
 
 
         /*************************************************************************
-        Weighted  fitting by polynomials in barycentric form, with constraints  on
-        function values or first derivatives.
-
-        Small regularizing term is used when solving constrained tasks (to improve
-        stability).
-
-        Task is linear, so linear least squares solver is used. Complexity of this
-        computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-        SEE ALSO:
-            PolynomialFit()
+        IDW interpolant using modified Shepard method for uniform point
+        distributions.
 
         INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            W   -   weights, array[0..N-1]
-                    Each summand in square  sum  of  approximation deviations from
-                    given  values  is  multiplied  by  the square of corresponding
-                    weight. Fill it by 1's if you don't  want  to  solve  weighted
-                    task.
-            N   -   number of points, N>0.
-                    * if given, only leading N elements of X/Y/W are used
-                    * if not given, automatically determined from sizes of X/Y/W
-            XC  -   points where polynomial values/derivatives are constrained,
-                    array[0..K-1].
-            YC  -   values of constraints, array[0..K-1]
-            DC  -   array[0..K-1], types of constraints:
-                    * DC[i]=0   means that P(XC[i])=YC[i]
-                    * DC[i]=1   means that P'(XC[i])=YC[i]
-                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-            K   -   number of constraints, 0<=K<M.
-                    K=0 means no constraints (XC/YC/DC are not used in such cases)
-            M   -   number of basis functions (= polynomial_degree + 1), M>=1
+            XY  -   X and Y values, array[0..N-1,0..NX].
+                    First NX columns contain X-values, last column contain
+                    Y-values.
+            N   -   number of nodes, N>0.
+            NX  -   space dimension, NX>=1.
+            D   -   nodal function type, either:
+                    * 0     constant  model.  Just  for  demonstration only, worst
+                            model ever.
+                    * 1     linear model, least squares fitting. Simpe  model  for
+                            datasets too small for quadratic models
+                    * 2     quadratic  model,  least  squares  fitting. Best model
+                            available (if your dataset is large enough).
+                    * -1    "fast"  linear  model,  use  with  caution!!!   It  is
+                            significantly  faster than linear/quadratic and better
+                            than constant model. But it is less robust (especially
+                            in the presence of noise).
+            NQ  -   number of points used to calculate  nodal  functions  (ignored
+                    for constant models). NQ should be LARGER than:
+                    * max(1.5*(1+NX),2^NX+1) for linear model,
+                    * max(3/4*(NX+2)*(NX+1),2^NX+1) for quadratic model.
+                    Values less than this threshold will be silently increased.
+            NW  -   number of points used to calculate weights and to interpolate.
+                    Required: >=2^NX+1, values less than this  threshold  will  be
+                    silently increased.
+                    Recommended value: about 2*NQ
 
         OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearW() subroutine:
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-            P   -   interpolant in barycentric form.
-            Rep -   report, same format as in LSFitLinearW() subroutine.
-                    Following fields are set:
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
-
+            Z   -   IDW interpolant.
+            
         NOTES:
-            you can convert P from barycentric form  to  the  power  or  Chebyshev
-            basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
-            POLINT subpackage.
+          * best results are obtained with quadratic models, worst - with constant
+            models
+          * when N is large, NQ and NW must be significantly smaller than  N  both
+            to obtain optimal performance and to obtain optimal accuracy. In 2  or
+            3-dimensional tasks NQ=15 and NW=25 are good values to start with.
+          * NQ  and  NW  may  be  greater  than  N.  In  such  cases  they will be
+            automatically decreased.
+          * this subroutine is always succeeds (as long as correct parameters  are
+            passed).
+          * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
+            Robert J. Renka for more information on this algorithm.
+          * this subroutine assumes that point distribution is uniform at the small
+            scales.  If  it  isn't  -  for  example,  points are concentrated along
+            "lines", but "lines" distribution is uniform at the larger scale - then
+            you should use IDWBuildModifiedShepardR()
 
-        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-        Setting constraints can lead  to undesired  results,  like ill-conditioned
-        behavior, or inconsistency being detected. From the other side,  it allows
-        us to improve quality of the fit. Here we summarize  our  experience  with
-        constrained regression splines:
-        * even simple constraints can be inconsistent, see  Wikipedia  article  on
-          this subject: http://en.wikipedia.org/wiki/Birkhoff_interpolation
-        * the  greater  is  M (given  fixed  constraints),  the  more chances that
-          constraints will be consistent
-        * in the general case, consistency of constraints is NOT GUARANTEED.
-        * in the one special cases, however, we can  guarantee  consistency.  This
-          case  is:  M>1  and constraints on the function values (NOT DERIVATIVES)
-
-        Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
-        can't solve your task without them. Anything beyond  special  cases  given
-        above is not guaranteed and may result in inconsistency.
 
           -- ALGLIB PROJECT --
-             Copyright 10.12.2009 by Bochkanov Sergey
+             Copyright 02.03.2010 by Bochkanov Sergey
         *************************************************************************/
-        public static void polynomialfitwc(double[] x,
-            double[] y,
-            double[] w,
+        public static void idwbuildmodifiedshepard(double[,] xy,
             int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            ref int info,
-            ratint.barycentricinterpolant p,
-            polynomialfitreport rep)
+            int nx,
+            int d,
+            int nq,
+            int nw,
+            idwinterpolant z)
         {
-            double xa = 0;
-            double xb = 0;
-            double sa = 0;
-            double sb = 0;
-            double[] xoriginal = new double[0];
-            double[] yoriginal = new double[0];
-            double[] y2 = new double[0];
-            double[] w2 = new double[0];
-            double[] tmp = new double[0];
-            double[] tmp2 = new double[0];
-            double[] bx = new double[0];
-            double[] by = new double[0];
-            double[] bw = new double[0];
             int i = 0;
             int j = 0;
-            double u = 0;
+            int k = 0;
+            int j2 = 0;
+            int j3 = 0;
             double v = 0;
+            double r = 0;
             double s = 0;
-            int relcnt = 0;
-            lsfitreport lrep = new lsfitreport();
+            double d0 = 0;
+            double di = 0;
+            double v1 = 0;
+            double v2 = 0;
+            int nc = 0;
+            int offs = 0;
+            double[] x = new double[0];
+            double[] qrbuf = new double[0];
+            double[,] qxybuf = new double[0,0];
+            double[] y = new double[0];
+            double[,] fmatrix = new double[0,0];
+            double[] w = new double[0];
+            double[] qsol = new double[0];
+            double[] temp = new double[0];
+            int[] tags = new int[0];
+            int info = 0;
+            double taskrcond = 0;
+            int i_ = 0;
 
-            x = (double[])x.Clone();
-            y = (double[])y.Clone();
-            w = (double[])w.Clone();
-            xc = (double[])xc.Clone();
-            yc = (double[])yc.Clone();
-            info = 0;
-
-            ap.assert(n>0, "PolynomialFitWC: N<=0!");
-            ap.assert(m>0, "PolynomialFitWC: M<=0!");
-            ap.assert(k>=0, "PolynomialFitWC: K<0!");
-            ap.assert(k<m, "PolynomialFitWC: K>=M!");
-            ap.assert(ap.len(x)>=n, "PolynomialFitWC: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "PolynomialFitWC: Length(Y)<N!");
-            ap.assert(ap.len(w)>=n, "PolynomialFitWC: Length(W)<N!");
-            ap.assert(ap.len(xc)>=k, "PolynomialFitWC: Length(XC)<K!");
-            ap.assert(ap.len(yc)>=k, "PolynomialFitWC: Length(YC)<K!");
-            ap.assert(ap.len(dc)>=k, "PolynomialFitWC: Length(DC)<K!");
-            ap.assert(apserv.isfinitevector(x, n), "PolynomialFitWC: X contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(y, n), "PolynomialFitWC: Y contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(w, n), "PolynomialFitWC: X contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(xc, k), "PolynomialFitWC: XC contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(yc, k), "PolynomialFitWC: YC contains infinite or NaN values!");
-            for(i=0; i<=k-1; i++)
-            {
-                ap.assert(dc[i]==0 | dc[i]==1, "PolynomialFitWC: one of DC[] is not 0 or 1!");
-            }
             
             //
-            // Scale X, Y, XC, YC.
-            // Solve scaled problem using internal Chebyshev fitting function.
+            // these initializers are not really necessary,
+            // but without them compiler complains about uninitialized locals
             //
-            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, k, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
-            internalchebyshevfit(x, y, w, n, xc, yc, dc, k, m, ref info, ref tmp, lrep);
-            if( info<0 )
-            {
-                return;
-            }
+            nc = 0;
             
             //
-            // Generate barycentric model and scale it
-            // * BX, BY store barycentric model nodes
-            // * FMatrix is reused (remember - it is at least MxM, what we need)
+            // assertions
             //
-            // Model intialization is done in O(M^2). In principle, it can be
-            // done in O(M*log(M)), but before it we solved task with O(N*M^2)
-            // complexity, so it is only a small amount of total time spent.
+            ap.assert(n>0, "IDWBuildModifiedShepard: N<=0!");
+            ap.assert(nx>=1, "IDWBuildModifiedShepard: NX<1!");
+            ap.assert(d>=-1 & d<=2, "IDWBuildModifiedShepard: D<>-1 and D<>0 and D<>1 and D<>2!");
+            
             //
-            bx = new double[m];
-            by = new double[m];
-            bw = new double[m];
-            tmp2 = new double[m];
-            s = 1;
-            for(i=0; i<=m-1; i++)
+            // Correct parameters if needed
+            //
+            if( d==1 )
             {
-                if( m!=1 )
+                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(1+nx))+1);
+                nq = Math.Max(nq, (int)Math.Round(Math.Pow(2, nx))+1);
+            }
+            if( d==2 )
+            {
+                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(nx+2)*(nx+1)/2)+1);
+                nq = Math.Max(nq, (int)Math.Round(Math.Pow(2, nx))+1);
+            }
+            nw = Math.Max(nw, (int)Math.Round(Math.Pow(2, nx))+1);
+            nq = Math.Min(nq, n);
+            nw = Math.Min(nw, n);
+            
+            //
+            // primary initialization of Z
+            //
+            idwinit1(n, nx, d, nq, nw, z);
+            z.modeltype = 0;
+            
+            //
+            // Create KD-tree
+            //
+            tags = new int[n];
+            for(i=0; i<=n-1; i++)
+            {
+                tags[i] = i;
+            }
+            nearestneighbor.kdtreebuildtagged(xy, tags, n, nx, 1, 2, z.tree);
+            
+            //
+            // build nodal functions
+            //
+            temp = new double[nq+1];
+            x = new double[nx];
+            qrbuf = new double[nq];
+            qxybuf = new double[nq, nx+1];
+            if( d==-1 )
+            {
+                w = new double[nq];
+            }
+            if( d==1 )
+            {
+                y = new double[nq];
+                w = new double[nq];
+                qsol = new double[nx];
+                
+                //
+                // NX for linear members,
+                // 1 for temporary storage
+                //
+                fmatrix = new double[nq, nx+1];
+            }
+            if( d==2 )
+            {
+                y = new double[nq];
+                w = new double[nq];
+                qsol = new double[nx+(int)Math.Round(nx*(nx+1)*0.5)];
+                
+                //
+                // NX for linear members,
+                // Round(NX*(NX+1)*0.5) for quadratic model,
+                // 1 for temporary storage
+                //
+                fmatrix = new double[nq, nx+(int)Math.Round(nx*(nx+1)*0.5)+1];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                
+                //
+                // Initialize center and function value.
+                // If D=0 it is all what we need
+                //
+                for(i_=0; i_<=nx;i_++)
                 {
-                    u = Math.Cos(Math.PI*i/(m-1));
+                    z.q[i,i_] = xy[i,i_];
                 }
-                else
+                if( d==0 )
                 {
-                    u = 0;
+                    continue;
                 }
-                v = 0;
-                for(j=0; j<=m-1; j++)
+                
+                //
+                // calculate weights for linear/quadratic members calculation.
+                //
+                // NOTE 1: weights are calculated using NORMALIZED modified
+                // Shepard's formula. Original formula is w(i) = sqr((R-di)/(R*di)),
+                // where di is i-th distance, R is max(di). Modified formula have
+                // following form:
+                //     w_mod(i) = 1, if di=d0
+                //     w_mod(i) = w(i)/w(0), if di<>d0
+                //
+                // NOTE 2: self-match is NOT used for this query
+                //
+                // NOTE 3: last point almost always gain zero weight, but it MUST
+                // be used for fitting because sometimes it will gain NON-ZERO
+                // weight - for example, when all distances are equal.
+                //
+                for(i_=0; i_<=nx-1;i_++)
                 {
-                    if( j==0 )
+                    x[i_] = xy[i,i_];
+                }
+                k = nearestneighbor.kdtreequeryknn(z.tree, x, nq, false);
+                nearestneighbor.kdtreequeryresultsxy(z.tree, ref qxybuf);
+                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref qrbuf);
+                r = qrbuf[k-1];
+                d0 = qrbuf[0];
+                for(j=0; j<=k-1; j++)
+                {
+                    di = qrbuf[j];
+                    if( (double)(di)==(double)(d0) )
                     {
-                        tmp2[j] = 1;
+                        
+                        //
+                        // distance is equal to shortest, set it 1.0
+                        // without explicitly calculating (which would give
+                        // us same result, but 'll expose us to the risk of
+                        // division by zero).
+                        //
+                        w[j] = 1;
                     }
                     else
                     {
-                        if( j==1 )
-                        {
-                            tmp2[j] = u;
-                        }
-                        else
-                        {
-                            tmp2[j] = 2*u*tmp2[j-1]-tmp2[j-2];
-                        }
+                        
+                        //
+                        // use normalized formula
+                        //
+                        v1 = (r-di)/(r-d0);
+                        v2 = d0/di;
+                        w[j] = math.sqr(v1*v2);
                     }
-                    v = v+tmp[j]*tmp2[j];
                 }
-                bx[i] = u;
-                by[i] = v;
-                bw[i] = s;
-                if( i==0 | i==m-1 )
-                {
-                    bw[i] = 0.5*bw[i];
-                }
-                s = -s;
-            }
-            ratint.barycentricbuildxyw(bx, by, bw, m, p);
-            ratint.barycentriclintransx(p, 2/(xb-xa), -((xa+xb)/(xb-xa)));
-            ratint.barycentriclintransy(p, sb-sa, sa);
-            
-            //
-            // Scale absolute errors obtained from LSFitLinearW.
-            // Relative error should be calculated separately
-            // (because of shifting/scaling of the task)
-            //
-            rep.taskrcond = lrep.taskrcond;
-            rep.rmserror = lrep.rmserror*(sb-sa);
-            rep.avgerror = lrep.avgerror*(sb-sa);
-            rep.maxerror = lrep.maxerror*(sb-sa);
-            rep.avgrelerror = 0;
-            relcnt = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                if( (double)(yoriginal[i])!=(double)(0) )
-                {
-                    rep.avgrelerror = rep.avgrelerror+Math.Abs(ratint.barycentriccalc(p, xoriginal[i])-yoriginal[i])/Math.Abs(yoriginal[i]);
-                    relcnt = relcnt+1;
-                }
-            }
-            if( relcnt!=0 )
-            {
-                rep.avgrelerror = rep.avgrelerror/relcnt;
-            }
-        }
-
-
-        /*************************************************************************
-        Weghted rational least  squares  fitting  using  Floater-Hormann  rational
-        functions  with  optimal  D  chosen  from  [0,9],  with  constraints   and
-        individual weights.
-
-        Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
-        functions. Different values of D are tried, optimal D (least WEIGHTED root
-        mean square error) is chosen.  Task  is  linear,  so  linear least squares
-        solver  is  used.  Complexity  of  this  computational  scheme is O(N*M^2)
-        (mostly dominated by the least squares solver).
-
-        SEE ALSO
-        * BarycentricFitFloaterHormann(), "lightweight" fitting without invididual
-          weights and constraints.
-
-        INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            W   -   weights, array[0..N-1]
-                    Each summand in square  sum  of  approximation deviations from
-                    given  values  is  multiplied  by  the square of corresponding
-                    weight. Fill it by 1's if you don't  want  to  solve  weighted
-                    task.
-            N   -   number of points, N>0.
-            XC  -   points where function values/derivatives are constrained,
-                    array[0..K-1].
-            YC  -   values of constraints, array[0..K-1]
-            DC  -   array[0..K-1], types of constraints:
-                    * DC[i]=0   means that S(XC[i])=YC[i]
-                    * DC[i]=1   means that S'(XC[i])=YC[i]
-                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-            K   -   number of constraints, 0<=K<M.
-                    K=0 means no constraints (XC/YC/DC are not used in such cases)
-            M   -   number of basis functions ( = number_of_nodes), M>=2.
-
-        OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearWC() subroutine.
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-                                -1 means another errors in parameters passed
-                                   (N<=0, for example)
-            B   -   barycentric interpolant.
-            Rep -   report, same format as in LSFitLinearWC() subroutine.
-                    Following fields are set:
-                    * DBest         best value of the D parameter
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroutine doesn't calculate task's condition number for K<>0.
-
-        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-        Setting constraints can lead  to undesired  results,  like ill-conditioned
-        behavior, or inconsistency being detected. From the other side,  it allows
-        us to improve quality of the fit. Here we summarize  our  experience  with
-        constrained barycentric interpolants:
-        * excessive  constraints  can  be  inconsistent.   Floater-Hormann   basis
-          functions aren't as flexible as splines (although they are very smooth).
-        * the more evenly constraints are spread across [min(x),max(x)],  the more
-          chances that they will be consistent
-        * the  greater  is  M (given  fixed  constraints),  the  more chances that
-          constraints will be consistent
-        * in the general case, consistency of constraints IS NOT GUARANTEED.
-        * in the several special cases, however, we CAN guarantee consistency.
-        * one of this cases is constraints on the function  VALUES at the interval
-          boundaries. Note that consustency of the  constraints  on  the  function
-          DERIVATIVES is NOT guaranteed (you can use in such cases  cubic  splines
-          which are more flexible).
-        * another  special  case  is ONE constraint on the function value (OR, but
-          not AND, derivative) anywhere in the interval
-
-        Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
-        can't solve your task without them. Anything beyond  special  cases  given
-        above is not guaranteed and may result in inconsistency.
-
-          -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void barycentricfitfloaterhormannwc(double[] x,
-            double[] y,
-            double[] w,
-            int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            ref int info,
-            ratint.barycentricinterpolant b,
-            barycentricfitreport rep)
-        {
-            int d = 0;
-            int i = 0;
-            double wrmscur = 0;
-            double wrmsbest = 0;
-            ratint.barycentricinterpolant locb = new ratint.barycentricinterpolant();
-            barycentricfitreport locrep = new barycentricfitreport();
-            int locinfo = 0;
-
-            info = 0;
-
-            ap.assert(n>0, "BarycentricFitFloaterHormannWC: N<=0!");
-            ap.assert(m>0, "BarycentricFitFloaterHormannWC: M<=0!");
-            ap.assert(k>=0, "BarycentricFitFloaterHormannWC: K<0!");
-            ap.assert(k<m, "BarycentricFitFloaterHormannWC: K>=M!");
-            ap.assert(ap.len(x)>=n, "BarycentricFitFloaterHormannWC: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "BarycentricFitFloaterHormannWC: Length(Y)<N!");
-            ap.assert(ap.len(w)>=n, "BarycentricFitFloaterHormannWC: Length(W)<N!");
-            ap.assert(ap.len(xc)>=k, "BarycentricFitFloaterHormannWC: Length(XC)<K!");
-            ap.assert(ap.len(yc)>=k, "BarycentricFitFloaterHormannWC: Length(YC)<K!");
-            ap.assert(ap.len(dc)>=k, "BarycentricFitFloaterHormannWC: Length(DC)<K!");
-            ap.assert(apserv.isfinitevector(x, n), "BarycentricFitFloaterHormannWC: X contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(y, n), "BarycentricFitFloaterHormannWC: Y contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(w, n), "BarycentricFitFloaterHormannWC: X contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(xc, k), "BarycentricFitFloaterHormannWC: XC contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(yc, k), "BarycentricFitFloaterHormannWC: YC contains infinite or NaN values!");
-            for(i=0; i<=k-1; i++)
-            {
-                ap.assert(dc[i]==0 | dc[i]==1, "BarycentricFitFloaterHormannWC: one of DC[] is not 0 or 1!");
-            }
-            
-            //
-            // Find optimal D
-            //
-            // Info is -3 by default (degenerate constraints).
-            // If LocInfo will always be equal to -3, Info will remain equal to -3.
-            // If at least once LocInfo will be -4, Info will be -4.
-            //
-            wrmsbest = math.maxrealnumber;
-            rep.dbest = -1;
-            info = -3;
-            for(d=0; d<=Math.Min(9, n-1); d++)
-            {
-                barycentricfitwcfixedd(x, y, w, n, xc, yc, dc, k, m, d, ref locinfo, locb, locrep);
-                ap.assert((locinfo==-4 | locinfo==-3) | locinfo>0, "BarycentricFitFloaterHormannWC: unexpected result from BarycentricFitWCFixedD!");
-                if( locinfo>0 )
+                
+                //
+                // calculate linear/quadratic members
+                //
+                if( d==-1 )
                 {
                     
                     //
-                    // Calculate weghted RMS
+                    // "Fast" linear nodal function calculated using
+                    // inverse distance weighting
                     //
-                    wrmscur = 0;
-                    for(i=0; i<=n-1; i++)
+                    for(j=0; j<=nx-1; j++)
                     {
-                        wrmscur = wrmscur+math.sqr(w[i]*(y[i]-ratint.barycentriccalc(locb, x[i])));
+                        x[j] = 0;
                     }
-                    wrmscur = Math.Sqrt(wrmscur/n);
-                    if( (double)(wrmscur)<(double)(wrmsbest) | rep.dbest<0 )
+                    s = 0;
+                    for(j=0; j<=k-1; j++)
                     {
-                        ratint.barycentriccopy(locb, b);
-                        rep.dbest = d;
-                        info = 1;
-                        rep.rmserror = locrep.rmserror;
-                        rep.avgerror = locrep.avgerror;
-                        rep.avgrelerror = locrep.avgrelerror;
-                        rep.maxerror = locrep.maxerror;
-                        rep.taskrcond = locrep.taskrcond;
-                        wrmsbest = wrmscur;
+                        
+                        //
+                        // calculate J-th inverse distance weighted gradient:
+                        //     grad_k = (y_j-y_k)*(x_j-x_k)/sqr(norm(x_j-x_k))
+                        //     grad   = sum(wk*grad_k)/sum(w_k)
+                        //
+                        v = 0;
+                        for(j2=0; j2<=nx-1; j2++)
+                        {
+                            v = v+math.sqr(qxybuf[j,j2]-xy[i,j2]);
+                        }
+                        
+                        //
+                        // Although x_j<>x_k, sqr(norm(x_j-x_k)) may be zero due to
+                        // underflow. If it is, we assume than J-th gradient is zero
+                        // (i.e. don't add anything)
+                        //
+                        if( (double)(v)!=(double)(0) )
+                        {
+                            for(j2=0; j2<=nx-1; j2++)
+                            {
+                                x[j2] = x[j2]+w[j]*(qxybuf[j,nx]-xy[i,nx])*(qxybuf[j,j2]-xy[i,j2])/v;
+                            }
+                        }
+                        s = s+w[j];
+                    }
+                    for(j=0; j<=nx-1; j++)
+                    {
+                        z.q[i,nx+1+j] = x[j]/s;
                     }
                 }
                 else
                 {
-                    if( locinfo!=-3 & info<0 )
+                    
+                    //
+                    // Least squares models: build
+                    //
+                    if( d==1 )
                     {
-                        info = locinfo;
+                        
+                        //
+                        // Linear nodal function calculated using
+                        // least squares fitting to its neighbors
+                        //
+                        for(j=0; j<=k-1; j++)
+                        {
+                            for(j2=0; j2<=nx-1; j2++)
+                            {
+                                fmatrix[j,j2] = qxybuf[j,j2]-xy[i,j2];
+                            }
+                            y[j] = qxybuf[j,nx]-xy[i,nx];
+                        }
+                        nc = nx;
+                    }
+                    if( d==2 )
+                    {
+                        
+                        //
+                        // Quadratic nodal function calculated using
+                        // least squares fitting to its neighbors
+                        //
+                        for(j=0; j<=k-1; j++)
+                        {
+                            offs = 0;
+                            for(j2=0; j2<=nx-1; j2++)
+                            {
+                                fmatrix[j,offs] = qxybuf[j,j2]-xy[i,j2];
+                                offs = offs+1;
+                            }
+                            for(j2=0; j2<=nx-1; j2++)
+                            {
+                                for(j3=j2; j3<=nx-1; j3++)
+                                {
+                                    fmatrix[j,offs] = (qxybuf[j,j2]-xy[i,j2])*(qxybuf[j,j3]-xy[i,j3]);
+                                    offs = offs+1;
+                                }
+                            }
+                            y[j] = qxybuf[j,nx]-xy[i,nx];
+                        }
+                        nc = nx+(int)Math.Round(nx*(nx+1)*0.5);
+                    }
+                    idwinternalsolver(ref y, ref w, ref fmatrix, ref temp, k, nc, ref info, ref qsol, ref taskrcond);
+                    
+                    //
+                    // Least squares models: copy results
+                    //
+                    if( info>0 )
+                    {
+                        
+                        //
+                        // LLS task is solved, copy results
+                        //
+                        z.debugworstrcond = Math.Min(z.debugworstrcond, taskrcond);
+                        z.debugbestrcond = Math.Max(z.debugbestrcond, taskrcond);
+                        for(j=0; j<=nc-1; j++)
+                        {
+                            z.q[i,nx+1+j] = qsol[j];
+                        }
+                    }
+                    else
+                    {
+                        
+                        //
+                        // Solver failure, very strange, but we will use
+                        // zero values to handle it.
+                        //
+                        z.debugsolverfailures = z.debugsolverfailures+1;
+                        for(j=0; j<=nc-1; j++)
+                        {
+                            z.q[i,nx+1+j] = 0;
+                        }
                     }
                 }
             }
@@ -5106,3813 +5109,628 @@ public partial class alglib
 
 
         /*************************************************************************
-        Rational least squares fitting using  Floater-Hormann  rational  functions
-        with optimal D chosen from [0,9].
+        IDW interpolant using modified Shepard method for non-uniform datasets.
 
-        Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
-        functions. Different values of D are tried, optimal  D  (least  root  mean
-        square error) is chosen.  Task  is  linear, so linear least squares solver
-        is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
-        dominated by the least squares solver).
+        This type of model uses  constant  nodal  functions and interpolates using
+        all nodes which are closer than user-specified radius R. It  may  be  used
+        when points distribution is non-uniform at the small scale, but it  is  at
+        the distances as large as R.
 
         INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            N   -   number of points, N>0.
-            M   -   number of basis functions ( = number_of_nodes), M>=2.
+            XY  -   X and Y values, array[0..N-1,0..NX].
+                    First NX columns contain X-values, last column contain
+                    Y-values.
+            N   -   number of nodes, N>0.
+            NX  -   space dimension, NX>=1.
+            R   -   radius, R>0
 
         OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearWC() subroutine.
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-            B   -   barycentric interpolant.
-            Rep -   report, same format as in LSFitLinearWC() subroutine.
-                    Following fields are set:
-                    * DBest         best value of the D parameter
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
+            Z   -   IDW interpolant.
+
+        NOTES:
+        * if there is less than IDWKMin points within  R-ball,  algorithm  selects
+          IDWKMin closest ones, so that continuity properties of  interpolant  are
+          preserved even far from points.
 
           -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
+             Copyright 11.04.2010 by Bochkanov Sergey
         *************************************************************************/
-        public static void barycentricfitfloaterhormann(double[] x,
-            double[] y,
+        public static void idwbuildmodifiedshepardr(double[,] xy,
             int n,
-            int m,
-            ref int info,
-            ratint.barycentricinterpolant b,
-            barycentricfitreport rep)
+            int nx,
+            double r,
+            idwinterpolant z)
         {
-            double[] w = new double[0];
-            double[] xc = new double[0];
-            double[] yc = new double[0];
-            int[] dc = new int[0];
             int i = 0;
+            int[] tags = new int[0];
+            int i_ = 0;
 
-            info = 0;
-
-            ap.assert(n>0, "BarycentricFitFloaterHormann: N<=0!");
-            ap.assert(m>0, "BarycentricFitFloaterHormann: M<=0!");
-            ap.assert(ap.len(x)>=n, "BarycentricFitFloaterHormann: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "BarycentricFitFloaterHormann: Length(Y)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "BarycentricFitFloaterHormann: X contains infinite or NaN values!");
-            ap.assert(apserv.isfinitevector(y, n), "BarycentricFitFloaterHormann: Y contains infinite or NaN values!");
-            w = new double[n];
+            
+            //
+            // assertions
+            //
+            ap.assert(n>0, "IDWBuildModifiedShepardR: N<=0!");
+            ap.assert(nx>=1, "IDWBuildModifiedShepardR: NX<1!");
+            ap.assert((double)(r)>(double)(0), "IDWBuildModifiedShepardR: R<=0!");
+            
+            //
+            // primary initialization of Z
+            //
+            idwinit1(n, nx, 0, 0, n, z);
+            z.modeltype = 1;
+            z.r = r;
+            
+            //
+            // Create KD-tree
+            //
+            tags = new int[n];
             for(i=0; i<=n-1; i++)
             {
-                w[i] = 1;
+                tags[i] = i;
             }
-            barycentricfitfloaterhormannwc(x, y, w, n, xc, yc, dc, 0, m, ref info, b, rep);
+            nearestneighbor.kdtreebuildtagged(xy, tags, n, nx, 1, 2, z.tree);
+            
+            //
+            // build nodal functions
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=nx;i_++)
+                {
+                    z.q[i,i_] = xy[i,i_];
+                }
+            }
         }
 
 
         /*************************************************************************
-        Rational least squares fitting using  Floater-Hormann  rational  functions
-        with optimal D chosen from [0,9].
+        IDW model for noisy data.
 
-        Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
-        functions. Different values of D are tried, optimal  D  (least  root  mean
-        square error) is chosen.  Task  is  linear, so linear least squares solver
-        is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
-        dominated by the least squares solver).
+        This subroutine may be used to handle noisy data, i.e. data with noise  in
+        OUTPUT values.  It differs from IDWBuildModifiedShepard() in the following
+        aspects:
+        * nodal functions are not constrained to pass through  nodes:  Qi(xi)<>yi,
+          i.e. we have fitting  instead  of  interpolation.
+        * weights which are used during least  squares fitting stage are all equal
+          to 1.0 (independently of distance)
+        * "fast"-linear or constant nodal functions are not supported (either  not
+          robust enough or too rigid)
 
-        INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            N   -   number of points, N>0.
-            M   -   number of basis functions ( = number_of_nodes), M>=2.
-
-        OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearWC() subroutine.
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-            B   -   barycentric interpolant.
-            Rep -   report, same format as in LSFitLinearWC() subroutine.
-                    Following fields are set:
-                    * DBest         best value of the D parameter
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
-
-          -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void spline1dfitpenalized(double[] x,
-            double[] y,
-            int n,
-            int m,
-            double rho,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
-        {
-            double[] w = new double[0];
-            int i = 0;
-
-            x = (double[])x.Clone();
-            y = (double[])y.Clone();
-            info = 0;
-
-            ap.assert(n>=1, "Spline1DFitPenalized: N<1!");
-            ap.assert(m>=4, "Spline1DFitPenalized: M<4!");
-            ap.assert(ap.len(x)>=n, "Spline1DFitPenalized: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "Spline1DFitPenalized: Length(Y)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitPenalized: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitPenalized: Y contains infinite or NAN values!");
-            ap.assert(math.isfinite(rho), "Spline1DFitPenalized: Rho is infinite!");
-            w = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                w[i] = 1;
-            }
-            spline1dfitpenalizedw(x, y, w, n, m, rho, ref info, s, rep);
-        }
-
-
-        /*************************************************************************
-        Weighted fitting by penalized cubic spline.
-
-        Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
-        basis functions. Basis functions are cubic splines with  natural  boundary
-        conditions. Problem is regularized by  adding non-linearity penalty to the
-        usual least squares penalty function:
-
-            S(x) = arg min { LS + P }, where
-            LS   = SUM { w[i]^2*(y[i] - S(x[i]))^2 } - least squares penalty
-            P    = C*10^rho*integral{ S''(x)^2*dx } - non-linearity penalty
-            rho  - tunable constant given by user
-            C    - automatically determined scale parameter,
-                   makes penalty invariant with respect to scaling of X, Y, W.
+        This problem require far more complex tuning than interpolation  problems.
+        Below you can find some recommendations regarding this problem:
+        * focus on tuning NQ; it controls noise reduction. As for NW, you can just
+          make it equal to 2*NQ.
+        * you can use cross-validation to determine optimal NQ.
+        * optimal NQ is a result of complex tradeoff  between  noise  level  (more
+          noise = larger NQ required) and underlying  function  complexity  (given
+          fixed N, larger NQ means smoothing of compex features in the data).  For
+          example, NQ=N will reduce noise to the minimum level possible,  but  you
+          will end up with just constant/linear/quadratic (depending on  D)  least
+          squares model for the whole dataset.
 
         INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            W   -   weights, array[0..N-1]
-                    Each summand in square  sum  of  approximation deviations from
-                    given  values  is  multiplied  by  the square of corresponding
-                    weight. Fill it by 1's if you don't  want  to  solve  weighted
-                    problem.
-            N   -   number of points (optional):
-                    * N>0
-                    * if given, only first N elements of X/Y/W are processed
-                    * if not given, automatically determined from X/Y/W sizes
-            M   -   number of basis functions ( = number_of_nodes), M>=4.
-            Rho -   regularization  constant  passed   by   user.   It   penalizes
-                    nonlinearity in the regression spline. It  is  logarithmically
-                    scaled,  i.e.  actual  value  of  regularization  constant  is
-                    calculated as 10^Rho. It is automatically scaled so that:
-                    * Rho=2.0 corresponds to moderate amount of nonlinearity
-                    * generally, it should be somewhere in the [-8.0,+8.0]
-                    If you do not want to penalize nonlineary,
-                    pass small Rho. Values as low as -15 should work.
+            XY  -   X and Y values, array[0..N-1,0..NX].
+                    First NX columns contain X-values, last column contain
+                    Y-values.
+            N   -   number of nodes, N>0.
+            NX  -   space dimension, NX>=1.
+            D   -   nodal function degree, either:
+                    * 1     linear model, least squares fitting. Simpe  model  for
+                            datasets too small for quadratic models (or  for  very
+                            noisy problems).
+                    * 2     quadratic  model,  least  squares  fitting. Best model
+                            available (if your dataset is large enough).
+            NQ  -   number of points used to calculate nodal functions.  NQ should
+                    be  significantly   larger   than  1.5  times  the  number  of
+                    coefficients in a nodal function to overcome effects of noise:
+                    * larger than 1.5*(1+NX) for linear model,
+                    * larger than 3/4*(NX+2)*(NX+1) for quadratic model.
+                    Values less than this threshold will be silently increased.
+            NW  -   number of points used to calculate weights and to interpolate.
+                    Required: >=2^NX+1, values less than this  threshold  will  be
+                    silently increased.
+                    Recommended value: about 2*NQ or larger
 
         OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearWC() subroutine.
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD or
-                                   Cholesky decomposition; problem may be
-                                   too ill-conditioned (very rare)
-            S   -   spline interpolant.
-            Rep -   Following fields are set:
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
+            Z   -   IDW interpolant.
 
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
+        NOTES:
+          * best results are obtained with quadratic models, linear models are not
+            recommended to use unless you are pretty sure that it is what you want
+          * this subroutine is always succeeds (as long as correct parameters  are
+            passed).
+          * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
+            Robert J. Renka for more information on this algorithm.
 
-        NOTE 1: additional nodes are added to the spline outside  of  the  fitting
-        interval to force linearity when x<min(x,xc) or x>max(x,xc).  It  is  done
-        for consistency - we penalize non-linearity  at [min(x,xc),max(x,xc)],  so
-        it is natural to force linearity outside of this interval.
-
-        NOTE 2: function automatically sorts points,  so  caller may pass unsorted
-        array.
 
           -- ALGLIB PROJECT --
-             Copyright 19.10.2010 by Bochkanov Sergey
+             Copyright 02.03.2010 by Bochkanov Sergey
         *************************************************************************/
-        public static void spline1dfitpenalizedw(double[] x,
-            double[] y,
-            double[] w,
+        public static void idwbuildnoisy(double[,] xy,
             int n,
-            int m,
-            double rho,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
+            int nx,
+            int d,
+            int nq,
+            int nw,
+            idwinterpolant z)
         {
             int i = 0;
             int j = 0;
-            int b = 0;
+            int k = 0;
+            int j2 = 0;
+            int j3 = 0;
             double v = 0;
-            double relcnt = 0;
-            double xa = 0;
-            double xb = 0;
-            double sa = 0;
-            double sb = 0;
-            double[] xoriginal = new double[0];
-            double[] yoriginal = new double[0];
-            double pdecay = 0;
-            double tdecay = 0;
+            int nc = 0;
+            int offs = 0;
+            double taskrcond = 0;
+            double[] x = new double[0];
+            double[] qrbuf = new double[0];
+            double[,] qxybuf = new double[0,0];
+            double[] y = new double[0];
+            double[] w = new double[0];
             double[,] fmatrix = new double[0,0];
-            double[] fcolumn = new double[0];
-            double[] y2 = new double[0];
-            double[] w2 = new double[0];
-            double[] xc = new double[0];
-            double[] yc = new double[0];
-            int[] dc = new int[0];
-            double fdmax = 0;
-            double admax = 0;
-            double[,] amatrix = new double[0,0];
-            double[,] d2matrix = new double[0,0];
-            double fa = 0;
-            double ga = 0;
-            double fb = 0;
-            double gb = 0;
-            double lambdav = 0;
-            double[] bx = new double[0];
-            double[] by = new double[0];
-            double[] bd1 = new double[0];
-            double[] bd2 = new double[0];
-            double[] tx = new double[0];
-            double[] ty = new double[0];
-            double[] td = new double[0];
-            spline1d.spline1dinterpolant bs = new spline1d.spline1dinterpolant();
-            double[,] nmatrix = new double[0,0];
-            double[] rightpart = new double[0];
-            fbls.fblslincgstate cgstate = new fbls.fblslincgstate();
-            double[] c = new double[0];
-            double[] tmp0 = new double[0];
+            double[] qsol = new double[0];
+            int[] tags = new int[0];
+            double[] temp = new double[0];
+            int info = 0;
             int i_ = 0;
-            int i1_ = 0;
 
-            x = (double[])x.Clone();
-            y = (double[])y.Clone();
-            w = (double[])w.Clone();
-            info = 0;
-
-            ap.assert(n>=1, "Spline1DFitPenalizedW: N<1!");
-            ap.assert(m>=4, "Spline1DFitPenalizedW: M<4!");
-            ap.assert(ap.len(x)>=n, "Spline1DFitPenalizedW: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "Spline1DFitPenalizedW: Length(Y)<N!");
-            ap.assert(ap.len(w)>=n, "Spline1DFitPenalizedW: Length(W)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitPenalizedW: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitPenalizedW: Y contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(w, n), "Spline1DFitPenalizedW: Y contains infinite or NAN values!");
-            ap.assert(math.isfinite(rho), "Spline1DFitPenalizedW: Rho is infinite!");
             
             //
-            // Prepare LambdaV
+            // these initializers are not really necessary,
+            // but without them compiler complains about uninitialized locals
             //
-            v = -(Math.Log(math.machineepsilon)/Math.Log(10));
-            if( (double)(rho)<(double)(-v) )
+            nc = 0;
+            
+            //
+            // assertions
+            //
+            ap.assert(n>0, "IDWBuildNoisy: N<=0!");
+            ap.assert(nx>=1, "IDWBuildNoisy: NX<1!");
+            ap.assert(d>=1 & d<=2, "IDWBuildNoisy: D<>1 and D<>2!");
+            
+            //
+            // Correct parameters if needed
+            //
+            if( d==1 )
             {
-                rho = -v;
+                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(1+nx))+1);
             }
-            if( (double)(rho)>(double)(v) )
+            if( d==2 )
             {
-                rho = v;
+                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(nx+2)*(nx+1)/2)+1);
             }
-            lambdav = Math.Pow(10, rho);
+            nw = Math.Max(nw, (int)Math.Round(Math.Pow(2, nx))+1);
+            nq = Math.Min(nq, n);
+            nw = Math.Min(nw, n);
             
             //
-            // Sort X, Y, W
+            // primary initialization of Z
             //
-            spline1d.heapsortdpoints(ref x, ref y, ref w, n);
+            idwinit1(n, nx, d, nq, nw, z);
+            z.modeltype = 0;
             
             //
-            // Scale X, Y, XC, YC
+            // Create KD-tree
             //
-            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, 0, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
+            tags = new int[n];
+            for(i=0; i<=n-1; i++)
+            {
+                tags[i] = i;
+            }
+            nearestneighbor.kdtreebuildtagged(xy, tags, n, nx, 1, 2, z.tree);
             
             //
-            // Allocate space
+            // build nodal functions
+            // (special algorithm for noisy data is used)
             //
-            fmatrix = new double[n, m];
-            amatrix = new double[m, m];
-            d2matrix = new double[m, m];
-            bx = new double[m];
-            by = new double[m];
-            fcolumn = new double[n];
-            nmatrix = new double[m, m];
-            rightpart = new double[m];
-            tmp0 = new double[Math.Max(m, n)];
-            c = new double[m];
-            
-            //
-            // Fill:
-            // * FMatrix by values of basis functions
-            // * TmpAMatrix by second derivatives of I-th function at J-th point
-            // * CMatrix by constraints
-            //
-            fdmax = 0;
-            for(b=0; b<=m-1; b++)
+            temp = new double[nq+1];
+            x = new double[nx];
+            qrbuf = new double[nq];
+            qxybuf = new double[nq, nx+1];
+            if( d==1 )
+            {
+                y = new double[nq];
+                w = new double[nq];
+                qsol = new double[1+nx];
+                
+                //
+                // 1 for constant member,
+                // NX for linear members,
+                // 1 for temporary storage
+                //
+                fmatrix = new double[nq, 1+nx+1];
+            }
+            if( d==2 )
+            {
+                y = new double[nq];
+                w = new double[nq];
+                qsol = new double[1+nx+(int)Math.Round(nx*(nx+1)*0.5)];
+                
+                //
+                // 1 for constant member,
+                // NX for linear members,
+                // Round(NX*(NX+1)*0.5) for quadratic model,
+                // 1 for temporary storage
+                //
+                fmatrix = new double[nq, 1+nx+(int)Math.Round(nx*(nx+1)*0.5)+1];
+            }
+            for(i=0; i<=n-1; i++)
             {
                 
                 //
-                // Prepare I-th basis function
+                // Initialize center.
                 //
-                for(j=0; j<=m-1; j++)
+                for(i_=0; i_<=nx-1;i_++)
                 {
-                    bx[j] = (double)(2*j)/(double)(m-1)-1;
-                    by[j] = 0;
+                    z.q[i,i_] = xy[i,i_];
                 }
-                by[b] = 1;
-                spline1d.spline1dgriddiff2cubic(bx, by, m, 2, 0.0, 2, 0.0, ref bd1, ref bd2);
-                spline1d.spline1dbuildcubic(bx, by, m, 2, 0.0, 2, 0.0, bs);
                 
                 //
-                // Calculate B-th column of FMatrix
-                // Update FDMax (maximum column norm)
+                // Calculate linear/quadratic members
+                // using least squares fit
+                // NOTE 1: all weight are equal to 1.0
+                // NOTE 2: self-match is USED for this query
                 //
-                spline1d.spline1dconvcubic(bx, by, m, 2, 0.0, 2, 0.0, x, n, ref fcolumn);
-                for(i_=0; i_<=n-1;i_++)
+                for(i_=0; i_<=nx-1;i_++)
                 {
-                    fmatrix[i_,b] = fcolumn[i_];
+                    x[i_] = xy[i,i_];
                 }
-                v = 0;
-                for(i=0; i<=n-1; i++)
-                {
-                    v = v+math.sqr(w[i]*fcolumn[i]);
-                }
-                fdmax = Math.Max(fdmax, v);
-                
-                //
-                // Fill temporary with second derivatives of basis function
-                //
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    d2matrix[b,i_] = bd2[i_];
-                }
-            }
-            
-            //
-            // * calculate penalty matrix A
-            // * calculate max of diagonal elements of A
-            // * calculate PDecay - coefficient before penalty matrix
-            //
-            for(i=0; i<=m-1; i++)
-            {
-                for(j=i; j<=m-1; j++)
+                k = nearestneighbor.kdtreequeryknn(z.tree, x, nq, true);
+                nearestneighbor.kdtreequeryresultsxy(z.tree, ref qxybuf);
+                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref qrbuf);
+                if( d==1 )
                 {
                     
                     //
-                    // calculate integral(B_i''*B_j'') where B_i and B_j are
-                    // i-th and j-th basis splines.
-                    // B_i and B_j are piecewise linear functions.
+                    // Linear nodal function calculated using
+                    // least squares fitting to its neighbors
                     //
-                    v = 0;
-                    for(b=0; b<=m-2; b++)
+                    for(j=0; j<=k-1; j++)
                     {
-                        fa = d2matrix[i,b];
-                        fb = d2matrix[i,b+1];
-                        ga = d2matrix[j,b];
-                        gb = d2matrix[j,b+1];
-                        v = v+(bx[b+1]-bx[b])*(fa*ga+(fa*(gb-ga)+ga*(fb-fa))/2+(fb-fa)*(gb-ga)/3);
+                        fmatrix[j,0] = 1.0;
+                        for(j2=0; j2<=nx-1; j2++)
+                        {
+                            fmatrix[j,1+j2] = qxybuf[j,j2]-xy[i,j2];
+                        }
+                        y[j] = qxybuf[j,nx];
+                        w[j] = 1;
                     }
-                    amatrix[i,j] = v;
-                    amatrix[j,i] = v;
+                    nc = 1+nx;
+                }
+                if( d==2 )
+                {
+                    
+                    //
+                    // Quadratic nodal function calculated using
+                    // least squares fitting to its neighbors
+                    //
+                    for(j=0; j<=k-1; j++)
+                    {
+                        fmatrix[j,0] = 1;
+                        offs = 1;
+                        for(j2=0; j2<=nx-1; j2++)
+                        {
+                            fmatrix[j,offs] = qxybuf[j,j2]-xy[i,j2];
+                            offs = offs+1;
+                        }
+                        for(j2=0; j2<=nx-1; j2++)
+                        {
+                            for(j3=j2; j3<=nx-1; j3++)
+                            {
+                                fmatrix[j,offs] = (qxybuf[j,j2]-xy[i,j2])*(qxybuf[j,j3]-xy[i,j3]);
+                                offs = offs+1;
+                            }
+                        }
+                        y[j] = qxybuf[j,nx];
+                        w[j] = 1;
+                    }
+                    nc = 1+nx+(int)Math.Round(nx*(nx+1)*0.5);
+                }
+                idwinternalsolver(ref y, ref w, ref fmatrix, ref temp, k, nc, ref info, ref qsol, ref taskrcond);
+                
+                //
+                // Least squares models: copy results
+                //
+                if( info>0 )
+                {
+                    
+                    //
+                    // LLS task is solved, copy results
+                    //
+                    z.debugworstrcond = Math.Min(z.debugworstrcond, taskrcond);
+                    z.debugbestrcond = Math.Max(z.debugbestrcond, taskrcond);
+                    for(j=0; j<=nc-1; j++)
+                    {
+                        z.q[i,nx+j] = qsol[j];
+                    }
+                }
+                else
+                {
+                    
+                    //
+                    // Solver failure, very strange, but we will use
+                    // zero values to handle it.
+                    //
+                    z.debugsolverfailures = z.debugsolverfailures+1;
+                    v = 0;
+                    for(j=0; j<=k-1; j++)
+                    {
+                        v = v+qxybuf[j,nx];
+                    }
+                    z.q[i,nx] = v/k;
+                    for(j=0; j<=nc-2; j++)
+                    {
+                        z.q[i,nx+1+j] = 0;
+                    }
                 }
             }
-            admax = 0;
-            for(i=0; i<=m-1; i++)
+        }
+
+
+        /*************************************************************************
+        Internal subroutine: K-th nodal function calculation
+
+          -- ALGLIB --
+             Copyright 02.03.2010 by Bochkanov Sergey
+        *************************************************************************/
+        private static double idwcalcq(idwinterpolant z,
+            double[] x,
+            int k)
+        {
+            double result = 0;
+            int nx = 0;
+            int i = 0;
+            int j = 0;
+            int offs = 0;
+
+            nx = z.nx;
+            
+            //
+            // constant member
+            //
+            result = z.q[k,nx];
+            
+            //
+            // linear members
+            //
+            if( z.d>=1 )
             {
-                admax = Math.Max(admax, Math.Abs(amatrix[i,i]));
+                for(i=0; i<=nx-1; i++)
+                {
+                    result = result+z.q[k,nx+1+i]*(x[i]-z.q[k,i]);
+                }
             }
-            pdecay = lambdav*fdmax/admax;
             
             //
-            // Calculate TDecay for Tikhonov regularization
+            // quadratic members
             //
-            tdecay = fdmax*(1+pdecay)*10*math.machineepsilon;
+            if( z.d>=2 )
+            {
+                offs = nx+1+nx;
+                for(i=0; i<=nx-1; i++)
+                {
+                    for(j=i; j<=nx-1; j++)
+                    {
+                        result = result+z.q[k,offs]*(x[i]-z.q[k,i])*(x[j]-z.q[k,j]);
+                        offs = offs+1;
+                    }
+                }
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        Initialization of internal structures.
+
+        It assumes correctness of all parameters.
+
+          -- ALGLIB --
+             Copyright 02.03.2010 by Bochkanov Sergey
+        *************************************************************************/
+        private static void idwinit1(int n,
+            int nx,
+            int d,
+            int nq,
+            int nw,
+            idwinterpolant z)
+        {
+            z.debugsolverfailures = 0;
+            z.debugworstrcond = 1.0;
+            z.debugbestrcond = 0;
+            z.n = n;
+            z.nx = nx;
+            z.d = 0;
+            if( d==1 )
+            {
+                z.d = 1;
+            }
+            if( d==2 )
+            {
+                z.d = 2;
+            }
+            if( d==-1 )
+            {
+                z.d = 1;
+            }
+            z.nw = nw;
+            if( d==-1 )
+            {
+                z.q = new double[n, nx+1+nx];
+            }
+            if( d==0 )
+            {
+                z.q = new double[n, nx+1];
+            }
+            if( d==1 )
+            {
+                z.q = new double[n, nx+1+nx];
+            }
+            if( d==2 )
+            {
+                z.q = new double[n, nx+1+nx+(int)Math.Round(nx*(nx+1)*0.5)];
+            }
+            z.tbuf = new int[nw];
+            z.rbuf = new double[nw];
+            z.xybuf = new double[nw, nx+1];
+            z.xbuf = new double[nx];
+        }
+
+
+        /*************************************************************************
+        Linear least squares solver for small tasks.
+
+        Works faster than standard ALGLIB solver in non-degenerate cases  (due  to
+        absense of internal allocations and optimized row/colums).  In  degenerate
+        cases it calls standard solver, which results in small performance penalty
+        associated with preliminary steps.
+
+        INPUT PARAMETERS:
+            Y           array[0..N-1]
+            W           array[0..N-1]
+            FMatrix     array[0..N-1,0..M], have additional column for temporary
+                        values
+            Temp        array[0..N]
+        *************************************************************************/
+        private static void idwinternalsolver(ref double[] y,
+            ref double[] w,
+            ref double[,] fmatrix,
+            ref double[] temp,
+            int n,
+            int m,
+            ref int info,
+            ref double[] x,
+            ref double taskrcond)
+        {
+            int i = 0;
+            int j = 0;
+            double v = 0;
+            double tau = 0;
+            double[] b = new double[0];
+            densesolver.densesolverlsreport srep = new densesolver.densesolverlsreport();
+            int i_ = 0;
+            int i1_ = 0;
+
+            info = 0;
+
             
             //
-            // Prepare system
+            // set up info
             //
-            // NOTE: FMatrix is spoiled during this process
+            info = 1;
+            
+            //
+            // prepare matrix
             //
             for(i=0; i<=n-1; i++)
             {
+                fmatrix[i,m] = y[i];
                 v = w[i];
-                for(i_=0; i_<=m-1;i_++)
+                for(i_=0; i_<=m;i_++)
                 {
                     fmatrix[i,i_] = v*fmatrix[i,i_];
                 }
             }
-            ablas.rmatrixgemm(m, m, n, 1.0, fmatrix, 0, 0, 1, fmatrix, 0, 0, 0, 0.0, ref nmatrix, 0, 0);
-            for(i=0; i<=m-1; i++)
-            {
-                for(j=0; j<=m-1; j++)
-                {
-                    nmatrix[i,j] = nmatrix[i,j]+pdecay*amatrix[i,j];
-                }
-            }
-            for(i=0; i<=m-1; i++)
-            {
-                nmatrix[i,i] = nmatrix[i,i]+tdecay;
-            }
-            for(i=0; i<=m-1; i++)
-            {
-                rightpart[i] = 0;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                v = y[i]*w[i];
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    rightpart[i_] = rightpart[i_] + v*fmatrix[i,i_];
-                }
-            }
             
             //
-            // Solve system
+            // use either fast algorithm or general algorithm
             //
-            if( !trfac.spdmatrixcholesky(ref nmatrix, m, true) )
-            {
-                info = -4;
-                return;
-            }
-            fbls.fblscholeskysolve(nmatrix, 1.0, m, true, ref rightpart, ref tmp0);
-            for(i_=0; i_<=m-1;i_++)
-            {
-                c[i_] = rightpart[i_];
-            }
-            
-            //
-            // add nodes to force linearity outside of the fitting interval
-            //
-            spline1d.spline1dgriddiffcubic(bx, c, m, 2, 0.0, 2, 0.0, ref bd1);
-            tx = new double[m+2];
-            ty = new double[m+2];
-            td = new double[m+2];
-            i1_ = (0) - (1);
-            for(i_=1; i_<=m;i_++)
-            {
-                tx[i_] = bx[i_+i1_];
-            }
-            i1_ = (0) - (1);
-            for(i_=1; i_<=m;i_++)
-            {
-                ty[i_] = rightpart[i_+i1_];
-            }
-            i1_ = (0) - (1);
-            for(i_=1; i_<=m;i_++)
-            {
-                td[i_] = bd1[i_+i1_];
-            }
-            tx[0] = tx[1]-(tx[2]-tx[1]);
-            ty[0] = ty[1]-td[1]*(tx[2]-tx[1]);
-            td[0] = td[1];
-            tx[m+1] = tx[m]+(tx[m]-tx[m-1]);
-            ty[m+1] = ty[m]+td[m]*(tx[m]-tx[m-1]);
-            td[m+1] = td[m];
-            spline1d.spline1dbuildhermite(tx, ty, td, m+2, s);
-            spline1d.spline1dlintransx(s, 2/(xb-xa), -((xa+xb)/(xb-xa)));
-            spline1d.spline1dlintransy(s, sb-sa, sa);
-            info = 1;
-            
-            //
-            // Fill report
-            //
-            rep.rmserror = 0;
-            rep.avgerror = 0;
-            rep.avgrelerror = 0;
-            rep.maxerror = 0;
-            relcnt = 0;
-            spline1d.spline1dconvcubic(bx, rightpart, m, 2, 0.0, 2, 0.0, x, n, ref fcolumn);
-            for(i=0; i<=n-1; i++)
-            {
-                v = (sb-sa)*fcolumn[i]+sa;
-                rep.rmserror = rep.rmserror+math.sqr(v-yoriginal[i]);
-                rep.avgerror = rep.avgerror+Math.Abs(v-yoriginal[i]);
-                if( (double)(yoriginal[i])!=(double)(0) )
-                {
-                    rep.avgrelerror = rep.avgrelerror+Math.Abs(v-yoriginal[i])/Math.Abs(yoriginal[i]);
-                    relcnt = relcnt+1;
-                }
-                rep.maxerror = Math.Max(rep.maxerror, Math.Abs(v-yoriginal[i]));
-            }
-            rep.rmserror = Math.Sqrt(rep.rmserror/n);
-            rep.avgerror = rep.avgerror/n;
-            if( (double)(relcnt)!=(double)(0) )
-            {
-                rep.avgrelerror = rep.avgrelerror/relcnt;
-            }
-        }
-
-
-        /*************************************************************************
-        Weighted fitting by cubic  spline,  with constraints on function values or
-        derivatives.
-
-        Equidistant grid with M-2 nodes on [min(x,xc),max(x,xc)] is  used to build
-        basis functions. Basis functions are cubic splines with continuous  second
-        derivatives  and  non-fixed first  derivatives  at  interval  ends.  Small
-        regularizing term is used  when  solving  constrained  tasks  (to  improve
-        stability).
-
-        Task is linear, so linear least squares solver is used. Complexity of this
-        computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-        SEE ALSO
-            Spline1DFitHermiteWC()  -   fitting by Hermite splines (more flexible,
-                                        less smooth)
-            Spline1DFitCubic()      -   "lightweight" fitting  by  cubic  splines,
-                                        without invididual weights and constraints
-
-        INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            W   -   weights, array[0..N-1]
-                    Each summand in square  sum  of  approximation deviations from
-                    given  values  is  multiplied  by  the square of corresponding
-                    weight. Fill it by 1's if you don't  want  to  solve  weighted
-                    task.
-            N   -   number of points (optional):
-                    * N>0
-                    * if given, only first N elements of X/Y/W are processed
-                    * if not given, automatically determined from X/Y/W sizes
-            XC  -   points where spline values/derivatives are constrained,
-                    array[0..K-1].
-            YC  -   values of constraints, array[0..K-1]
-            DC  -   array[0..K-1], types of constraints:
-                    * DC[i]=0   means that S(XC[i])=YC[i]
-                    * DC[i]=1   means that S'(XC[i])=YC[i]
-                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-            K   -   number of constraints (optional):
-                    * 0<=K<M.
-                    * K=0 means no constraints (XC/YC/DC are not used)
-                    * if given, only first K elements of XC/YC/DC are used
-                    * if not given, automatically determined from XC/YC/DC
-            M   -   number of basis functions ( = number_of_nodes+2), M>=4.
-
-        OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearWC() subroutine.
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-            S   -   spline interpolant.
-            Rep -   report, same format as in LSFitLinearWC() subroutine.
-                    Following fields are set:
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
-
-
-        ORDER OF POINTS
-
-        Subroutine automatically sorts points, so caller may pass unsorted array.
-
-        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-        Setting constraints can lead  to undesired  results,  like ill-conditioned
-        behavior, or inconsistency being detected. From the other side,  it allows
-        us to improve quality of the fit. Here we summarize  our  experience  with
-        constrained regression splines:
-        * excessive constraints can be inconsistent. Splines are  piecewise  cubic
-          functions, and it is easy to create an example, where  large  number  of
-          constraints  concentrated  in  small  area will result in inconsistency.
-          Just because spline is not flexible enough to satisfy all of  them.  And
-          same constraints spread across the  [min(x),max(x)]  will  be  perfectly
-          consistent.
-        * the more evenly constraints are spread across [min(x),max(x)],  the more
-          chances that they will be consistent
-        * the  greater  is  M (given  fixed  constraints),  the  more chances that
-          constraints will be consistent
-        * in the general case, consistency of constraints IS NOT GUARANTEED.
-        * in the several special cases, however, we CAN guarantee consistency.
-        * one of this cases is constraints  on  the  function  values  AND/OR  its
-          derivatives at the interval boundaries.
-        * another  special  case  is ONE constraint on the function value (OR, but
-          not AND, derivative) anywhere in the interval
-
-        Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
-        can't solve your task without them. Anything beyond  special  cases  given
-        above is not guaranteed and may result in inconsistency.
-
-
-          -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void spline1dfitcubicwc(double[] x,
-            double[] y,
-            double[] w,
-            int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
-        {
-            int i = 0;
-
-            info = 0;
-
-            ap.assert(n>=1, "Spline1DFitCubicWC: N<1!");
-            ap.assert(m>=4, "Spline1DFitCubicWC: M<4!");
-            ap.assert(k>=0, "Spline1DFitCubicWC: K<0!");
-            ap.assert(k<m, "Spline1DFitCubicWC: K>=M!");
-            ap.assert(ap.len(x)>=n, "Spline1DFitCubicWC: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "Spline1DFitCubicWC: Length(Y)<N!");
-            ap.assert(ap.len(w)>=n, "Spline1DFitCubicWC: Length(W)<N!");
-            ap.assert(ap.len(xc)>=k, "Spline1DFitCubicWC: Length(XC)<K!");
-            ap.assert(ap.len(yc)>=k, "Spline1DFitCubicWC: Length(YC)<K!");
-            ap.assert(ap.len(dc)>=k, "Spline1DFitCubicWC: Length(DC)<K!");
-            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitCubicWC: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitCubicWC: Y contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(w, n), "Spline1DFitCubicWC: Y contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(xc, k), "Spline1DFitCubicWC: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(yc, k), "Spline1DFitCubicWC: Y contains infinite or NAN values!");
-            for(i=0; i<=k-1; i++)
-            {
-                ap.assert(dc[i]==0 | dc[i]==1, "Spline1DFitCubicWC: DC[i] is neither 0 or 1!");
-            }
-            spline1dfitinternal(0, x, y, w, n, xc, yc, dc, k, m, ref info, s, rep);
-        }
-
-
-        /*************************************************************************
-        Weighted  fitting  by Hermite spline,  with constraints on function values
-        or first derivatives.
-
-        Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
-        basis functions. Basis functions are Hermite splines.  Small  regularizing
-        term is used when solving constrained tasks (to improve stability).
-
-        Task is linear, so linear least squares solver is used. Complexity of this
-        computational scheme is O(N*M^2), mostly dominated by least squares solver
-
-        SEE ALSO
-            Spline1DFitCubicWC()    -   fitting by Cubic splines (less flexible,
-                                        more smooth)
-            Spline1DFitHermite()    -   "lightweight" Hermite fitting, without
-                                        invididual weights and constraints
-
-        INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            W   -   weights, array[0..N-1]
-                    Each summand in square  sum  of  approximation deviations from
-                    given  values  is  multiplied  by  the square of corresponding
-                    weight. Fill it by 1's if you don't  want  to  solve  weighted
-                    task.
-            N   -   number of points (optional):
-                    * N>0
-                    * if given, only first N elements of X/Y/W are processed
-                    * if not given, automatically determined from X/Y/W sizes
-            XC  -   points where spline values/derivatives are constrained,
-                    array[0..K-1].
-            YC  -   values of constraints, array[0..K-1]
-            DC  -   array[0..K-1], types of constraints:
-                    * DC[i]=0   means that S(XC[i])=YC[i]
-                    * DC[i]=1   means that S'(XC[i])=YC[i]
-                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
-            K   -   number of constraints (optional):
-                    * 0<=K<M.
-                    * K=0 means no constraints (XC/YC/DC are not used)
-                    * if given, only first K elements of XC/YC/DC are used
-                    * if not given, automatically determined from XC/YC/DC
-            M   -   number of basis functions (= 2 * number of nodes),
-                    M>=4,
-                    M IS EVEN!
-
-        OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearW() subroutine:
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-                                -2 means odd M was passed (which is not supported)
-                                -1 means another errors in parameters passed
-                                   (N<=0, for example)
-            S   -   spline interpolant.
-            Rep -   report, same format as in LSFitLinearW() subroutine.
-                    Following fields are set:
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
-
-        IMPORTANT:
-            this subroitine supports only even M's
-
-
-        ORDER OF POINTS
-
-        Subroutine automatically sorts points, so caller may pass unsorted array.
-
-        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
-
-        Setting constraints can lead  to undesired  results,  like ill-conditioned
-        behavior, or inconsistency being detected. From the other side,  it allows
-        us to improve quality of the fit. Here we summarize  our  experience  with
-        constrained regression splines:
-        * excessive constraints can be inconsistent. Splines are  piecewise  cubic
-          functions, and it is easy to create an example, where  large  number  of
-          constraints  concentrated  in  small  area will result in inconsistency.
-          Just because spline is not flexible enough to satisfy all of  them.  And
-          same constraints spread across the  [min(x),max(x)]  will  be  perfectly
-          consistent.
-        * the more evenly constraints are spread across [min(x),max(x)],  the more
-          chances that they will be consistent
-        * the  greater  is  M (given  fixed  constraints),  the  more chances that
-          constraints will be consistent
-        * in the general case, consistency of constraints is NOT GUARANTEED.
-        * in the several special cases, however, we can guarantee consistency.
-        * one of this cases is  M>=4  and   constraints  on   the  function  value
-          (AND/OR its derivative) at the interval boundaries.
-        * another special case is M>=4  and  ONE  constraint on the function value
-          (OR, BUT NOT AND, derivative) anywhere in [min(x),max(x)]
-
-        Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
-        can't solve your task without them. Anything beyond  special  cases  given
-        above is not guaranteed and may result in inconsistency.
-
-          -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void spline1dfithermitewc(double[] x,
-            double[] y,
-            double[] w,
-            int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
-        {
-            int i = 0;
-
-            info = 0;
-
-            ap.assert(n>=1, "Spline1DFitHermiteWC: N<1!");
-            ap.assert(m>=4, "Spline1DFitHermiteWC: M<4!");
-            ap.assert(m%2==0, "Spline1DFitHermiteWC: M is odd!");
-            ap.assert(k>=0, "Spline1DFitHermiteWC: K<0!");
-            ap.assert(k<m, "Spline1DFitHermiteWC: K>=M!");
-            ap.assert(ap.len(x)>=n, "Spline1DFitHermiteWC: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "Spline1DFitHermiteWC: Length(Y)<N!");
-            ap.assert(ap.len(w)>=n, "Spline1DFitHermiteWC: Length(W)<N!");
-            ap.assert(ap.len(xc)>=k, "Spline1DFitHermiteWC: Length(XC)<K!");
-            ap.assert(ap.len(yc)>=k, "Spline1DFitHermiteWC: Length(YC)<K!");
-            ap.assert(ap.len(dc)>=k, "Spline1DFitHermiteWC: Length(DC)<K!");
-            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitHermiteWC: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitHermiteWC: Y contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(w, n), "Spline1DFitHermiteWC: Y contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(xc, k), "Spline1DFitHermiteWC: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(yc, k), "Spline1DFitHermiteWC: Y contains infinite or NAN values!");
-            for(i=0; i<=k-1; i++)
-            {
-                ap.assert(dc[i]==0 | dc[i]==1, "Spline1DFitHermiteWC: DC[i] is neither 0 or 1!");
-            }
-            spline1dfitinternal(1, x, y, w, n, xc, yc, dc, k, m, ref info, s, rep);
-        }
-
-
-        /*************************************************************************
-        Least squares fitting by cubic spline.
-
-        This subroutine is "lightweight" alternative for more complex and feature-
-        rich Spline1DFitCubicWC().  See  Spline1DFitCubicWC() for more information
-        about subroutine parameters (we don't duplicate it here because of length)
-
-          -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void spline1dfitcubic(double[] x,
-            double[] y,
-            int n,
-            int m,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
-        {
-            int i = 0;
-            double[] w = new double[0];
-            double[] xc = new double[0];
-            double[] yc = new double[0];
-            int[] dc = new int[0];
-
-            info = 0;
-
-            ap.assert(n>=1, "Spline1DFitCubic: N<1!");
-            ap.assert(m>=4, "Spline1DFitCubic: M<4!");
-            ap.assert(ap.len(x)>=n, "Spline1DFitCubic: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "Spline1DFitCubic: Length(Y)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitCubic: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitCubic: Y contains infinite or NAN values!");
-            w = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                w[i] = 1;
-            }
-            spline1dfitcubicwc(x, y, w, n, xc, yc, dc, 0, m, ref info, s, rep);
-        }
-
-
-        /*************************************************************************
-        Least squares fitting by Hermite spline.
-
-        This subroutine is "lightweight" alternative for more complex and feature-
-        rich Spline1DFitHermiteWC().  See Spline1DFitHermiteWC()  description  for
-        more information about subroutine parameters (we don't duplicate  it  here
-        because of length).
-
-          -- ALGLIB PROJECT --
-             Copyright 18.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void spline1dfithermite(double[] x,
-            double[] y,
-            int n,
-            int m,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
-        {
-            int i = 0;
-            double[] w = new double[0];
-            double[] xc = new double[0];
-            double[] yc = new double[0];
-            int[] dc = new int[0];
-
-            info = 0;
-
-            ap.assert(n>=1, "Spline1DFitHermite: N<1!");
-            ap.assert(m>=4, "Spline1DFitHermite: M<4!");
-            ap.assert(m%2==0, "Spline1DFitHermite: M is odd!");
-            ap.assert(ap.len(x)>=n, "Spline1DFitHermite: Length(X)<N!");
-            ap.assert(ap.len(y)>=n, "Spline1DFitHermite: Length(Y)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitHermite: X contains infinite or NAN values!");
-            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitHermite: Y contains infinite or NAN values!");
-            w = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                w[i] = 1;
-            }
-            spline1dfithermitewc(x, y, w, n, xc, yc, dc, 0, m, ref info, s, rep);
-        }
-
-
-        /*************************************************************************
-        Weighted linear least squares fitting.
-
-        QR decomposition is used to reduce task to MxM, then triangular solver  or
-        SVD-based solver is used depending on condition number of the  system.  It
-        allows to maximize speed and retain decent accuracy.
-
-        INPUT PARAMETERS:
-            Y       -   array[0..N-1] Function values in  N  points.
-            W       -   array[0..N-1]  Weights  corresponding to function  values.
-                        Each summand in square  sum  of  approximation  deviations
-                        from  given  values  is  multiplied  by  the   square   of
-                        corresponding weight.
-            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                        FMatrix[I, J] - value of J-th basis function in I-th point.
-            N       -   number of points used. N>=1.
-            M       -   number of basis functions, M>=1.
-
-        OUTPUT PARAMETERS:
-            Info    -   error code:
-                        * -4    internal SVD decomposition subroutine failed (very
-                                rare and for degenerate systems only)
-                        * -1    incorrect N/M were specified
-                        *  1    task is solved
-            C       -   decomposition coefficients, array[0..M-1]
-            Rep     -   fitting report. Following fields are set:
-                        * Rep.TaskRCond     reciprocal of condition number
-                        * RMSError          rms error on the (X,Y).
-                        * AvgError          average error on the (X,Y).
-                        * AvgRelError       average relative error on the non-zero Y
-                        * MaxError          maximum error
-                                            NON-WEIGHTED ERRORS ARE CALCULATED
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitlinearw(double[] y,
-            double[] w,
-            double[,] fmatrix,
-            int n,
-            int m,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            info = 0;
-            c = new double[0];
-
-            ap.assert(n>=1, "LSFitLinearW: N<1!");
-            ap.assert(m>=1, "LSFitLinearW: M<1!");
-            ap.assert(ap.len(y)>=n, "LSFitLinearW: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitLinearW: Y contains infinite or NaN values!");
-            ap.assert(ap.len(w)>=n, "LSFitLinearW: length(W)<N!");
-            ap.assert(apserv.isfinitevector(w, n), "LSFitLinearW: W contains infinite or NaN values!");
-            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinearW: rows(FMatrix)<N!");
-            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinearW: cols(FMatrix)<M!");
-            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinearW: FMatrix contains infinite or NaN values!");
-            lsfitlinearinternal(y, w, fmatrix, n, m, ref info, ref c, rep);
-        }
-
-
-        /*************************************************************************
-        Weighted constained linear least squares fitting.
-
-        This  is  variation  of LSFitLinearW(), which searchs for min|A*x=b| given
-        that  K  additional  constaints  C*x=bc are satisfied. It reduces original
-        task to modified one: min|B*y-d| WITHOUT constraints,  then LSFitLinearW()
-        is called.
-
-        INPUT PARAMETERS:
-            Y       -   array[0..N-1] Function values in  N  points.
-            W       -   array[0..N-1]  Weights  corresponding to function  values.
-                        Each summand in square  sum  of  approximation  deviations
-                        from  given  values  is  multiplied  by  the   square   of
-                        corresponding weight.
-            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                        FMatrix[I,J] - value of J-th basis function in I-th point.
-            CMatrix -   a table of constaints, array[0..K-1,0..M].
-                        I-th row of CMatrix corresponds to I-th linear constraint:
-                        CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
-            N       -   number of points used. N>=1.
-            M       -   number of basis functions, M>=1.
-            K       -   number of constraints, 0 <= K < M
-                        K=0 corresponds to absence of constraints.
-
-        OUTPUT PARAMETERS:
-            Info    -   error code:
-                        * -4    internal SVD decomposition subroutine failed (very
-                                rare and for degenerate systems only)
-                        * -3    either   too   many  constraints  (M   or   more),
-                                degenerate  constraints   (some   constraints  are
-                                repetead twice) or inconsistent  constraints  were
-                                specified.
-                        *  1    task is solved
-            C       -   decomposition coefficients, array[0..M-1]
-            Rep     -   fitting report. Following fields are set:
-                        * RMSError          rms error on the (X,Y).
-                        * AvgError          average error on the (X,Y).
-                        * AvgRelError       average relative error on the non-zero Y
-                        * MaxError          maximum error
-                                            NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
-
-          -- ALGLIB --
-             Copyright 07.09.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitlinearwc(double[] y,
-            double[] w,
-            double[,] fmatrix,
-            double[,] cmatrix,
-            int n,
-            int m,
-            int k,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            int i = 0;
-            int j = 0;
-            double[] tau = new double[0];
-            double[,] q = new double[0,0];
-            double[,] f2 = new double[0,0];
-            double[] tmp = new double[0];
-            double[] c0 = new double[0];
-            double v = 0;
-            int i_ = 0;
-
-            y = (double[])y.Clone();
-            cmatrix = (double[,])cmatrix.Clone();
-            info = 0;
-            c = new double[0];
-
-            ap.assert(n>=1, "LSFitLinearWC: N<1!");
-            ap.assert(m>=1, "LSFitLinearWC: M<1!");
-            ap.assert(k>=0, "LSFitLinearWC: K<0!");
-            ap.assert(ap.len(y)>=n, "LSFitLinearWC: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitLinearWC: Y contains infinite or NaN values!");
-            ap.assert(ap.len(w)>=n, "LSFitLinearWC: length(W)<N!");
-            ap.assert(apserv.isfinitevector(w, n), "LSFitLinearWC: W contains infinite or NaN values!");
-            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinearWC: rows(FMatrix)<N!");
-            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinearWC: cols(FMatrix)<M!");
-            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinearWC: FMatrix contains infinite or NaN values!");
-            ap.assert(ap.rows(cmatrix)>=k, "LSFitLinearWC: rows(CMatrix)<K!");
-            ap.assert(ap.cols(cmatrix)>=m+1 | k==0, "LSFitLinearWC: cols(CMatrix)<M+1!");
-            ap.assert(apserv.apservisfinitematrix(cmatrix, k, m+1), "LSFitLinearWC: CMatrix contains infinite or NaN values!");
-            if( k>=m )
-            {
-                info = -3;
-                return;
-            }
-            
-            //
-            // Solve
-            //
-            if( k==0 )
+            if( m<=n )
             {
                 
                 //
-                // no constraints
+                // QR decomposition
+                // We assume that M<=N (we would have called LSFit() otherwise)
                 //
-                lsfitlinearinternal(y, w, fmatrix, n, m, ref info, ref c, rep);
-            }
-            else
-            {
-                
-                //
-                // First, find general form solution of constraints system:
-                // * factorize C = L*Q
-                // * unpack Q
-                // * fill upper part of C with zeros (for RCond)
-                //
-                // We got C=C0+Q2'*y where Q2 is lower M-K rows of Q.
-                //
-                ortfac.rmatrixlq(ref cmatrix, k, m, ref tau);
-                ortfac.rmatrixlqunpackq(cmatrix, k, m, tau, m, ref q);
-                for(i=0; i<=k-1; i++)
+                for(i=0; i<=m-1; i++)
                 {
-                    for(j=i+1; j<=m-1; j++)
+                    if( i<n-1 )
                     {
-                        cmatrix[i,j] = 0.0;
+                        i1_ = (i) - (1);
+                        for(i_=1; i_<=n-i;i_++)
+                        {
+                            temp[i_] = fmatrix[i_+i1_,i];
+                        }
+                        reflections.generatereflection(ref temp, n-i, ref tau);
+                        fmatrix[i,i] = temp[1];
+                        temp[1] = 1;
+                        for(j=i+1; j<=m; j++)
+                        {
+                            i1_ = (1)-(i);
+                            v = 0.0;
+                            for(i_=i; i_<=n-1;i_++)
+                            {
+                                v += fmatrix[i_,j]*temp[i_+i1_];
+                            }
+                            v = tau*v;
+                            i1_ = (1) - (i);
+                            for(i_=i; i_<=n-1;i_++)
+                            {
+                                fmatrix[i_,j] = fmatrix[i_,j] - v*temp[i_+i1_];
+                            }
+                        }
                     }
                 }
-                if( (double)(rcond.rmatrixlurcondinf(cmatrix, k))<(double)(1000*math.machineepsilon) )
+                
+                //
+                // Check condition number
+                //
+                taskrcond = rcond.rmatrixtrrcondinf(fmatrix, m, true, false);
+                
+                //
+                // use either fast algorithm for non-degenerate cases
+                // or slow algorithm for degenerate cases
+                //
+                if( (double)(taskrcond)>(double)(10000*n*math.machineepsilon) )
                 {
-                    info = -3;
-                    return;
-                }
-                tmp = new double[k];
-                for(i=0; i<=k-1; i++)
-                {
-                    if( i>0 )
+                    
+                    //
+                    // solve triangular system R*x = FMatrix[0:M-1,M]
+                    // using fast algorithm, then exit
+                    //
+                    x[m-1] = fmatrix[m-1,m]/fmatrix[m-1,m-1];
+                    for(i=m-2; i>=0; i--)
                     {
                         v = 0.0;
-                        for(i_=0; i_<=i-1;i_++)
+                        for(i_=i+1; i_<=m-1;i_++)
                         {
-                            v += cmatrix[i,i_]*tmp[i_];
+                            v += fmatrix[i,i_]*x[i_];
                         }
+                        x[i] = (fmatrix[i,m]-v)/fmatrix[i,i];
                     }
-                    else
-                    {
-                        v = 0;
-                    }
-                    tmp[i] = (cmatrix[i,m]-v)/cmatrix[i,i];
-                }
-                c0 = new double[m];
-                for(i=0; i<=m-1; i++)
-                {
-                    c0[i] = 0;
-                }
-                for(i=0; i<=k-1; i++)
-                {
-                    v = tmp[i];
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        c0[i_] = c0[i_] + v*q[i,i_];
-                    }
-                }
-                
-                //
-                // Second, prepare modified matrix F2 = F*Q2' and solve modified task
-                //
-                tmp = new double[Math.Max(n, m)+1];
-                f2 = new double[n, m-k];
-                blas.matrixvectormultiply(fmatrix, 0, n-1, 0, m-1, false, c0, 0, m-1, -1.0, ref y, 0, n-1, 1.0);
-                blas.matrixmatrixmultiply(fmatrix, 0, n-1, 0, m-1, false, q, k, m-1, 0, m-1, true, 1.0, ref f2, 0, n-1, 0, m-k-1, 0.0, ref tmp);
-                lsfitlinearinternal(y, w, f2, n, m-k, ref info, ref tmp, rep);
-                rep.taskrcond = -1;
-                if( info<=0 )
-                {
-                    return;
-                }
-                
-                //
-                // then, convert back to original answer: C = C0 + Q2'*Y0
-                //
-                c = new double[m];
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    c[i_] = c0[i_];
-                }
-                blas.matrixvectormultiply(q, k, m-1, 0, m-1, true, tmp, 0, m-k-1, 1.0, ref c, 0, m-1, 1.0);
-            }
-        }
-
-
-        /*************************************************************************
-        Linear least squares fitting.
-
-        QR decomposition is used to reduce task to MxM, then triangular solver  or
-        SVD-based solver is used depending on condition number of the  system.  It
-        allows to maximize speed and retain decent accuracy.
-
-        INPUT PARAMETERS:
-            Y       -   array[0..N-1] Function values in  N  points.
-            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                        FMatrix[I, J] - value of J-th basis function in I-th point.
-            N       -   number of points used. N>=1.
-            M       -   number of basis functions, M>=1.
-
-        OUTPUT PARAMETERS:
-            Info    -   error code:
-                        * -4    internal SVD decomposition subroutine failed (very
-                                rare and for degenerate systems only)
-                        *  1    task is solved
-            C       -   decomposition coefficients, array[0..M-1]
-            Rep     -   fitting report. Following fields are set:
-                        * Rep.TaskRCond     reciprocal of condition number
-                        * RMSError          rms error on the (X,Y).
-                        * AvgError          average error on the (X,Y).
-                        * AvgRelError       average relative error on the non-zero Y
-                        * MaxError          maximum error
-                                            NON-WEIGHTED ERRORS ARE CALCULATED
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitlinear(double[] y,
-            double[,] fmatrix,
-            int n,
-            int m,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            double[] w = new double[0];
-            int i = 0;
-
-            info = 0;
-            c = new double[0];
-
-            ap.assert(n>=1, "LSFitLinear: N<1!");
-            ap.assert(m>=1, "LSFitLinear: M<1!");
-            ap.assert(ap.len(y)>=n, "LSFitLinear: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitLinear: Y contains infinite or NaN values!");
-            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinear: rows(FMatrix)<N!");
-            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinear: cols(FMatrix)<M!");
-            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinear: FMatrix contains infinite or NaN values!");
-            w = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                w[i] = 1;
-            }
-            lsfitlinearinternal(y, w, fmatrix, n, m, ref info, ref c, rep);
-        }
-
-
-        /*************************************************************************
-        Constained linear least squares fitting.
-
-        This  is  variation  of LSFitLinear(),  which searchs for min|A*x=b| given
-        that  K  additional  constaints  C*x=bc are satisfied. It reduces original
-        task to modified one: min|B*y-d| WITHOUT constraints,  then  LSFitLinear()
-        is called.
-
-        INPUT PARAMETERS:
-            Y       -   array[0..N-1] Function values in  N  points.
-            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
-                        FMatrix[I,J] - value of J-th basis function in I-th point.
-            CMatrix -   a table of constaints, array[0..K-1,0..M].
-                        I-th row of CMatrix corresponds to I-th linear constraint:
-                        CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
-            N       -   number of points used. N>=1.
-            M       -   number of basis functions, M>=1.
-            K       -   number of constraints, 0 <= K < M
-                        K=0 corresponds to absence of constraints.
-
-        OUTPUT PARAMETERS:
-            Info    -   error code:
-                        * -4    internal SVD decomposition subroutine failed (very
-                                rare and for degenerate systems only)
-                        * -3    either   too   many  constraints  (M   or   more),
-                                degenerate  constraints   (some   constraints  are
-                                repetead twice) or inconsistent  constraints  were
-                                specified.
-                        *  1    task is solved
-            C       -   decomposition coefficients, array[0..M-1]
-            Rep     -   fitting report. Following fields are set:
-                        * RMSError          rms error on the (X,Y).
-                        * AvgError          average error on the (X,Y).
-                        * AvgRelError       average relative error on the non-zero Y
-                        * MaxError          maximum error
-                                            NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
-
-          -- ALGLIB --
-             Copyright 07.09.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitlinearc(double[] y,
-            double[,] fmatrix,
-            double[,] cmatrix,
-            int n,
-            int m,
-            int k,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            double[] w = new double[0];
-            int i = 0;
-
-            y = (double[])y.Clone();
-            info = 0;
-            c = new double[0];
-
-            ap.assert(n>=1, "LSFitLinearC: N<1!");
-            ap.assert(m>=1, "LSFitLinearC: M<1!");
-            ap.assert(k>=0, "LSFitLinearC: K<0!");
-            ap.assert(ap.len(y)>=n, "LSFitLinearC: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitLinearC: Y contains infinite or NaN values!");
-            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinearC: rows(FMatrix)<N!");
-            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinearC: cols(FMatrix)<M!");
-            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinearC: FMatrix contains infinite or NaN values!");
-            ap.assert(ap.rows(cmatrix)>=k, "LSFitLinearC: rows(CMatrix)<K!");
-            ap.assert(ap.cols(cmatrix)>=m+1 | k==0, "LSFitLinearC: cols(CMatrix)<M+1!");
-            ap.assert(apserv.apservisfinitematrix(cmatrix, k, m+1), "LSFitLinearC: CMatrix contains infinite or NaN values!");
-            w = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                w[i] = 1;
-            }
-            lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref c, rep);
-        }
-
-
-        /*************************************************************************
-        Weighted nonlinear least squares fitting using function values only.
-
-        Combination of numerical differentiation and secant updates is used to
-        obtain function Jacobian.
-
-        Nonlinear task min(F(c)) is solved, where
-
-            F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-
-            * N is a number of points,
-            * M is a dimension of a space points belong to,
-            * K is a dimension of a space of parameters being fitted,
-            * w is an N-dimensional vector of weight coefficients,
-            * x is a set of N points, each of them is an M-dimensional vector,
-            * c is a K-dimensional vector of parameters being fitted
-
-        This subroutine uses only f(c,x[i]).
-
-        INPUT PARAMETERS:
-            X       -   array[0..N-1,0..M-1], points (one row = one point)
-            Y       -   array[0..N-1], function values.
-            W       -   weights, array[0..N-1]
-            C       -   array[0..K-1], initial approximation to the solution,
-            N       -   number of points, N>1
-            M       -   dimension of space
-            K       -   number of parameters being fitted
-            DiffStep-   numerical differentiation step;
-                        should not be very small or large;
-                        large = loss of accuracy
-                        small = growth of round-off errors
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 18.10.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitcreatewf(double[,] x,
-            double[] y,
-            double[] w,
-            double[] c,
-            int n,
-            int m,
-            int k,
-            double diffstep,
-            lsfitstate state)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            ap.assert(n>=1, "LSFitCreateWF: N<1!");
-            ap.assert(m>=1, "LSFitCreateWF: M<1!");
-            ap.assert(k>=1, "LSFitCreateWF: K<1!");
-            ap.assert(ap.len(c)>=k, "LSFitCreateWF: length(C)<K!");
-            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateWF: C contains infinite or NaN values!");
-            ap.assert(ap.len(y)>=n, "LSFitCreateWF: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateWF: Y contains infinite or NaN values!");
-            ap.assert(ap.len(w)>=n, "LSFitCreateWF: length(W)<N!");
-            ap.assert(apserv.isfinitevector(w, n), "LSFitCreateWF: W contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateWF: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateWF: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateWF: X contains infinite or NaN values!");
-            ap.assert(math.isfinite(diffstep), "LSFitCreateWF: DiffStep is not finite!");
-            ap.assert((double)(diffstep)>(double)(0), "LSFitCreateWF: DiffStep<=0!");
-            state.n = n;
-            state.m = m;
-            state.k = k;
-            lsfitsetcond(state, 0.0, 0.0, 0);
-            lsfitsetstpmax(state, 0.0);
-            lsfitsetxrep(state, false);
-            state.taskx = new double[n, m];
-            state.tasky = new double[n];
-            state.w = new double[n];
-            state.c = new double[k];
-            state.x = new double[m];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = c[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.w[i_] = w[i_];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    state.taskx[i,i_] = x[i,i_];
-                }
-                state.tasky[i] = y[i];
-            }
-            minlm.minlmcreatev(k, n, state.c, diffstep, state.optstate);
-            lsfitclearrequestfields(state);
-            state.rstate.ia = new int[4+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-        }
-
-
-        /*************************************************************************
-        Nonlinear least squares fitting using function values only.
-
-        Combination of numerical differentiation and secant updates is used to
-        obtain function Jacobian.
-
-        Nonlinear task min(F(c)) is solved, where
-
-            F(c) = (f(c,x[0])-y[0])^2 + ... + (f(c,x[n-1])-y[n-1])^2,
-
-            * N is a number of points,
-            * M is a dimension of a space points belong to,
-            * K is a dimension of a space of parameters being fitted,
-            * w is an N-dimensional vector of weight coefficients,
-            * x is a set of N points, each of them is an M-dimensional vector,
-            * c is a K-dimensional vector of parameters being fitted
-
-        This subroutine uses only f(c,x[i]).
-
-        INPUT PARAMETERS:
-            X       -   array[0..N-1,0..M-1], points (one row = one point)
-            Y       -   array[0..N-1], function values.
-            C       -   array[0..K-1], initial approximation to the solution,
-            N       -   number of points, N>1
-            M       -   dimension of space
-            K       -   number of parameters being fitted
-            DiffStep-   numerical differentiation step;
-                        should not be very small or large;
-                        large = loss of accuracy
-                        small = growth of round-off errors
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 18.10.2008 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitcreatef(double[,] x,
-            double[] y,
-            double[] c,
-            int n,
-            int m,
-            int k,
-            double diffstep,
-            lsfitstate state)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            ap.assert(n>=1, "LSFitCreateFG: N<1!");
-            ap.assert(m>=1, "LSFitCreateFG: M<1!");
-            ap.assert(k>=1, "LSFitCreateFG: K<1!");
-            ap.assert(ap.len(c)>=k, "LSFitCreateFG: length(C)<K!");
-            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateFG: C contains infinite or NaN values!");
-            ap.assert(ap.len(y)>=n, "LSFitCreateFG: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateFG: Y contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateFG: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateFG: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFG: X contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateFG: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateFG: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFG: X contains infinite or NaN values!");
-            ap.assert(math.isfinite(diffstep), "LSFitCreateWF: DiffStep is not finite!");
-            ap.assert((double)(diffstep)>(double)(0), "LSFitCreateWF: DiffStep<=0!");
-            state.n = n;
-            state.m = m;
-            state.k = k;
-            lsfitsetcond(state, 0.0, 0.0, 0);
-            lsfitsetstpmax(state, 0.0);
-            lsfitsetxrep(state, false);
-            state.taskx = new double[n, m];
-            state.tasky = new double[n];
-            state.w = new double[n];
-            state.c = new double[k];
-            state.x = new double[m];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = c[i_];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    state.taskx[i,i_] = x[i,i_];
-                }
-                state.tasky[i] = y[i];
-                state.w[i] = 1;
-            }
-            minlm.minlmcreatev(k, n, state.c, diffstep, state.optstate);
-            lsfitclearrequestfields(state);
-            state.rstate.ia = new int[4+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-        }
-
-
-        /*************************************************************************
-        Weighted nonlinear least squares fitting using gradient only.
-
-        Nonlinear task min(F(c)) is solved, where
-
-            F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-            
-            * N is a number of points,
-            * M is a dimension of a space points belong to,
-            * K is a dimension of a space of parameters being fitted,
-            * w is an N-dimensional vector of weight coefficients,
-            * x is a set of N points, each of them is an M-dimensional vector,
-            * c is a K-dimensional vector of parameters being fitted
-            
-        This subroutine uses only f(c,x[i]) and its gradient.
-            
-        INPUT PARAMETERS:
-            X       -   array[0..N-1,0..M-1], points (one row = one point)
-            Y       -   array[0..N-1], function values.
-            W       -   weights, array[0..N-1]
-            C       -   array[0..K-1], initial approximation to the solution,
-            N       -   number of points, N>1
-            M       -   dimension of space
-            K       -   number of parameters being fitted
-            CheapFG -   boolean flag, which is:
-                        * True  if both function and gradient calculation complexity
-                                are less than O(M^2).  An improved  algorithm  can
-                                be  used  which corresponds  to  FGJ  scheme  from
-                                MINLM unit.
-                        * False otherwise.
-                                Standard Jacibian-bases  Levenberg-Marquardt  algo
-                                will be used (FJ scheme).
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-        See also:
-            LSFitResults
-            LSFitCreateFG (fitting without weights)
-            LSFitCreateWFGH (fitting using Hessian)
-            LSFitCreateFGH (fitting using Hessian, without weights)
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitcreatewfg(double[,] x,
-            double[] y,
-            double[] w,
-            double[] c,
-            int n,
-            int m,
-            int k,
-            bool cheapfg,
-            lsfitstate state)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            ap.assert(n>=1, "LSFitCreateWFG: N<1!");
-            ap.assert(m>=1, "LSFitCreateWFG: M<1!");
-            ap.assert(k>=1, "LSFitCreateWFG: K<1!");
-            ap.assert(ap.len(c)>=k, "LSFitCreateWFG: length(C)<K!");
-            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateWFG: C contains infinite or NaN values!");
-            ap.assert(ap.len(y)>=n, "LSFitCreateWFG: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateWFG: Y contains infinite or NaN values!");
-            ap.assert(ap.len(w)>=n, "LSFitCreateWFG: length(W)<N!");
-            ap.assert(apserv.isfinitevector(w, n), "LSFitCreateWFG: W contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateWFG: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateWFG: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateWFG: X contains infinite or NaN values!");
-            state.n = n;
-            state.m = m;
-            state.k = k;
-            lsfitsetcond(state, 0.0, 0.0, 0);
-            lsfitsetstpmax(state, 0.0);
-            lsfitsetxrep(state, false);
-            state.taskx = new double[n, m];
-            state.tasky = new double[n];
-            state.w = new double[n];
-            state.c = new double[k];
-            state.x = new double[m];
-            state.g = new double[k];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = c[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.w[i_] = w[i_];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    state.taskx[i,i_] = x[i,i_];
-                }
-                state.tasky[i] = y[i];
-            }
-            if( cheapfg )
-            {
-                minlm.minlmcreatevgj(k, n, state.c, state.optstate);
-            }
-            else
-            {
-                minlm.minlmcreatevj(k, n, state.c, state.optstate);
-            }
-            lsfitclearrequestfields(state);
-            state.rstate.ia = new int[4+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-        }
-
-
-        /*************************************************************************
-        Nonlinear least squares fitting using gradient only, without individual
-        weights.
-
-        Nonlinear task min(F(c)) is solved, where
-
-            F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
-
-            * N is a number of points,
-            * M is a dimension of a space points belong to,
-            * K is a dimension of a space of parameters being fitted,
-            * x is a set of N points, each of them is an M-dimensional vector,
-            * c is a K-dimensional vector of parameters being fitted
-
-        This subroutine uses only f(c,x[i]) and its gradient.
-
-        INPUT PARAMETERS:
-            X       -   array[0..N-1,0..M-1], points (one row = one point)
-            Y       -   array[0..N-1], function values.
-            C       -   array[0..K-1], initial approximation to the solution,
-            N       -   number of points, N>1
-            M       -   dimension of space
-            K       -   number of parameters being fitted
-            CheapFG -   boolean flag, which is:
-                        * True  if both function and gradient calculation complexity
-                                are less than O(M^2).  An improved  algorithm  can
-                                be  used  which corresponds  to  FGJ  scheme  from
-                                MINLM unit.
-                        * False otherwise.
-                                Standard Jacibian-bases  Levenberg-Marquardt  algo
-                                will be used (FJ scheme).
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitcreatefg(double[,] x,
-            double[] y,
-            double[] c,
-            int n,
-            int m,
-            int k,
-            bool cheapfg,
-            lsfitstate state)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            ap.assert(n>=1, "LSFitCreateFG: N<1!");
-            ap.assert(m>=1, "LSFitCreateFG: M<1!");
-            ap.assert(k>=1, "LSFitCreateFG: K<1!");
-            ap.assert(ap.len(c)>=k, "LSFitCreateFG: length(C)<K!");
-            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateFG: C contains infinite or NaN values!");
-            ap.assert(ap.len(y)>=n, "LSFitCreateFG: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateFG: Y contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateFG: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateFG: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFG: X contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateFG: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateFG: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFG: X contains infinite or NaN values!");
-            state.n = n;
-            state.m = m;
-            state.k = k;
-            lsfitsetcond(state, 0.0, 0.0, 0);
-            lsfitsetstpmax(state, 0.0);
-            lsfitsetxrep(state, false);
-            state.taskx = new double[n, m];
-            state.tasky = new double[n];
-            state.w = new double[n];
-            state.c = new double[k];
-            state.x = new double[m];
-            state.g = new double[k];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = c[i_];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    state.taskx[i,i_] = x[i,i_];
-                }
-                state.tasky[i] = y[i];
-                state.w[i] = 1;
-            }
-            if( cheapfg )
-            {
-                minlm.minlmcreatevgj(k, n, state.c, state.optstate);
-            }
-            else
-            {
-                minlm.minlmcreatevj(k, n, state.c, state.optstate);
-            }
-            lsfitclearrequestfields(state);
-            state.rstate.ia = new int[4+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-        }
-
-
-        /*************************************************************************
-        Weighted nonlinear least squares fitting using gradient/Hessian.
-
-        Nonlinear task min(F(c)) is solved, where
-
-            F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-
-            * N is a number of points,
-            * M is a dimension of a space points belong to,
-            * K is a dimension of a space of parameters being fitted,
-            * w is an N-dimensional vector of weight coefficients,
-            * x is a set of N points, each of them is an M-dimensional vector,
-            * c is a K-dimensional vector of parameters being fitted
-
-        This subroutine uses f(c,x[i]), its gradient and its Hessian.
-
-        INPUT PARAMETERS:
-            X       -   array[0..N-1,0..M-1], points (one row = one point)
-            Y       -   array[0..N-1], function values.
-            W       -   weights, array[0..N-1]
-            C       -   array[0..K-1], initial approximation to the solution,
-            N       -   number of points, N>1
-            M       -   dimension of space
-            K       -   number of parameters being fitted
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitcreatewfgh(double[,] x,
-            double[] y,
-            double[] w,
-            double[] c,
-            int n,
-            int m,
-            int k,
-            lsfitstate state)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            ap.assert(n>=1, "LSFitCreateWFGH: N<1!");
-            ap.assert(m>=1, "LSFitCreateWFGH: M<1!");
-            ap.assert(k>=1, "LSFitCreateWFGH: K<1!");
-            ap.assert(ap.len(c)>=k, "LSFitCreateWFGH: length(C)<K!");
-            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateWFGH: C contains infinite or NaN values!");
-            ap.assert(ap.len(y)>=n, "LSFitCreateWFGH: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateWFGH: Y contains infinite or NaN values!");
-            ap.assert(ap.len(w)>=n, "LSFitCreateWFGH: length(W)<N!");
-            ap.assert(apserv.isfinitevector(w, n), "LSFitCreateWFGH: W contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateWFGH: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateWFGH: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateWFGH: X contains infinite or NaN values!");
-            state.n = n;
-            state.m = m;
-            state.k = k;
-            lsfitsetcond(state, 0.0, 0.0, 0);
-            lsfitsetstpmax(state, 0.0);
-            lsfitsetxrep(state, false);
-            state.taskx = new double[n, m];
-            state.tasky = new double[n];
-            state.w = new double[n];
-            state.c = new double[k];
-            state.h = new double[k, k];
-            state.x = new double[m];
-            state.g = new double[k];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = c[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.w[i_] = w[i_];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    state.taskx[i,i_] = x[i,i_];
-                }
-                state.tasky[i] = y[i];
-            }
-            minlm.minlmcreatefgh(k, state.c, state.optstate);
-            lsfitclearrequestfields(state);
-            state.rstate.ia = new int[4+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-        }
-
-
-        /*************************************************************************
-        Nonlinear least squares fitting using gradient/Hessian, without individial
-        weights.
-
-        Nonlinear task min(F(c)) is solved, where
-
-            F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
-
-            * N is a number of points,
-            * M is a dimension of a space points belong to,
-            * K is a dimension of a space of parameters being fitted,
-            * x is a set of N points, each of them is an M-dimensional vector,
-            * c is a K-dimensional vector of parameters being fitted
-
-        This subroutine uses f(c,x[i]), its gradient and its Hessian.
-
-        INPUT PARAMETERS:
-            X       -   array[0..N-1,0..M-1], points (one row = one point)
-            Y       -   array[0..N-1], function values.
-            C       -   array[0..K-1], initial approximation to the solution,
-            N       -   number of points, N>1
-            M       -   dimension of space
-            K       -   number of parameters being fitted
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitcreatefgh(double[,] x,
-            double[] y,
-            double[] c,
-            int n,
-            int m,
-            int k,
-            lsfitstate state)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            ap.assert(n>=1, "LSFitCreateFGH: N<1!");
-            ap.assert(m>=1, "LSFitCreateFGH: M<1!");
-            ap.assert(k>=1, "LSFitCreateFGH: K<1!");
-            ap.assert(ap.len(c)>=k, "LSFitCreateFGH: length(C)<K!");
-            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateFGH: C contains infinite or NaN values!");
-            ap.assert(ap.len(y)>=n, "LSFitCreateFGH: length(Y)<N!");
-            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateFGH: Y contains infinite or NaN values!");
-            ap.assert(ap.rows(x)>=n, "LSFitCreateFGH: rows(X)<N!");
-            ap.assert(ap.cols(x)>=m, "LSFitCreateFGH: cols(X)<M!");
-            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFGH: X contains infinite or NaN values!");
-            state.n = n;
-            state.m = m;
-            state.k = k;
-            lsfitsetcond(state, 0.0, 0.0, 0);
-            lsfitsetstpmax(state, 0.0);
-            lsfitsetxrep(state, false);
-            state.taskx = new double[n, m];
-            state.tasky = new double[n];
-            state.w = new double[n];
-            state.c = new double[k];
-            state.h = new double[k, k];
-            state.x = new double[m];
-            state.g = new double[k];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = c[i_];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    state.taskx[i,i_] = x[i,i_];
-                }
-                state.tasky[i] = y[i];
-                state.w[i] = 1;
-            }
-            minlm.minlmcreatefgh(k, state.c, state.optstate);
-            lsfitclearrequestfields(state);
-            state.rstate.ia = new int[4+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-        }
-
-
-        /*************************************************************************
-        Stopping conditions for nonlinear least squares fitting.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            EpsF    -   stopping criterion. Algorithm stops if
-                        |F(k+1)-F(k)| <= EpsF*max{|F(k)|, |F(k+1)|, 1}
-            EpsX    -   stopping criterion. Algorithm stops if
-                        |X(k+1)-X(k)| <= EpsX*(1+|X(k)|)
-            MaxIts  -   stopping criterion. Algorithm stops after MaxIts iterations.
-                        MaxIts=0 means no stopping criterion.
-
-        NOTE
-
-        Passing EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to automatic
-        stopping criterion selection (according to the scheme used by MINLM unit).
-
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitsetcond(lsfitstate state,
-            double epsf,
-            double epsx,
-            int maxits)
-        {
-            ap.assert(math.isfinite(epsf), "LSFitSetCond: EpsF is not finite!");
-            ap.assert((double)(epsf)>=(double)(0), "LSFitSetCond: negative EpsF!");
-            ap.assert(math.isfinite(epsx), "LSFitSetCond: EpsX is not finite!");
-            ap.assert((double)(epsx)>=(double)(0), "LSFitSetCond: negative EpsX!");
-            ap.assert(maxits>=0, "LSFitSetCond: negative MaxIts!");
-            state.epsf = epsf;
-            state.epsx = epsx;
-            state.maxits = maxits;
-        }
-
-
-        /*************************************************************************
-        This function sets maximum step length
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                        want to limit step length.
-
-        Use this subroutine when you optimize target function which contains exp()
-        or  other  fast  growing  functions,  and optimization algorithm makes too
-        large  steps  which  leads  to overflow. This function allows us to reject
-        steps  that  are  too  large  (and  therefore  expose  us  to the possible
-        overflow) without actually calculating function value at the x+stp*d.
-
-        NOTE: non-zero StpMax leads to moderate  performance  degradation  because
-        intermediate  step  of  preconditioned L-BFGS optimization is incompatible
-        with limits on step size.
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitsetstpmax(lsfitstate state,
-            double stpmax)
-        {
-            ap.assert((double)(stpmax)>=(double)(0), "LSFitSetStpMax: StpMax<0!");
-            state.stpmax = stpmax;
-        }
-
-
-        /*************************************************************************
-        This function turns on/off reporting.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            NeedXRep-   whether iteration reports are needed or not
-            
-        When reports are needed, State.C (current parameters) and State.F (current
-        value of fitting function) are reported.
-
-
-          -- ALGLIB --
-             Copyright 15.08.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitsetxrep(lsfitstate state,
-            bool needxrep)
-        {
-            state.xrep = needxrep;
-        }
-
-
-        /*************************************************************************
-        NOTES:
-
-        1. this algorithm is somewhat unusual because it works with  parameterized
-           function f(C,X), where X is a function argument (we  have  many  points
-           which are characterized by different  argument  values),  and  C  is  a
-           parameter to fit.
-
-           For example, if we want to do linear fit by f(c0,c1,x) = c0*x+c1,  then
-           x will be argument, and {c0,c1} will be parameters.
-           
-           It is important to understand that this algorithm finds minimum in  the
-           space of function PARAMETERS (not arguments), so it  needs  derivatives
-           of f() with respect to C, not X.
-           
-           In the example above it will need f=c0*x+c1 and {df/dc0,df/dc1} = {x,1}
-           instead of {df/dx} = {c0}.
-
-        2. Callback functions accept C as the first parameter, and X as the second
-
-        3. If  state  was  created  with  LSFitCreateFG(),  algorithm  needs  just
-           function   and   its   gradient,   but   if   state   was  created with
-           LSFitCreateFGH(), algorithm will need function, gradient and Hessian.
-           
-           According  to  the  said  above,  there  ase  several  versions of this
-           function, which accept different sets of callbacks.
-           
-           This flexibility opens way to subtle errors - you may create state with
-           LSFitCreateFGH() (optimization using Hessian), but call function  which
-           does not accept Hessian. So when algorithm will request Hessian,  there
-           will be no callback to call. In this case exception will be thrown.
-           
-           Be careful to avoid such errors because there is no way to find them at
-           compile time - you can see them at runtime only.
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static bool lsfititeration(lsfitstate state)
-        {
-            bool result = new bool();
-            int n = 0;
-            int m = 0;
-            int k = 0;
-            int i = 0;
-            int j = 0;
-            double v = 0;
-            double relcnt = 0;
-            int i_ = 0;
-
-            
-            //
-            // Reverse communication preparations
-            // I know it looks ugly, but it works the same way
-            // anywhere from C++ to Python.
-            //
-            // This code initializes locals by:
-            // * random values determined during code
-            //   generation - on first subroutine call
-            // * values from previous call - on subsequent calls
-            //
-            if( state.rstate.stage>=0 )
-            {
-                n = state.rstate.ia[0];
-                m = state.rstate.ia[1];
-                k = state.rstate.ia[2];
-                i = state.rstate.ia[3];
-                j = state.rstate.ia[4];
-                v = state.rstate.ra[0];
-                relcnt = state.rstate.ra[1];
-            }
-            else
-            {
-                n = -983;
-                m = -989;
-                k = -834;
-                i = 900;
-                j = -287;
-                v = 364;
-                relcnt = 214;
-            }
-            if( state.rstate.stage==0 )
-            {
-                goto lbl_0;
-            }
-            if( state.rstate.stage==1 )
-            {
-                goto lbl_1;
-            }
-            if( state.rstate.stage==2 )
-            {
-                goto lbl_2;
-            }
-            if( state.rstate.stage==3 )
-            {
-                goto lbl_3;
-            }
-            if( state.rstate.stage==4 )
-            {
-                goto lbl_4;
-            }
-            if( state.rstate.stage==5 )
-            {
-                goto lbl_5;
-            }
-            if( state.rstate.stage==6 )
-            {
-                goto lbl_6;
-            }
-            
-            //
-            // Routine body
-            //
-            
-            //
-            // init
-            //
-            n = state.n;
-            m = state.m;
-            k = state.k;
-            minlm.minlmsetcond(state.optstate, 0.0, state.epsf, state.epsx, state.maxits);
-            minlm.minlmsetstpmax(state.optstate, state.stpmax);
-            minlm.minlmsetxrep(state.optstate, state.xrep);
-            
-            //
-            // Optimize
-            //
-        lbl_7:
-            if( !minlm.minlmiteration(state.optstate) )
-            {
-                goto lbl_8;
-            }
-            if( !state.optstate.needfi )
-            {
-                goto lbl_9;
-            }
-            
-            //
-            // calculate f[] = wi*(f(xi,c)-yi)
-            //
-            i = 0;
-        lbl_11:
-            if( i>n-1 )
-            {
-                goto lbl_13;
-            }
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.optstate.x[i_];
-            }
-            for(i_=0; i_<=m-1;i_++)
-            {
-                state.x[i_] = state.taskx[i,i_];
-            }
-            state.pointindex = i;
-            lsfitclearrequestfields(state);
-            state.needf = true;
-            state.rstate.stage = 0;
-            goto lbl_rcomm;
-        lbl_0:
-            state.needf = false;
-            state.optstate.fi[i] = state.w[i]*(state.f-state.tasky[i]);
-            i = i+1;
-            goto lbl_11;
-        lbl_13:
-            goto lbl_7;
-        lbl_9:
-            if( !state.optstate.needf )
-            {
-                goto lbl_14;
-            }
-            
-            //
-            // calculate F = sum (wi*(f(xi,c)-yi))^2
-            //
-            state.optstate.f = 0;
-            i = 0;
-        lbl_16:
-            if( i>n-1 )
-            {
-                goto lbl_18;
-            }
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.optstate.x[i_];
-            }
-            for(i_=0; i_<=m-1;i_++)
-            {
-                state.x[i_] = state.taskx[i,i_];
-            }
-            state.pointindex = i;
-            lsfitclearrequestfields(state);
-            state.needf = true;
-            state.rstate.stage = 1;
-            goto lbl_rcomm;
-        lbl_1:
-            state.needf = false;
-            state.optstate.f = state.optstate.f+math.sqr(state.w[i]*(state.f-state.tasky[i]));
-            i = i+1;
-            goto lbl_16;
-        lbl_18:
-            goto lbl_7;
-        lbl_14:
-            if( !state.optstate.needfg )
-            {
-                goto lbl_19;
-            }
-            
-            //
-            // calculate F/gradF
-            //
-            state.optstate.f = 0;
-            for(i=0; i<=k-1; i++)
-            {
-                state.optstate.g[i] = 0;
-            }
-            i = 0;
-        lbl_21:
-            if( i>n-1 )
-            {
-                goto lbl_23;
-            }
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.optstate.x[i_];
-            }
-            for(i_=0; i_<=m-1;i_++)
-            {
-                state.x[i_] = state.taskx[i,i_];
-            }
-            state.pointindex = i;
-            lsfitclearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 2;
-            goto lbl_rcomm;
-        lbl_2:
-            state.needfg = false;
-            state.optstate.f = state.optstate.f+math.sqr(state.w[i]*(state.f-state.tasky[i]));
-            v = math.sqr(state.w[i])*2*(state.f-state.tasky[i]);
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.optstate.g[i_] = state.optstate.g[i_] + v*state.g[i_];
-            }
-            i = i+1;
-            goto lbl_21;
-        lbl_23:
-            goto lbl_7;
-        lbl_19:
-            if( !state.optstate.needfij )
-            {
-                goto lbl_24;
-            }
-            
-            //
-            // calculate Fi/jac(Fi)
-            //
-            i = 0;
-        lbl_26:
-            if( i>n-1 )
-            {
-                goto lbl_28;
-            }
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.optstate.x[i_];
-            }
-            for(i_=0; i_<=m-1;i_++)
-            {
-                state.x[i_] = state.taskx[i,i_];
-            }
-            state.pointindex = i;
-            lsfitclearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 3;
-            goto lbl_rcomm;
-        lbl_3:
-            state.needfg = false;
-            state.optstate.fi[i] = state.w[i]*(state.f-state.tasky[i]);
-            v = state.w[i];
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.optstate.j[i,i_] = v*state.g[i_];
-            }
-            i = i+1;
-            goto lbl_26;
-        lbl_28:
-            goto lbl_7;
-        lbl_24:
-            if( !state.optstate.needfgh )
-            {
-                goto lbl_29;
-            }
-            
-            //
-            // calculate F/grad(F)/hess(F)
-            //
-            state.optstate.f = 0;
-            for(i=0; i<=k-1; i++)
-            {
-                state.optstate.g[i] = 0;
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                for(j=0; j<=k-1; j++)
-                {
-                    state.optstate.h[i,j] = 0;
-                }
-            }
-            i = 0;
-        lbl_31:
-            if( i>n-1 )
-            {
-                goto lbl_33;
-            }
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.optstate.x[i_];
-            }
-            for(i_=0; i_<=m-1;i_++)
-            {
-                state.x[i_] = state.taskx[i,i_];
-            }
-            state.pointindex = i;
-            lsfitclearrequestfields(state);
-            state.needfgh = true;
-            state.rstate.stage = 4;
-            goto lbl_rcomm;
-        lbl_4:
-            state.needfgh = false;
-            state.optstate.f = state.optstate.f+math.sqr(state.w[i]*(state.f-state.tasky[i]));
-            v = math.sqr(state.w[i])*2*(state.f-state.tasky[i]);
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.optstate.g[i_] = state.optstate.g[i_] + v*state.g[i_];
-            }
-            for(j=0; j<=k-1; j++)
-            {
-                v = 2*math.sqr(state.w[i])*state.g[j];
-                for(i_=0; i_<=k-1;i_++)
-                {
-                    state.optstate.h[j,i_] = state.optstate.h[j,i_] + v*state.g[i_];
-                }
-                v = 2*math.sqr(state.w[i])*(state.f-state.tasky[i]);
-                for(i_=0; i_<=k-1;i_++)
-                {
-                    state.optstate.h[j,i_] = state.optstate.h[j,i_] + v*state.h[j,i_];
-                }
-            }
-            i = i+1;
-            goto lbl_31;
-        lbl_33:
-            goto lbl_7;
-        lbl_29:
-            if( !state.optstate.xupdated )
-            {
-                goto lbl_34;
-            }
-            
-            //
-            // Report new iteration
-            //
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.optstate.x[i_];
-            }
-            state.f = state.optstate.f;
-            lsfitclearrequestfields(state);
-            state.xupdated = true;
-            state.rstate.stage = 5;
-            goto lbl_rcomm;
-        lbl_5:
-            state.xupdated = false;
-            goto lbl_7;
-        lbl_34:
-            goto lbl_7;
-        lbl_8:
-            minlm.minlmresults(state.optstate, ref state.c, state.optrep);
-            state.repterminationtype = state.optrep.terminationtype;
-            
-            //
-            // calculate errors
-            //
-            if( state.repterminationtype<=0 )
-            {
-                goto lbl_36;
-            }
-            state.reprmserror = 0;
-            state.repavgerror = 0;
-            state.repavgrelerror = 0;
-            state.repmaxerror = 0;
-            relcnt = 0;
-            i = 0;
-        lbl_38:
-            if( i>n-1 )
-            {
-                goto lbl_40;
-            }
-            for(i_=0; i_<=k-1;i_++)
-            {
-                state.c[i_] = state.c[i_];
-            }
-            for(i_=0; i_<=m-1;i_++)
-            {
-                state.x[i_] = state.taskx[i,i_];
-            }
-            state.pointindex = i;
-            lsfitclearrequestfields(state);
-            state.needf = true;
-            state.rstate.stage = 6;
-            goto lbl_rcomm;
-        lbl_6:
-            state.needf = false;
-            v = state.f;
-            state.reprmserror = state.reprmserror+math.sqr(v-state.tasky[i]);
-            state.repavgerror = state.repavgerror+Math.Abs(v-state.tasky[i]);
-            if( (double)(state.tasky[i])!=(double)(0) )
-            {
-                state.repavgrelerror = state.repavgrelerror+Math.Abs(v-state.tasky[i])/Math.Abs(state.tasky[i]);
-                relcnt = relcnt+1;
-            }
-            state.repmaxerror = Math.Max(state.repmaxerror, Math.Abs(v-state.tasky[i]));
-            i = i+1;
-            goto lbl_38;
-        lbl_40:
-            state.reprmserror = Math.Sqrt(state.reprmserror/n);
-            state.repavgerror = state.repavgerror/n;
-            if( (double)(relcnt)!=(double)(0) )
-            {
-                state.repavgrelerror = state.repavgrelerror/relcnt;
-            }
-        lbl_36:
-            result = false;
-            return result;
-            
-            //
-            // Saving state
-            //
-        lbl_rcomm:
-            result = true;
-            state.rstate.ia[0] = n;
-            state.rstate.ia[1] = m;
-            state.rstate.ia[2] = k;
-            state.rstate.ia[3] = i;
-            state.rstate.ia[4] = j;
-            state.rstate.ra[0] = v;
-            state.rstate.ra[1] = relcnt;
-            return result;
-        }
-
-
-        /*************************************************************************
-        Nonlinear least squares fitting results.
-
-        Called after return from LSFitFit().
-
-        INPUT PARAMETERS:
-            State   -   algorithm state
-
-        OUTPUT PARAMETERS:
-            Info    -   completetion code:
-                            *  1    relative function improvement is no more than
-                                    EpsF.
-                            *  2    relative step is no more than EpsX.
-                            *  4    gradient norm is no more than EpsG
-                            *  5    MaxIts steps was taken
-                            *  7    stopping conditions are too stringent,
-                                    further improvement is impossible
-            C       -   array[0..K-1], solution
-            Rep     -   optimization report. Following fields are set:
-                        * Rep.TerminationType completetion code:
-                        * RMSError          rms error on the (X,Y).
-                        * AvgError          average error on the (X,Y).
-                        * AvgRelError       average relative error on the non-zero Y
-                        * MaxError          maximum error
-                                            NON-WEIGHTED ERRORS ARE CALCULATED
-
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitresults(lsfitstate state,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            int i_ = 0;
-
-            info = 0;
-            c = new double[0];
-
-            info = state.repterminationtype;
-            if( info>0 )
-            {
-                c = new double[state.k];
-                for(i_=0; i_<=state.k-1;i_++)
-                {
-                    c[i_] = state.c[i_];
-                }
-                rep.rmserror = state.reprmserror;
-                rep.avgerror = state.repavgerror;
-                rep.avgrelerror = state.repavgrelerror;
-                rep.maxerror = state.repmaxerror;
-            }
-        }
-
-
-        /*************************************************************************
-        Internal subroutine: automatic scaling for LLS tasks.
-        NEVER CALL IT DIRECTLY!
-
-        Maps abscissas to [-1,1], standartizes ordinates and correspondingly scales
-        constraints. It also scales weights so that max(W[i])=1
-
-        Transformations performed:
-        * X, XC         [XA,XB] => [-1,+1]
-                        transformation makes min(X)=-1, max(X)=+1
-
-        * Y             [SA,SB] => [0,1]
-                        transformation makes mean(Y)=0, stddev(Y)=1
-                        
-        * YC            transformed accordingly to SA, SB, DC[I]
-
-          -- ALGLIB PROJECT --
-             Copyright 08.09.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void lsfitscalexy(ref double[] x,
-            ref double[] y,
-            ref double[] w,
-            int n,
-            ref double[] xc,
-            ref double[] yc,
-            int[] dc,
-            int k,
-            ref double xa,
-            ref double xb,
-            ref double sa,
-            ref double sb,
-            ref double[] xoriginal,
-            ref double[] yoriginal)
-        {
-            double xmin = 0;
-            double xmax = 0;
-            int i = 0;
-            double mx = 0;
-            int i_ = 0;
-
-            xa = 0;
-            xb = 0;
-            sa = 0;
-            sb = 0;
-            xoriginal = new double[0];
-            yoriginal = new double[0];
-
-            ap.assert(n>=1, "LSFitScaleXY: incorrect N");
-            ap.assert(k>=0, "LSFitScaleXY: incorrect K");
-            
-            //
-            // Calculate xmin/xmax.
-            // Force xmin<>xmax.
-            //
-            xmin = x[0];
-            xmax = x[0];
-            for(i=1; i<=n-1; i++)
-            {
-                xmin = Math.Min(xmin, x[i]);
-                xmax = Math.Max(xmax, x[i]);
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                xmin = Math.Min(xmin, xc[i]);
-                xmax = Math.Max(xmax, xc[i]);
-            }
-            if( (double)(xmin)==(double)(xmax) )
-            {
-                if( (double)(xmin)==(double)(0) )
-                {
-                    xmin = -1;
-                    xmax = 1;
                 }
                 else
                 {
-                    if( (double)(xmin)>(double)(0) )
-                    {
-                        xmin = 0.5*xmin;
-                    }
-                    else
-                    {
-                        xmax = 0.5*xmax;
-                    }
-                }
-            }
-            
-            //
-            // Transform abscissas: map [XA,XB] to [0,1]
-            //
-            // Store old X[] in XOriginal[] (it will be used
-            // to calculate relative error).
-            //
-            xoriginal = new double[n];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                xoriginal[i_] = x[i_];
-            }
-            xa = xmin;
-            xb = xmax;
-            for(i=0; i<=n-1; i++)
-            {
-                x[i] = 2*(x[i]-0.5*(xa+xb))/(xb-xa);
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                ap.assert(dc[i]>=0, "LSFitScaleXY: internal error!");
-                xc[i] = 2*(xc[i]-0.5*(xa+xb))/(xb-xa);
-                yc[i] = yc[i]*Math.Pow(0.5*(xb-xa), dc[i]);
-            }
-            
-            //
-            // Transform function values: map [SA,SB] to [0,1]
-            // SA = mean(Y),
-            // SB = SA+stddev(Y).
-            //
-            // Store old Y[] in YOriginal[] (it will be used
-            // to calculate relative error).
-            //
-            yoriginal = new double[n];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                yoriginal[i_] = y[i_];
-            }
-            sa = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                sa = sa+y[i];
-            }
-            sa = sa/n;
-            sb = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                sb = sb+math.sqr(y[i]-sa);
-            }
-            sb = Math.Sqrt(sb/n)+sa;
-            if( (double)(sb)==(double)(sa) )
-            {
-                sb = 2*sa;
-            }
-            if( (double)(sb)==(double)(sa) )
-            {
-                sb = sa+1;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                y[i] = (y[i]-sa)/(sb-sa);
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                if( dc[i]==0 )
-                {
-                    yc[i] = (yc[i]-sa)/(sb-sa);
-                }
-                else
-                {
-                    yc[i] = yc[i]/(sb-sa);
-                }
-            }
-            
-            //
-            // Scale weights
-            //
-            mx = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                mx = Math.Max(mx, Math.Abs(w[i]));
-            }
-            if( (double)(mx)!=(double)(0) )
-            {
-                for(i=0; i<=n-1; i++)
-                {
-                    w[i] = w[i]/mx;
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        Internal spline fitting subroutine
-
-          -- ALGLIB PROJECT --
-             Copyright 08.09.2009 by Bochkanov Sergey
-        *************************************************************************/
-        private static void spline1dfitinternal(int st,
-            double[] x,
-            double[] y,
-            double[] w,
-            int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            ref int info,
-            spline1d.spline1dinterpolant s,
-            spline1dfitreport rep)
-        {
-            double[,] fmatrix = new double[0,0];
-            double[,] cmatrix = new double[0,0];
-            double[] y2 = new double[0];
-            double[] w2 = new double[0];
-            double[] sx = new double[0];
-            double[] sy = new double[0];
-            double[] sd = new double[0];
-            double[] tmp = new double[0];
-            double[] xoriginal = new double[0];
-            double[] yoriginal = new double[0];
-            lsfitreport lrep = new lsfitreport();
-            double v0 = 0;
-            double v1 = 0;
-            double v2 = 0;
-            double mx = 0;
-            spline1d.spline1dinterpolant s2 = new spline1d.spline1dinterpolant();
-            int i = 0;
-            int j = 0;
-            int relcnt = 0;
-            double xa = 0;
-            double xb = 0;
-            double sa = 0;
-            double sb = 0;
-            double bl = 0;
-            double br = 0;
-            double decay = 0;
-            int i_ = 0;
-
-            x = (double[])x.Clone();
-            y = (double[])y.Clone();
-            w = (double[])w.Clone();
-            xc = (double[])xc.Clone();
-            yc = (double[])yc.Clone();
-            info = 0;
-
-            ap.assert(st==0 | st==1, "Spline1DFit: internal error!");
-            if( st==0 & m<4 )
-            {
-                info = -1;
-                return;
-            }
-            if( st==1 & m<4 )
-            {
-                info = -1;
-                return;
-            }
-            if( (n<1 | k<0) | k>=m )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                info = 0;
-                if( dc[i]<0 )
-                {
-                    info = -1;
-                }
-                if( dc[i]>1 )
-                {
-                    info = -1;
-                }
-                if( info<0 )
-                {
-                    return;
-                }
-            }
-            if( st==1 & m%2!=0 )
-            {
-                
-                //
-                // Hermite fitter must have even number of basis functions
-                //
-                info = -2;
-                return;
-            }
-            
-            //
-            // weight decay for correct handling of task which becomes
-            // degenerate after constraints are applied
-            //
-            decay = 10000*math.machineepsilon;
-            
-            //
-            // Scale X, Y, XC, YC
-            //
-            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, k, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
-            
-            //
-            // allocate space, initialize:
-            // * SX     -   grid for basis functions
-            // * SY     -   values of basis functions at grid points
-            // * FMatrix-   values of basis functions at X[]
-            // * CMatrix-   values (derivatives) of basis functions at XC[]
-            //
-            y2 = new double[n+m];
-            w2 = new double[n+m];
-            fmatrix = new double[n+m, m];
-            if( k>0 )
-            {
-                cmatrix = new double[k, m+1];
-            }
-            if( st==0 )
-            {
-                
-                //
-                // allocate space for cubic spline
-                //
-                sx = new double[m-2];
-                sy = new double[m-2];
-                for(j=0; j<=m-2-1; j++)
-                {
-                    sx[j] = (double)(2*j)/(double)(m-2-1)-1;
-                }
-            }
-            if( st==1 )
-            {
-                
-                //
-                // allocate space for Hermite spline
-                //
-                sx = new double[m/2];
-                sy = new double[m/2];
-                sd = new double[m/2];
-                for(j=0; j<=m/2-1; j++)
-                {
-                    sx[j] = (double)(2*j)/(double)(m/2-1)-1;
-                }
-            }
-            
-            //
-            // Prepare design and constraints matrices:
-            // * fill constraints matrix
-            // * fill first N rows of design matrix with values
-            // * fill next M rows of design matrix with regularizing term
-            // * append M zeros to Y
-            // * append M elements, mean(abs(W)) each, to W
-            //
-            for(j=0; j<=m-1; j++)
-            {
-                
-                //
-                // prepare Jth basis function
-                //
-                if( st==0 )
-                {
                     
                     //
-                    // cubic spline basis
+                    // use more general algorithm
                     //
-                    for(i=0; i<=m-2-1; i++)
+                    b = new double[m];
+                    for(i=0; i<=m-1; i++)
                     {
-                        sy[i] = 0;
+                        for(j=0; j<=i-1; j++)
+                        {
+                            fmatrix[i,j] = 0.0;
+                        }
+                        b[i] = fmatrix[i,m];
                     }
-                    bl = 0;
-                    br = 0;
-                    if( j<m-2 )
-                    {
-                        sy[j] = 1;
-                    }
-                    if( j==m-2 )
-                    {
-                        bl = 1;
-                    }
-                    if( j==m-1 )
-                    {
-                        br = 1;
-                    }
-                    spline1d.spline1dbuildcubic(sx, sy, m-2, 1, bl, 1, br, s2);
+                    densesolver.rmatrixsolvels(fmatrix, m, m, b, 10000*math.machineepsilon, ref info, srep, ref x);
                 }
-                if( st==1 )
-                {
-                    
-                    //
-                    // Hermite basis
-                    //
-                    for(i=0; i<=m/2-1; i++)
-                    {
-                        sy[i] = 0;
-                        sd[i] = 0;
-                    }
-                    if( j%2==0 )
-                    {
-                        sy[j/2] = 1;
-                    }
-                    else
-                    {
-                        sd[j/2] = 1;
-                    }
-                    spline1d.spline1dbuildhermite(sx, sy, sd, m/2, s2);
-                }
-                
-                //
-                // values at X[], XC[]
-                //
-                for(i=0; i<=n-1; i++)
-                {
-                    fmatrix[i,j] = spline1d.spline1dcalc(s2, x[i]);
-                }
-                for(i=0; i<=k-1; i++)
-                {
-                    ap.assert(dc[i]>=0 & dc[i]<=2, "Spline1DFit: internal error!");
-                    spline1d.spline1ddiff(s2, xc[i], ref v0, ref v1, ref v2);
-                    if( dc[i]==0 )
-                    {
-                        cmatrix[i,j] = v0;
-                    }
-                    if( dc[i]==1 )
-                    {
-                        cmatrix[i,j] = v1;
-                    }
-                    if( dc[i]==2 )
-                    {
-                        cmatrix[i,j] = v2;
-                    }
-                }
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                cmatrix[i,m] = yc[i];
-            }
-            for(i=0; i<=m-1; i++)
-            {
-                for(j=0; j<=m-1; j++)
-                {
-                    if( i==j )
-                    {
-                        fmatrix[n+i,j] = decay;
-                    }
-                    else
-                    {
-                        fmatrix[n+i,j] = 0;
-                    }
-                }
-            }
-            y2 = new double[n+m];
-            w2 = new double[n+m];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                y2[i_] = y[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                w2[i_] = w[i_];
-            }
-            mx = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                mx = mx+Math.Abs(w[i]);
-            }
-            mx = mx/n;
-            for(i=0; i<=m-1; i++)
-            {
-                y2[n+i] = 0;
-                w2[n+i] = mx;
-            }
-            
-            //
-            // Solve constrained task
-            //
-            if( k>0 )
-            {
-                
-                //
-                // solve using regularization
-                //
-                lsfitlinearwc(y2, w2, fmatrix, cmatrix, n+m, m, k, ref info, ref tmp, lrep);
             }
             else
             {
                 
                 //
-                // no constraints, no regularization needed
+                // use more general algorithm
                 //
-                lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref tmp, lrep);
-            }
-            if( info<0 )
-            {
-                return;
-            }
-            
-            //
-            // Generate spline and scale it
-            //
-            if( st==0 )
-            {
-                
-                //
-                // cubic spline basis
-                //
-                for(i_=0; i_<=m-2-1;i_++)
-                {
-                    sy[i_] = tmp[i_];
-                }
-                spline1d.spline1dbuildcubic(sx, sy, m-2, 1, tmp[m-2], 1, tmp[m-1], s);
-            }
-            if( st==1 )
-            {
-                
-                //
-                // Hermite basis
-                //
-                for(i=0; i<=m/2-1; i++)
-                {
-                    sy[i] = tmp[2*i];
-                    sd[i] = tmp[2*i+1];
-                }
-                spline1d.spline1dbuildhermite(sx, sy, sd, m/2, s);
-            }
-            spline1d.spline1dlintransx(s, 2/(xb-xa), -((xa+xb)/(xb-xa)));
-            spline1d.spline1dlintransy(s, sb-sa, sa);
-            
-            //
-            // Scale absolute errors obtained from LSFitLinearW.
-            // Relative error should be calculated separately
-            // (because of shifting/scaling of the task)
-            //
-            rep.taskrcond = lrep.taskrcond;
-            rep.rmserror = lrep.rmserror*(sb-sa);
-            rep.avgerror = lrep.avgerror*(sb-sa);
-            rep.maxerror = lrep.maxerror*(sb-sa);
-            rep.avgrelerror = 0;
-            relcnt = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                if( (double)(yoriginal[i])!=(double)(0) )
-                {
-                    rep.avgrelerror = rep.avgrelerror+Math.Abs(spline1d.spline1dcalc(s, xoriginal[i])-yoriginal[i])/Math.Abs(yoriginal[i]);
-                    relcnt = relcnt+1;
-                }
-            }
-            if( relcnt!=0 )
-            {
-                rep.avgrelerror = rep.avgrelerror/relcnt;
-            }
-        }
-
-
-        /*************************************************************************
-        Internal fitting subroutine
-        *************************************************************************/
-        private static void lsfitlinearinternal(double[] y,
-            double[] w,
-            double[,] fmatrix,
-            int n,
-            int m,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            double threshold = 0;
-            double[,] ft = new double[0,0];
-            double[,] q = new double[0,0];
-            double[,] l = new double[0,0];
-            double[,] r = new double[0,0];
-            double[] b = new double[0];
-            double[] wmod = new double[0];
-            double[] tau = new double[0];
-            int i = 0;
-            int j = 0;
-            double v = 0;
-            double[] sv = new double[0];
-            double[,] u = new double[0,0];
-            double[,] vt = new double[0,0];
-            double[] tmp = new double[0];
-            double[] utb = new double[0];
-            double[] sutb = new double[0];
-            int relcnt = 0;
-            int i_ = 0;
-
-            info = 0;
-            c = new double[0];
-
-            if( n<1 | m<1 )
-            {
-                info = -1;
-                return;
-            }
-            info = 1;
-            threshold = Math.Sqrt(math.machineepsilon);
-            
-            //
-            // Degenerate case, needs special handling
-            //
-            if( n<m )
-            {
-                
-                //
-                // Create design matrix.
-                //
-                ft = new double[n, m];
                 b = new double[n];
-                wmod = new double[n];
-                for(j=0; j<=n-1; j++)
-                {
-                    v = w[j];
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        ft[j,i_] = v*fmatrix[j,i_];
-                    }
-                    b[j] = w[j]*y[j];
-                    wmod[j] = 1;
-                }
-                
-                //
-                // LQ decomposition and reduction to M=N
-                //
-                c = new double[m];
-                for(i=0; i<=m-1; i++)
-                {
-                    c[i] = 0;
-                }
-                rep.taskrcond = 0;
-                ortfac.rmatrixlq(ref ft, n, m, ref tau);
-                ortfac.rmatrixlqunpackq(ft, n, m, tau, n, ref q);
-                ortfac.rmatrixlqunpackl(ft, n, m, ref l);
-                lsfitlinearinternal(b, wmod, l, n, n, ref info, ref tmp, rep);
-                if( info<=0 )
-                {
-                    return;
-                }
                 for(i=0; i<=n-1; i++)
                 {
-                    v = tmp[i];
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        c[i_] = c[i_] + v*q[i,i_];
-                    }
+                    b[i] = fmatrix[i,m];
                 }
-                return;
-            }
-            
-            //
-            // N>=M. Generate design matrix and reduce to N=M using
-            // QR decomposition.
-            //
-            ft = new double[n, m];
-            b = new double[n];
-            for(j=0; j<=n-1; j++)
-            {
-                v = w[j];
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    ft[j,i_] = v*fmatrix[j,i_];
-                }
-                b[j] = w[j]*y[j];
-            }
-            ortfac.rmatrixqr(ref ft, n, m, ref tau);
-            ortfac.rmatrixqrunpackq(ft, n, m, tau, m, ref q);
-            ortfac.rmatrixqrunpackr(ft, n, m, ref r);
-            tmp = new double[m];
-            for(i=0; i<=m-1; i++)
-            {
-                tmp[i] = 0;
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                v = b[i];
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    tmp[i_] = tmp[i_] + v*q[i,i_];
-                }
-            }
-            b = new double[m];
-            for(i_=0; i_<=m-1;i_++)
-            {
-                b[i_] = tmp[i_];
-            }
-            
-            //
-            // R contains reduced MxM design upper triangular matrix,
-            // B contains reduced Mx1 right part.
-            //
-            // Determine system condition number and decide
-            // should we use triangular solver (faster) or
-            // SVD-based solver (more stable).
-            //
-            // We can use LU-based RCond estimator for this task.
-            //
-            rep.taskrcond = rcond.rmatrixlurcondinf(r, m);
-            if( (double)(rep.taskrcond)>(double)(threshold) )
-            {
-                
-                //
-                // use QR-based solver
-                //
-                c = new double[m];
-                c[m-1] = b[m-1]/r[m-1,m-1];
-                for(i=m-2; i>=0; i--)
-                {
-                    v = 0.0;
-                    for(i_=i+1; i_<=m-1;i_++)
-                    {
-                        v += r[i,i_]*c[i_];
-                    }
-                    c[i] = (b[i]-v)/r[i,i];
-                }
-            }
-            else
-            {
-                
-                //
-                // use SVD-based solver
-                //
-                if( !svd.rmatrixsvd(r, m, m, 1, 1, 2, ref sv, ref u, ref vt) )
-                {
-                    info = -4;
-                    return;
-                }
-                utb = new double[m];
-                sutb = new double[m];
-                for(i=0; i<=m-1; i++)
-                {
-                    utb[i] = 0;
-                }
-                for(i=0; i<=m-1; i++)
-                {
-                    v = b[i];
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        utb[i_] = utb[i_] + v*u[i,i_];
-                    }
-                }
-                if( (double)(sv[0])>(double)(0) )
-                {
-                    rep.taskrcond = sv[m-1]/sv[0];
-                    for(i=0; i<=m-1; i++)
-                    {
-                        if( (double)(sv[i])>(double)(threshold*sv[0]) )
-                        {
-                            sutb[i] = utb[i]/sv[i];
-                        }
-                        else
-                        {
-                            sutb[i] = 0;
-                        }
-                    }
-                }
-                else
-                {
-                    rep.taskrcond = 0;
-                    for(i=0; i<=m-1; i++)
-                    {
-                        sutb[i] = 0;
-                    }
-                }
-                c = new double[m];
-                for(i=0; i<=m-1; i++)
-                {
-                    c[i] = 0;
-                }
-                for(i=0; i<=m-1; i++)
-                {
-                    v = sutb[i];
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        c[i_] = c[i_] + v*vt[i,i_];
-                    }
-                }
-            }
-            
-            //
-            // calculate errors
-            //
-            rep.rmserror = 0;
-            rep.avgerror = 0;
-            rep.avgrelerror = 0;
-            rep.maxerror = 0;
-            relcnt = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    v += fmatrix[i,i_]*c[i_];
-                }
-                rep.rmserror = rep.rmserror+math.sqr(v-y[i]);
-                rep.avgerror = rep.avgerror+Math.Abs(v-y[i]);
-                if( (double)(y[i])!=(double)(0) )
-                {
-                    rep.avgrelerror = rep.avgrelerror+Math.Abs(v-y[i])/Math.Abs(y[i]);
-                    relcnt = relcnt+1;
-                }
-                rep.maxerror = Math.Max(rep.maxerror, Math.Abs(v-y[i]));
-            }
-            rep.rmserror = Math.Sqrt(rep.rmserror/n);
-            rep.avgerror = rep.avgerror/n;
-            if( relcnt!=0 )
-            {
-                rep.avgrelerror = rep.avgrelerror/relcnt;
-            }
-        }
-
-
-        /*************************************************************************
-        Internal subroutine
-        *************************************************************************/
-        private static void lsfitclearrequestfields(lsfitstate state)
-        {
-            state.needf = false;
-            state.needfg = false;
-            state.needfgh = false;
-            state.xupdated = false;
-        }
-
-
-        /*************************************************************************
-        Internal subroutine, calculates barycentric basis functions.
-        Used for efficient simultaneous calculation of N basis functions.
-
-          -- ALGLIB --
-             Copyright 17.08.2009 by Bochkanov Sergey
-        *************************************************************************/
-        private static void barycentriccalcbasis(ratint.barycentricinterpolant b,
-            double t,
-            ref double[] y)
-        {
-            double s2 = 0;
-            double s = 0;
-            double v = 0;
-            int i = 0;
-            int j = 0;
-            int i_ = 0;
-
-            
-            //
-            // special case: N=1
-            //
-            if( b.n==1 )
-            {
-                y[0] = 1;
-                return;
-            }
-            
-            //
-            // Here we assume that task is normalized, i.e.:
-            // 1. abs(Y[i])<=1
-            // 2. abs(W[i])<=1
-            // 3. X[] is ordered
-            //
-            // First, we decide: should we use "safe" formula (guarded
-            // against overflow) or fast one?
-            //
-            s = Math.Abs(t-b.x[0]);
-            for(i=0; i<=b.n-1; i++)
-            {
-                v = b.x[i];
-                if( (double)(v)==(double)(t) )
-                {
-                    for(j=0; j<=b.n-1; j++)
-                    {
-                        y[j] = 0;
-                    }
-                    y[i] = 1;
-                    return;
-                }
-                v = Math.Abs(t-v);
-                if( (double)(v)<(double)(s) )
-                {
-                    s = v;
-                }
-            }
-            s2 = 0;
-            for(i=0; i<=b.n-1; i++)
-            {
-                v = s/(t-b.x[i]);
-                v = v*b.w[i];
-                y[i] = v;
-                s2 = s2+v;
-            }
-            v = 1/s2;
-            for(i_=0; i_<=b.n-1;i_++)
-            {
-                y[i_] = v*y[i_];
-            }
-        }
-
-
-        /*************************************************************************
-        This is internal function for Chebyshev fitting.
-
-        It assumes that input data are normalized:
-        * X/XC belong to [-1,+1],
-        * mean(Y)=0, stddev(Y)=1.
-
-        It does not checks inputs for errors.
-
-        This function is used to fit general (shifted) Chebyshev models, power
-        basis models or barycentric models.
-
-        INPUT PARAMETERS:
-            X   -   points, array[0..N-1].
-            Y   -   function values, array[0..N-1].
-            W   -   weights, array[0..N-1]
-            N   -   number of points, N>0.
-            XC  -   points where polynomial values/derivatives are constrained,
-                    array[0..K-1].
-            YC  -   values of constraints, array[0..K-1]
-            DC  -   array[0..K-1], types of constraints:
-                    * DC[i]=0   means that P(XC[i])=YC[i]
-                    * DC[i]=1   means that P'(XC[i])=YC[i]
-            K   -   number of constraints, 0<=K<M.
-                    K=0 means no constraints (XC/YC/DC are not used in such cases)
-            M   -   number of basis functions (= polynomial_degree + 1), M>=1
-
-        OUTPUT PARAMETERS:
-            Info-   same format as in LSFitLinearW() subroutine:
-                    * Info>0    task is solved
-                    * Info<=0   an error occured:
-                                -4 means inconvergence of internal SVD
-                                -3 means inconsistent constraints
-            C   -   interpolant in Chebyshev form; [-1,+1] is used as base interval
-            Rep -   report, same format as in LSFitLinearW() subroutine.
-                    Following fields are set:
-                    * RMSError      rms error on the (X,Y).
-                    * AvgError      average error on the (X,Y).
-                    * AvgRelError   average relative error on the non-zero Y
-                    * MaxError      maximum error
-                                    NON-WEIGHTED ERRORS ARE CALCULATED
-
-        IMPORTANT:
-            this subroitine doesn't calculate task's condition number for K<>0.
-
-          -- ALGLIB PROJECT --
-             Copyright 10.12.2009 by Bochkanov Sergey
-        *************************************************************************/
-        private static void internalchebyshevfit(double[] x,
-            double[] y,
-            double[] w,
-            int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            ref int info,
-            ref double[] c,
-            lsfitreport rep)
-        {
-            double[] y2 = new double[0];
-            double[] w2 = new double[0];
-            double[] tmp = new double[0];
-            double[] tmp2 = new double[0];
-            double[] tmpdiff = new double[0];
-            double[] bx = new double[0];
-            double[] by = new double[0];
-            double[] bw = new double[0];
-            double[,] fmatrix = new double[0,0];
-            double[,] cmatrix = new double[0,0];
-            int i = 0;
-            int j = 0;
-            double mx = 0;
-            double decay = 0;
-            int i_ = 0;
-
-            xc = (double[])xc.Clone();
-            yc = (double[])yc.Clone();
-            info = 0;
-            c = new double[0];
-
-            
-            //
-            // weight decay for correct handling of task which becomes
-            // degenerate after constraints are applied
-            //
-            decay = 10000*math.machineepsilon;
-            
-            //
-            // allocate space, initialize/fill:
-            // * FMatrix-   values of basis functions at X[]
-            // * CMatrix-   values (derivatives) of basis functions at XC[]
-            // * fill constraints matrix
-            // * fill first N rows of design matrix with values
-            // * fill next M rows of design matrix with regularizing term
-            // * append M zeros to Y
-            // * append M elements, mean(abs(W)) each, to W
-            //
-            y2 = new double[n+m];
-            w2 = new double[n+m];
-            tmp = new double[m];
-            tmpdiff = new double[m];
-            fmatrix = new double[n+m, m];
-            if( k>0 )
-            {
-                cmatrix = new double[k, m+1];
-            }
-            
-            //
-            // Fill design matrix, Y2, W2:
-            // * first N rows with basis functions for original points
-            // * next M rows with decay terms
-            //
-            for(i=0; i<=n-1; i++)
-            {
-                
-                //
-                // prepare Ith row
-                // use Tmp for calculations to avoid multidimensional arrays overhead
-                //
-                for(j=0; j<=m-1; j++)
-                {
-                    if( j==0 )
-                    {
-                        tmp[j] = 1;
-                    }
-                    else
-                    {
-                        if( j==1 )
-                        {
-                            tmp[j] = x[i];
-                        }
-                        else
-                        {
-                            tmp[j] = 2*x[i]*tmp[j-1]-tmp[j-2];
-                        }
-                    }
-                }
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    fmatrix[i,i_] = tmp[i_];
-                }
-            }
-            for(i=0; i<=m-1; i++)
-            {
-                for(j=0; j<=m-1; j++)
-                {
-                    if( i==j )
-                    {
-                        fmatrix[n+i,j] = decay;
-                    }
-                    else
-                    {
-                        fmatrix[n+i,j] = 0;
-                    }
-                }
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                y2[i_] = y[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                w2[i_] = w[i_];
-            }
-            mx = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                mx = mx+Math.Abs(w[i]);
-            }
-            mx = mx/n;
-            for(i=0; i<=m-1; i++)
-            {
-                y2[n+i] = 0;
-                w2[n+i] = mx;
-            }
-            
-            //
-            // fill constraints matrix
-            //
-            for(i=0; i<=k-1; i++)
-            {
-                
-                //
-                // prepare Ith row
-                // use Tmp for basis function values,
-                // TmpDiff for basos function derivatives
-                //
-                for(j=0; j<=m-1; j++)
-                {
-                    if( j==0 )
-                    {
-                        tmp[j] = 1;
-                        tmpdiff[j] = 0;
-                    }
-                    else
-                    {
-                        if( j==1 )
-                        {
-                            tmp[j] = xc[i];
-                            tmpdiff[j] = 1;
-                        }
-                        else
-                        {
-                            tmp[j] = 2*xc[i]*tmp[j-1]-tmp[j-2];
-                            tmpdiff[j] = 2*(tmp[j-1]+xc[i]*tmpdiff[j-1])-tmpdiff[j-2];
-                        }
-                    }
-                }
-                if( dc[i]==0 )
-                {
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        cmatrix[i,i_] = tmp[i_];
-                    }
-                }
-                if( dc[i]==1 )
-                {
-                    for(i_=0; i_<=m-1;i_++)
-                    {
-                        cmatrix[i,i_] = tmpdiff[i_];
-                    }
-                }
-                cmatrix[i,m] = yc[i];
-            }
-            
-            //
-            // Solve constrained task
-            //
-            if( k>0 )
-            {
-                
-                //
-                // solve using regularization
-                //
-                lsfitlinearwc(y2, w2, fmatrix, cmatrix, n+m, m, k, ref info, ref c, rep);
-            }
-            else
-            {
-                
-                //
-                // no constraints, no regularization needed
-                //
-                lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, 0, ref info, ref c, rep);
-            }
-            if( info<0 )
-            {
-                return;
-            }
-        }
-
-
-        /*************************************************************************
-        Internal Floater-Hormann fitting subroutine for fixed D
-        *************************************************************************/
-        private static void barycentricfitwcfixedd(double[] x,
-            double[] y,
-            double[] w,
-            int n,
-            double[] xc,
-            double[] yc,
-            int[] dc,
-            int k,
-            int m,
-            int d,
-            ref int info,
-            ratint.barycentricinterpolant b,
-            barycentricfitreport rep)
-        {
-            double[,] fmatrix = new double[0,0];
-            double[,] cmatrix = new double[0,0];
-            double[] y2 = new double[0];
-            double[] w2 = new double[0];
-            double[] sx = new double[0];
-            double[] sy = new double[0];
-            double[] sbf = new double[0];
-            double[] xoriginal = new double[0];
-            double[] yoriginal = new double[0];
-            double[] tmp = new double[0];
-            lsfitreport lrep = new lsfitreport();
-            double v0 = 0;
-            double v1 = 0;
-            double mx = 0;
-            ratint.barycentricinterpolant b2 = new ratint.barycentricinterpolant();
-            int i = 0;
-            int j = 0;
-            int relcnt = 0;
-            double xa = 0;
-            double xb = 0;
-            double sa = 0;
-            double sb = 0;
-            double decay = 0;
-            int i_ = 0;
-
-            x = (double[])x.Clone();
-            y = (double[])y.Clone();
-            w = (double[])w.Clone();
-            xc = (double[])xc.Clone();
-            yc = (double[])yc.Clone();
-            info = 0;
-
-            if( ((n<1 | m<2) | k<0) | k>=m )
-            {
-                info = -1;
-                return;
-            }
-            for(i=0; i<=k-1; i++)
-            {
-                info = 0;
-                if( dc[i]<0 )
-                {
-                    info = -1;
-                }
-                if( dc[i]>1 )
-                {
-                    info = -1;
-                }
-                if( info<0 )
-                {
-                    return;
-                }
-            }
-            
-            //
-            // weight decay for correct handling of task which becomes
-            // degenerate after constraints are applied
-            //
-            decay = 10000*math.machineepsilon;
-            
-            //
-            // Scale X, Y, XC, YC
-            //
-            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, k, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
-            
-            //
-            // allocate space, initialize:
-            // * FMatrix-   values of basis functions at X[]
-            // * CMatrix-   values (derivatives) of basis functions at XC[]
-            //
-            y2 = new double[n+m];
-            w2 = new double[n+m];
-            fmatrix = new double[n+m, m];
-            if( k>0 )
-            {
-                cmatrix = new double[k, m+1];
-            }
-            y2 = new double[n+m];
-            w2 = new double[n+m];
-            
-            //
-            // Prepare design and constraints matrices:
-            // * fill constraints matrix
-            // * fill first N rows of design matrix with values
-            // * fill next M rows of design matrix with regularizing term
-            // * append M zeros to Y
-            // * append M elements, mean(abs(W)) each, to W
-            //
-            sx = new double[m];
-            sy = new double[m];
-            sbf = new double[m];
-            for(j=0; j<=m-1; j++)
-            {
-                sx[j] = (double)(2*j)/(double)(m-1)-1;
-            }
-            for(i=0; i<=m-1; i++)
-            {
-                sy[i] = 1;
-            }
-            ratint.barycentricbuildfloaterhormann(sx, sy, m, d, b2);
-            mx = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                barycentriccalcbasis(b2, x[i], ref sbf);
-                for(i_=0; i_<=m-1;i_++)
-                {
-                    fmatrix[i,i_] = sbf[i_];
-                }
-                y2[i] = y[i];
-                w2[i] = w[i];
-                mx = mx+Math.Abs(w[i])/n;
-            }
-            for(i=0; i<=m-1; i++)
-            {
-                for(j=0; j<=m-1; j++)
-                {
-                    if( i==j )
-                    {
-                        fmatrix[n+i,j] = decay;
-                    }
-                    else
-                    {
-                        fmatrix[n+i,j] = 0;
-                    }
-                }
-                y2[n+i] = 0;
-                w2[n+i] = mx;
-            }
-            if( k>0 )
-            {
-                for(j=0; j<=m-1; j++)
-                {
-                    for(i=0; i<=m-1; i++)
-                    {
-                        sy[i] = 0;
-                    }
-                    sy[j] = 1;
-                    ratint.barycentricbuildfloaterhormann(sx, sy, m, d, b2);
-                    for(i=0; i<=k-1; i++)
-                    {
-                        ap.assert(dc[i]>=0 & dc[i]<=1, "BarycentricFit: internal error!");
-                        ratint.barycentricdiff1(b2, xc[i], ref v0, ref v1);
-                        if( dc[i]==0 )
-                        {
-                            cmatrix[i,j] = v0;
-                        }
-                        if( dc[i]==1 )
-                        {
-                            cmatrix[i,j] = v1;
-                        }
-                    }
-                }
-                for(i=0; i<=k-1; i++)
-                {
-                    cmatrix[i,m] = yc[i];
-                }
-            }
-            
-            //
-            // Solve constrained task
-            //
-            if( k>0 )
-            {
-                
-                //
-                // solve using regularization
-                //
-                lsfitlinearwc(y2, w2, fmatrix, cmatrix, n+m, m, k, ref info, ref tmp, lrep);
-            }
-            else
-            {
-                
-                //
-                // no constraints, no regularization needed
-                //
-                lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref tmp, lrep);
-            }
-            if( info<0 )
-            {
-                return;
-            }
-            
-            //
-            // Generate interpolant and scale it
-            //
-            for(i_=0; i_<=m-1;i_++)
-            {
-                sy[i_] = tmp[i_];
-            }
-            ratint.barycentricbuildfloaterhormann(sx, sy, m, d, b);
-            ratint.barycentriclintransx(b, 2/(xb-xa), -((xa+xb)/(xb-xa)));
-            ratint.barycentriclintransy(b, sb-sa, sa);
-            
-            //
-            // Scale absolute errors obtained from LSFitLinearW.
-            // Relative error should be calculated separately
-            // (because of shifting/scaling of the task)
-            //
-            rep.taskrcond = lrep.taskrcond;
-            rep.rmserror = lrep.rmserror*(sb-sa);
-            rep.avgerror = lrep.avgerror*(sb-sa);
-            rep.maxerror = lrep.maxerror*(sb-sa);
-            rep.avgrelerror = 0;
-            relcnt = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                if( (double)(yoriginal[i])!=(double)(0) )
-                {
-                    rep.avgrelerror = rep.avgrelerror+Math.Abs(ratint.barycentriccalc(b, xoriginal[i])-yoriginal[i])/Math.Abs(yoriginal[i]);
-                    relcnt = relcnt+1;
-                }
-            }
-            if( relcnt!=0 )
-            {
-                rep.avgrelerror = rep.avgrelerror/relcnt;
+                densesolver.rmatrixsolvels(fmatrix, n, m, b, 10000*math.machineepsilon, ref info, srep, ref x);
+                taskrcond = srep.r2;
             }
         }
 
@@ -13495,6 +10313,5846 @@ public partial class alglib
 
 
     }
+    public class lsfit
+    {
+        /*************************************************************************
+        Polynomial fitting report:
+            TaskRCond       reciprocal of task's condition number
+            RMSError        RMS error
+            AvgError        average error
+            AvgRelError     average relative error (for non-zero Y[I])
+            MaxError        maximum error
+        *************************************************************************/
+        public class polynomialfitreport
+        {
+            public double taskrcond;
+            public double rmserror;
+            public double avgerror;
+            public double avgrelerror;
+            public double maxerror;
+        };
+
+
+        /*************************************************************************
+        Barycentric fitting report:
+            RMSError        RMS error
+            AvgError        average error
+            AvgRelError     average relative error (for non-zero Y[I])
+            MaxError        maximum error
+            TaskRCond       reciprocal of task's condition number
+        *************************************************************************/
+        public class barycentricfitreport
+        {
+            public double taskrcond;
+            public int dbest;
+            public double rmserror;
+            public double avgerror;
+            public double avgrelerror;
+            public double maxerror;
+        };
+
+
+        /*************************************************************************
+        Spline fitting report:
+            RMSError        RMS error
+            AvgError        average error
+            AvgRelError     average relative error (for non-zero Y[I])
+            MaxError        maximum error
+            
+        Fields  below are  filled  by   obsolete    functions   (Spline1DFitCubic,
+        Spline1DFitHermite). Modern fitting functions do NOT fill these fields:
+            TaskRCond       reciprocal of task's condition number
+        *************************************************************************/
+        public class spline1dfitreport
+        {
+            public double taskrcond;
+            public double rmserror;
+            public double avgerror;
+            public double avgrelerror;
+            public double maxerror;
+        };
+
+
+        /*************************************************************************
+        Least squares fitting report:
+            TaskRCond       reciprocal of task's condition number
+            IterationsCount number of internal iterations
+
+            RMSError        RMS error
+            AvgError        average error
+            AvgRelError     average relative error (for non-zero Y[I])
+            MaxError        maximum error
+
+            WRMSError       weighted RMS error
+        *************************************************************************/
+        public class lsfitreport
+        {
+            public double taskrcond;
+            public int iterationscount;
+            public double rmserror;
+            public double avgerror;
+            public double avgrelerror;
+            public double maxerror;
+            public double wrmserror;
+        };
+
+
+        /*************************************************************************
+        Nonlinear fitter.
+
+        You should use ALGLIB functions to work with fitter.
+        Never try to access its fields directly!
+        *************************************************************************/
+        public class lsfitstate
+        {
+            public int optalgo;
+            public int m;
+            public int k;
+            public double epsf;
+            public double epsx;
+            public int maxits;
+            public double stpmax;
+            public bool xrep;
+            public double[] s;
+            public double[] bndl;
+            public double[] bndu;
+            public double[,] taskx;
+            public double[] tasky;
+            public int npoints;
+            public double[] w;
+            public int nweights;
+            public int wkind;
+            public int wits;
+            public bool xupdated;
+            public bool needf;
+            public bool needfg;
+            public bool needfgh;
+            public int pointindex;
+            public double[] x;
+            public double[] c;
+            public double f;
+            public double[] g;
+            public double[,] h;
+            public int repiterationscount;
+            public int repterminationtype;
+            public double reprmserror;
+            public double repavgerror;
+            public double repavgrelerror;
+            public double repmaxerror;
+            public double repwrmserror;
+            public minlm.minlmstate optstate;
+            public minlm.minlmreport optrep;
+            public int prevnpt;
+            public int prevalgo;
+            public rcommstate rstate;
+            public lsfitstate()
+            {
+                s = new double[0];
+                bndl = new double[0];
+                bndu = new double[0];
+                taskx = new double[0,0];
+                tasky = new double[0];
+                w = new double[0];
+                x = new double[0];
+                c = new double[0];
+                g = new double[0];
+                h = new double[0,0];
+                optstate = new minlm.minlmstate();
+                optrep = new minlm.minlmreport();
+                rstate = new rcommstate();
+            }
+        };
+
+
+
+
+        public const int rfsmax = 10;
+
+
+        /*************************************************************************
+        Fitting by polynomials in barycentric form. This function provides  simple
+        unterface for unconstrained unweighted fitting. See  PolynomialFitWC()  if
+        you need constrained fitting.
+
+        Task is linear, so linear least squares solver is used. Complexity of this
+        computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+        SEE ALSO:
+            PolynomialFitWC()
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            N   -   number of points, N>0
+                    * if given, only leading N elements of X/Y are used
+                    * if not given, automatically determined from sizes of X/Y
+            M   -   number of basis functions (= polynomial_degree + 1), M>=1
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearW() subroutine:
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+            P   -   interpolant in barycentric form.
+            Rep -   report, same format as in LSFitLinearW() subroutine.
+                    Following fields are set:
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        NOTES:
+            you can convert P from barycentric form  to  the  power  or  Chebyshev
+            basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
+            POLINT subpackage.
+
+          -- ALGLIB PROJECT --
+             Copyright 10.12.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void polynomialfit(double[] x,
+            double[] y,
+            int n,
+            int m,
+            ref int info,
+            ratint.barycentricinterpolant p,
+            polynomialfitreport rep)
+        {
+            int i = 0;
+            double[] w = new double[0];
+            double[] xc = new double[0];
+            double[] yc = new double[0];
+            int[] dc = new int[0];
+
+            info = 0;
+
+            ap.assert(n>0, "PolynomialFit: N<=0!");
+            ap.assert(m>0, "PolynomialFit: M<=0!");
+            ap.assert(ap.len(x)>=n, "PolynomialFit: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "PolynomialFit: Length(Y)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "PolynomialFit: X contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(y, n), "PolynomialFit: Y contains infinite or NaN values!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            polynomialfitwc(x, y, w, n, xc, yc, dc, 0, m, ref info, p, rep);
+        }
+
+
+        /*************************************************************************
+        Weighted  fitting by polynomials in barycentric form, with constraints  on
+        function values or first derivatives.
+
+        Small regularizing term is used when solving constrained tasks (to improve
+        stability).
+
+        Task is linear, so linear least squares solver is used. Complexity of this
+        computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+        SEE ALSO:
+            PolynomialFit()
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            W   -   weights, array[0..N-1]
+                    Each summand in square  sum  of  approximation deviations from
+                    given  values  is  multiplied  by  the square of corresponding
+                    weight. Fill it by 1's if you don't  want  to  solve  weighted
+                    task.
+            N   -   number of points, N>0.
+                    * if given, only leading N elements of X/Y/W are used
+                    * if not given, automatically determined from sizes of X/Y/W
+            XC  -   points where polynomial values/derivatives are constrained,
+                    array[0..K-1].
+            YC  -   values of constraints, array[0..K-1]
+            DC  -   array[0..K-1], types of constraints:
+                    * DC[i]=0   means that P(XC[i])=YC[i]
+                    * DC[i]=1   means that P'(XC[i])=YC[i]
+                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+            K   -   number of constraints, 0<=K<M.
+                    K=0 means no constraints (XC/YC/DC are not used in such cases)
+            M   -   number of basis functions (= polynomial_degree + 1), M>=1
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearW() subroutine:
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+            P   -   interpolant in barycentric form.
+            Rep -   report, same format as in LSFitLinearW() subroutine.
+                    Following fields are set:
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+        NOTES:
+            you can convert P from barycentric form  to  the  power  or  Chebyshev
+            basis with PolynomialBar2Pow() or PolynomialBar2Cheb() functions  from
+            POLINT subpackage.
+
+        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+        Setting constraints can lead  to undesired  results,  like ill-conditioned
+        behavior, or inconsistency being detected. From the other side,  it allows
+        us to improve quality of the fit. Here we summarize  our  experience  with
+        constrained regression splines:
+        * even simple constraints can be inconsistent, see  Wikipedia  article  on
+          this subject: http://en.wikipedia.org/wiki/Birkhoff_interpolation
+        * the  greater  is  M (given  fixed  constraints),  the  more chances that
+          constraints will be consistent
+        * in the general case, consistency of constraints is NOT GUARANTEED.
+        * in the one special cases, however, we can  guarantee  consistency.  This
+          case  is:  M>1  and constraints on the function values (NOT DERIVATIVES)
+
+        Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
+        can't solve your task without them. Anything beyond  special  cases  given
+        above is not guaranteed and may result in inconsistency.
+
+          -- ALGLIB PROJECT --
+             Copyright 10.12.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void polynomialfitwc(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            ref int info,
+            ratint.barycentricinterpolant p,
+            polynomialfitreport rep)
+        {
+            double xa = 0;
+            double xb = 0;
+            double sa = 0;
+            double sb = 0;
+            double[] xoriginal = new double[0];
+            double[] yoriginal = new double[0];
+            double[] y2 = new double[0];
+            double[] w2 = new double[0];
+            double[] tmp = new double[0];
+            double[] tmp2 = new double[0];
+            double[] bx = new double[0];
+            double[] by = new double[0];
+            double[] bw = new double[0];
+            int i = 0;
+            int j = 0;
+            double u = 0;
+            double v = 0;
+            double s = 0;
+            int relcnt = 0;
+            lsfitreport lrep = new lsfitreport();
+
+            x = (double[])x.Clone();
+            y = (double[])y.Clone();
+            w = (double[])w.Clone();
+            xc = (double[])xc.Clone();
+            yc = (double[])yc.Clone();
+            info = 0;
+
+            ap.assert(n>0, "PolynomialFitWC: N<=0!");
+            ap.assert(m>0, "PolynomialFitWC: M<=0!");
+            ap.assert(k>=0, "PolynomialFitWC: K<0!");
+            ap.assert(k<m, "PolynomialFitWC: K>=M!");
+            ap.assert(ap.len(x)>=n, "PolynomialFitWC: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "PolynomialFitWC: Length(Y)<N!");
+            ap.assert(ap.len(w)>=n, "PolynomialFitWC: Length(W)<N!");
+            ap.assert(ap.len(xc)>=k, "PolynomialFitWC: Length(XC)<K!");
+            ap.assert(ap.len(yc)>=k, "PolynomialFitWC: Length(YC)<K!");
+            ap.assert(ap.len(dc)>=k, "PolynomialFitWC: Length(DC)<K!");
+            ap.assert(apserv.isfinitevector(x, n), "PolynomialFitWC: X contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(y, n), "PolynomialFitWC: Y contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(w, n), "PolynomialFitWC: X contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(xc, k), "PolynomialFitWC: XC contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(yc, k), "PolynomialFitWC: YC contains infinite or NaN values!");
+            for(i=0; i<=k-1; i++)
+            {
+                ap.assert(dc[i]==0 | dc[i]==1, "PolynomialFitWC: one of DC[] is not 0 or 1!");
+            }
+            
+            //
+            // Scale X, Y, XC, YC.
+            // Solve scaled problem using internal Chebyshev fitting function.
+            //
+            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, k, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
+            internalchebyshevfit(x, y, w, n, xc, yc, dc, k, m, ref info, ref tmp, lrep);
+            if( info<0 )
+            {
+                return;
+            }
+            
+            //
+            // Generate barycentric model and scale it
+            // * BX, BY store barycentric model nodes
+            // * FMatrix is reused (remember - it is at least MxM, what we need)
+            //
+            // Model intialization is done in O(M^2). In principle, it can be
+            // done in O(M*log(M)), but before it we solved task with O(N*M^2)
+            // complexity, so it is only a small amount of total time spent.
+            //
+            bx = new double[m];
+            by = new double[m];
+            bw = new double[m];
+            tmp2 = new double[m];
+            s = 1;
+            for(i=0; i<=m-1; i++)
+            {
+                if( m!=1 )
+                {
+                    u = Math.Cos(Math.PI*i/(m-1));
+                }
+                else
+                {
+                    u = 0;
+                }
+                v = 0;
+                for(j=0; j<=m-1; j++)
+                {
+                    if( j==0 )
+                    {
+                        tmp2[j] = 1;
+                    }
+                    else
+                    {
+                        if( j==1 )
+                        {
+                            tmp2[j] = u;
+                        }
+                        else
+                        {
+                            tmp2[j] = 2*u*tmp2[j-1]-tmp2[j-2];
+                        }
+                    }
+                    v = v+tmp[j]*tmp2[j];
+                }
+                bx[i] = u;
+                by[i] = v;
+                bw[i] = s;
+                if( i==0 | i==m-1 )
+                {
+                    bw[i] = 0.5*bw[i];
+                }
+                s = -s;
+            }
+            ratint.barycentricbuildxyw(bx, by, bw, m, p);
+            ratint.barycentriclintransx(p, 2/(xb-xa), -((xa+xb)/(xb-xa)));
+            ratint.barycentriclintransy(p, sb-sa, sa);
+            
+            //
+            // Scale absolute errors obtained from LSFitLinearW.
+            // Relative error should be calculated separately
+            // (because of shifting/scaling of the task)
+            //
+            rep.taskrcond = lrep.taskrcond;
+            rep.rmserror = lrep.rmserror*(sb-sa);
+            rep.avgerror = lrep.avgerror*(sb-sa);
+            rep.maxerror = lrep.maxerror*(sb-sa);
+            rep.avgrelerror = 0;
+            relcnt = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                if( (double)(yoriginal[i])!=(double)(0) )
+                {
+                    rep.avgrelerror = rep.avgrelerror+Math.Abs(ratint.barycentriccalc(p, xoriginal[i])-yoriginal[i])/Math.Abs(yoriginal[i]);
+                    relcnt = relcnt+1;
+                }
+            }
+            if( relcnt!=0 )
+            {
+                rep.avgrelerror = rep.avgrelerror/relcnt;
+            }
+        }
+
+
+        /*************************************************************************
+        Weghted rational least  squares  fitting  using  Floater-Hormann  rational
+        functions  with  optimal  D  chosen  from  [0,9],  with  constraints   and
+        individual weights.
+
+        Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
+        functions. Different values of D are tried, optimal D (least WEIGHTED root
+        mean square error) is chosen.  Task  is  linear,  so  linear least squares
+        solver  is  used.  Complexity  of  this  computational  scheme is O(N*M^2)
+        (mostly dominated by the least squares solver).
+
+        SEE ALSO
+        * BarycentricFitFloaterHormann(), "lightweight" fitting without invididual
+          weights and constraints.
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            W   -   weights, array[0..N-1]
+                    Each summand in square  sum  of  approximation deviations from
+                    given  values  is  multiplied  by  the square of corresponding
+                    weight. Fill it by 1's if you don't  want  to  solve  weighted
+                    task.
+            N   -   number of points, N>0.
+            XC  -   points where function values/derivatives are constrained,
+                    array[0..K-1].
+            YC  -   values of constraints, array[0..K-1]
+            DC  -   array[0..K-1], types of constraints:
+                    * DC[i]=0   means that S(XC[i])=YC[i]
+                    * DC[i]=1   means that S'(XC[i])=YC[i]
+                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+            K   -   number of constraints, 0<=K<M.
+                    K=0 means no constraints (XC/YC/DC are not used in such cases)
+            M   -   number of basis functions ( = number_of_nodes), M>=2.
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearWC() subroutine.
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+                                -1 means another errors in parameters passed
+                                   (N<=0, for example)
+            B   -   barycentric interpolant.
+            Rep -   report, same format as in LSFitLinearWC() subroutine.
+                    Following fields are set:
+                    * DBest         best value of the D parameter
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroutine doesn't calculate task's condition number for K<>0.
+
+        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+        Setting constraints can lead  to undesired  results,  like ill-conditioned
+        behavior, or inconsistency being detected. From the other side,  it allows
+        us to improve quality of the fit. Here we summarize  our  experience  with
+        constrained barycentric interpolants:
+        * excessive  constraints  can  be  inconsistent.   Floater-Hormann   basis
+          functions aren't as flexible as splines (although they are very smooth).
+        * the more evenly constraints are spread across [min(x),max(x)],  the more
+          chances that they will be consistent
+        * the  greater  is  M (given  fixed  constraints),  the  more chances that
+          constraints will be consistent
+        * in the general case, consistency of constraints IS NOT GUARANTEED.
+        * in the several special cases, however, we CAN guarantee consistency.
+        * one of this cases is constraints on the function  VALUES at the interval
+          boundaries. Note that consustency of the  constraints  on  the  function
+          DERIVATIVES is NOT guaranteed (you can use in such cases  cubic  splines
+          which are more flexible).
+        * another  special  case  is ONE constraint on the function value (OR, but
+          not AND, derivative) anywhere in the interval
+
+        Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
+        can't solve your task without them. Anything beyond  special  cases  given
+        above is not guaranteed and may result in inconsistency.
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void barycentricfitfloaterhormannwc(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            ref int info,
+            ratint.barycentricinterpolant b,
+            barycentricfitreport rep)
+        {
+            int d = 0;
+            int i = 0;
+            double wrmscur = 0;
+            double wrmsbest = 0;
+            ratint.barycentricinterpolant locb = new ratint.barycentricinterpolant();
+            barycentricfitreport locrep = new barycentricfitreport();
+            int locinfo = 0;
+
+            info = 0;
+
+            ap.assert(n>0, "BarycentricFitFloaterHormannWC: N<=0!");
+            ap.assert(m>0, "BarycentricFitFloaterHormannWC: M<=0!");
+            ap.assert(k>=0, "BarycentricFitFloaterHormannWC: K<0!");
+            ap.assert(k<m, "BarycentricFitFloaterHormannWC: K>=M!");
+            ap.assert(ap.len(x)>=n, "BarycentricFitFloaterHormannWC: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "BarycentricFitFloaterHormannWC: Length(Y)<N!");
+            ap.assert(ap.len(w)>=n, "BarycentricFitFloaterHormannWC: Length(W)<N!");
+            ap.assert(ap.len(xc)>=k, "BarycentricFitFloaterHormannWC: Length(XC)<K!");
+            ap.assert(ap.len(yc)>=k, "BarycentricFitFloaterHormannWC: Length(YC)<K!");
+            ap.assert(ap.len(dc)>=k, "BarycentricFitFloaterHormannWC: Length(DC)<K!");
+            ap.assert(apserv.isfinitevector(x, n), "BarycentricFitFloaterHormannWC: X contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(y, n), "BarycentricFitFloaterHormannWC: Y contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(w, n), "BarycentricFitFloaterHormannWC: X contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(xc, k), "BarycentricFitFloaterHormannWC: XC contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(yc, k), "BarycentricFitFloaterHormannWC: YC contains infinite or NaN values!");
+            for(i=0; i<=k-1; i++)
+            {
+                ap.assert(dc[i]==0 | dc[i]==1, "BarycentricFitFloaterHormannWC: one of DC[] is not 0 or 1!");
+            }
+            
+            //
+            // Find optimal D
+            //
+            // Info is -3 by default (degenerate constraints).
+            // If LocInfo will always be equal to -3, Info will remain equal to -3.
+            // If at least once LocInfo will be -4, Info will be -4.
+            //
+            wrmsbest = math.maxrealnumber;
+            rep.dbest = -1;
+            info = -3;
+            for(d=0; d<=Math.Min(9, n-1); d++)
+            {
+                barycentricfitwcfixedd(x, y, w, n, xc, yc, dc, k, m, d, ref locinfo, locb, locrep);
+                ap.assert((locinfo==-4 | locinfo==-3) | locinfo>0, "BarycentricFitFloaterHormannWC: unexpected result from BarycentricFitWCFixedD!");
+                if( locinfo>0 )
+                {
+                    
+                    //
+                    // Calculate weghted RMS
+                    //
+                    wrmscur = 0;
+                    for(i=0; i<=n-1; i++)
+                    {
+                        wrmscur = wrmscur+math.sqr(w[i]*(y[i]-ratint.barycentriccalc(locb, x[i])));
+                    }
+                    wrmscur = Math.Sqrt(wrmscur/n);
+                    if( (double)(wrmscur)<(double)(wrmsbest) | rep.dbest<0 )
+                    {
+                        ratint.barycentriccopy(locb, b);
+                        rep.dbest = d;
+                        info = 1;
+                        rep.rmserror = locrep.rmserror;
+                        rep.avgerror = locrep.avgerror;
+                        rep.avgrelerror = locrep.avgrelerror;
+                        rep.maxerror = locrep.maxerror;
+                        rep.taskrcond = locrep.taskrcond;
+                        wrmsbest = wrmscur;
+                    }
+                }
+                else
+                {
+                    if( locinfo!=-3 & info<0 )
+                    {
+                        info = locinfo;
+                    }
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Rational least squares fitting using  Floater-Hormann  rational  functions
+        with optimal D chosen from [0,9].
+
+        Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
+        functions. Different values of D are tried, optimal  D  (least  root  mean
+        square error) is chosen.  Task  is  linear, so linear least squares solver
+        is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
+        dominated by the least squares solver).
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            N   -   number of points, N>0.
+            M   -   number of basis functions ( = number_of_nodes), M>=2.
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearWC() subroutine.
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+            B   -   barycentric interpolant.
+            Rep -   report, same format as in LSFitLinearWC() subroutine.
+                    Following fields are set:
+                    * DBest         best value of the D parameter
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void barycentricfitfloaterhormann(double[] x,
+            double[] y,
+            int n,
+            int m,
+            ref int info,
+            ratint.barycentricinterpolant b,
+            barycentricfitreport rep)
+        {
+            double[] w = new double[0];
+            double[] xc = new double[0];
+            double[] yc = new double[0];
+            int[] dc = new int[0];
+            int i = 0;
+
+            info = 0;
+
+            ap.assert(n>0, "BarycentricFitFloaterHormann: N<=0!");
+            ap.assert(m>0, "BarycentricFitFloaterHormann: M<=0!");
+            ap.assert(ap.len(x)>=n, "BarycentricFitFloaterHormann: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "BarycentricFitFloaterHormann: Length(Y)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "BarycentricFitFloaterHormann: X contains infinite or NaN values!");
+            ap.assert(apserv.isfinitevector(y, n), "BarycentricFitFloaterHormann: Y contains infinite or NaN values!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            barycentricfitfloaterhormannwc(x, y, w, n, xc, yc, dc, 0, m, ref info, b, rep);
+        }
+
+
+        /*************************************************************************
+        Rational least squares fitting using  Floater-Hormann  rational  functions
+        with optimal D chosen from [0,9].
+
+        Equidistant  grid  with M node on [min(x),max(x)]  is  used to build basis
+        functions. Different values of D are tried, optimal  D  (least  root  mean
+        square error) is chosen.  Task  is  linear, so linear least squares solver
+        is used. Complexity  of  this  computational  scheme is  O(N*M^2)  (mostly
+        dominated by the least squares solver).
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            N   -   number of points, N>0.
+            M   -   number of basis functions ( = number_of_nodes), M>=2.
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearWC() subroutine.
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+            B   -   barycentric interpolant.
+            Rep -   report, same format as in LSFitLinearWC() subroutine.
+                    Following fields are set:
+                    * DBest         best value of the D parameter
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void spline1dfitpenalized(double[] x,
+            double[] y,
+            int n,
+            int m,
+            double rho,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            double[] w = new double[0];
+            int i = 0;
+
+            x = (double[])x.Clone();
+            y = (double[])y.Clone();
+            info = 0;
+
+            ap.assert(n>=1, "Spline1DFitPenalized: N<1!");
+            ap.assert(m>=4, "Spline1DFitPenalized: M<4!");
+            ap.assert(ap.len(x)>=n, "Spline1DFitPenalized: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "Spline1DFitPenalized: Length(Y)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitPenalized: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitPenalized: Y contains infinite or NAN values!");
+            ap.assert(math.isfinite(rho), "Spline1DFitPenalized: Rho is infinite!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            spline1dfitpenalizedw(x, y, w, n, m, rho, ref info, s, rep);
+        }
+
+
+        /*************************************************************************
+        Weighted fitting by penalized cubic spline.
+
+        Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
+        basis functions. Basis functions are cubic splines with  natural  boundary
+        conditions. Problem is regularized by  adding non-linearity penalty to the
+        usual least squares penalty function:
+
+            S(x) = arg min { LS + P }, where
+            LS   = SUM { w[i]^2*(y[i] - S(x[i]))^2 } - least squares penalty
+            P    = C*10^rho*integral{ S''(x)^2*dx } - non-linearity penalty
+            rho  - tunable constant given by user
+            C    - automatically determined scale parameter,
+                   makes penalty invariant with respect to scaling of X, Y, W.
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            W   -   weights, array[0..N-1]
+                    Each summand in square  sum  of  approximation deviations from
+                    given  values  is  multiplied  by  the square of corresponding
+                    weight. Fill it by 1's if you don't  want  to  solve  weighted
+                    problem.
+            N   -   number of points (optional):
+                    * N>0
+                    * if given, only first N elements of X/Y/W are processed
+                    * if not given, automatically determined from X/Y/W sizes
+            M   -   number of basis functions ( = number_of_nodes), M>=4.
+            Rho -   regularization  constant  passed   by   user.   It   penalizes
+                    nonlinearity in the regression spline. It  is  logarithmically
+                    scaled,  i.e.  actual  value  of  regularization  constant  is
+                    calculated as 10^Rho. It is automatically scaled so that:
+                    * Rho=2.0 corresponds to moderate amount of nonlinearity
+                    * generally, it should be somewhere in the [-8.0,+8.0]
+                    If you do not want to penalize nonlineary,
+                    pass small Rho. Values as low as -15 should work.
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearWC() subroutine.
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD or
+                                   Cholesky decomposition; problem may be
+                                   too ill-conditioned (very rare)
+            S   -   spline interpolant.
+            Rep -   Following fields are set:
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+        NOTE 1: additional nodes are added to the spline outside  of  the  fitting
+        interval to force linearity when x<min(x,xc) or x>max(x,xc).  It  is  done
+        for consistency - we penalize non-linearity  at [min(x,xc),max(x,xc)],  so
+        it is natural to force linearity outside of this interval.
+
+        NOTE 2: function automatically sorts points,  so  caller may pass unsorted
+        array.
+
+          -- ALGLIB PROJECT --
+             Copyright 19.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void spline1dfitpenalizedw(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            int m,
+            double rho,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            int i = 0;
+            int j = 0;
+            int b = 0;
+            double v = 0;
+            double relcnt = 0;
+            double xa = 0;
+            double xb = 0;
+            double sa = 0;
+            double sb = 0;
+            double[] xoriginal = new double[0];
+            double[] yoriginal = new double[0];
+            double pdecay = 0;
+            double tdecay = 0;
+            double[,] fmatrix = new double[0,0];
+            double[] fcolumn = new double[0];
+            double[] y2 = new double[0];
+            double[] w2 = new double[0];
+            double[] xc = new double[0];
+            double[] yc = new double[0];
+            int[] dc = new int[0];
+            double fdmax = 0;
+            double admax = 0;
+            double[,] amatrix = new double[0,0];
+            double[,] d2matrix = new double[0,0];
+            double fa = 0;
+            double ga = 0;
+            double fb = 0;
+            double gb = 0;
+            double lambdav = 0;
+            double[] bx = new double[0];
+            double[] by = new double[0];
+            double[] bd1 = new double[0];
+            double[] bd2 = new double[0];
+            double[] tx = new double[0];
+            double[] ty = new double[0];
+            double[] td = new double[0];
+            spline1d.spline1dinterpolant bs = new spline1d.spline1dinterpolant();
+            double[,] nmatrix = new double[0,0];
+            double[] rightpart = new double[0];
+            fbls.fblslincgstate cgstate = new fbls.fblslincgstate();
+            double[] c = new double[0];
+            double[] tmp0 = new double[0];
+            int i_ = 0;
+            int i1_ = 0;
+
+            x = (double[])x.Clone();
+            y = (double[])y.Clone();
+            w = (double[])w.Clone();
+            info = 0;
+
+            ap.assert(n>=1, "Spline1DFitPenalizedW: N<1!");
+            ap.assert(m>=4, "Spline1DFitPenalizedW: M<4!");
+            ap.assert(ap.len(x)>=n, "Spline1DFitPenalizedW: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "Spline1DFitPenalizedW: Length(Y)<N!");
+            ap.assert(ap.len(w)>=n, "Spline1DFitPenalizedW: Length(W)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitPenalizedW: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitPenalizedW: Y contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(w, n), "Spline1DFitPenalizedW: Y contains infinite or NAN values!");
+            ap.assert(math.isfinite(rho), "Spline1DFitPenalizedW: Rho is infinite!");
+            
+            //
+            // Prepare LambdaV
+            //
+            v = -(Math.Log(math.machineepsilon)/Math.Log(10));
+            if( (double)(rho)<(double)(-v) )
+            {
+                rho = -v;
+            }
+            if( (double)(rho)>(double)(v) )
+            {
+                rho = v;
+            }
+            lambdav = Math.Pow(10, rho);
+            
+            //
+            // Sort X, Y, W
+            //
+            spline1d.heapsortdpoints(ref x, ref y, ref w, n);
+            
+            //
+            // Scale X, Y, XC, YC
+            //
+            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, 0, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
+            
+            //
+            // Allocate space
+            //
+            fmatrix = new double[n, m];
+            amatrix = new double[m, m];
+            d2matrix = new double[m, m];
+            bx = new double[m];
+            by = new double[m];
+            fcolumn = new double[n];
+            nmatrix = new double[m, m];
+            rightpart = new double[m];
+            tmp0 = new double[Math.Max(m, n)];
+            c = new double[m];
+            
+            //
+            // Fill:
+            // * FMatrix by values of basis functions
+            // * TmpAMatrix by second derivatives of I-th function at J-th point
+            // * CMatrix by constraints
+            //
+            fdmax = 0;
+            for(b=0; b<=m-1; b++)
+            {
+                
+                //
+                // Prepare I-th basis function
+                //
+                for(j=0; j<=m-1; j++)
+                {
+                    bx[j] = (double)(2*j)/(double)(m-1)-1;
+                    by[j] = 0;
+                }
+                by[b] = 1;
+                spline1d.spline1dgriddiff2cubic(bx, by, m, 2, 0.0, 2, 0.0, ref bd1, ref bd2);
+                spline1d.spline1dbuildcubic(bx, by, m, 2, 0.0, 2, 0.0, bs);
+                
+                //
+                // Calculate B-th column of FMatrix
+                // Update FDMax (maximum column norm)
+                //
+                spline1d.spline1dconvcubic(bx, by, m, 2, 0.0, 2, 0.0, x, n, ref fcolumn);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    fmatrix[i_,b] = fcolumn[i_];
+                }
+                v = 0;
+                for(i=0; i<=n-1; i++)
+                {
+                    v = v+math.sqr(w[i]*fcolumn[i]);
+                }
+                fdmax = Math.Max(fdmax, v);
+                
+                //
+                // Fill temporary with second derivatives of basis function
+                //
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    d2matrix[b,i_] = bd2[i_];
+                }
+            }
+            
+            //
+            // * calculate penalty matrix A
+            // * calculate max of diagonal elements of A
+            // * calculate PDecay - coefficient before penalty matrix
+            //
+            for(i=0; i<=m-1; i++)
+            {
+                for(j=i; j<=m-1; j++)
+                {
+                    
+                    //
+                    // calculate integral(B_i''*B_j'') where B_i and B_j are
+                    // i-th and j-th basis splines.
+                    // B_i and B_j are piecewise linear functions.
+                    //
+                    v = 0;
+                    for(b=0; b<=m-2; b++)
+                    {
+                        fa = d2matrix[i,b];
+                        fb = d2matrix[i,b+1];
+                        ga = d2matrix[j,b];
+                        gb = d2matrix[j,b+1];
+                        v = v+(bx[b+1]-bx[b])*(fa*ga+(fa*(gb-ga)+ga*(fb-fa))/2+(fb-fa)*(gb-ga)/3);
+                    }
+                    amatrix[i,j] = v;
+                    amatrix[j,i] = v;
+                }
+            }
+            admax = 0;
+            for(i=0; i<=m-1; i++)
+            {
+                admax = Math.Max(admax, Math.Abs(amatrix[i,i]));
+            }
+            pdecay = lambdav*fdmax/admax;
+            
+            //
+            // Calculate TDecay for Tikhonov regularization
+            //
+            tdecay = fdmax*(1+pdecay)*10*math.machineepsilon;
+            
+            //
+            // Prepare system
+            //
+            // NOTE: FMatrix is spoiled during this process
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                v = w[i];
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    fmatrix[i,i_] = v*fmatrix[i,i_];
+                }
+            }
+            ablas.rmatrixgemm(m, m, n, 1.0, fmatrix, 0, 0, 1, fmatrix, 0, 0, 0, 0.0, ref nmatrix, 0, 0);
+            for(i=0; i<=m-1; i++)
+            {
+                for(j=0; j<=m-1; j++)
+                {
+                    nmatrix[i,j] = nmatrix[i,j]+pdecay*amatrix[i,j];
+                }
+            }
+            for(i=0; i<=m-1; i++)
+            {
+                nmatrix[i,i] = nmatrix[i,i]+tdecay;
+            }
+            for(i=0; i<=m-1; i++)
+            {
+                rightpart[i] = 0;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                v = y[i]*w[i];
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    rightpart[i_] = rightpart[i_] + v*fmatrix[i,i_];
+                }
+            }
+            
+            //
+            // Solve system
+            //
+            if( !trfac.spdmatrixcholesky(ref nmatrix, m, true) )
+            {
+                info = -4;
+                return;
+            }
+            fbls.fblscholeskysolve(nmatrix, 1.0, m, true, ref rightpart, ref tmp0);
+            for(i_=0; i_<=m-1;i_++)
+            {
+                c[i_] = rightpart[i_];
+            }
+            
+            //
+            // add nodes to force linearity outside of the fitting interval
+            //
+            spline1d.spline1dgriddiffcubic(bx, c, m, 2, 0.0, 2, 0.0, ref bd1);
+            tx = new double[m+2];
+            ty = new double[m+2];
+            td = new double[m+2];
+            i1_ = (0) - (1);
+            for(i_=1; i_<=m;i_++)
+            {
+                tx[i_] = bx[i_+i1_];
+            }
+            i1_ = (0) - (1);
+            for(i_=1; i_<=m;i_++)
+            {
+                ty[i_] = rightpart[i_+i1_];
+            }
+            i1_ = (0) - (1);
+            for(i_=1; i_<=m;i_++)
+            {
+                td[i_] = bd1[i_+i1_];
+            }
+            tx[0] = tx[1]-(tx[2]-tx[1]);
+            ty[0] = ty[1]-td[1]*(tx[2]-tx[1]);
+            td[0] = td[1];
+            tx[m+1] = tx[m]+(tx[m]-tx[m-1]);
+            ty[m+1] = ty[m]+td[m]*(tx[m]-tx[m-1]);
+            td[m+1] = td[m];
+            spline1d.spline1dbuildhermite(tx, ty, td, m+2, s);
+            spline1d.spline1dlintransx(s, 2/(xb-xa), -((xa+xb)/(xb-xa)));
+            spline1d.spline1dlintransy(s, sb-sa, sa);
+            info = 1;
+            
+            //
+            // Fill report
+            //
+            rep.rmserror = 0;
+            rep.avgerror = 0;
+            rep.avgrelerror = 0;
+            rep.maxerror = 0;
+            relcnt = 0;
+            spline1d.spline1dconvcubic(bx, rightpart, m, 2, 0.0, 2, 0.0, x, n, ref fcolumn);
+            for(i=0; i<=n-1; i++)
+            {
+                v = (sb-sa)*fcolumn[i]+sa;
+                rep.rmserror = rep.rmserror+math.sqr(v-yoriginal[i]);
+                rep.avgerror = rep.avgerror+Math.Abs(v-yoriginal[i]);
+                if( (double)(yoriginal[i])!=(double)(0) )
+                {
+                    rep.avgrelerror = rep.avgrelerror+Math.Abs(v-yoriginal[i])/Math.Abs(yoriginal[i]);
+                    relcnt = relcnt+1;
+                }
+                rep.maxerror = Math.Max(rep.maxerror, Math.Abs(v-yoriginal[i]));
+            }
+            rep.rmserror = Math.Sqrt(rep.rmserror/n);
+            rep.avgerror = rep.avgerror/n;
+            if( (double)(relcnt)!=(double)(0) )
+            {
+                rep.avgrelerror = rep.avgrelerror/relcnt;
+            }
+        }
+
+
+        /*************************************************************************
+        Weighted fitting by cubic  spline,  with constraints on function values or
+        derivatives.
+
+        Equidistant grid with M-2 nodes on [min(x,xc),max(x,xc)] is  used to build
+        basis functions. Basis functions are cubic splines with continuous  second
+        derivatives  and  non-fixed first  derivatives  at  interval  ends.  Small
+        regularizing term is used  when  solving  constrained  tasks  (to  improve
+        stability).
+
+        Task is linear, so linear least squares solver is used. Complexity of this
+        computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+        SEE ALSO
+            Spline1DFitHermiteWC()  -   fitting by Hermite splines (more flexible,
+                                        less smooth)
+            Spline1DFitCubic()      -   "lightweight" fitting  by  cubic  splines,
+                                        without invididual weights and constraints
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            W   -   weights, array[0..N-1]
+                    Each summand in square  sum  of  approximation deviations from
+                    given  values  is  multiplied  by  the square of corresponding
+                    weight. Fill it by 1's if you don't  want  to  solve  weighted
+                    task.
+            N   -   number of points (optional):
+                    * N>0
+                    * if given, only first N elements of X/Y/W are processed
+                    * if not given, automatically determined from X/Y/W sizes
+            XC  -   points where spline values/derivatives are constrained,
+                    array[0..K-1].
+            YC  -   values of constraints, array[0..K-1]
+            DC  -   array[0..K-1], types of constraints:
+                    * DC[i]=0   means that S(XC[i])=YC[i]
+                    * DC[i]=1   means that S'(XC[i])=YC[i]
+                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+            K   -   number of constraints (optional):
+                    * 0<=K<M.
+                    * K=0 means no constraints (XC/YC/DC are not used)
+                    * if given, only first K elements of XC/YC/DC are used
+                    * if not given, automatically determined from XC/YC/DC
+            M   -   number of basis functions ( = number_of_nodes+2), M>=4.
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearWC() subroutine.
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+            S   -   spline interpolant.
+            Rep -   report, same format as in LSFitLinearWC() subroutine.
+                    Following fields are set:
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+
+        ORDER OF POINTS
+
+        Subroutine automatically sorts points, so caller may pass unsorted array.
+
+        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+        Setting constraints can lead  to undesired  results,  like ill-conditioned
+        behavior, or inconsistency being detected. From the other side,  it allows
+        us to improve quality of the fit. Here we summarize  our  experience  with
+        constrained regression splines:
+        * excessive constraints can be inconsistent. Splines are  piecewise  cubic
+          functions, and it is easy to create an example, where  large  number  of
+          constraints  concentrated  in  small  area will result in inconsistency.
+          Just because spline is not flexible enough to satisfy all of  them.  And
+          same constraints spread across the  [min(x),max(x)]  will  be  perfectly
+          consistent.
+        * the more evenly constraints are spread across [min(x),max(x)],  the more
+          chances that they will be consistent
+        * the  greater  is  M (given  fixed  constraints),  the  more chances that
+          constraints will be consistent
+        * in the general case, consistency of constraints IS NOT GUARANTEED.
+        * in the several special cases, however, we CAN guarantee consistency.
+        * one of this cases is constraints  on  the  function  values  AND/OR  its
+          derivatives at the interval boundaries.
+        * another  special  case  is ONE constraint on the function value (OR, but
+          not AND, derivative) anywhere in the interval
+
+        Our final recommendation is to use constraints  WHEN  AND  ONLY  WHEN  you
+        can't solve your task without them. Anything beyond  special  cases  given
+        above is not guaranteed and may result in inconsistency.
+
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void spline1dfitcubicwc(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            int i = 0;
+
+            info = 0;
+
+            ap.assert(n>=1, "Spline1DFitCubicWC: N<1!");
+            ap.assert(m>=4, "Spline1DFitCubicWC: M<4!");
+            ap.assert(k>=0, "Spline1DFitCubicWC: K<0!");
+            ap.assert(k<m, "Spline1DFitCubicWC: K>=M!");
+            ap.assert(ap.len(x)>=n, "Spline1DFitCubicWC: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "Spline1DFitCubicWC: Length(Y)<N!");
+            ap.assert(ap.len(w)>=n, "Spline1DFitCubicWC: Length(W)<N!");
+            ap.assert(ap.len(xc)>=k, "Spline1DFitCubicWC: Length(XC)<K!");
+            ap.assert(ap.len(yc)>=k, "Spline1DFitCubicWC: Length(YC)<K!");
+            ap.assert(ap.len(dc)>=k, "Spline1DFitCubicWC: Length(DC)<K!");
+            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitCubicWC: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitCubicWC: Y contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(w, n), "Spline1DFitCubicWC: Y contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(xc, k), "Spline1DFitCubicWC: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(yc, k), "Spline1DFitCubicWC: Y contains infinite or NAN values!");
+            for(i=0; i<=k-1; i++)
+            {
+                ap.assert(dc[i]==0 | dc[i]==1, "Spline1DFitCubicWC: DC[i] is neither 0 or 1!");
+            }
+            spline1dfitinternal(0, x, y, w, n, xc, yc, dc, k, m, ref info, s, rep);
+        }
+
+
+        /*************************************************************************
+        Weighted  fitting  by Hermite spline,  with constraints on function values
+        or first derivatives.
+
+        Equidistant grid with M nodes on [min(x,xc),max(x,xc)] is  used  to  build
+        basis functions. Basis functions are Hermite splines.  Small  regularizing
+        term is used when solving constrained tasks (to improve stability).
+
+        Task is linear, so linear least squares solver is used. Complexity of this
+        computational scheme is O(N*M^2), mostly dominated by least squares solver
+
+        SEE ALSO
+            Spline1DFitCubicWC()    -   fitting by Cubic splines (less flexible,
+                                        more smooth)
+            Spline1DFitHermite()    -   "lightweight" Hermite fitting, without
+                                        invididual weights and constraints
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            W   -   weights, array[0..N-1]
+                    Each summand in square  sum  of  approximation deviations from
+                    given  values  is  multiplied  by  the square of corresponding
+                    weight. Fill it by 1's if you don't  want  to  solve  weighted
+                    task.
+            N   -   number of points (optional):
+                    * N>0
+                    * if given, only first N elements of X/Y/W are processed
+                    * if not given, automatically determined from X/Y/W sizes
+            XC  -   points where spline values/derivatives are constrained,
+                    array[0..K-1].
+            YC  -   values of constraints, array[0..K-1]
+            DC  -   array[0..K-1], types of constraints:
+                    * DC[i]=0   means that S(XC[i])=YC[i]
+                    * DC[i]=1   means that S'(XC[i])=YC[i]
+                    SEE BELOW FOR IMPORTANT INFORMATION ON CONSTRAINTS
+            K   -   number of constraints (optional):
+                    * 0<=K<M.
+                    * K=0 means no constraints (XC/YC/DC are not used)
+                    * if given, only first K elements of XC/YC/DC are used
+                    * if not given, automatically determined from XC/YC/DC
+            M   -   number of basis functions (= 2 * number of nodes),
+                    M>=4,
+                    M IS EVEN!
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearW() subroutine:
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+                                -2 means odd M was passed (which is not supported)
+                                -1 means another errors in parameters passed
+                                   (N<=0, for example)
+            S   -   spline interpolant.
+            Rep -   report, same format as in LSFitLinearW() subroutine.
+                    Following fields are set:
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+        IMPORTANT:
+            this subroitine supports only even M's
+
+
+        ORDER OF POINTS
+
+        Subroutine automatically sorts points, so caller may pass unsorted array.
+
+        SETTING CONSTRAINTS - DANGERS AND OPPORTUNITIES:
+
+        Setting constraints can lead  to undesired  results,  like ill-conditioned
+        behavior, or inconsistency being detected. From the other side,  it allows
+        us to improve quality of the fit. Here we summarize  our  experience  with
+        constrained regression splines:
+        * excessive constraints can be inconsistent. Splines are  piecewise  cubic
+          functions, and it is easy to create an example, where  large  number  of
+          constraints  concentrated  in  small  area will result in inconsistency.
+          Just because spline is not flexible enough to satisfy all of  them.  And
+          same constraints spread across the  [min(x),max(x)]  will  be  perfectly
+          consistent.
+        * the more evenly constraints are spread across [min(x),max(x)],  the more
+          chances that they will be consistent
+        * the  greater  is  M (given  fixed  constraints),  the  more chances that
+          constraints will be consistent
+        * in the general case, consistency of constraints is NOT GUARANTEED.
+        * in the several special cases, however, we can guarantee consistency.
+        * one of this cases is  M>=4  and   constraints  on   the  function  value
+          (AND/OR its derivative) at the interval boundaries.
+        * another special case is M>=4  and  ONE  constraint on the function value
+          (OR, BUT NOT AND, derivative) anywhere in [min(x),max(x)]
+
+        Our final recommendation is to use constraints  WHEN  AND  ONLY  when  you
+        can't solve your task without them. Anything beyond  special  cases  given
+        above is not guaranteed and may result in inconsistency.
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void spline1dfithermitewc(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            int i = 0;
+
+            info = 0;
+
+            ap.assert(n>=1, "Spline1DFitHermiteWC: N<1!");
+            ap.assert(m>=4, "Spline1DFitHermiteWC: M<4!");
+            ap.assert(m%2==0, "Spline1DFitHermiteWC: M is odd!");
+            ap.assert(k>=0, "Spline1DFitHermiteWC: K<0!");
+            ap.assert(k<m, "Spline1DFitHermiteWC: K>=M!");
+            ap.assert(ap.len(x)>=n, "Spline1DFitHermiteWC: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "Spline1DFitHermiteWC: Length(Y)<N!");
+            ap.assert(ap.len(w)>=n, "Spline1DFitHermiteWC: Length(W)<N!");
+            ap.assert(ap.len(xc)>=k, "Spline1DFitHermiteWC: Length(XC)<K!");
+            ap.assert(ap.len(yc)>=k, "Spline1DFitHermiteWC: Length(YC)<K!");
+            ap.assert(ap.len(dc)>=k, "Spline1DFitHermiteWC: Length(DC)<K!");
+            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitHermiteWC: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitHermiteWC: Y contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(w, n), "Spline1DFitHermiteWC: Y contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(xc, k), "Spline1DFitHermiteWC: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(yc, k), "Spline1DFitHermiteWC: Y contains infinite or NAN values!");
+            for(i=0; i<=k-1; i++)
+            {
+                ap.assert(dc[i]==0 | dc[i]==1, "Spline1DFitHermiteWC: DC[i] is neither 0 or 1!");
+            }
+            spline1dfitinternal(1, x, y, w, n, xc, yc, dc, k, m, ref info, s, rep);
+        }
+
+
+        /*************************************************************************
+        Least squares fitting by cubic spline.
+
+        This subroutine is "lightweight" alternative for more complex and feature-
+        rich Spline1DFitCubicWC().  See  Spline1DFitCubicWC() for more information
+        about subroutine parameters (we don't duplicate it here because of length)
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void spline1dfitcubic(double[] x,
+            double[] y,
+            int n,
+            int m,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            int i = 0;
+            double[] w = new double[0];
+            double[] xc = new double[0];
+            double[] yc = new double[0];
+            int[] dc = new int[0];
+
+            info = 0;
+
+            ap.assert(n>=1, "Spline1DFitCubic: N<1!");
+            ap.assert(m>=4, "Spline1DFitCubic: M<4!");
+            ap.assert(ap.len(x)>=n, "Spline1DFitCubic: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "Spline1DFitCubic: Length(Y)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitCubic: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitCubic: Y contains infinite or NAN values!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            spline1dfitcubicwc(x, y, w, n, xc, yc, dc, 0, m, ref info, s, rep);
+        }
+
+
+        /*************************************************************************
+        Least squares fitting by Hermite spline.
+
+        This subroutine is "lightweight" alternative for more complex and feature-
+        rich Spline1DFitHermiteWC().  See Spline1DFitHermiteWC()  description  for
+        more information about subroutine parameters (we don't duplicate  it  here
+        because of length).
+
+          -- ALGLIB PROJECT --
+             Copyright 18.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void spline1dfithermite(double[] x,
+            double[] y,
+            int n,
+            int m,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            int i = 0;
+            double[] w = new double[0];
+            double[] xc = new double[0];
+            double[] yc = new double[0];
+            int[] dc = new int[0];
+
+            info = 0;
+
+            ap.assert(n>=1, "Spline1DFitHermite: N<1!");
+            ap.assert(m>=4, "Spline1DFitHermite: M<4!");
+            ap.assert(m%2==0, "Spline1DFitHermite: M is odd!");
+            ap.assert(ap.len(x)>=n, "Spline1DFitHermite: Length(X)<N!");
+            ap.assert(ap.len(y)>=n, "Spline1DFitHermite: Length(Y)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "Spline1DFitHermite: X contains infinite or NAN values!");
+            ap.assert(apserv.isfinitevector(y, n), "Spline1DFitHermite: Y contains infinite or NAN values!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            spline1dfithermitewc(x, y, w, n, xc, yc, dc, 0, m, ref info, s, rep);
+        }
+
+
+        /*************************************************************************
+        Weighted linear least squares fitting.
+
+        QR decomposition is used to reduce task to MxM, then triangular solver  or
+        SVD-based solver is used depending on condition number of the  system.  It
+        allows to maximize speed and retain decent accuracy.
+
+        INPUT PARAMETERS:
+            Y       -   array[0..N-1] Function values in  N  points.
+            W       -   array[0..N-1]  Weights  corresponding to function  values.
+                        Each summand in square  sum  of  approximation  deviations
+                        from  given  values  is  multiplied  by  the   square   of
+                        corresponding weight.
+            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                        FMatrix[I, J] - value of J-th basis function in I-th point.
+            N       -   number of points used. N>=1.
+            M       -   number of basis functions, M>=1.
+
+        OUTPUT PARAMETERS:
+            Info    -   error code:
+                        * -4    internal SVD decomposition subroutine failed (very
+                                rare and for degenerate systems only)
+                        * -1    incorrect N/M were specified
+                        *  1    task is solved
+            C       -   decomposition coefficients, array[0..M-1]
+            Rep     -   fitting report. Following fields are set:
+                        * Rep.TaskRCond     reciprocal of condition number
+                        * RMSError          rms error on the (X,Y).
+                        * AvgError          average error on the (X,Y).
+                        * AvgRelError       average relative error on the non-zero Y
+                        * MaxError          maximum error
+                                            NON-WEIGHTED ERRORS ARE CALCULATED
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitlinearw(double[] y,
+            double[] w,
+            double[,] fmatrix,
+            int n,
+            int m,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            info = 0;
+            c = new double[0];
+
+            ap.assert(n>=1, "LSFitLinearW: N<1!");
+            ap.assert(m>=1, "LSFitLinearW: M<1!");
+            ap.assert(ap.len(y)>=n, "LSFitLinearW: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitLinearW: Y contains infinite or NaN values!");
+            ap.assert(ap.len(w)>=n, "LSFitLinearW: length(W)<N!");
+            ap.assert(apserv.isfinitevector(w, n), "LSFitLinearW: W contains infinite or NaN values!");
+            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinearW: rows(FMatrix)<N!");
+            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinearW: cols(FMatrix)<M!");
+            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinearW: FMatrix contains infinite or NaN values!");
+            lsfitlinearinternal(y, w, fmatrix, n, m, ref info, ref c, rep);
+        }
+
+
+        /*************************************************************************
+        Weighted constained linear least squares fitting.
+
+        This  is  variation  of LSFitLinearW(), which searchs for min|A*x=b| given
+        that  K  additional  constaints  C*x=bc are satisfied. It reduces original
+        task to modified one: min|B*y-d| WITHOUT constraints,  then LSFitLinearW()
+        is called.
+
+        INPUT PARAMETERS:
+            Y       -   array[0..N-1] Function values in  N  points.
+            W       -   array[0..N-1]  Weights  corresponding to function  values.
+                        Each summand in square  sum  of  approximation  deviations
+                        from  given  values  is  multiplied  by  the   square   of
+                        corresponding weight.
+            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                        FMatrix[I,J] - value of J-th basis function in I-th point.
+            CMatrix -   a table of constaints, array[0..K-1,0..M].
+                        I-th row of CMatrix corresponds to I-th linear constraint:
+                        CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
+            N       -   number of points used. N>=1.
+            M       -   number of basis functions, M>=1.
+            K       -   number of constraints, 0 <= K < M
+                        K=0 corresponds to absence of constraints.
+
+        OUTPUT PARAMETERS:
+            Info    -   error code:
+                        * -4    internal SVD decomposition subroutine failed (very
+                                rare and for degenerate systems only)
+                        * -3    either   too   many  constraints  (M   or   more),
+                                degenerate  constraints   (some   constraints  are
+                                repetead twice) or inconsistent  constraints  were
+                                specified.
+                        *  1    task is solved
+            C       -   decomposition coefficients, array[0..M-1]
+            Rep     -   fitting report. Following fields are set:
+                        * RMSError          rms error on the (X,Y).
+                        * AvgError          average error on the (X,Y).
+                        * AvgRelError       average relative error on the non-zero Y
+                        * MaxError          maximum error
+                                            NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+          -- ALGLIB --
+             Copyright 07.09.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitlinearwc(double[] y,
+            double[] w,
+            double[,] fmatrix,
+            double[,] cmatrix,
+            int n,
+            int m,
+            int k,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            int i = 0;
+            int j = 0;
+            double[] tau = new double[0];
+            double[,] q = new double[0,0];
+            double[,] f2 = new double[0,0];
+            double[] tmp = new double[0];
+            double[] c0 = new double[0];
+            double v = 0;
+            int i_ = 0;
+
+            y = (double[])y.Clone();
+            cmatrix = (double[,])cmatrix.Clone();
+            info = 0;
+            c = new double[0];
+
+            ap.assert(n>=1, "LSFitLinearWC: N<1!");
+            ap.assert(m>=1, "LSFitLinearWC: M<1!");
+            ap.assert(k>=0, "LSFitLinearWC: K<0!");
+            ap.assert(ap.len(y)>=n, "LSFitLinearWC: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitLinearWC: Y contains infinite or NaN values!");
+            ap.assert(ap.len(w)>=n, "LSFitLinearWC: length(W)<N!");
+            ap.assert(apserv.isfinitevector(w, n), "LSFitLinearWC: W contains infinite or NaN values!");
+            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinearWC: rows(FMatrix)<N!");
+            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinearWC: cols(FMatrix)<M!");
+            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinearWC: FMatrix contains infinite or NaN values!");
+            ap.assert(ap.rows(cmatrix)>=k, "LSFitLinearWC: rows(CMatrix)<K!");
+            ap.assert(ap.cols(cmatrix)>=m+1 | k==0, "LSFitLinearWC: cols(CMatrix)<M+1!");
+            ap.assert(apserv.apservisfinitematrix(cmatrix, k, m+1), "LSFitLinearWC: CMatrix contains infinite or NaN values!");
+            if( k>=m )
+            {
+                info = -3;
+                return;
+            }
+            
+            //
+            // Solve
+            //
+            if( k==0 )
+            {
+                
+                //
+                // no constraints
+                //
+                lsfitlinearinternal(y, w, fmatrix, n, m, ref info, ref c, rep);
+            }
+            else
+            {
+                
+                //
+                // First, find general form solution of constraints system:
+                // * factorize C = L*Q
+                // * unpack Q
+                // * fill upper part of C with zeros (for RCond)
+                //
+                // We got C=C0+Q2'*y where Q2 is lower M-K rows of Q.
+                //
+                ortfac.rmatrixlq(ref cmatrix, k, m, ref tau);
+                ortfac.rmatrixlqunpackq(cmatrix, k, m, tau, m, ref q);
+                for(i=0; i<=k-1; i++)
+                {
+                    for(j=i+1; j<=m-1; j++)
+                    {
+                        cmatrix[i,j] = 0.0;
+                    }
+                }
+                if( (double)(rcond.rmatrixlurcondinf(cmatrix, k))<(double)(1000*math.machineepsilon) )
+                {
+                    info = -3;
+                    return;
+                }
+                tmp = new double[k];
+                for(i=0; i<=k-1; i++)
+                {
+                    if( i>0 )
+                    {
+                        v = 0.0;
+                        for(i_=0; i_<=i-1;i_++)
+                        {
+                            v += cmatrix[i,i_]*tmp[i_];
+                        }
+                    }
+                    else
+                    {
+                        v = 0;
+                    }
+                    tmp[i] = (cmatrix[i,m]-v)/cmatrix[i,i];
+                }
+                c0 = new double[m];
+                for(i=0; i<=m-1; i++)
+                {
+                    c0[i] = 0;
+                }
+                for(i=0; i<=k-1; i++)
+                {
+                    v = tmp[i];
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        c0[i_] = c0[i_] + v*q[i,i_];
+                    }
+                }
+                
+                //
+                // Second, prepare modified matrix F2 = F*Q2' and solve modified task
+                //
+                tmp = new double[Math.Max(n, m)+1];
+                f2 = new double[n, m-k];
+                blas.matrixvectormultiply(fmatrix, 0, n-1, 0, m-1, false, c0, 0, m-1, -1.0, ref y, 0, n-1, 1.0);
+                blas.matrixmatrixmultiply(fmatrix, 0, n-1, 0, m-1, false, q, k, m-1, 0, m-1, true, 1.0, ref f2, 0, n-1, 0, m-k-1, 0.0, ref tmp);
+                lsfitlinearinternal(y, w, f2, n, m-k, ref info, ref tmp, rep);
+                rep.taskrcond = -1;
+                if( info<=0 )
+                {
+                    return;
+                }
+                
+                //
+                // then, convert back to original answer: C = C0 + Q2'*Y0
+                //
+                c = new double[m];
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    c[i_] = c0[i_];
+                }
+                blas.matrixvectormultiply(q, k, m-1, 0, m-1, true, tmp, 0, m-k-1, 1.0, ref c, 0, m-1, 1.0);
+            }
+        }
+
+
+        /*************************************************************************
+        Linear least squares fitting.
+
+        QR decomposition is used to reduce task to MxM, then triangular solver  or
+        SVD-based solver is used depending on condition number of the  system.  It
+        allows to maximize speed and retain decent accuracy.
+
+        INPUT PARAMETERS:
+            Y       -   array[0..N-1] Function values in  N  points.
+            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                        FMatrix[I, J] - value of J-th basis function in I-th point.
+            N       -   number of points used. N>=1.
+            M       -   number of basis functions, M>=1.
+
+        OUTPUT PARAMETERS:
+            Info    -   error code:
+                        * -4    internal SVD decomposition subroutine failed (very
+                                rare and for degenerate systems only)
+                        *  1    task is solved
+            C       -   decomposition coefficients, array[0..M-1]
+            Rep     -   fitting report. Following fields are set:
+                        * Rep.TaskRCond     reciprocal of condition number
+                        * RMSError          rms error on the (X,Y).
+                        * AvgError          average error on the (X,Y).
+                        * AvgRelError       average relative error on the non-zero Y
+                        * MaxError          maximum error
+                                            NON-WEIGHTED ERRORS ARE CALCULATED
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitlinear(double[] y,
+            double[,] fmatrix,
+            int n,
+            int m,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            double[] w = new double[0];
+            int i = 0;
+
+            info = 0;
+            c = new double[0];
+
+            ap.assert(n>=1, "LSFitLinear: N<1!");
+            ap.assert(m>=1, "LSFitLinear: M<1!");
+            ap.assert(ap.len(y)>=n, "LSFitLinear: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitLinear: Y contains infinite or NaN values!");
+            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinear: rows(FMatrix)<N!");
+            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinear: cols(FMatrix)<M!");
+            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinear: FMatrix contains infinite or NaN values!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            lsfitlinearinternal(y, w, fmatrix, n, m, ref info, ref c, rep);
+        }
+
+
+        /*************************************************************************
+        Constained linear least squares fitting.
+
+        This  is  variation  of LSFitLinear(),  which searchs for min|A*x=b| given
+        that  K  additional  constaints  C*x=bc are satisfied. It reduces original
+        task to modified one: min|B*y-d| WITHOUT constraints,  then  LSFitLinear()
+        is called.
+
+        INPUT PARAMETERS:
+            Y       -   array[0..N-1] Function values in  N  points.
+            FMatrix -   a table of basis functions values, array[0..N-1, 0..M-1].
+                        FMatrix[I,J] - value of J-th basis function in I-th point.
+            CMatrix -   a table of constaints, array[0..K-1,0..M].
+                        I-th row of CMatrix corresponds to I-th linear constraint:
+                        CMatrix[I,0]*C[0] + ... + CMatrix[I,M-1]*C[M-1] = CMatrix[I,M]
+            N       -   number of points used. N>=1.
+            M       -   number of basis functions, M>=1.
+            K       -   number of constraints, 0 <= K < M
+                        K=0 corresponds to absence of constraints.
+
+        OUTPUT PARAMETERS:
+            Info    -   error code:
+                        * -4    internal SVD decomposition subroutine failed (very
+                                rare and for degenerate systems only)
+                        * -3    either   too   many  constraints  (M   or   more),
+                                degenerate  constraints   (some   constraints  are
+                                repetead twice) or inconsistent  constraints  were
+                                specified.
+                        *  1    task is solved
+            C       -   decomposition coefficients, array[0..M-1]
+            Rep     -   fitting report. Following fields are set:
+                        * RMSError          rms error on the (X,Y).
+                        * AvgError          average error on the (X,Y).
+                        * AvgRelError       average relative error on the non-zero Y
+                        * MaxError          maximum error
+                                            NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+          -- ALGLIB --
+             Copyright 07.09.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitlinearc(double[] y,
+            double[,] fmatrix,
+            double[,] cmatrix,
+            int n,
+            int m,
+            int k,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            double[] w = new double[0];
+            int i = 0;
+
+            y = (double[])y.Clone();
+            info = 0;
+            c = new double[0];
+
+            ap.assert(n>=1, "LSFitLinearC: N<1!");
+            ap.assert(m>=1, "LSFitLinearC: M<1!");
+            ap.assert(k>=0, "LSFitLinearC: K<0!");
+            ap.assert(ap.len(y)>=n, "LSFitLinearC: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitLinearC: Y contains infinite or NaN values!");
+            ap.assert(ap.rows(fmatrix)>=n, "LSFitLinearC: rows(FMatrix)<N!");
+            ap.assert(ap.cols(fmatrix)>=m, "LSFitLinearC: cols(FMatrix)<M!");
+            ap.assert(apserv.apservisfinitematrix(fmatrix, n, m), "LSFitLinearC: FMatrix contains infinite or NaN values!");
+            ap.assert(ap.rows(cmatrix)>=k, "LSFitLinearC: rows(CMatrix)<K!");
+            ap.assert(ap.cols(cmatrix)>=m+1 | k==0, "LSFitLinearC: cols(CMatrix)<M+1!");
+            ap.assert(apserv.apservisfinitematrix(cmatrix, k, m+1), "LSFitLinearC: CMatrix contains infinite or NaN values!");
+            w = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                w[i] = 1;
+            }
+            lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref c, rep);
+        }
+
+
+        /*************************************************************************
+        Weighted nonlinear least squares fitting using function values only.
+
+        Combination of numerical differentiation and secant updates is used to
+        obtain function Jacobian.
+
+        Nonlinear task min(F(c)) is solved, where
+
+            F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
+
+            * N is a number of points,
+            * M is a dimension of a space points belong to,
+            * K is a dimension of a space of parameters being fitted,
+            * w is an N-dimensional vector of weight coefficients,
+            * x is a set of N points, each of them is an M-dimensional vector,
+            * c is a K-dimensional vector of parameters being fitted
+
+        This subroutine uses only f(c,x[i]).
+
+        INPUT PARAMETERS:
+            X       -   array[0..N-1,0..M-1], points (one row = one point)
+            Y       -   array[0..N-1], function values.
+            W       -   weights, array[0..N-1]
+            C       -   array[0..K-1], initial approximation to the solution,
+            N       -   number of points, N>1
+            M       -   dimension of space
+            K       -   number of parameters being fitted
+            DiffStep-   numerical differentiation step;
+                        should not be very small or large;
+                        large = loss of accuracy
+                        small = growth of round-off errors
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 18.10.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitcreatewf(double[,] x,
+            double[] y,
+            double[] w,
+            double[] c,
+            int n,
+            int m,
+            int k,
+            double diffstep,
+            lsfitstate state)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            ap.assert(n>=1, "LSFitCreateWF: N<1!");
+            ap.assert(m>=1, "LSFitCreateWF: M<1!");
+            ap.assert(k>=1, "LSFitCreateWF: K<1!");
+            ap.assert(ap.len(c)>=k, "LSFitCreateWF: length(C)<K!");
+            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateWF: C contains infinite or NaN values!");
+            ap.assert(ap.len(y)>=n, "LSFitCreateWF: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateWF: Y contains infinite or NaN values!");
+            ap.assert(ap.len(w)>=n, "LSFitCreateWF: length(W)<N!");
+            ap.assert(apserv.isfinitevector(w, n), "LSFitCreateWF: W contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateWF: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateWF: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateWF: X contains infinite or NaN values!");
+            ap.assert(math.isfinite(diffstep), "LSFitCreateWF: DiffStep is not finite!");
+            ap.assert((double)(diffstep)>(double)(0), "LSFitCreateWF: DiffStep<=0!");
+            state.npoints = n;
+            state.nweights = n;
+            state.wkind = 1;
+            state.m = m;
+            state.k = k;
+            lsfitsetcond(state, 0.0, 0.0, 0);
+            lsfitsetstpmax(state, 0.0);
+            lsfitsetxrep(state, false);
+            state.taskx = new double[n, m];
+            state.tasky = new double[n];
+            state.w = new double[n];
+            state.c = new double[k];
+            state.x = new double[m];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = c[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.w[i_] = w[i_];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    state.taskx[i,i_] = x[i,i_];
+                }
+                state.tasky[i] = y[i];
+            }
+            state.s = new double[k];
+            state.bndl = new double[k];
+            state.bndu = new double[k];
+            for(i=0; i<=k-1; i++)
+            {
+                state.s[i] = 1.0;
+                state.bndl[i] = Double.NegativeInfinity;
+                state.bndu[i] = Double.PositiveInfinity;
+            }
+            state.optalgo = 0;
+            state.prevnpt = -1;
+            state.prevalgo = -1;
+            minlm.minlmcreatev(k, n, state.c, diffstep, state.optstate);
+            lsfitclearrequestfields(state);
+            state.rstate.ia = new int[4+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+        }
+
+
+        /*************************************************************************
+        Nonlinear least squares fitting using function values only.
+
+        Combination of numerical differentiation and secant updates is used to
+        obtain function Jacobian.
+
+        Nonlinear task min(F(c)) is solved, where
+
+            F(c) = (f(c,x[0])-y[0])^2 + ... + (f(c,x[n-1])-y[n-1])^2,
+
+            * N is a number of points,
+            * M is a dimension of a space points belong to,
+            * K is a dimension of a space of parameters being fitted,
+            * w is an N-dimensional vector of weight coefficients,
+            * x is a set of N points, each of them is an M-dimensional vector,
+            * c is a K-dimensional vector of parameters being fitted
+
+        This subroutine uses only f(c,x[i]).
+
+        INPUT PARAMETERS:
+            X       -   array[0..N-1,0..M-1], points (one row = one point)
+            Y       -   array[0..N-1], function values.
+            C       -   array[0..K-1], initial approximation to the solution,
+            N       -   number of points, N>1
+            M       -   dimension of space
+            K       -   number of parameters being fitted
+            DiffStep-   numerical differentiation step;
+                        should not be very small or large;
+                        large = loss of accuracy
+                        small = growth of round-off errors
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 18.10.2008 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitcreatef(double[,] x,
+            double[] y,
+            double[] c,
+            int n,
+            int m,
+            int k,
+            double diffstep,
+            lsfitstate state)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            ap.assert(n>=1, "LSFitCreateF: N<1!");
+            ap.assert(m>=1, "LSFitCreateF: M<1!");
+            ap.assert(k>=1, "LSFitCreateF: K<1!");
+            ap.assert(ap.len(c)>=k, "LSFitCreateF: length(C)<K!");
+            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateF: C contains infinite or NaN values!");
+            ap.assert(ap.len(y)>=n, "LSFitCreateF: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateF: Y contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateF: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateF: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateF: X contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateF: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateF: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateF: X contains infinite or NaN values!");
+            ap.assert(math.isfinite(diffstep), "LSFitCreateF: DiffStep is not finite!");
+            ap.assert((double)(diffstep)>(double)(0), "LSFitCreateF: DiffStep<=0!");
+            state.npoints = n;
+            state.wkind = 0;
+            state.m = m;
+            state.k = k;
+            lsfitsetcond(state, 0.0, 0.0, 0);
+            lsfitsetstpmax(state, 0.0);
+            lsfitsetxrep(state, false);
+            state.taskx = new double[n, m];
+            state.tasky = new double[n];
+            state.c = new double[k];
+            state.x = new double[m];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = c[i_];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    state.taskx[i,i_] = x[i,i_];
+                }
+                state.tasky[i] = y[i];
+            }
+            state.s = new double[k];
+            state.bndl = new double[k];
+            state.bndu = new double[k];
+            for(i=0; i<=k-1; i++)
+            {
+                state.s[i] = 1.0;
+                state.bndl[i] = Double.NegativeInfinity;
+                state.bndu[i] = Double.PositiveInfinity;
+            }
+            state.optalgo = 0;
+            state.prevnpt = -1;
+            state.prevalgo = -1;
+            minlm.minlmcreatev(k, n, state.c, diffstep, state.optstate);
+            lsfitclearrequestfields(state);
+            state.rstate.ia = new int[4+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+        }
+
+
+        /*************************************************************************
+        Weighted nonlinear least squares fitting using gradient only.
+
+        Nonlinear task min(F(c)) is solved, where
+
+            F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
+            
+            * N is a number of points,
+            * M is a dimension of a space points belong to,
+            * K is a dimension of a space of parameters being fitted,
+            * w is an N-dimensional vector of weight coefficients,
+            * x is a set of N points, each of them is an M-dimensional vector,
+            * c is a K-dimensional vector of parameters being fitted
+            
+        This subroutine uses only f(c,x[i]) and its gradient.
+            
+        INPUT PARAMETERS:
+            X       -   array[0..N-1,0..M-1], points (one row = one point)
+            Y       -   array[0..N-1], function values.
+            W       -   weights, array[0..N-1]
+            C       -   array[0..K-1], initial approximation to the solution,
+            N       -   number of points, N>1
+            M       -   dimension of space
+            K       -   number of parameters being fitted
+            CheapFG -   boolean flag, which is:
+                        * True  if both function and gradient calculation complexity
+                                are less than O(M^2).  An improved  algorithm  can
+                                be  used  which corresponds  to  FGJ  scheme  from
+                                MINLM unit.
+                        * False otherwise.
+                                Standard Jacibian-bases  Levenberg-Marquardt  algo
+                                will be used (FJ scheme).
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+        See also:
+            LSFitResults
+            LSFitCreateFG (fitting without weights)
+            LSFitCreateWFGH (fitting using Hessian)
+            LSFitCreateFGH (fitting using Hessian, without weights)
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitcreatewfg(double[,] x,
+            double[] y,
+            double[] w,
+            double[] c,
+            int n,
+            int m,
+            int k,
+            bool cheapfg,
+            lsfitstate state)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            ap.assert(n>=1, "LSFitCreateWFG: N<1!");
+            ap.assert(m>=1, "LSFitCreateWFG: M<1!");
+            ap.assert(k>=1, "LSFitCreateWFG: K<1!");
+            ap.assert(ap.len(c)>=k, "LSFitCreateWFG: length(C)<K!");
+            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateWFG: C contains infinite or NaN values!");
+            ap.assert(ap.len(y)>=n, "LSFitCreateWFG: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateWFG: Y contains infinite or NaN values!");
+            ap.assert(ap.len(w)>=n, "LSFitCreateWFG: length(W)<N!");
+            ap.assert(apserv.isfinitevector(w, n), "LSFitCreateWFG: W contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateWFG: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateWFG: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateWFG: X contains infinite or NaN values!");
+            state.npoints = n;
+            state.nweights = n;
+            state.wkind = 1;
+            state.m = m;
+            state.k = k;
+            lsfitsetcond(state, 0.0, 0.0, 0);
+            lsfitsetstpmax(state, 0.0);
+            lsfitsetxrep(state, false);
+            state.taskx = new double[n, m];
+            state.tasky = new double[n];
+            state.w = new double[n];
+            state.c = new double[k];
+            state.x = new double[m];
+            state.g = new double[k];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = c[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.w[i_] = w[i_];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    state.taskx[i,i_] = x[i,i_];
+                }
+                state.tasky[i] = y[i];
+            }
+            state.s = new double[k];
+            state.bndl = new double[k];
+            state.bndu = new double[k];
+            for(i=0; i<=k-1; i++)
+            {
+                state.s[i] = 1.0;
+                state.bndl[i] = Double.NegativeInfinity;
+                state.bndu[i] = Double.PositiveInfinity;
+            }
+            state.optalgo = 1;
+            state.prevnpt = -1;
+            state.prevalgo = -1;
+            if( cheapfg )
+            {
+                minlm.minlmcreatevgj(k, n, state.c, state.optstate);
+            }
+            else
+            {
+                minlm.minlmcreatevj(k, n, state.c, state.optstate);
+            }
+            lsfitclearrequestfields(state);
+            state.rstate.ia = new int[4+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+        }
+
+
+        /*************************************************************************
+        Nonlinear least squares fitting using gradient only, without individual
+        weights.
+
+        Nonlinear task min(F(c)) is solved, where
+
+            F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
+
+            * N is a number of points,
+            * M is a dimension of a space points belong to,
+            * K is a dimension of a space of parameters being fitted,
+            * x is a set of N points, each of them is an M-dimensional vector,
+            * c is a K-dimensional vector of parameters being fitted
+
+        This subroutine uses only f(c,x[i]) and its gradient.
+
+        INPUT PARAMETERS:
+            X       -   array[0..N-1,0..M-1], points (one row = one point)
+            Y       -   array[0..N-1], function values.
+            C       -   array[0..K-1], initial approximation to the solution,
+            N       -   number of points, N>1
+            M       -   dimension of space
+            K       -   number of parameters being fitted
+            CheapFG -   boolean flag, which is:
+                        * True  if both function and gradient calculation complexity
+                                are less than O(M^2).  An improved  algorithm  can
+                                be  used  which corresponds  to  FGJ  scheme  from
+                                MINLM unit.
+                        * False otherwise.
+                                Standard Jacibian-bases  Levenberg-Marquardt  algo
+                                will be used (FJ scheme).
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitcreatefg(double[,] x,
+            double[] y,
+            double[] c,
+            int n,
+            int m,
+            int k,
+            bool cheapfg,
+            lsfitstate state)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            ap.assert(n>=1, "LSFitCreateFG: N<1!");
+            ap.assert(m>=1, "LSFitCreateFG: M<1!");
+            ap.assert(k>=1, "LSFitCreateFG: K<1!");
+            ap.assert(ap.len(c)>=k, "LSFitCreateFG: length(C)<K!");
+            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateFG: C contains infinite or NaN values!");
+            ap.assert(ap.len(y)>=n, "LSFitCreateFG: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateFG: Y contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateFG: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateFG: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFG: X contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateFG: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateFG: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFG: X contains infinite or NaN values!");
+            state.npoints = n;
+            state.wkind = 0;
+            state.m = m;
+            state.k = k;
+            lsfitsetcond(state, 0.0, 0.0, 0);
+            lsfitsetstpmax(state, 0.0);
+            lsfitsetxrep(state, false);
+            state.taskx = new double[n, m];
+            state.tasky = new double[n];
+            state.c = new double[k];
+            state.x = new double[m];
+            state.g = new double[k];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = c[i_];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    state.taskx[i,i_] = x[i,i_];
+                }
+                state.tasky[i] = y[i];
+            }
+            state.s = new double[k];
+            state.bndl = new double[k];
+            state.bndu = new double[k];
+            for(i=0; i<=k-1; i++)
+            {
+                state.s[i] = 1.0;
+                state.bndl[i] = Double.NegativeInfinity;
+                state.bndu[i] = Double.PositiveInfinity;
+            }
+            state.optalgo = 1;
+            state.prevnpt = -1;
+            state.prevalgo = -1;
+            if( cheapfg )
+            {
+                minlm.minlmcreatevgj(k, n, state.c, state.optstate);
+            }
+            else
+            {
+                minlm.minlmcreatevj(k, n, state.c, state.optstate);
+            }
+            lsfitclearrequestfields(state);
+            state.rstate.ia = new int[4+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+        }
+
+
+        /*************************************************************************
+        Weighted nonlinear least squares fitting using gradient/Hessian.
+
+        Nonlinear task min(F(c)) is solved, where
+
+            F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
+
+            * N is a number of points,
+            * M is a dimension of a space points belong to,
+            * K is a dimension of a space of parameters being fitted,
+            * w is an N-dimensional vector of weight coefficients,
+            * x is a set of N points, each of them is an M-dimensional vector,
+            * c is a K-dimensional vector of parameters being fitted
+
+        This subroutine uses f(c,x[i]), its gradient and its Hessian.
+
+        INPUT PARAMETERS:
+            X       -   array[0..N-1,0..M-1], points (one row = one point)
+            Y       -   array[0..N-1], function values.
+            W       -   weights, array[0..N-1]
+            C       -   array[0..K-1], initial approximation to the solution,
+            N       -   number of points, N>1
+            M       -   dimension of space
+            K       -   number of parameters being fitted
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitcreatewfgh(double[,] x,
+            double[] y,
+            double[] w,
+            double[] c,
+            int n,
+            int m,
+            int k,
+            lsfitstate state)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            ap.assert(n>=1, "LSFitCreateWFGH: N<1!");
+            ap.assert(m>=1, "LSFitCreateWFGH: M<1!");
+            ap.assert(k>=1, "LSFitCreateWFGH: K<1!");
+            ap.assert(ap.len(c)>=k, "LSFitCreateWFGH: length(C)<K!");
+            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateWFGH: C contains infinite or NaN values!");
+            ap.assert(ap.len(y)>=n, "LSFitCreateWFGH: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateWFGH: Y contains infinite or NaN values!");
+            ap.assert(ap.len(w)>=n, "LSFitCreateWFGH: length(W)<N!");
+            ap.assert(apserv.isfinitevector(w, n), "LSFitCreateWFGH: W contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateWFGH: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateWFGH: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateWFGH: X contains infinite or NaN values!");
+            state.npoints = n;
+            state.nweights = n;
+            state.wkind = 1;
+            state.m = m;
+            state.k = k;
+            lsfitsetcond(state, 0.0, 0.0, 0);
+            lsfitsetstpmax(state, 0.0);
+            lsfitsetxrep(state, false);
+            state.taskx = new double[n, m];
+            state.tasky = new double[n];
+            state.w = new double[n];
+            state.c = new double[k];
+            state.h = new double[k, k];
+            state.x = new double[m];
+            state.g = new double[k];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = c[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.w[i_] = w[i_];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    state.taskx[i,i_] = x[i,i_];
+                }
+                state.tasky[i] = y[i];
+            }
+            state.s = new double[k];
+            state.bndl = new double[k];
+            state.bndu = new double[k];
+            for(i=0; i<=k-1; i++)
+            {
+                state.s[i] = 1.0;
+                state.bndl[i] = Double.NegativeInfinity;
+                state.bndu[i] = Double.PositiveInfinity;
+            }
+            state.optalgo = 2;
+            state.prevnpt = -1;
+            state.prevalgo = -1;
+            minlm.minlmcreatefgh(k, state.c, state.optstate);
+            lsfitclearrequestfields(state);
+            state.rstate.ia = new int[4+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+        }
+
+
+        /*************************************************************************
+        Nonlinear least squares fitting using gradient/Hessian, without individial
+        weights.
+
+        Nonlinear task min(F(c)) is solved, where
+
+            F(c) = ((f(c,x[0])-y[0]))^2 + ... + ((f(c,x[n-1])-y[n-1]))^2,
+
+            * N is a number of points,
+            * M is a dimension of a space points belong to,
+            * K is a dimension of a space of parameters being fitted,
+            * x is a set of N points, each of them is an M-dimensional vector,
+            * c is a K-dimensional vector of parameters being fitted
+
+        This subroutine uses f(c,x[i]), its gradient and its Hessian.
+
+        INPUT PARAMETERS:
+            X       -   array[0..N-1,0..M-1], points (one row = one point)
+            Y       -   array[0..N-1], function values.
+            C       -   array[0..K-1], initial approximation to the solution,
+            N       -   number of points, N>1
+            M       -   dimension of space
+            K       -   number of parameters being fitted
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitcreatefgh(double[,] x,
+            double[] y,
+            double[] c,
+            int n,
+            int m,
+            int k,
+            lsfitstate state)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            ap.assert(n>=1, "LSFitCreateFGH: N<1!");
+            ap.assert(m>=1, "LSFitCreateFGH: M<1!");
+            ap.assert(k>=1, "LSFitCreateFGH: K<1!");
+            ap.assert(ap.len(c)>=k, "LSFitCreateFGH: length(C)<K!");
+            ap.assert(apserv.isfinitevector(c, k), "LSFitCreateFGH: C contains infinite or NaN values!");
+            ap.assert(ap.len(y)>=n, "LSFitCreateFGH: length(Y)<N!");
+            ap.assert(apserv.isfinitevector(y, n), "LSFitCreateFGH: Y contains infinite or NaN values!");
+            ap.assert(ap.rows(x)>=n, "LSFitCreateFGH: rows(X)<N!");
+            ap.assert(ap.cols(x)>=m, "LSFitCreateFGH: cols(X)<M!");
+            ap.assert(apserv.apservisfinitematrix(x, n, m), "LSFitCreateFGH: X contains infinite or NaN values!");
+            state.npoints = n;
+            state.wkind = 0;
+            state.m = m;
+            state.k = k;
+            lsfitsetcond(state, 0.0, 0.0, 0);
+            lsfitsetstpmax(state, 0.0);
+            lsfitsetxrep(state, false);
+            state.taskx = new double[n, m];
+            state.tasky = new double[n];
+            state.c = new double[k];
+            state.h = new double[k, k];
+            state.x = new double[m];
+            state.g = new double[k];
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = c[i_];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    state.taskx[i,i_] = x[i,i_];
+                }
+                state.tasky[i] = y[i];
+            }
+            state.s = new double[k];
+            state.bndl = new double[k];
+            state.bndu = new double[k];
+            for(i=0; i<=k-1; i++)
+            {
+                state.s[i] = 1.0;
+                state.bndl[i] = Double.NegativeInfinity;
+                state.bndu[i] = Double.PositiveInfinity;
+            }
+            state.optalgo = 2;
+            state.prevnpt = -1;
+            state.prevalgo = -1;
+            minlm.minlmcreatefgh(k, state.c, state.optstate);
+            lsfitclearrequestfields(state);
+            state.rstate.ia = new int[4+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+        }
+
+
+        /*************************************************************************
+        Stopping conditions for nonlinear least squares fitting.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            EpsF    -   stopping criterion. Algorithm stops if
+                        |F(k+1)-F(k)| <= EpsF*max{|F(k)|, |F(k+1)|, 1}
+            EpsX    -   >=0
+                        The subroutine finishes its work if  on  k+1-th  iteration
+                        the condition |v|<=EpsX is fulfilled, where:
+                        * |.| means Euclidian norm
+                        * v - scaled step vector, v[i]=dx[i]/s[i]
+                        * dx - ste pvector, dx=X(k+1)-X(k)
+                        * s - scaling coefficients set by LSFitSetScale()
+            MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
+                        iterations   is    unlimited.   Only   Levenberg-Marquardt
+                        iterations  are  counted  (L-BFGS/CG  iterations  are  NOT
+                        counted because their cost is very low compared to that of
+                        LM).
+
+        NOTE
+
+        Passing EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to automatic
+        stopping criterion selection (according to the scheme used by MINLM unit).
+
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitsetcond(lsfitstate state,
+            double epsf,
+            double epsx,
+            int maxits)
+        {
+            ap.assert(math.isfinite(epsf), "LSFitSetCond: EpsF is not finite!");
+            ap.assert((double)(epsf)>=(double)(0), "LSFitSetCond: negative EpsF!");
+            ap.assert(math.isfinite(epsx), "LSFitSetCond: EpsX is not finite!");
+            ap.assert((double)(epsx)>=(double)(0), "LSFitSetCond: negative EpsX!");
+            ap.assert(maxits>=0, "LSFitSetCond: negative MaxIts!");
+            state.epsf = epsf;
+            state.epsx = epsx;
+            state.maxits = maxits;
+        }
+
+
+        /*************************************************************************
+        This function sets maximum step length
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
+                        want to limit step length.
+
+        Use this subroutine when you optimize target function which contains exp()
+        or  other  fast  growing  functions,  and optimization algorithm makes too
+        large  steps  which  leads  to overflow. This function allows us to reject
+        steps  that  are  too  large  (and  therefore  expose  us  to the possible
+        overflow) without actually calculating function value at the x+stp*d.
+
+        NOTE: non-zero StpMax leads to moderate  performance  degradation  because
+        intermediate  step  of  preconditioned L-BFGS optimization is incompatible
+        with limits on step size.
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitsetstpmax(lsfitstate state,
+            double stpmax)
+        {
+            ap.assert((double)(stpmax)>=(double)(0), "LSFitSetStpMax: StpMax<0!");
+            state.stpmax = stpmax;
+        }
+
+
+        /*************************************************************************
+        This function turns on/off reporting.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            NeedXRep-   whether iteration reports are needed or not
+            
+        When reports are needed, State.C (current parameters) and State.F (current
+        value of fitting function) are reported.
+
+
+          -- ALGLIB --
+             Copyright 15.08.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitsetxrep(lsfitstate state,
+            bool needxrep)
+        {
+            state.xrep = needxrep;
+        }
+
+
+        /*************************************************************************
+        This function sets scaling coefficients for underlying optimizer.
+
+        ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
+        size and gradient are scaled before comparison with tolerances).  Scale of
+        the I-th variable is a translation invariant measure of:
+        a) "how large" the variable is
+        b) how large the step should be to make significant changes in the function
+
+        Generally, scale is NOT considered to be a form of preconditioner.  But LM
+        optimizer is unique in that it uses scaling matrix both  in  the  stopping
+        condition tests and as Marquardt damping factor.
+
+        Proper scaling is very important for the algorithm performance. It is less
+        important for the quality of results, but still has some influence (it  is
+        easier  to  converge  when  variables  are  properly  scaled, so premature
+        stopping is possible when very badly scalled variables are  combined  with
+        relaxed stopping conditions).
+
+        INPUT PARAMETERS:
+            State   -   structure stores algorithm state
+            S       -   array[N], non-zero scaling coefficients
+                        S[i] may be negative, sign doesn't matter.
+
+          -- ALGLIB --
+             Copyright 14.01.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitsetscale(lsfitstate state,
+            double[] s)
+        {
+            int i = 0;
+
+            ap.assert(ap.len(s)>=state.k, "LSFitSetScale: Length(S)<K");
+            for(i=0; i<=state.k-1; i++)
+            {
+                ap.assert(math.isfinite(s[i]), "LSFitSetScale: S contains infinite or NAN elements");
+                ap.assert((double)(s[i])!=(double)(0), "LSFitSetScale: S contains infinite or NAN elements");
+                state.s[i] = s[i];
+            }
+        }
+
+
+        /*************************************************************************
+        This function sets boundary constraints for underlying optimizer
+
+        Boundary constraints are inactive by default (after initial creation).
+        They are preserved until explicitly turned off with another SetBC() call.
+
+        INPUT PARAMETERS:
+            State   -   structure stores algorithm state
+            BndL    -   lower bounds, array[K].
+                        If some (all) variables are unbounded, you may specify
+                        very small number or -INF (latter is recommended because
+                        it will allow solver to use better algorithm).
+            BndU    -   upper bounds, array[K].
+                        If some (all) variables are unbounded, you may specify
+                        very large number or +INF (latter is recommended because
+                        it will allow solver to use better algorithm).
+
+        NOTE 1: it is possible to specify BndL[i]=BndU[i]. In this case I-th
+        variable will be "frozen" at X[i]=BndL[i]=BndU[i].
+
+        NOTE 2: unlike other constrained optimization algorithms, this solver  has
+        following useful properties:
+        * bound constraints are always satisfied exactly
+        * function is evaluated only INSIDE area specified by bound constraints
+
+          -- ALGLIB --
+             Copyright 14.01.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitsetbc(lsfitstate state,
+            double[] bndl,
+            double[] bndu)
+        {
+            int i = 0;
+            int k = 0;
+
+            k = state.k;
+            ap.assert(ap.len(bndl)>=k, "LSFitSetBC: Length(BndL)<K");
+            ap.assert(ap.len(bndu)>=k, "LSFitSetBC: Length(BndU)<K");
+            for(i=0; i<=k-1; i++)
+            {
+                ap.assert(math.isfinite(bndl[i]) | Double.IsNegativeInfinity(bndl[i]), "LSFitSetBC: BndL contains NAN or +INF");
+                ap.assert(math.isfinite(bndu[i]) | Double.IsPositiveInfinity(bndu[i]), "LSFitSetBC: BndU contains NAN or -INF");
+                if( math.isfinite(bndl[i]) & math.isfinite(bndu[i]) )
+                {
+                    ap.assert((double)(bndl[i])<=(double)(bndu[i]), "LSFitSetBC: BndL[i]>BndU[i]");
+                }
+                state.bndl[i] = bndl[i];
+                state.bndu[i] = bndu[i];
+            }
+        }
+
+
+        /*************************************************************************
+        NOTES:
+
+        1. this algorithm is somewhat unusual because it works with  parameterized
+           function f(C,X), where X is a function argument (we  have  many  points
+           which are characterized by different  argument  values),  and  C  is  a
+           parameter to fit.
+
+           For example, if we want to do linear fit by f(c0,c1,x) = c0*x+c1,  then
+           x will be argument, and {c0,c1} will be parameters.
+           
+           It is important to understand that this algorithm finds minimum in  the
+           space of function PARAMETERS (not arguments), so it  needs  derivatives
+           of f() with respect to C, not X.
+           
+           In the example above it will need f=c0*x+c1 and {df/dc0,df/dc1} = {x,1}
+           instead of {df/dx} = {c0}.
+
+        2. Callback functions accept C as the first parameter, and X as the second
+
+        3. If  state  was  created  with  LSFitCreateFG(),  algorithm  needs  just
+           function   and   its   gradient,   but   if   state   was  created with
+           LSFitCreateFGH(), algorithm will need function, gradient and Hessian.
+           
+           According  to  the  said  above,  there  ase  several  versions of this
+           function, which accept different sets of callbacks.
+           
+           This flexibility opens way to subtle errors - you may create state with
+           LSFitCreateFGH() (optimization using Hessian), but call function  which
+           does not accept Hessian. So when algorithm will request Hessian,  there
+           will be no callback to call. In this case exception will be thrown.
+           
+           Be careful to avoid such errors because there is no way to find them at
+           compile time - you can see them at runtime only.
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static bool lsfititeration(lsfitstate state)
+        {
+            bool result = new bool();
+            int n = 0;
+            int m = 0;
+            int k = 0;
+            int i = 0;
+            int j = 0;
+            double v = 0;
+            double vv = 0;
+            double relcnt = 0;
+            int i_ = 0;
+
+            
+            //
+            // Reverse communication preparations
+            // I know it looks ugly, but it works the same way
+            // anywhere from C++ to Python.
+            //
+            // This code initializes locals by:
+            // * random values determined during code
+            //   generation - on first subroutine call
+            // * values from previous call - on subsequent calls
+            //
+            if( state.rstate.stage>=0 )
+            {
+                n = state.rstate.ia[0];
+                m = state.rstate.ia[1];
+                k = state.rstate.ia[2];
+                i = state.rstate.ia[3];
+                j = state.rstate.ia[4];
+                v = state.rstate.ra[0];
+                vv = state.rstate.ra[1];
+                relcnt = state.rstate.ra[2];
+            }
+            else
+            {
+                n = -983;
+                m = -989;
+                k = -834;
+                i = 900;
+                j = -287;
+                v = 364;
+                vv = 214;
+                relcnt = -338;
+            }
+            if( state.rstate.stage==0 )
+            {
+                goto lbl_0;
+            }
+            if( state.rstate.stage==1 )
+            {
+                goto lbl_1;
+            }
+            if( state.rstate.stage==2 )
+            {
+                goto lbl_2;
+            }
+            if( state.rstate.stage==3 )
+            {
+                goto lbl_3;
+            }
+            if( state.rstate.stage==4 )
+            {
+                goto lbl_4;
+            }
+            if( state.rstate.stage==5 )
+            {
+                goto lbl_5;
+            }
+            if( state.rstate.stage==6 )
+            {
+                goto lbl_6;
+            }
+            
+            //
+            // Routine body
+            //
+            
+            //
+            // init
+            //
+            if( state.wkind==1 )
+            {
+                ap.assert(state.npoints==state.nweights, "LSFitFit: number of points is not equal to the number of weights");
+            }
+            n = state.npoints;
+            m = state.m;
+            k = state.k;
+            minlm.minlmsetcond(state.optstate, 0.0, state.epsf, state.epsx, state.maxits);
+            minlm.minlmsetstpmax(state.optstate, state.stpmax);
+            minlm.minlmsetxrep(state.optstate, state.xrep);
+            minlm.minlmsetscale(state.optstate, state.s);
+            minlm.minlmsetbc(state.optstate, state.bndl, state.bndu);
+            
+            //
+            // Optimize
+            //
+        lbl_7:
+            if( !minlm.minlmiteration(state.optstate) )
+            {
+                goto lbl_8;
+            }
+            if( !state.optstate.needfi )
+            {
+                goto lbl_9;
+            }
+            
+            //
+            // calculate f[] = wi*(f(xi,c)-yi)
+            //
+            i = 0;
+        lbl_11:
+            if( i>n-1 )
+            {
+                goto lbl_13;
+            }
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.optstate.x[i_];
+            }
+            for(i_=0; i_<=m-1;i_++)
+            {
+                state.x[i_] = state.taskx[i,i_];
+            }
+            state.pointindex = i;
+            lsfitclearrequestfields(state);
+            state.needf = true;
+            state.rstate.stage = 0;
+            goto lbl_rcomm;
+        lbl_0:
+            state.needf = false;
+            if( state.wkind==1 )
+            {
+                vv = state.w[i];
+            }
+            else
+            {
+                vv = 1.0;
+            }
+            state.optstate.fi[i] = vv*(state.f-state.tasky[i]);
+            i = i+1;
+            goto lbl_11;
+        lbl_13:
+            goto lbl_7;
+        lbl_9:
+            if( !state.optstate.needf )
+            {
+                goto lbl_14;
+            }
+            
+            //
+            // calculate F = sum (wi*(f(xi,c)-yi))^2
+            //
+            state.optstate.f = 0;
+            i = 0;
+        lbl_16:
+            if( i>n-1 )
+            {
+                goto lbl_18;
+            }
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.optstate.x[i_];
+            }
+            for(i_=0; i_<=m-1;i_++)
+            {
+                state.x[i_] = state.taskx[i,i_];
+            }
+            state.pointindex = i;
+            lsfitclearrequestfields(state);
+            state.needf = true;
+            state.rstate.stage = 1;
+            goto lbl_rcomm;
+        lbl_1:
+            state.needf = false;
+            if( state.wkind==1 )
+            {
+                vv = state.w[i];
+            }
+            else
+            {
+                vv = 1.0;
+            }
+            state.optstate.f = state.optstate.f+math.sqr(vv*(state.f-state.tasky[i]));
+            i = i+1;
+            goto lbl_16;
+        lbl_18:
+            goto lbl_7;
+        lbl_14:
+            if( !state.optstate.needfg )
+            {
+                goto lbl_19;
+            }
+            
+            //
+            // calculate F/gradF
+            //
+            state.optstate.f = 0;
+            for(i=0; i<=k-1; i++)
+            {
+                state.optstate.g[i] = 0;
+            }
+            i = 0;
+        lbl_21:
+            if( i>n-1 )
+            {
+                goto lbl_23;
+            }
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.optstate.x[i_];
+            }
+            for(i_=0; i_<=m-1;i_++)
+            {
+                state.x[i_] = state.taskx[i,i_];
+            }
+            state.pointindex = i;
+            lsfitclearrequestfields(state);
+            state.needfg = true;
+            state.rstate.stage = 2;
+            goto lbl_rcomm;
+        lbl_2:
+            state.needfg = false;
+            if( state.wkind==1 )
+            {
+                vv = state.w[i];
+            }
+            else
+            {
+                vv = 1.0;
+            }
+            state.optstate.f = state.optstate.f+math.sqr(vv*(state.f-state.tasky[i]));
+            v = math.sqr(vv)*2*(state.f-state.tasky[i]);
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.optstate.g[i_] = state.optstate.g[i_] + v*state.g[i_];
+            }
+            i = i+1;
+            goto lbl_21;
+        lbl_23:
+            goto lbl_7;
+        lbl_19:
+            if( !state.optstate.needfij )
+            {
+                goto lbl_24;
+            }
+            
+            //
+            // calculate Fi/jac(Fi)
+            //
+            i = 0;
+        lbl_26:
+            if( i>n-1 )
+            {
+                goto lbl_28;
+            }
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.optstate.x[i_];
+            }
+            for(i_=0; i_<=m-1;i_++)
+            {
+                state.x[i_] = state.taskx[i,i_];
+            }
+            state.pointindex = i;
+            lsfitclearrequestfields(state);
+            state.needfg = true;
+            state.rstate.stage = 3;
+            goto lbl_rcomm;
+        lbl_3:
+            state.needfg = false;
+            if( state.wkind==1 )
+            {
+                vv = state.w[i];
+            }
+            else
+            {
+                vv = 1.0;
+            }
+            state.optstate.fi[i] = vv*(state.f-state.tasky[i]);
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.optstate.j[i,i_] = vv*state.g[i_];
+            }
+            i = i+1;
+            goto lbl_26;
+        lbl_28:
+            goto lbl_7;
+        lbl_24:
+            if( !state.optstate.needfgh )
+            {
+                goto lbl_29;
+            }
+            
+            //
+            // calculate F/grad(F)/hess(F)
+            //
+            state.optstate.f = 0;
+            for(i=0; i<=k-1; i++)
+            {
+                state.optstate.g[i] = 0;
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                for(j=0; j<=k-1; j++)
+                {
+                    state.optstate.h[i,j] = 0;
+                }
+            }
+            i = 0;
+        lbl_31:
+            if( i>n-1 )
+            {
+                goto lbl_33;
+            }
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.optstate.x[i_];
+            }
+            for(i_=0; i_<=m-1;i_++)
+            {
+                state.x[i_] = state.taskx[i,i_];
+            }
+            state.pointindex = i;
+            lsfitclearrequestfields(state);
+            state.needfgh = true;
+            state.rstate.stage = 4;
+            goto lbl_rcomm;
+        lbl_4:
+            state.needfgh = false;
+            if( state.wkind==1 )
+            {
+                vv = state.w[i];
+            }
+            else
+            {
+                vv = 1.0;
+            }
+            state.optstate.f = state.optstate.f+math.sqr(vv*(state.f-state.tasky[i]));
+            v = math.sqr(vv)*2*(state.f-state.tasky[i]);
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.optstate.g[i_] = state.optstate.g[i_] + v*state.g[i_];
+            }
+            for(j=0; j<=k-1; j++)
+            {
+                v = 2*math.sqr(vv)*state.g[j];
+                for(i_=0; i_<=k-1;i_++)
+                {
+                    state.optstate.h[j,i_] = state.optstate.h[j,i_] + v*state.g[i_];
+                }
+                v = 2*math.sqr(vv)*(state.f-state.tasky[i]);
+                for(i_=0; i_<=k-1;i_++)
+                {
+                    state.optstate.h[j,i_] = state.optstate.h[j,i_] + v*state.h[j,i_];
+                }
+            }
+            i = i+1;
+            goto lbl_31;
+        lbl_33:
+            goto lbl_7;
+        lbl_29:
+            if( !state.optstate.xupdated )
+            {
+                goto lbl_34;
+            }
+            
+            //
+            // Report new iteration
+            //
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.optstate.x[i_];
+            }
+            state.f = state.optstate.f;
+            lsfitclearrequestfields(state);
+            state.xupdated = true;
+            state.rstate.stage = 5;
+            goto lbl_rcomm;
+        lbl_5:
+            state.xupdated = false;
+            goto lbl_7;
+        lbl_34:
+            goto lbl_7;
+        lbl_8:
+            minlm.minlmresults(state.optstate, ref state.c, state.optrep);
+            state.repterminationtype = state.optrep.terminationtype;
+            state.repiterationscount = state.optrep.iterationscount;
+            
+            //
+            // calculate errors
+            //
+            if( state.repterminationtype<=0 )
+            {
+                goto lbl_36;
+            }
+            state.reprmserror = 0;
+            state.repwrmserror = 0;
+            state.repavgerror = 0;
+            state.repavgrelerror = 0;
+            state.repmaxerror = 0;
+            relcnt = 0;
+            i = 0;
+        lbl_38:
+            if( i>n-1 )
+            {
+                goto lbl_40;
+            }
+            for(i_=0; i_<=k-1;i_++)
+            {
+                state.c[i_] = state.c[i_];
+            }
+            for(i_=0; i_<=m-1;i_++)
+            {
+                state.x[i_] = state.taskx[i,i_];
+            }
+            state.pointindex = i;
+            lsfitclearrequestfields(state);
+            state.needf = true;
+            state.rstate.stage = 6;
+            goto lbl_rcomm;
+        lbl_6:
+            state.needf = false;
+            v = state.f;
+            if( state.wkind==1 )
+            {
+                vv = state.w[i];
+            }
+            else
+            {
+                vv = 1.0;
+            }
+            state.reprmserror = state.reprmserror+math.sqr(v-state.tasky[i]);
+            state.repwrmserror = state.repwrmserror+math.sqr(vv*(v-state.tasky[i]));
+            state.repavgerror = state.repavgerror+Math.Abs(v-state.tasky[i]);
+            if( (double)(state.tasky[i])!=(double)(0) )
+            {
+                state.repavgrelerror = state.repavgrelerror+Math.Abs(v-state.tasky[i])/Math.Abs(state.tasky[i]);
+                relcnt = relcnt+1;
+            }
+            state.repmaxerror = Math.Max(state.repmaxerror, Math.Abs(v-state.tasky[i]));
+            i = i+1;
+            goto lbl_38;
+        lbl_40:
+            state.reprmserror = Math.Sqrt(state.reprmserror/n);
+            state.repwrmserror = Math.Sqrt(state.repwrmserror/n);
+            state.repavgerror = state.repavgerror/n;
+            if( (double)(relcnt)!=(double)(0) )
+            {
+                state.repavgrelerror = state.repavgrelerror/relcnt;
+            }
+        lbl_36:
+            result = false;
+            return result;
+            
+            //
+            // Saving state
+            //
+        lbl_rcomm:
+            result = true;
+            state.rstate.ia[0] = n;
+            state.rstate.ia[1] = m;
+            state.rstate.ia[2] = k;
+            state.rstate.ia[3] = i;
+            state.rstate.ia[4] = j;
+            state.rstate.ra[0] = v;
+            state.rstate.ra[1] = vv;
+            state.rstate.ra[2] = relcnt;
+            return result;
+        }
+
+
+        /*************************************************************************
+        Nonlinear least squares fitting results.
+
+        Called after return from LSFitFit().
+
+        INPUT PARAMETERS:
+            State   -   algorithm state
+
+        OUTPUT PARAMETERS:
+            Info    -   completetion code:
+                            *  1    relative function improvement is no more than
+                                    EpsF.
+                            *  2    relative step is no more than EpsX.
+                            *  4    gradient norm is no more than EpsG
+                            *  5    MaxIts steps was taken
+                            *  7    stopping conditions are too stringent,
+                                    further improvement is impossible
+            C       -   array[0..K-1], solution
+            Rep     -   optimization report. Following fields are set:
+                        * Rep.TerminationType completetion code:
+                        * RMSError          rms error on the (X,Y).
+                        * AvgError          average error on the (X,Y).
+                        * AvgRelError       average relative error on the non-zero Y
+                        * MaxError          maximum error
+                                            NON-WEIGHTED ERRORS ARE CALCULATED
+                        * WRMSError         weighted rms error on the (X,Y).
+
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitresults(lsfitstate state,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            int i_ = 0;
+
+            info = 0;
+            c = new double[0];
+
+            info = state.repterminationtype;
+            if( info>0 )
+            {
+                c = new double[state.k];
+                for(i_=0; i_<=state.k-1;i_++)
+                {
+                    c[i_] = state.c[i_];
+                }
+                rep.rmserror = state.reprmserror;
+                rep.wrmserror = state.repwrmserror;
+                rep.avgerror = state.repavgerror;
+                rep.avgrelerror = state.repavgrelerror;
+                rep.maxerror = state.repmaxerror;
+                rep.iterationscount = state.repiterationscount;
+            }
+        }
+
+
+        /*************************************************************************
+        Internal subroutine: automatic scaling for LLS tasks.
+        NEVER CALL IT DIRECTLY!
+
+        Maps abscissas to [-1,1], standartizes ordinates and correspondingly scales
+        constraints. It also scales weights so that max(W[i])=1
+
+        Transformations performed:
+        * X, XC         [XA,XB] => [-1,+1]
+                        transformation makes min(X)=-1, max(X)=+1
+
+        * Y             [SA,SB] => [0,1]
+                        transformation makes mean(Y)=0, stddev(Y)=1
+                        
+        * YC            transformed accordingly to SA, SB, DC[I]
+
+          -- ALGLIB PROJECT --
+             Copyright 08.09.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void lsfitscalexy(ref double[] x,
+            ref double[] y,
+            ref double[] w,
+            int n,
+            ref double[] xc,
+            ref double[] yc,
+            int[] dc,
+            int k,
+            ref double xa,
+            ref double xb,
+            ref double sa,
+            ref double sb,
+            ref double[] xoriginal,
+            ref double[] yoriginal)
+        {
+            double xmin = 0;
+            double xmax = 0;
+            int i = 0;
+            double mx = 0;
+            int i_ = 0;
+
+            xa = 0;
+            xb = 0;
+            sa = 0;
+            sb = 0;
+            xoriginal = new double[0];
+            yoriginal = new double[0];
+
+            ap.assert(n>=1, "LSFitScaleXY: incorrect N");
+            ap.assert(k>=0, "LSFitScaleXY: incorrect K");
+            
+            //
+            // Calculate xmin/xmax.
+            // Force xmin<>xmax.
+            //
+            xmin = x[0];
+            xmax = x[0];
+            for(i=1; i<=n-1; i++)
+            {
+                xmin = Math.Min(xmin, x[i]);
+                xmax = Math.Max(xmax, x[i]);
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                xmin = Math.Min(xmin, xc[i]);
+                xmax = Math.Max(xmax, xc[i]);
+            }
+            if( (double)(xmin)==(double)(xmax) )
+            {
+                if( (double)(xmin)==(double)(0) )
+                {
+                    xmin = -1;
+                    xmax = 1;
+                }
+                else
+                {
+                    if( (double)(xmin)>(double)(0) )
+                    {
+                        xmin = 0.5*xmin;
+                    }
+                    else
+                    {
+                        xmax = 0.5*xmax;
+                    }
+                }
+            }
+            
+            //
+            // Transform abscissas: map [XA,XB] to [0,1]
+            //
+            // Store old X[] in XOriginal[] (it will be used
+            // to calculate relative error).
+            //
+            xoriginal = new double[n];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                xoriginal[i_] = x[i_];
+            }
+            xa = xmin;
+            xb = xmax;
+            for(i=0; i<=n-1; i++)
+            {
+                x[i] = 2*(x[i]-0.5*(xa+xb))/(xb-xa);
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                ap.assert(dc[i]>=0, "LSFitScaleXY: internal error!");
+                xc[i] = 2*(xc[i]-0.5*(xa+xb))/(xb-xa);
+                yc[i] = yc[i]*Math.Pow(0.5*(xb-xa), dc[i]);
+            }
+            
+            //
+            // Transform function values: map [SA,SB] to [0,1]
+            // SA = mean(Y),
+            // SB = SA+stddev(Y).
+            //
+            // Store old Y[] in YOriginal[] (it will be used
+            // to calculate relative error).
+            //
+            yoriginal = new double[n];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                yoriginal[i_] = y[i_];
+            }
+            sa = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                sa = sa+y[i];
+            }
+            sa = sa/n;
+            sb = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                sb = sb+math.sqr(y[i]-sa);
+            }
+            sb = Math.Sqrt(sb/n)+sa;
+            if( (double)(sb)==(double)(sa) )
+            {
+                sb = 2*sa;
+            }
+            if( (double)(sb)==(double)(sa) )
+            {
+                sb = sa+1;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                y[i] = (y[i]-sa)/(sb-sa);
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                if( dc[i]==0 )
+                {
+                    yc[i] = (yc[i]-sa)/(sb-sa);
+                }
+                else
+                {
+                    yc[i] = yc[i]/(sb-sa);
+                }
+            }
+            
+            //
+            // Scale weights
+            //
+            mx = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                mx = Math.Max(mx, Math.Abs(w[i]));
+            }
+            if( (double)(mx)!=(double)(0) )
+            {
+                for(i=0; i<=n-1; i++)
+                {
+                    w[i] = w[i]/mx;
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Internal spline fitting subroutine
+
+          -- ALGLIB PROJECT --
+             Copyright 08.09.2009 by Bochkanov Sergey
+        *************************************************************************/
+        private static void spline1dfitinternal(int st,
+            double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            ref int info,
+            spline1d.spline1dinterpolant s,
+            spline1dfitreport rep)
+        {
+            double[,] fmatrix = new double[0,0];
+            double[,] cmatrix = new double[0,0];
+            double[] y2 = new double[0];
+            double[] w2 = new double[0];
+            double[] sx = new double[0];
+            double[] sy = new double[0];
+            double[] sd = new double[0];
+            double[] tmp = new double[0];
+            double[] xoriginal = new double[0];
+            double[] yoriginal = new double[0];
+            lsfitreport lrep = new lsfitreport();
+            double v0 = 0;
+            double v1 = 0;
+            double v2 = 0;
+            double mx = 0;
+            spline1d.spline1dinterpolant s2 = new spline1d.spline1dinterpolant();
+            int i = 0;
+            int j = 0;
+            int relcnt = 0;
+            double xa = 0;
+            double xb = 0;
+            double sa = 0;
+            double sb = 0;
+            double bl = 0;
+            double br = 0;
+            double decay = 0;
+            int i_ = 0;
+
+            x = (double[])x.Clone();
+            y = (double[])y.Clone();
+            w = (double[])w.Clone();
+            xc = (double[])xc.Clone();
+            yc = (double[])yc.Clone();
+            info = 0;
+
+            ap.assert(st==0 | st==1, "Spline1DFit: internal error!");
+            if( st==0 & m<4 )
+            {
+                info = -1;
+                return;
+            }
+            if( st==1 & m<4 )
+            {
+                info = -1;
+                return;
+            }
+            if( (n<1 | k<0) | k>=m )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                info = 0;
+                if( dc[i]<0 )
+                {
+                    info = -1;
+                }
+                if( dc[i]>1 )
+                {
+                    info = -1;
+                }
+                if( info<0 )
+                {
+                    return;
+                }
+            }
+            if( st==1 & m%2!=0 )
+            {
+                
+                //
+                // Hermite fitter must have even number of basis functions
+                //
+                info = -2;
+                return;
+            }
+            
+            //
+            // weight decay for correct handling of task which becomes
+            // degenerate after constraints are applied
+            //
+            decay = 10000*math.machineepsilon;
+            
+            //
+            // Scale X, Y, XC, YC
+            //
+            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, k, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
+            
+            //
+            // allocate space, initialize:
+            // * SX     -   grid for basis functions
+            // * SY     -   values of basis functions at grid points
+            // * FMatrix-   values of basis functions at X[]
+            // * CMatrix-   values (derivatives) of basis functions at XC[]
+            //
+            y2 = new double[n+m];
+            w2 = new double[n+m];
+            fmatrix = new double[n+m, m];
+            if( k>0 )
+            {
+                cmatrix = new double[k, m+1];
+            }
+            if( st==0 )
+            {
+                
+                //
+                // allocate space for cubic spline
+                //
+                sx = new double[m-2];
+                sy = new double[m-2];
+                for(j=0; j<=m-2-1; j++)
+                {
+                    sx[j] = (double)(2*j)/(double)(m-2-1)-1;
+                }
+            }
+            if( st==1 )
+            {
+                
+                //
+                // allocate space for Hermite spline
+                //
+                sx = new double[m/2];
+                sy = new double[m/2];
+                sd = new double[m/2];
+                for(j=0; j<=m/2-1; j++)
+                {
+                    sx[j] = (double)(2*j)/(double)(m/2-1)-1;
+                }
+            }
+            
+            //
+            // Prepare design and constraints matrices:
+            // * fill constraints matrix
+            // * fill first N rows of design matrix with values
+            // * fill next M rows of design matrix with regularizing term
+            // * append M zeros to Y
+            // * append M elements, mean(abs(W)) each, to W
+            //
+            for(j=0; j<=m-1; j++)
+            {
+                
+                //
+                // prepare Jth basis function
+                //
+                if( st==0 )
+                {
+                    
+                    //
+                    // cubic spline basis
+                    //
+                    for(i=0; i<=m-2-1; i++)
+                    {
+                        sy[i] = 0;
+                    }
+                    bl = 0;
+                    br = 0;
+                    if( j<m-2 )
+                    {
+                        sy[j] = 1;
+                    }
+                    if( j==m-2 )
+                    {
+                        bl = 1;
+                    }
+                    if( j==m-1 )
+                    {
+                        br = 1;
+                    }
+                    spline1d.spline1dbuildcubic(sx, sy, m-2, 1, bl, 1, br, s2);
+                }
+                if( st==1 )
+                {
+                    
+                    //
+                    // Hermite basis
+                    //
+                    for(i=0; i<=m/2-1; i++)
+                    {
+                        sy[i] = 0;
+                        sd[i] = 0;
+                    }
+                    if( j%2==0 )
+                    {
+                        sy[j/2] = 1;
+                    }
+                    else
+                    {
+                        sd[j/2] = 1;
+                    }
+                    spline1d.spline1dbuildhermite(sx, sy, sd, m/2, s2);
+                }
+                
+                //
+                // values at X[], XC[]
+                //
+                for(i=0; i<=n-1; i++)
+                {
+                    fmatrix[i,j] = spline1d.spline1dcalc(s2, x[i]);
+                }
+                for(i=0; i<=k-1; i++)
+                {
+                    ap.assert(dc[i]>=0 & dc[i]<=2, "Spline1DFit: internal error!");
+                    spline1d.spline1ddiff(s2, xc[i], ref v0, ref v1, ref v2);
+                    if( dc[i]==0 )
+                    {
+                        cmatrix[i,j] = v0;
+                    }
+                    if( dc[i]==1 )
+                    {
+                        cmatrix[i,j] = v1;
+                    }
+                    if( dc[i]==2 )
+                    {
+                        cmatrix[i,j] = v2;
+                    }
+                }
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                cmatrix[i,m] = yc[i];
+            }
+            for(i=0; i<=m-1; i++)
+            {
+                for(j=0; j<=m-1; j++)
+                {
+                    if( i==j )
+                    {
+                        fmatrix[n+i,j] = decay;
+                    }
+                    else
+                    {
+                        fmatrix[n+i,j] = 0;
+                    }
+                }
+            }
+            y2 = new double[n+m];
+            w2 = new double[n+m];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                y2[i_] = y[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                w2[i_] = w[i_];
+            }
+            mx = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                mx = mx+Math.Abs(w[i]);
+            }
+            mx = mx/n;
+            for(i=0; i<=m-1; i++)
+            {
+                y2[n+i] = 0;
+                w2[n+i] = mx;
+            }
+            
+            //
+            // Solve constrained task
+            //
+            if( k>0 )
+            {
+                
+                //
+                // solve using regularization
+                //
+                lsfitlinearwc(y2, w2, fmatrix, cmatrix, n+m, m, k, ref info, ref tmp, lrep);
+            }
+            else
+            {
+                
+                //
+                // no constraints, no regularization needed
+                //
+                lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref tmp, lrep);
+            }
+            if( info<0 )
+            {
+                return;
+            }
+            
+            //
+            // Generate spline and scale it
+            //
+            if( st==0 )
+            {
+                
+                //
+                // cubic spline basis
+                //
+                for(i_=0; i_<=m-2-1;i_++)
+                {
+                    sy[i_] = tmp[i_];
+                }
+                spline1d.spline1dbuildcubic(sx, sy, m-2, 1, tmp[m-2], 1, tmp[m-1], s);
+            }
+            if( st==1 )
+            {
+                
+                //
+                // Hermite basis
+                //
+                for(i=0; i<=m/2-1; i++)
+                {
+                    sy[i] = tmp[2*i];
+                    sd[i] = tmp[2*i+1];
+                }
+                spline1d.spline1dbuildhermite(sx, sy, sd, m/2, s);
+            }
+            spline1d.spline1dlintransx(s, 2/(xb-xa), -((xa+xb)/(xb-xa)));
+            spline1d.spline1dlintransy(s, sb-sa, sa);
+            
+            //
+            // Scale absolute errors obtained from LSFitLinearW.
+            // Relative error should be calculated separately
+            // (because of shifting/scaling of the task)
+            //
+            rep.taskrcond = lrep.taskrcond;
+            rep.rmserror = lrep.rmserror*(sb-sa);
+            rep.avgerror = lrep.avgerror*(sb-sa);
+            rep.maxerror = lrep.maxerror*(sb-sa);
+            rep.avgrelerror = 0;
+            relcnt = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                if( (double)(yoriginal[i])!=(double)(0) )
+                {
+                    rep.avgrelerror = rep.avgrelerror+Math.Abs(spline1d.spline1dcalc(s, xoriginal[i])-yoriginal[i])/Math.Abs(yoriginal[i]);
+                    relcnt = relcnt+1;
+                }
+            }
+            if( relcnt!=0 )
+            {
+                rep.avgrelerror = rep.avgrelerror/relcnt;
+            }
+        }
+
+
+        /*************************************************************************
+        Internal fitting subroutine
+        *************************************************************************/
+        private static void lsfitlinearinternal(double[] y,
+            double[] w,
+            double[,] fmatrix,
+            int n,
+            int m,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            double threshold = 0;
+            double[,] ft = new double[0,0];
+            double[,] q = new double[0,0];
+            double[,] l = new double[0,0];
+            double[,] r = new double[0,0];
+            double[] b = new double[0];
+            double[] wmod = new double[0];
+            double[] tau = new double[0];
+            int i = 0;
+            int j = 0;
+            double v = 0;
+            double[] sv = new double[0];
+            double[,] u = new double[0,0];
+            double[,] vt = new double[0,0];
+            double[] tmp = new double[0];
+            double[] utb = new double[0];
+            double[] sutb = new double[0];
+            int relcnt = 0;
+            int i_ = 0;
+
+            info = 0;
+            c = new double[0];
+
+            if( n<1 | m<1 )
+            {
+                info = -1;
+                return;
+            }
+            info = 1;
+            threshold = Math.Sqrt(math.machineepsilon);
+            
+            //
+            // Degenerate case, needs special handling
+            //
+            if( n<m )
+            {
+                
+                //
+                // Create design matrix.
+                //
+                ft = new double[n, m];
+                b = new double[n];
+                wmod = new double[n];
+                for(j=0; j<=n-1; j++)
+                {
+                    v = w[j];
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        ft[j,i_] = v*fmatrix[j,i_];
+                    }
+                    b[j] = w[j]*y[j];
+                    wmod[j] = 1;
+                }
+                
+                //
+                // LQ decomposition and reduction to M=N
+                //
+                c = new double[m];
+                for(i=0; i<=m-1; i++)
+                {
+                    c[i] = 0;
+                }
+                rep.taskrcond = 0;
+                ortfac.rmatrixlq(ref ft, n, m, ref tau);
+                ortfac.rmatrixlqunpackq(ft, n, m, tau, n, ref q);
+                ortfac.rmatrixlqunpackl(ft, n, m, ref l);
+                lsfitlinearinternal(b, wmod, l, n, n, ref info, ref tmp, rep);
+                if( info<=0 )
+                {
+                    return;
+                }
+                for(i=0; i<=n-1; i++)
+                {
+                    v = tmp[i];
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        c[i_] = c[i_] + v*q[i,i_];
+                    }
+                }
+                return;
+            }
+            
+            //
+            // N>=M. Generate design matrix and reduce to N=M using
+            // QR decomposition.
+            //
+            ft = new double[n, m];
+            b = new double[n];
+            for(j=0; j<=n-1; j++)
+            {
+                v = w[j];
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    ft[j,i_] = v*fmatrix[j,i_];
+                }
+                b[j] = w[j]*y[j];
+            }
+            ortfac.rmatrixqr(ref ft, n, m, ref tau);
+            ortfac.rmatrixqrunpackq(ft, n, m, tau, m, ref q);
+            ortfac.rmatrixqrunpackr(ft, n, m, ref r);
+            tmp = new double[m];
+            for(i=0; i<=m-1; i++)
+            {
+                tmp[i] = 0;
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                v = b[i];
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    tmp[i_] = tmp[i_] + v*q[i,i_];
+                }
+            }
+            b = new double[m];
+            for(i_=0; i_<=m-1;i_++)
+            {
+                b[i_] = tmp[i_];
+            }
+            
+            //
+            // R contains reduced MxM design upper triangular matrix,
+            // B contains reduced Mx1 right part.
+            //
+            // Determine system condition number and decide
+            // should we use triangular solver (faster) or
+            // SVD-based solver (more stable).
+            //
+            // We can use LU-based RCond estimator for this task.
+            //
+            rep.taskrcond = rcond.rmatrixlurcondinf(r, m);
+            if( (double)(rep.taskrcond)>(double)(threshold) )
+            {
+                
+                //
+                // use QR-based solver
+                //
+                c = new double[m];
+                c[m-1] = b[m-1]/r[m-1,m-1];
+                for(i=m-2; i>=0; i--)
+                {
+                    v = 0.0;
+                    for(i_=i+1; i_<=m-1;i_++)
+                    {
+                        v += r[i,i_]*c[i_];
+                    }
+                    c[i] = (b[i]-v)/r[i,i];
+                }
+            }
+            else
+            {
+                
+                //
+                // use SVD-based solver
+                //
+                if( !svd.rmatrixsvd(r, m, m, 1, 1, 2, ref sv, ref u, ref vt) )
+                {
+                    info = -4;
+                    return;
+                }
+                utb = new double[m];
+                sutb = new double[m];
+                for(i=0; i<=m-1; i++)
+                {
+                    utb[i] = 0;
+                }
+                for(i=0; i<=m-1; i++)
+                {
+                    v = b[i];
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        utb[i_] = utb[i_] + v*u[i,i_];
+                    }
+                }
+                if( (double)(sv[0])>(double)(0) )
+                {
+                    rep.taskrcond = sv[m-1]/sv[0];
+                    for(i=0; i<=m-1; i++)
+                    {
+                        if( (double)(sv[i])>(double)(threshold*sv[0]) )
+                        {
+                            sutb[i] = utb[i]/sv[i];
+                        }
+                        else
+                        {
+                            sutb[i] = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    rep.taskrcond = 0;
+                    for(i=0; i<=m-1; i++)
+                    {
+                        sutb[i] = 0;
+                    }
+                }
+                c = new double[m];
+                for(i=0; i<=m-1; i++)
+                {
+                    c[i] = 0;
+                }
+                for(i=0; i<=m-1; i++)
+                {
+                    v = sutb[i];
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        c[i_] = c[i_] + v*vt[i,i_];
+                    }
+                }
+            }
+            
+            //
+            // calculate errors
+            //
+            rep.rmserror = 0;
+            rep.avgerror = 0;
+            rep.avgrelerror = 0;
+            rep.maxerror = 0;
+            relcnt = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    v += fmatrix[i,i_]*c[i_];
+                }
+                rep.rmserror = rep.rmserror+math.sqr(v-y[i]);
+                rep.avgerror = rep.avgerror+Math.Abs(v-y[i]);
+                if( (double)(y[i])!=(double)(0) )
+                {
+                    rep.avgrelerror = rep.avgrelerror+Math.Abs(v-y[i])/Math.Abs(y[i]);
+                    relcnt = relcnt+1;
+                }
+                rep.maxerror = Math.Max(rep.maxerror, Math.Abs(v-y[i]));
+            }
+            rep.rmserror = Math.Sqrt(rep.rmserror/n);
+            rep.avgerror = rep.avgerror/n;
+            if( relcnt!=0 )
+            {
+                rep.avgrelerror = rep.avgrelerror/relcnt;
+            }
+        }
+
+
+        /*************************************************************************
+        Internal subroutine
+        *************************************************************************/
+        private static void lsfitclearrequestfields(lsfitstate state)
+        {
+            state.needf = false;
+            state.needfg = false;
+            state.needfgh = false;
+            state.xupdated = false;
+        }
+
+
+        /*************************************************************************
+        Internal subroutine, calculates barycentric basis functions.
+        Used for efficient simultaneous calculation of N basis functions.
+
+          -- ALGLIB --
+             Copyright 17.08.2009 by Bochkanov Sergey
+        *************************************************************************/
+        private static void barycentriccalcbasis(ratint.barycentricinterpolant b,
+            double t,
+            ref double[] y)
+        {
+            double s2 = 0;
+            double s = 0;
+            double v = 0;
+            int i = 0;
+            int j = 0;
+            int i_ = 0;
+
+            
+            //
+            // special case: N=1
+            //
+            if( b.n==1 )
+            {
+                y[0] = 1;
+                return;
+            }
+            
+            //
+            // Here we assume that task is normalized, i.e.:
+            // 1. abs(Y[i])<=1
+            // 2. abs(W[i])<=1
+            // 3. X[] is ordered
+            //
+            // First, we decide: should we use "safe" formula (guarded
+            // against overflow) or fast one?
+            //
+            s = Math.Abs(t-b.x[0]);
+            for(i=0; i<=b.n-1; i++)
+            {
+                v = b.x[i];
+                if( (double)(v)==(double)(t) )
+                {
+                    for(j=0; j<=b.n-1; j++)
+                    {
+                        y[j] = 0;
+                    }
+                    y[i] = 1;
+                    return;
+                }
+                v = Math.Abs(t-v);
+                if( (double)(v)<(double)(s) )
+                {
+                    s = v;
+                }
+            }
+            s2 = 0;
+            for(i=0; i<=b.n-1; i++)
+            {
+                v = s/(t-b.x[i]);
+                v = v*b.w[i];
+                y[i] = v;
+                s2 = s2+v;
+            }
+            v = 1/s2;
+            for(i_=0; i_<=b.n-1;i_++)
+            {
+                y[i_] = v*y[i_];
+            }
+        }
+
+
+        /*************************************************************************
+        This is internal function for Chebyshev fitting.
+
+        It assumes that input data are normalized:
+        * X/XC belong to [-1,+1],
+        * mean(Y)=0, stddev(Y)=1.
+
+        It does not checks inputs for errors.
+
+        This function is used to fit general (shifted) Chebyshev models, power
+        basis models or barycentric models.
+
+        INPUT PARAMETERS:
+            X   -   points, array[0..N-1].
+            Y   -   function values, array[0..N-1].
+            W   -   weights, array[0..N-1]
+            N   -   number of points, N>0.
+            XC  -   points where polynomial values/derivatives are constrained,
+                    array[0..K-1].
+            YC  -   values of constraints, array[0..K-1]
+            DC  -   array[0..K-1], types of constraints:
+                    * DC[i]=0   means that P(XC[i])=YC[i]
+                    * DC[i]=1   means that P'(XC[i])=YC[i]
+            K   -   number of constraints, 0<=K<M.
+                    K=0 means no constraints (XC/YC/DC are not used in such cases)
+            M   -   number of basis functions (= polynomial_degree + 1), M>=1
+
+        OUTPUT PARAMETERS:
+            Info-   same format as in LSFitLinearW() subroutine:
+                    * Info>0    task is solved
+                    * Info<=0   an error occured:
+                                -4 means inconvergence of internal SVD
+                                -3 means inconsistent constraints
+            C   -   interpolant in Chebyshev form; [-1,+1] is used as base interval
+            Rep -   report, same format as in LSFitLinearW() subroutine.
+                    Following fields are set:
+                    * RMSError      rms error on the (X,Y).
+                    * AvgError      average error on the (X,Y).
+                    * AvgRelError   average relative error on the non-zero Y
+                    * MaxError      maximum error
+                                    NON-WEIGHTED ERRORS ARE CALCULATED
+
+        IMPORTANT:
+            this subroitine doesn't calculate task's condition number for K<>0.
+
+          -- ALGLIB PROJECT --
+             Copyright 10.12.2009 by Bochkanov Sergey
+        *************************************************************************/
+        private static void internalchebyshevfit(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            ref int info,
+            ref double[] c,
+            lsfitreport rep)
+        {
+            double[] y2 = new double[0];
+            double[] w2 = new double[0];
+            double[] tmp = new double[0];
+            double[] tmp2 = new double[0];
+            double[] tmpdiff = new double[0];
+            double[] bx = new double[0];
+            double[] by = new double[0];
+            double[] bw = new double[0];
+            double[,] fmatrix = new double[0,0];
+            double[,] cmatrix = new double[0,0];
+            int i = 0;
+            int j = 0;
+            double mx = 0;
+            double decay = 0;
+            int i_ = 0;
+
+            xc = (double[])xc.Clone();
+            yc = (double[])yc.Clone();
+            info = 0;
+            c = new double[0];
+
+            
+            //
+            // weight decay for correct handling of task which becomes
+            // degenerate after constraints are applied
+            //
+            decay = 10000*math.machineepsilon;
+            
+            //
+            // allocate space, initialize/fill:
+            // * FMatrix-   values of basis functions at X[]
+            // * CMatrix-   values (derivatives) of basis functions at XC[]
+            // * fill constraints matrix
+            // * fill first N rows of design matrix with values
+            // * fill next M rows of design matrix with regularizing term
+            // * append M zeros to Y
+            // * append M elements, mean(abs(W)) each, to W
+            //
+            y2 = new double[n+m];
+            w2 = new double[n+m];
+            tmp = new double[m];
+            tmpdiff = new double[m];
+            fmatrix = new double[n+m, m];
+            if( k>0 )
+            {
+                cmatrix = new double[k, m+1];
+            }
+            
+            //
+            // Fill design matrix, Y2, W2:
+            // * first N rows with basis functions for original points
+            // * next M rows with decay terms
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                
+                //
+                // prepare Ith row
+                // use Tmp for calculations to avoid multidimensional arrays overhead
+                //
+                for(j=0; j<=m-1; j++)
+                {
+                    if( j==0 )
+                    {
+                        tmp[j] = 1;
+                    }
+                    else
+                    {
+                        if( j==1 )
+                        {
+                            tmp[j] = x[i];
+                        }
+                        else
+                        {
+                            tmp[j] = 2*x[i]*tmp[j-1]-tmp[j-2];
+                        }
+                    }
+                }
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    fmatrix[i,i_] = tmp[i_];
+                }
+            }
+            for(i=0; i<=m-1; i++)
+            {
+                for(j=0; j<=m-1; j++)
+                {
+                    if( i==j )
+                    {
+                        fmatrix[n+i,j] = decay;
+                    }
+                    else
+                    {
+                        fmatrix[n+i,j] = 0;
+                    }
+                }
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                y2[i_] = y[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                w2[i_] = w[i_];
+            }
+            mx = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                mx = mx+Math.Abs(w[i]);
+            }
+            mx = mx/n;
+            for(i=0; i<=m-1; i++)
+            {
+                y2[n+i] = 0;
+                w2[n+i] = mx;
+            }
+            
+            //
+            // fill constraints matrix
+            //
+            for(i=0; i<=k-1; i++)
+            {
+                
+                //
+                // prepare Ith row
+                // use Tmp for basis function values,
+                // TmpDiff for basos function derivatives
+                //
+                for(j=0; j<=m-1; j++)
+                {
+                    if( j==0 )
+                    {
+                        tmp[j] = 1;
+                        tmpdiff[j] = 0;
+                    }
+                    else
+                    {
+                        if( j==1 )
+                        {
+                            tmp[j] = xc[i];
+                            tmpdiff[j] = 1;
+                        }
+                        else
+                        {
+                            tmp[j] = 2*xc[i]*tmp[j-1]-tmp[j-2];
+                            tmpdiff[j] = 2*(tmp[j-1]+xc[i]*tmpdiff[j-1])-tmpdiff[j-2];
+                        }
+                    }
+                }
+                if( dc[i]==0 )
+                {
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        cmatrix[i,i_] = tmp[i_];
+                    }
+                }
+                if( dc[i]==1 )
+                {
+                    for(i_=0; i_<=m-1;i_++)
+                    {
+                        cmatrix[i,i_] = tmpdiff[i_];
+                    }
+                }
+                cmatrix[i,m] = yc[i];
+            }
+            
+            //
+            // Solve constrained task
+            //
+            if( k>0 )
+            {
+                
+                //
+                // solve using regularization
+                //
+                lsfitlinearwc(y2, w2, fmatrix, cmatrix, n+m, m, k, ref info, ref c, rep);
+            }
+            else
+            {
+                
+                //
+                // no constraints, no regularization needed
+                //
+                lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, 0, ref info, ref c, rep);
+            }
+            if( info<0 )
+            {
+                return;
+            }
+        }
+
+
+        /*************************************************************************
+        Internal Floater-Hormann fitting subroutine for fixed D
+        *************************************************************************/
+        private static void barycentricfitwcfixedd(double[] x,
+            double[] y,
+            double[] w,
+            int n,
+            double[] xc,
+            double[] yc,
+            int[] dc,
+            int k,
+            int m,
+            int d,
+            ref int info,
+            ratint.barycentricinterpolant b,
+            barycentricfitreport rep)
+        {
+            double[,] fmatrix = new double[0,0];
+            double[,] cmatrix = new double[0,0];
+            double[] y2 = new double[0];
+            double[] w2 = new double[0];
+            double[] sx = new double[0];
+            double[] sy = new double[0];
+            double[] sbf = new double[0];
+            double[] xoriginal = new double[0];
+            double[] yoriginal = new double[0];
+            double[] tmp = new double[0];
+            lsfitreport lrep = new lsfitreport();
+            double v0 = 0;
+            double v1 = 0;
+            double mx = 0;
+            ratint.barycentricinterpolant b2 = new ratint.barycentricinterpolant();
+            int i = 0;
+            int j = 0;
+            int relcnt = 0;
+            double xa = 0;
+            double xb = 0;
+            double sa = 0;
+            double sb = 0;
+            double decay = 0;
+            int i_ = 0;
+
+            x = (double[])x.Clone();
+            y = (double[])y.Clone();
+            w = (double[])w.Clone();
+            xc = (double[])xc.Clone();
+            yc = (double[])yc.Clone();
+            info = 0;
+
+            if( ((n<1 | m<2) | k<0) | k>=m )
+            {
+                info = -1;
+                return;
+            }
+            for(i=0; i<=k-1; i++)
+            {
+                info = 0;
+                if( dc[i]<0 )
+                {
+                    info = -1;
+                }
+                if( dc[i]>1 )
+                {
+                    info = -1;
+                }
+                if( info<0 )
+                {
+                    return;
+                }
+            }
+            
+            //
+            // weight decay for correct handling of task which becomes
+            // degenerate after constraints are applied
+            //
+            decay = 10000*math.machineepsilon;
+            
+            //
+            // Scale X, Y, XC, YC
+            //
+            lsfitscalexy(ref x, ref y, ref w, n, ref xc, ref yc, dc, k, ref xa, ref xb, ref sa, ref sb, ref xoriginal, ref yoriginal);
+            
+            //
+            // allocate space, initialize:
+            // * FMatrix-   values of basis functions at X[]
+            // * CMatrix-   values (derivatives) of basis functions at XC[]
+            //
+            y2 = new double[n+m];
+            w2 = new double[n+m];
+            fmatrix = new double[n+m, m];
+            if( k>0 )
+            {
+                cmatrix = new double[k, m+1];
+            }
+            y2 = new double[n+m];
+            w2 = new double[n+m];
+            
+            //
+            // Prepare design and constraints matrices:
+            // * fill constraints matrix
+            // * fill first N rows of design matrix with values
+            // * fill next M rows of design matrix with regularizing term
+            // * append M zeros to Y
+            // * append M elements, mean(abs(W)) each, to W
+            //
+            sx = new double[m];
+            sy = new double[m];
+            sbf = new double[m];
+            for(j=0; j<=m-1; j++)
+            {
+                sx[j] = (double)(2*j)/(double)(m-1)-1;
+            }
+            for(i=0; i<=m-1; i++)
+            {
+                sy[i] = 1;
+            }
+            ratint.barycentricbuildfloaterhormann(sx, sy, m, d, b2);
+            mx = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                barycentriccalcbasis(b2, x[i], ref sbf);
+                for(i_=0; i_<=m-1;i_++)
+                {
+                    fmatrix[i,i_] = sbf[i_];
+                }
+                y2[i] = y[i];
+                w2[i] = w[i];
+                mx = mx+Math.Abs(w[i])/n;
+            }
+            for(i=0; i<=m-1; i++)
+            {
+                for(j=0; j<=m-1; j++)
+                {
+                    if( i==j )
+                    {
+                        fmatrix[n+i,j] = decay;
+                    }
+                    else
+                    {
+                        fmatrix[n+i,j] = 0;
+                    }
+                }
+                y2[n+i] = 0;
+                w2[n+i] = mx;
+            }
+            if( k>0 )
+            {
+                for(j=0; j<=m-1; j++)
+                {
+                    for(i=0; i<=m-1; i++)
+                    {
+                        sy[i] = 0;
+                    }
+                    sy[j] = 1;
+                    ratint.barycentricbuildfloaterhormann(sx, sy, m, d, b2);
+                    for(i=0; i<=k-1; i++)
+                    {
+                        ap.assert(dc[i]>=0 & dc[i]<=1, "BarycentricFit: internal error!");
+                        ratint.barycentricdiff1(b2, xc[i], ref v0, ref v1);
+                        if( dc[i]==0 )
+                        {
+                            cmatrix[i,j] = v0;
+                        }
+                        if( dc[i]==1 )
+                        {
+                            cmatrix[i,j] = v1;
+                        }
+                    }
+                }
+                for(i=0; i<=k-1; i++)
+                {
+                    cmatrix[i,m] = yc[i];
+                }
+            }
+            
+            //
+            // Solve constrained task
+            //
+            if( k>0 )
+            {
+                
+                //
+                // solve using regularization
+                //
+                lsfitlinearwc(y2, w2, fmatrix, cmatrix, n+m, m, k, ref info, ref tmp, lrep);
+            }
+            else
+            {
+                
+                //
+                // no constraints, no regularization needed
+                //
+                lsfitlinearwc(y, w, fmatrix, cmatrix, n, m, k, ref info, ref tmp, lrep);
+            }
+            if( info<0 )
+            {
+                return;
+            }
+            
+            //
+            // Generate interpolant and scale it
+            //
+            for(i_=0; i_<=m-1;i_++)
+            {
+                sy[i_] = tmp[i_];
+            }
+            ratint.barycentricbuildfloaterhormann(sx, sy, m, d, b);
+            ratint.barycentriclintransx(b, 2/(xb-xa), -((xa+xb)/(xb-xa)));
+            ratint.barycentriclintransy(b, sb-sa, sa);
+            
+            //
+            // Scale absolute errors obtained from LSFitLinearW.
+            // Relative error should be calculated separately
+            // (because of shifting/scaling of the task)
+            //
+            rep.taskrcond = lrep.taskrcond;
+            rep.rmserror = lrep.rmserror*(sb-sa);
+            rep.avgerror = lrep.avgerror*(sb-sa);
+            rep.maxerror = lrep.maxerror*(sb-sa);
+            rep.avgrelerror = 0;
+            relcnt = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                if( (double)(yoriginal[i])!=(double)(0) )
+                {
+                    rep.avgrelerror = rep.avgrelerror+Math.Abs(ratint.barycentriccalc(b, xoriginal[i])-yoriginal[i])/Math.Abs(yoriginal[i]);
+                    relcnt = relcnt+1;
+                }
+            }
+            if( relcnt!=0 )
+            {
+                rep.avgrelerror = rep.avgrelerror/relcnt;
+            }
+        }
+
+
+    }
+    public class pspline
+    {
+        /*************************************************************************
+        Parametric spline inteprolant: 2-dimensional curve.
+
+        You should not try to access its members directly - use PSpline2XXXXXXXX()
+        functions instead.
+        *************************************************************************/
+        public class pspline2interpolant
+        {
+            public int n;
+            public bool periodic;
+            public double[] p;
+            public spline1d.spline1dinterpolant x;
+            public spline1d.spline1dinterpolant y;
+            public pspline2interpolant()
+            {
+                p = new double[0];
+                x = new spline1d.spline1dinterpolant();
+                y = new spline1d.spline1dinterpolant();
+            }
+        };
+
+
+        /*************************************************************************
+        Parametric spline inteprolant: 3-dimensional curve.
+
+        You should not try to access its members directly - use PSpline3XXXXXXXX()
+        functions instead.
+        *************************************************************************/
+        public class pspline3interpolant
+        {
+            public int n;
+            public bool periodic;
+            public double[] p;
+            public spline1d.spline1dinterpolant x;
+            public spline1d.spline1dinterpolant y;
+            public spline1d.spline1dinterpolant z;
+            public pspline3interpolant()
+            {
+                p = new double[0];
+                x = new spline1d.spline1dinterpolant();
+                y = new spline1d.spline1dinterpolant();
+                z = new spline1d.spline1dinterpolant();
+            }
+        };
+
+
+
+
+        /*************************************************************************
+        This function  builds  non-periodic 2-dimensional parametric spline  which
+        starts at (X[0],Y[0]) and ends at (X[N-1],Y[N-1]).
+
+        INPUT PARAMETERS:
+            XY  -   points, array[0..N-1,0..1].
+                    XY[I,0:1] corresponds to the Ith point.
+                    Order of points is important!
+            N   -   points count, N>=5 for Akima splines, N>=2 for other types  of
+                    splines.
+            ST  -   spline type:
+                    * 0     Akima spline
+                    * 1     parabolically terminated Catmull-Rom spline (Tension=0)
+                    * 2     parabolically terminated cubic spline
+            PT  -   parameterization type:
+                    * 0     uniform
+                    * 1     chord length
+                    * 2     centripetal
+
+        OUTPUT PARAMETERS:
+            P   -   parametric spline interpolant
+
+
+        NOTES:
+        * this function  assumes  that  there all consequent points  are distinct.
+          I.e. (x0,y0)<>(x1,y1),  (x1,y1)<>(x2,y2),  (x2,y2)<>(x3,y3)  and  so on.
+          However, non-consequent points may coincide, i.e. we can  have  (x0,y0)=
+          =(x2,y2).
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2build(double[,] xy,
+            int n,
+            int st,
+            int pt,
+            pspline2interpolant p)
+        {
+            double[] tmp = new double[0];
+            int i_ = 0;
+
+            xy = (double[,])xy.Clone();
+
+            ap.assert(st>=0 & st<=2, "PSpline2Build: incorrect spline type!");
+            ap.assert(pt>=0 & pt<=2, "PSpline2Build: incorrect parameterization type!");
+            if( st==0 )
+            {
+                ap.assert(n>=5, "PSpline2Build: N<5 (minimum value for Akima splines)!");
+            }
+            else
+            {
+                ap.assert(n>=2, "PSpline2Build: N<2!");
+            }
+            
+            //
+            // Prepare
+            //
+            p.n = n;
+            p.periodic = false;
+            tmp = new double[n];
+            
+            //
+            // Build parameterization, check that all parameters are distinct
+            //
+            pspline2par(xy, n, pt, ref p.p);
+            ap.assert(apserv.aredistinct(p.p, n), "PSpline2Build: consequent points are too close!");
+            
+            //
+            // Build splines
+            //
+            if( st==0 )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,0];
+                }
+                spline1d.spline1dbuildakima(p.p, tmp, n, p.x);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,1];
+                }
+                spline1d.spline1dbuildakima(p.p, tmp, n, p.y);
+            }
+            if( st==1 )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,0];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.x);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,1];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.y);
+            }
+            if( st==2 )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,0];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.x);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,1];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.y);
+            }
+        }
+
+
+        /*************************************************************************
+        This function  builds  non-periodic 3-dimensional parametric spline  which
+        starts at (X[0],Y[0],Z[0]) and ends at (X[N-1],Y[N-1],Z[N-1]).
+
+        Same as PSpline2Build() function, but for 3D, so we  won't  duplicate  its
+        description here.
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3build(double[,] xy,
+            int n,
+            int st,
+            int pt,
+            pspline3interpolant p)
+        {
+            double[] tmp = new double[0];
+            int i_ = 0;
+
+            xy = (double[,])xy.Clone();
+
+            ap.assert(st>=0 & st<=2, "PSpline3Build: incorrect spline type!");
+            ap.assert(pt>=0 & pt<=2, "PSpline3Build: incorrect parameterization type!");
+            if( st==0 )
+            {
+                ap.assert(n>=5, "PSpline3Build: N<5 (minimum value for Akima splines)!");
+            }
+            else
+            {
+                ap.assert(n>=2, "PSpline3Build: N<2!");
+            }
+            
+            //
+            // Prepare
+            //
+            p.n = n;
+            p.periodic = false;
+            tmp = new double[n];
+            
+            //
+            // Build parameterization, check that all parameters are distinct
+            //
+            pspline3par(xy, n, pt, ref p.p);
+            ap.assert(apserv.aredistinct(p.p, n), "PSpline3Build: consequent points are too close!");
+            
+            //
+            // Build splines
+            //
+            if( st==0 )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,0];
+                }
+                spline1d.spline1dbuildakima(p.p, tmp, n, p.x);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,1];
+                }
+                spline1d.spline1dbuildakima(p.p, tmp, n, p.y);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,2];
+                }
+                spline1d.spline1dbuildakima(p.p, tmp, n, p.z);
+            }
+            if( st==1 )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,0];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.x);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,1];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.y);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,2];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.z);
+            }
+            if( st==2 )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,0];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.x);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,1];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.y);
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    tmp[i_] = xy[i_,2];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.z);
+            }
+        }
+
+
+        /*************************************************************************
+        This  function  builds  periodic  2-dimensional  parametric  spline  which
+        starts at (X[0],Y[0]), goes through all points to (X[N-1],Y[N-1]) and then
+        back to (X[0],Y[0]).
+
+        INPUT PARAMETERS:
+            XY  -   points, array[0..N-1,0..1].
+                    XY[I,0:1] corresponds to the Ith point.
+                    XY[N-1,0:1] must be different from XY[0,0:1].
+                    Order of points is important!
+            N   -   points count, N>=3 for other types of splines.
+            ST  -   spline type:
+                    * 1     Catmull-Rom spline (Tension=0) with cyclic boundary conditions
+                    * 2     cubic spline with cyclic boundary conditions
+            PT  -   parameterization type:
+                    * 0     uniform
+                    * 1     chord length
+                    * 2     centripetal
+
+        OUTPUT PARAMETERS:
+            P   -   parametric spline interpolant
+
+
+        NOTES:
+        * this function  assumes  that there all consequent points  are  distinct.
+          I.e. (x0,y0)<>(x1,y1), (x1,y1)<>(x2,y2),  (x2,y2)<>(x3,y3)  and  so  on.
+          However, non-consequent points may coincide, i.e. we can  have  (x0,y0)=
+          =(x2,y2).
+        * last point of sequence is NOT equal to the first  point.  You  shouldn't
+          make curve "explicitly periodic" by making them equal.
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2buildperiodic(double[,] xy,
+            int n,
+            int st,
+            int pt,
+            pspline2interpolant p)
+        {
+            double[,] xyp = new double[0,0];
+            double[] tmp = new double[0];
+            int i_ = 0;
+
+            xy = (double[,])xy.Clone();
+
+            ap.assert(st>=1 & st<=2, "PSpline2BuildPeriodic: incorrect spline type!");
+            ap.assert(pt>=0 & pt<=2, "PSpline2BuildPeriodic: incorrect parameterization type!");
+            ap.assert(n>=3, "PSpline2BuildPeriodic: N<3!");
+            
+            //
+            // Prepare
+            //
+            p.n = n;
+            p.periodic = true;
+            tmp = new double[n+1];
+            xyp = new double[n+1, 2];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                xyp[i_,0] = xy[i_,0];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                xyp[i_,1] = xy[i_,1];
+            }
+            for(i_=0; i_<=1;i_++)
+            {
+                xyp[n,i_] = xy[0,i_];
+            }
+            
+            //
+            // Build parameterization, check that all parameters are distinct
+            //
+            pspline2par(xyp, n+1, pt, ref p.p);
+            ap.assert(apserv.aredistinct(p.p, n+1), "PSpline2BuildPeriodic: consequent (or first and last) points are too close!");
+            
+            //
+            // Build splines
+            //
+            if( st==1 )
+            {
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,0];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.x);
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,1];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.y);
+            }
+            if( st==2 )
+            {
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,0];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.x);
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,1];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.y);
+            }
+        }
+
+
+        /*************************************************************************
+        This  function  builds  periodic  3-dimensional  parametric  spline  which
+        starts at (X[0],Y[0],Z[0]), goes through all points to (X[N-1],Y[N-1],Z[N-1])
+        and then back to (X[0],Y[0],Z[0]).
+
+        Same as PSpline2Build() function, but for 3D, so we  won't  duplicate  its
+        description here.
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3buildperiodic(double[,] xy,
+            int n,
+            int st,
+            int pt,
+            pspline3interpolant p)
+        {
+            double[,] xyp = new double[0,0];
+            double[] tmp = new double[0];
+            int i_ = 0;
+
+            xy = (double[,])xy.Clone();
+
+            ap.assert(st>=1 & st<=2, "PSpline3BuildPeriodic: incorrect spline type!");
+            ap.assert(pt>=0 & pt<=2, "PSpline3BuildPeriodic: incorrect parameterization type!");
+            ap.assert(n>=3, "PSpline3BuildPeriodic: N<3!");
+            
+            //
+            // Prepare
+            //
+            p.n = n;
+            p.periodic = true;
+            tmp = new double[n+1];
+            xyp = new double[n+1, 3];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                xyp[i_,0] = xy[i_,0];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                xyp[i_,1] = xy[i_,1];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                xyp[i_,2] = xy[i_,2];
+            }
+            for(i_=0; i_<=2;i_++)
+            {
+                xyp[n,i_] = xy[0,i_];
+            }
+            
+            //
+            // Build parameterization, check that all parameters are distinct
+            //
+            pspline3par(xyp, n+1, pt, ref p.p);
+            ap.assert(apserv.aredistinct(p.p, n+1), "PSplineBuild2Periodic: consequent (or first and last) points are too close!");
+            
+            //
+            // Build splines
+            //
+            if( st==1 )
+            {
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,0];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.x);
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,1];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.y);
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,2];
+                }
+                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.z);
+            }
+            if( st==2 )
+            {
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,0];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.x);
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,1];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.y);
+                for(i_=0; i_<=n;i_++)
+                {
+                    tmp[i_] = xyp[i_,2];
+                }
+                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.z);
+            }
+        }
+
+
+        /*************************************************************************
+        This function returns vector of parameter values correspoding to points.
+
+        I.e. for P created from (X[0],Y[0])...(X[N-1],Y[N-1]) and U=TValues(P)  we
+        have
+            (X[0],Y[0]) = PSpline2Calc(P,U[0]),
+            (X[1],Y[1]) = PSpline2Calc(P,U[1]),
+            (X[2],Y[2]) = PSpline2Calc(P,U[2]),
+            ...
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+
+        OUTPUT PARAMETERS:
+            N   -   array size
+            T   -   array[0..N-1]
+
+
+        NOTES:
+        * for non-periodic splines U[0]=0, U[0]<U[1]<...<U[N-1], U[N-1]=1
+        * for periodic splines     U[0]=0, U[0]<U[1]<...<U[N-1], U[N-1]<1
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2parametervalues(pspline2interpolant p,
+            ref int n,
+            ref double[] t)
+        {
+            int i_ = 0;
+
+            n = 0;
+            t = new double[0];
+
+            ap.assert(p.n>=2, "PSpline2ParameterValues: internal error!");
+            n = p.n;
+            t = new double[n];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                t[i_] = p.p[i_];
+            }
+            t[0] = 0;
+            if( !p.periodic )
+            {
+                t[n-1] = 1;
+            }
+        }
+
+
+        /*************************************************************************
+        This function returns vector of parameter values correspoding to points.
+
+        Same as PSpline2ParameterValues(), but for 3D.
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3parametervalues(pspline3interpolant p,
+            ref int n,
+            ref double[] t)
+        {
+            int i_ = 0;
+
+            n = 0;
+            t = new double[0];
+
+            ap.assert(p.n>=2, "PSpline3ParameterValues: internal error!");
+            n = p.n;
+            t = new double[n];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                t[i_] = p.p[i_];
+            }
+            t[0] = 0;
+            if( !p.periodic )
+            {
+                t[n-1] = 1;
+            }
+        }
+
+
+        /*************************************************************************
+        This function  calculates  the value of the parametric spline for a  given
+        value of parameter T
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X   -   X-position
+            Y   -   Y-position
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2calc(pspline2interpolant p,
+            double t,
+            ref double x,
+            ref double y)
+        {
+            x = 0;
+            y = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            x = spline1d.spline1dcalc(p.x, t);
+            y = spline1d.spline1dcalc(p.y, t);
+        }
+
+
+        /*************************************************************************
+        This function  calculates  the value of the parametric spline for a  given
+        value of parameter T.
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X   -   X-position
+            Y   -   Y-position
+            Z   -   Z-position
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3calc(pspline3interpolant p,
+            double t,
+            ref double x,
+            ref double y,
+            ref double z)
+        {
+            x = 0;
+            y = 0;
+            z = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            x = spline1d.spline1dcalc(p.x, t);
+            y = spline1d.spline1dcalc(p.y, t);
+            z = spline1d.spline1dcalc(p.z, t);
+        }
+
+
+        /*************************************************************************
+        This function  calculates  tangent vector for a given value of parameter T
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X    -   X-component of tangent vector (normalized)
+            Y    -   Y-component of tangent vector (normalized)
+            
+        NOTE:
+            X^2+Y^2 is either 1 (for non-zero tangent vector) or 0.
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2tangent(pspline2interpolant p,
+            double t,
+            ref double x,
+            ref double y)
+        {
+            double v = 0;
+            double v0 = 0;
+            double v1 = 0;
+
+            x = 0;
+            y = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            pspline2diff(p, t, ref v0, ref x, ref v1, ref y);
+            if( (double)(x)!=(double)(0) | (double)(y)!=(double)(0) )
+            {
+                
+                //
+                // this code is a bit more complex than X^2+Y^2 to avoid
+                // overflow for large values of X and Y.
+                //
+                v = apserv.safepythag2(x, y);
+                x = x/v;
+                y = y/v;
+            }
+        }
+
+
+        /*************************************************************************
+        This function  calculates  tangent vector for a given value of parameter T
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X    -   X-component of tangent vector (normalized)
+            Y    -   Y-component of tangent vector (normalized)
+            Z    -   Z-component of tangent vector (normalized)
+
+        NOTE:
+            X^2+Y^2+Z^2 is either 1 (for non-zero tangent vector) or 0.
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3tangent(pspline3interpolant p,
+            double t,
+            ref double x,
+            ref double y,
+            ref double z)
+        {
+            double v = 0;
+            double v0 = 0;
+            double v1 = 0;
+            double v2 = 0;
+
+            x = 0;
+            y = 0;
+            z = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            pspline3diff(p, t, ref v0, ref x, ref v1, ref y, ref v2, ref z);
+            if( ((double)(x)!=(double)(0) | (double)(y)!=(double)(0)) | (double)(z)!=(double)(0) )
+            {
+                v = apserv.safepythag3(x, y, z);
+                x = x/v;
+                y = y/v;
+                z = z/v;
+            }
+        }
+
+
+        /*************************************************************************
+        This function calculates derivative, i.e. it returns (dX/dT,dY/dT).
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X   -   X-value
+            DX  -   X-derivative
+            Y   -   Y-value
+            DY  -   Y-derivative
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2diff(pspline2interpolant p,
+            double t,
+            ref double x,
+            ref double dx,
+            ref double y,
+            ref double dy)
+        {
+            double d2s = 0;
+
+            x = 0;
+            dx = 0;
+            y = 0;
+            dy = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2s);
+            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2s);
+        }
+
+
+        /*************************************************************************
+        This function calculates derivative, i.e. it returns (dX/dT,dY/dT,dZ/dT).
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X   -   X-value
+            DX  -   X-derivative
+            Y   -   Y-value
+            DY  -   Y-derivative
+            Z   -   Z-value
+            DZ  -   Z-derivative
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3diff(pspline3interpolant p,
+            double t,
+            ref double x,
+            ref double dx,
+            ref double y,
+            ref double dy,
+            ref double z,
+            ref double dz)
+        {
+            double d2s = 0;
+
+            x = 0;
+            dx = 0;
+            y = 0;
+            dy = 0;
+            z = 0;
+            dz = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2s);
+            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2s);
+            spline1d.spline1ddiff(p.z, t, ref z, ref dz, ref d2s);
+        }
+
+
+        /*************************************************************************
+        This function calculates first and second derivative with respect to T.
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X   -   X-value
+            DX  -   derivative
+            D2X -   second derivative
+            Y   -   Y-value
+            DY  -   derivative
+            D2Y -   second derivative
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline2diff2(pspline2interpolant p,
+            double t,
+            ref double x,
+            ref double dx,
+            ref double d2x,
+            ref double y,
+            ref double dy,
+            ref double d2y)
+        {
+            x = 0;
+            dx = 0;
+            d2x = 0;
+            y = 0;
+            dy = 0;
+            d2y = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2x);
+            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2y);
+        }
+
+
+        /*************************************************************************
+        This function calculates first and second derivative with respect to T.
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            T   -   point:
+                    * T in [0,1] corresponds to interval spanned by points
+                    * for non-periodic splines T<0 (or T>1) correspond to parts of
+                      the curve before the first (after the last) point
+                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
+                      by making T=T-floor(T).
+
+        OUTPUT PARAMETERS:
+            X   -   X-value
+            DX  -   derivative
+            D2X -   second derivative
+            Y   -   Y-value
+            DY  -   derivative
+            D2Y -   second derivative
+            Z   -   Z-value
+            DZ  -   derivative
+            D2Z -   second derivative
+
+
+          -- ALGLIB PROJECT --
+             Copyright 28.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void pspline3diff2(pspline3interpolant p,
+            double t,
+            ref double x,
+            ref double dx,
+            ref double d2x,
+            ref double y,
+            ref double dy,
+            ref double d2y,
+            ref double z,
+            ref double dz,
+            ref double d2z)
+        {
+            x = 0;
+            dx = 0;
+            d2x = 0;
+            y = 0;
+            dy = 0;
+            d2y = 0;
+            z = 0;
+            dz = 0;
+            d2z = 0;
+
+            if( p.periodic )
+            {
+                t = t-(int)Math.Floor(t);
+            }
+            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2x);
+            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2y);
+            spline1d.spline1ddiff(p.z, t, ref z, ref dz, ref d2z);
+        }
+
+
+        /*************************************************************************
+        This function  calculates  arc length, i.e. length of  curve  between  t=a
+        and t=b.
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            A,B -   parameter values corresponding to arc ends:
+                    * B>A will result in positive length returned
+                    * B<A will result in negative length returned
+
+        RESULT:
+            length of arc starting at T=A and ending at T=B.
+
+
+          -- ALGLIB PROJECT --
+             Copyright 30.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static double pspline2arclength(pspline2interpolant p,
+            double a,
+            double b)
+        {
+            double result = 0;
+            autogk.autogkstate state = new autogk.autogkstate();
+            autogk.autogkreport rep = new autogk.autogkreport();
+            double sx = 0;
+            double dsx = 0;
+            double d2sx = 0;
+            double sy = 0;
+            double dsy = 0;
+            double d2sy = 0;
+
+            autogk.autogksmooth(a, b, state);
+            while( autogk.autogkiteration(state) )
+            {
+                spline1d.spline1ddiff(p.x, state.x, ref sx, ref dsx, ref d2sx);
+                spline1d.spline1ddiff(p.y, state.x, ref sy, ref dsy, ref d2sy);
+                state.f = apserv.safepythag2(dsx, dsy);
+            }
+            autogk.autogkresults(state, ref result, rep);
+            ap.assert(rep.terminationtype>0, "PSpline2ArcLength: internal error!");
+            return result;
+        }
+
+
+        /*************************************************************************
+        This function  calculates  arc length, i.e. length of  curve  between  t=a
+        and t=b.
+
+        INPUT PARAMETERS:
+            P   -   parametric spline interpolant
+            A,B -   parameter values corresponding to arc ends:
+                    * B>A will result in positive length returned
+                    * B<A will result in negative length returned
+
+        RESULT:
+            length of arc starting at T=A and ending at T=B.
+
+
+          -- ALGLIB PROJECT --
+             Copyright 30.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static double pspline3arclength(pspline3interpolant p,
+            double a,
+            double b)
+        {
+            double result = 0;
+            autogk.autogkstate state = new autogk.autogkstate();
+            autogk.autogkreport rep = new autogk.autogkreport();
+            double sx = 0;
+            double dsx = 0;
+            double d2sx = 0;
+            double sy = 0;
+            double dsy = 0;
+            double d2sy = 0;
+            double sz = 0;
+            double dsz = 0;
+            double d2sz = 0;
+
+            autogk.autogksmooth(a, b, state);
+            while( autogk.autogkiteration(state) )
+            {
+                spline1d.spline1ddiff(p.x, state.x, ref sx, ref dsx, ref d2sx);
+                spline1d.spline1ddiff(p.y, state.x, ref sy, ref dsy, ref d2sy);
+                spline1d.spline1ddiff(p.z, state.x, ref sz, ref dsz, ref d2sz);
+                state.f = apserv.safepythag3(dsx, dsy, dsz);
+            }
+            autogk.autogkresults(state, ref result, rep);
+            ap.assert(rep.terminationtype>0, "PSpline3ArcLength: internal error!");
+            return result;
+        }
+
+
+        /*************************************************************************
+        Builds non-periodic parameterization for 2-dimensional spline
+        *************************************************************************/
+        private static void pspline2par(double[,] xy,
+            int n,
+            int pt,
+            ref double[] p)
+        {
+            double v = 0;
+            int i = 0;
+            int i_ = 0;
+
+            p = new double[0];
+
+            ap.assert(pt>=0 & pt<=2, "PSpline2Par: internal error!");
+            
+            //
+            // Build parameterization:
+            // * fill by non-normalized values
+            // * normalize them so we have P[0]=0, P[N-1]=1.
+            //
+            p = new double[n];
+            if( pt==0 )
+            {
+                for(i=0; i<=n-1; i++)
+                {
+                    p[i] = i;
+                }
+            }
+            if( pt==1 )
+            {
+                p[0] = 0;
+                for(i=1; i<=n-1; i++)
+                {
+                    p[i] = p[i-1]+apserv.safepythag2(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1]);
+                }
+            }
+            if( pt==2 )
+            {
+                p[0] = 0;
+                for(i=1; i<=n-1; i++)
+                {
+                    p[i] = p[i-1]+Math.Sqrt(apserv.safepythag2(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1]));
+                }
+            }
+            v = 1/p[n-1];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                p[i_] = v*p[i_];
+            }
+        }
+
+
+        /*************************************************************************
+        Builds non-periodic parameterization for 3-dimensional spline
+        *************************************************************************/
+        private static void pspline3par(double[,] xy,
+            int n,
+            int pt,
+            ref double[] p)
+        {
+            double v = 0;
+            int i = 0;
+            int i_ = 0;
+
+            p = new double[0];
+
+            ap.assert(pt>=0 & pt<=2, "PSpline3Par: internal error!");
+            
+            //
+            // Build parameterization:
+            // * fill by non-normalized values
+            // * normalize them so we have P[0]=0, P[N-1]=1.
+            //
+            p = new double[n];
+            if( pt==0 )
+            {
+                for(i=0; i<=n-1; i++)
+                {
+                    p[i] = i;
+                }
+            }
+            if( pt==1 )
+            {
+                p[0] = 0;
+                for(i=1; i<=n-1; i++)
+                {
+                    p[i] = p[i-1]+apserv.safepythag3(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1], xy[i,2]-xy[i-1,2]);
+                }
+            }
+            if( pt==2 )
+            {
+                p[0] = 0;
+                for(i=1; i<=n-1; i++)
+                {
+                    p[i] = p[i-1]+Math.Sqrt(apserv.safepythag3(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1], xy[i,2]-xy[i-1,2]));
+                }
+            }
+            v = 1/p[n-1];
+            for(i_=0; i_<=n-1;i_++)
+            {
+                p[i_] = v*p[i_];
+            }
+        }
+
+
+    }
     public class spline2d
     {
         /*************************************************************************
@@ -14658,2319 +17316,6 @@ public partial class alglib
                     spline1d.spline1ddiff(c, x[j], ref s, ref ds, ref d2s);
                     dxy[i,j] = ds;
                 }
-            }
-        }
-
-
-    }
-    public class idwint
-    {
-        /*************************************************************************
-        IDW interpolant.
-        *************************************************************************/
-        public class idwinterpolant
-        {
-            public int n;
-            public int nx;
-            public int d;
-            public double r;
-            public int nw;
-            public nearestneighbor.kdtree tree;
-            public int modeltype;
-            public double[,] q;
-            public double[] xbuf;
-            public int[] tbuf;
-            public double[] rbuf;
-            public double[,] xybuf;
-            public int debugsolverfailures;
-            public double debugworstrcond;
-            public double debugbestrcond;
-            public idwinterpolant()
-            {
-                tree = new nearestneighbor.kdtree();
-                q = new double[0,0];
-                xbuf = new double[0];
-                tbuf = new int[0];
-                rbuf = new double[0];
-                xybuf = new double[0,0];
-            }
-        };
-
-
-
-
-        public const double idwqfactor = 1.5;
-        public const int idwkmin = 5;
-
-
-        /*************************************************************************
-        IDW interpolation
-
-        INPUT PARAMETERS:
-            Z   -   IDW interpolant built with one of model building
-                    subroutines.
-            X   -   array[0..NX-1], interpolation point
-
-        Result:
-            IDW interpolant Z(X)
-
-          -- ALGLIB --
-             Copyright 02.03.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static double idwcalc(idwinterpolant z,
-            double[] x)
-        {
-            double result = 0;
-            int nx = 0;
-            int i = 0;
-            int k = 0;
-            double r = 0;
-            double s = 0;
-            double w = 0;
-            double v1 = 0;
-            double v2 = 0;
-            double d0 = 0;
-            double di = 0;
-
-            
-            //
-            // these initializers are not really necessary,
-            // but without them compiler complains about uninitialized locals
-            //
-            k = 0;
-            
-            //
-            // Query
-            //
-            if( z.modeltype==0 )
-            {
-                
-                //
-                // NQ/NW-based model
-                //
-                nx = z.nx;
-                k = nearestneighbor.kdtreequeryknn(z.tree, x, z.nw, true);
-                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref z.rbuf);
-                nearestneighbor.kdtreequeryresultstags(z.tree, ref z.tbuf);
-            }
-            if( z.modeltype==1 )
-            {
-                
-                //
-                // R-based model
-                //
-                nx = z.nx;
-                k = nearestneighbor.kdtreequeryrnn(z.tree, x, z.r, true);
-                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref z.rbuf);
-                nearestneighbor.kdtreequeryresultstags(z.tree, ref z.tbuf);
-                if( k<idwkmin )
-                {
-                    
-                    //
-                    // we need at least IDWKMin points
-                    //
-                    k = nearestneighbor.kdtreequeryknn(z.tree, x, idwkmin, true);
-                    nearestneighbor.kdtreequeryresultsdistances(z.tree, ref z.rbuf);
-                    nearestneighbor.kdtreequeryresultstags(z.tree, ref z.tbuf);
-                }
-            }
-            
-            //
-            // initialize weights for linear/quadratic members calculation.
-            //
-            // NOTE 1: weights are calculated using NORMALIZED modified
-            // Shepard's formula. Original formula gives w(i) = sqr((R-di)/(R*di)),
-            // where di is i-th distance, R is max(di). Modified formula have
-            // following form:
-            //     w_mod(i) = 1, if di=d0
-            //     w_mod(i) = w(i)/w(0), if di<>d0
-            //
-            // NOTE 2: self-match is USED for this query
-            //
-            // NOTE 3: last point almost always gain zero weight, but it MUST
-            // be used for fitting because sometimes it will gain NON-ZERO
-            // weight - for example, when all distances are equal.
-            //
-            r = z.rbuf[k-1];
-            d0 = z.rbuf[0];
-            result = 0;
-            s = 0;
-            for(i=0; i<=k-1; i++)
-            {
-                di = z.rbuf[i];
-                if( (double)(di)==(double)(d0) )
-                {
-                    
-                    //
-                    // distance is equal to shortest, set it 1.0
-                    // without explicitly calculating (which would give
-                    // us same result, but 'll expose us to the risk of
-                    // division by zero).
-                    //
-                    w = 1;
-                }
-                else
-                {
-                    
-                    //
-                    // use normalized formula
-                    //
-                    v1 = (r-di)/(r-d0);
-                    v2 = d0/di;
-                    w = math.sqr(v1*v2);
-                }
-                result = result+w*idwcalcq(z, x, z.tbuf[i]);
-                s = s+w;
-            }
-            result = result/s;
-            return result;
-        }
-
-
-        /*************************************************************************
-        IDW interpolant using modified Shepard method for uniform point
-        distributions.
-
-        INPUT PARAMETERS:
-            XY  -   X and Y values, array[0..N-1,0..NX].
-                    First NX columns contain X-values, last column contain
-                    Y-values.
-            N   -   number of nodes, N>0.
-            NX  -   space dimension, NX>=1.
-            D   -   nodal function type, either:
-                    * 0     constant  model.  Just  for  demonstration only, worst
-                            model ever.
-                    * 1     linear model, least squares fitting. Simpe  model  for
-                            datasets too small for quadratic models
-                    * 2     quadratic  model,  least  squares  fitting. Best model
-                            available (if your dataset is large enough).
-                    * -1    "fast"  linear  model,  use  with  caution!!!   It  is
-                            significantly  faster than linear/quadratic and better
-                            than constant model. But it is less robust (especially
-                            in the presence of noise).
-            NQ  -   number of points used to calculate  nodal  functions  (ignored
-                    for constant models). NQ should be LARGER than:
-                    * max(1.5*(1+NX),2^NX+1) for linear model,
-                    * max(3/4*(NX+2)*(NX+1),2^NX+1) for quadratic model.
-                    Values less than this threshold will be silently increased.
-            NW  -   number of points used to calculate weights and to interpolate.
-                    Required: >=2^NX+1, values less than this  threshold  will  be
-                    silently increased.
-                    Recommended value: about 2*NQ
-
-        OUTPUT PARAMETERS:
-            Z   -   IDW interpolant.
-            
-        NOTES:
-          * best results are obtained with quadratic models, worst - with constant
-            models
-          * when N is large, NQ and NW must be significantly smaller than  N  both
-            to obtain optimal performance and to obtain optimal accuracy. In 2  or
-            3-dimensional tasks NQ=15 and NW=25 are good values to start with.
-          * NQ  and  NW  may  be  greater  than  N.  In  such  cases  they will be
-            automatically decreased.
-          * this subroutine is always succeeds (as long as correct parameters  are
-            passed).
-          * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
-            Robert J. Renka for more information on this algorithm.
-          * this subroutine assumes that point distribution is uniform at the small
-            scales.  If  it  isn't  -  for  example,  points are concentrated along
-            "lines", but "lines" distribution is uniform at the larger scale - then
-            you should use IDWBuildModifiedShepardR()
-
-
-          -- ALGLIB PROJECT --
-             Copyright 02.03.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void idwbuildmodifiedshepard(double[,] xy,
-            int n,
-            int nx,
-            int d,
-            int nq,
-            int nw,
-            idwinterpolant z)
-        {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int j2 = 0;
-            int j3 = 0;
-            double v = 0;
-            double r = 0;
-            double s = 0;
-            double d0 = 0;
-            double di = 0;
-            double v1 = 0;
-            double v2 = 0;
-            int nc = 0;
-            int offs = 0;
-            double[] x = new double[0];
-            double[] qrbuf = new double[0];
-            double[,] qxybuf = new double[0,0];
-            double[] y = new double[0];
-            double[,] fmatrix = new double[0,0];
-            double[] w = new double[0];
-            double[] qsol = new double[0];
-            double[] temp = new double[0];
-            int[] tags = new int[0];
-            int info = 0;
-            double taskrcond = 0;
-            int i_ = 0;
-
-            
-            //
-            // these initializers are not really necessary,
-            // but without them compiler complains about uninitialized locals
-            //
-            nc = 0;
-            
-            //
-            // assertions
-            //
-            ap.assert(n>0, "IDWBuildModifiedShepard: N<=0!");
-            ap.assert(nx>=1, "IDWBuildModifiedShepard: NX<1!");
-            ap.assert(d>=-1 & d<=2, "IDWBuildModifiedShepard: D<>-1 and D<>0 and D<>1 and D<>2!");
-            
-            //
-            // Correct parameters if needed
-            //
-            if( d==1 )
-            {
-                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(1+nx))+1);
-                nq = Math.Max(nq, (int)Math.Round(Math.Pow(2, nx))+1);
-            }
-            if( d==2 )
-            {
-                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(nx+2)*(nx+1)/2)+1);
-                nq = Math.Max(nq, (int)Math.Round(Math.Pow(2, nx))+1);
-            }
-            nw = Math.Max(nw, (int)Math.Round(Math.Pow(2, nx))+1);
-            nq = Math.Min(nq, n);
-            nw = Math.Min(nw, n);
-            
-            //
-            // primary initialization of Z
-            //
-            idwinit1(n, nx, d, nq, nw, z);
-            z.modeltype = 0;
-            
-            //
-            // Create KD-tree
-            //
-            tags = new int[n];
-            for(i=0; i<=n-1; i++)
-            {
-                tags[i] = i;
-            }
-            nearestneighbor.kdtreebuildtagged(xy, tags, n, nx, 1, 2, z.tree);
-            
-            //
-            // build nodal functions
-            //
-            temp = new double[nq+1];
-            x = new double[nx];
-            qrbuf = new double[nq];
-            qxybuf = new double[nq, nx+1];
-            if( d==-1 )
-            {
-                w = new double[nq];
-            }
-            if( d==1 )
-            {
-                y = new double[nq];
-                w = new double[nq];
-                qsol = new double[nx];
-                
-                //
-                // NX for linear members,
-                // 1 for temporary storage
-                //
-                fmatrix = new double[nq, nx+1];
-            }
-            if( d==2 )
-            {
-                y = new double[nq];
-                w = new double[nq];
-                qsol = new double[nx+(int)Math.Round(nx*(nx+1)*0.5)];
-                
-                //
-                // NX for linear members,
-                // Round(NX*(NX+1)*0.5) for quadratic model,
-                // 1 for temporary storage
-                //
-                fmatrix = new double[nq, nx+(int)Math.Round(nx*(nx+1)*0.5)+1];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                
-                //
-                // Initialize center and function value.
-                // If D=0 it is all what we need
-                //
-                for(i_=0; i_<=nx;i_++)
-                {
-                    z.q[i,i_] = xy[i,i_];
-                }
-                if( d==0 )
-                {
-                    continue;
-                }
-                
-                //
-                // calculate weights for linear/quadratic members calculation.
-                //
-                // NOTE 1: weights are calculated using NORMALIZED modified
-                // Shepard's formula. Original formula is w(i) = sqr((R-di)/(R*di)),
-                // where di is i-th distance, R is max(di). Modified formula have
-                // following form:
-                //     w_mod(i) = 1, if di=d0
-                //     w_mod(i) = w(i)/w(0), if di<>d0
-                //
-                // NOTE 2: self-match is NOT used for this query
-                //
-                // NOTE 3: last point almost always gain zero weight, but it MUST
-                // be used for fitting because sometimes it will gain NON-ZERO
-                // weight - for example, when all distances are equal.
-                //
-                for(i_=0; i_<=nx-1;i_++)
-                {
-                    x[i_] = xy[i,i_];
-                }
-                k = nearestneighbor.kdtreequeryknn(z.tree, x, nq, false);
-                nearestneighbor.kdtreequeryresultsxy(z.tree, ref qxybuf);
-                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref qrbuf);
-                r = qrbuf[k-1];
-                d0 = qrbuf[0];
-                for(j=0; j<=k-1; j++)
-                {
-                    di = qrbuf[j];
-                    if( (double)(di)==(double)(d0) )
-                    {
-                        
-                        //
-                        // distance is equal to shortest, set it 1.0
-                        // without explicitly calculating (which would give
-                        // us same result, but 'll expose us to the risk of
-                        // division by zero).
-                        //
-                        w[j] = 1;
-                    }
-                    else
-                    {
-                        
-                        //
-                        // use normalized formula
-                        //
-                        v1 = (r-di)/(r-d0);
-                        v2 = d0/di;
-                        w[j] = math.sqr(v1*v2);
-                    }
-                }
-                
-                //
-                // calculate linear/quadratic members
-                //
-                if( d==-1 )
-                {
-                    
-                    //
-                    // "Fast" linear nodal function calculated using
-                    // inverse distance weighting
-                    //
-                    for(j=0; j<=nx-1; j++)
-                    {
-                        x[j] = 0;
-                    }
-                    s = 0;
-                    for(j=0; j<=k-1; j++)
-                    {
-                        
-                        //
-                        // calculate J-th inverse distance weighted gradient:
-                        //     grad_k = (y_j-y_k)*(x_j-x_k)/sqr(norm(x_j-x_k))
-                        //     grad   = sum(wk*grad_k)/sum(w_k)
-                        //
-                        v = 0;
-                        for(j2=0; j2<=nx-1; j2++)
-                        {
-                            v = v+math.sqr(qxybuf[j,j2]-xy[i,j2]);
-                        }
-                        
-                        //
-                        // Although x_j<>x_k, sqr(norm(x_j-x_k)) may be zero due to
-                        // underflow. If it is, we assume than J-th gradient is zero
-                        // (i.e. don't add anything)
-                        //
-                        if( (double)(v)!=(double)(0) )
-                        {
-                            for(j2=0; j2<=nx-1; j2++)
-                            {
-                                x[j2] = x[j2]+w[j]*(qxybuf[j,nx]-xy[i,nx])*(qxybuf[j,j2]-xy[i,j2])/v;
-                            }
-                        }
-                        s = s+w[j];
-                    }
-                    for(j=0; j<=nx-1; j++)
-                    {
-                        z.q[i,nx+1+j] = x[j]/s;
-                    }
-                }
-                else
-                {
-                    
-                    //
-                    // Least squares models: build
-                    //
-                    if( d==1 )
-                    {
-                        
-                        //
-                        // Linear nodal function calculated using
-                        // least squares fitting to its neighbors
-                        //
-                        for(j=0; j<=k-1; j++)
-                        {
-                            for(j2=0; j2<=nx-1; j2++)
-                            {
-                                fmatrix[j,j2] = qxybuf[j,j2]-xy[i,j2];
-                            }
-                            y[j] = qxybuf[j,nx]-xy[i,nx];
-                        }
-                        nc = nx;
-                    }
-                    if( d==2 )
-                    {
-                        
-                        //
-                        // Quadratic nodal function calculated using
-                        // least squares fitting to its neighbors
-                        //
-                        for(j=0; j<=k-1; j++)
-                        {
-                            offs = 0;
-                            for(j2=0; j2<=nx-1; j2++)
-                            {
-                                fmatrix[j,offs] = qxybuf[j,j2]-xy[i,j2];
-                                offs = offs+1;
-                            }
-                            for(j2=0; j2<=nx-1; j2++)
-                            {
-                                for(j3=j2; j3<=nx-1; j3++)
-                                {
-                                    fmatrix[j,offs] = (qxybuf[j,j2]-xy[i,j2])*(qxybuf[j,j3]-xy[i,j3]);
-                                    offs = offs+1;
-                                }
-                            }
-                            y[j] = qxybuf[j,nx]-xy[i,nx];
-                        }
-                        nc = nx+(int)Math.Round(nx*(nx+1)*0.5);
-                    }
-                    idwinternalsolver(ref y, ref w, ref fmatrix, ref temp, k, nc, ref info, ref qsol, ref taskrcond);
-                    
-                    //
-                    // Least squares models: copy results
-                    //
-                    if( info>0 )
-                    {
-                        
-                        //
-                        // LLS task is solved, copy results
-                        //
-                        z.debugworstrcond = Math.Min(z.debugworstrcond, taskrcond);
-                        z.debugbestrcond = Math.Max(z.debugbestrcond, taskrcond);
-                        for(j=0; j<=nc-1; j++)
-                        {
-                            z.q[i,nx+1+j] = qsol[j];
-                        }
-                    }
-                    else
-                    {
-                        
-                        //
-                        // Solver failure, very strange, but we will use
-                        // zero values to handle it.
-                        //
-                        z.debugsolverfailures = z.debugsolverfailures+1;
-                        for(j=0; j<=nc-1; j++)
-                        {
-                            z.q[i,nx+1+j] = 0;
-                        }
-                    }
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        IDW interpolant using modified Shepard method for non-uniform datasets.
-
-        This type of model uses  constant  nodal  functions and interpolates using
-        all nodes which are closer than user-specified radius R. It  may  be  used
-        when points distribution is non-uniform at the small scale, but it  is  at
-        the distances as large as R.
-
-        INPUT PARAMETERS:
-            XY  -   X and Y values, array[0..N-1,0..NX].
-                    First NX columns contain X-values, last column contain
-                    Y-values.
-            N   -   number of nodes, N>0.
-            NX  -   space dimension, NX>=1.
-            R   -   radius, R>0
-
-        OUTPUT PARAMETERS:
-            Z   -   IDW interpolant.
-
-        NOTES:
-        * if there is less than IDWKMin points within  R-ball,  algorithm  selects
-          IDWKMin closest ones, so that continuity properties of  interpolant  are
-          preserved even far from points.
-
-          -- ALGLIB PROJECT --
-             Copyright 11.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void idwbuildmodifiedshepardr(double[,] xy,
-            int n,
-            int nx,
-            double r,
-            idwinterpolant z)
-        {
-            int i = 0;
-            int[] tags = new int[0];
-            int i_ = 0;
-
-            
-            //
-            // assertions
-            //
-            ap.assert(n>0, "IDWBuildModifiedShepardR: N<=0!");
-            ap.assert(nx>=1, "IDWBuildModifiedShepardR: NX<1!");
-            ap.assert((double)(r)>(double)(0), "IDWBuildModifiedShepardR: R<=0!");
-            
-            //
-            // primary initialization of Z
-            //
-            idwinit1(n, nx, 0, 0, n, z);
-            z.modeltype = 1;
-            z.r = r;
-            
-            //
-            // Create KD-tree
-            //
-            tags = new int[n];
-            for(i=0; i<=n-1; i++)
-            {
-                tags[i] = i;
-            }
-            nearestneighbor.kdtreebuildtagged(xy, tags, n, nx, 1, 2, z.tree);
-            
-            //
-            // build nodal functions
-            //
-            for(i=0; i<=n-1; i++)
-            {
-                for(i_=0; i_<=nx;i_++)
-                {
-                    z.q[i,i_] = xy[i,i_];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        IDW model for noisy data.
-
-        This subroutine may be used to handle noisy data, i.e. data with noise  in
-        OUTPUT values.  It differs from IDWBuildModifiedShepard() in the following
-        aspects:
-        * nodal functions are not constrained to pass through  nodes:  Qi(xi)<>yi,
-          i.e. we have fitting  instead  of  interpolation.
-        * weights which are used during least  squares fitting stage are all equal
-          to 1.0 (independently of distance)
-        * "fast"-linear or constant nodal functions are not supported (either  not
-          robust enough or too rigid)
-
-        This problem require far more complex tuning than interpolation  problems.
-        Below you can find some recommendations regarding this problem:
-        * focus on tuning NQ; it controls noise reduction. As for NW, you can just
-          make it equal to 2*NQ.
-        * you can use cross-validation to determine optimal NQ.
-        * optimal NQ is a result of complex tradeoff  between  noise  level  (more
-          noise = larger NQ required) and underlying  function  complexity  (given
-          fixed N, larger NQ means smoothing of compex features in the data).  For
-          example, NQ=N will reduce noise to the minimum level possible,  but  you
-          will end up with just constant/linear/quadratic (depending on  D)  least
-          squares model for the whole dataset.
-
-        INPUT PARAMETERS:
-            XY  -   X and Y values, array[0..N-1,0..NX].
-                    First NX columns contain X-values, last column contain
-                    Y-values.
-            N   -   number of nodes, N>0.
-            NX  -   space dimension, NX>=1.
-            D   -   nodal function degree, either:
-                    * 1     linear model, least squares fitting. Simpe  model  for
-                            datasets too small for quadratic models (or  for  very
-                            noisy problems).
-                    * 2     quadratic  model,  least  squares  fitting. Best model
-                            available (if your dataset is large enough).
-            NQ  -   number of points used to calculate nodal functions.  NQ should
-                    be  significantly   larger   than  1.5  times  the  number  of
-                    coefficients in a nodal function to overcome effects of noise:
-                    * larger than 1.5*(1+NX) for linear model,
-                    * larger than 3/4*(NX+2)*(NX+1) for quadratic model.
-                    Values less than this threshold will be silently increased.
-            NW  -   number of points used to calculate weights and to interpolate.
-                    Required: >=2^NX+1, values less than this  threshold  will  be
-                    silently increased.
-                    Recommended value: about 2*NQ or larger
-
-        OUTPUT PARAMETERS:
-            Z   -   IDW interpolant.
-
-        NOTES:
-          * best results are obtained with quadratic models, linear models are not
-            recommended to use unless you are pretty sure that it is what you want
-          * this subroutine is always succeeds (as long as correct parameters  are
-            passed).
-          * see  'Multivariate  Interpolation  of Large Sets of Scattered Data' by
-            Robert J. Renka for more information on this algorithm.
-
-
-          -- ALGLIB PROJECT --
-             Copyright 02.03.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void idwbuildnoisy(double[,] xy,
-            int n,
-            int nx,
-            int d,
-            int nq,
-            int nw,
-            idwinterpolant z)
-        {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int j2 = 0;
-            int j3 = 0;
-            double v = 0;
-            int nc = 0;
-            int offs = 0;
-            double taskrcond = 0;
-            double[] x = new double[0];
-            double[] qrbuf = new double[0];
-            double[,] qxybuf = new double[0,0];
-            double[] y = new double[0];
-            double[] w = new double[0];
-            double[,] fmatrix = new double[0,0];
-            double[] qsol = new double[0];
-            int[] tags = new int[0];
-            double[] temp = new double[0];
-            int info = 0;
-            int i_ = 0;
-
-            
-            //
-            // these initializers are not really necessary,
-            // but without them compiler complains about uninitialized locals
-            //
-            nc = 0;
-            
-            //
-            // assertions
-            //
-            ap.assert(n>0, "IDWBuildNoisy: N<=0!");
-            ap.assert(nx>=1, "IDWBuildNoisy: NX<1!");
-            ap.assert(d>=1 & d<=2, "IDWBuildNoisy: D<>1 and D<>2!");
-            
-            //
-            // Correct parameters if needed
-            //
-            if( d==1 )
-            {
-                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(1+nx))+1);
-            }
-            if( d==2 )
-            {
-                nq = Math.Max(nq, (int)Math.Ceiling(idwqfactor*(nx+2)*(nx+1)/2)+1);
-            }
-            nw = Math.Max(nw, (int)Math.Round(Math.Pow(2, nx))+1);
-            nq = Math.Min(nq, n);
-            nw = Math.Min(nw, n);
-            
-            //
-            // primary initialization of Z
-            //
-            idwinit1(n, nx, d, nq, nw, z);
-            z.modeltype = 0;
-            
-            //
-            // Create KD-tree
-            //
-            tags = new int[n];
-            for(i=0; i<=n-1; i++)
-            {
-                tags[i] = i;
-            }
-            nearestneighbor.kdtreebuildtagged(xy, tags, n, nx, 1, 2, z.tree);
-            
-            //
-            // build nodal functions
-            // (special algorithm for noisy data is used)
-            //
-            temp = new double[nq+1];
-            x = new double[nx];
-            qrbuf = new double[nq];
-            qxybuf = new double[nq, nx+1];
-            if( d==1 )
-            {
-                y = new double[nq];
-                w = new double[nq];
-                qsol = new double[1+nx];
-                
-                //
-                // 1 for constant member,
-                // NX for linear members,
-                // 1 for temporary storage
-                //
-                fmatrix = new double[nq, 1+nx+1];
-            }
-            if( d==2 )
-            {
-                y = new double[nq];
-                w = new double[nq];
-                qsol = new double[1+nx+(int)Math.Round(nx*(nx+1)*0.5)];
-                
-                //
-                // 1 for constant member,
-                // NX for linear members,
-                // Round(NX*(NX+1)*0.5) for quadratic model,
-                // 1 for temporary storage
-                //
-                fmatrix = new double[nq, 1+nx+(int)Math.Round(nx*(nx+1)*0.5)+1];
-            }
-            for(i=0; i<=n-1; i++)
-            {
-                
-                //
-                // Initialize center.
-                //
-                for(i_=0; i_<=nx-1;i_++)
-                {
-                    z.q[i,i_] = xy[i,i_];
-                }
-                
-                //
-                // Calculate linear/quadratic members
-                // using least squares fit
-                // NOTE 1: all weight are equal to 1.0
-                // NOTE 2: self-match is USED for this query
-                //
-                for(i_=0; i_<=nx-1;i_++)
-                {
-                    x[i_] = xy[i,i_];
-                }
-                k = nearestneighbor.kdtreequeryknn(z.tree, x, nq, true);
-                nearestneighbor.kdtreequeryresultsxy(z.tree, ref qxybuf);
-                nearestneighbor.kdtreequeryresultsdistances(z.tree, ref qrbuf);
-                if( d==1 )
-                {
-                    
-                    //
-                    // Linear nodal function calculated using
-                    // least squares fitting to its neighbors
-                    //
-                    for(j=0; j<=k-1; j++)
-                    {
-                        fmatrix[j,0] = 1.0;
-                        for(j2=0; j2<=nx-1; j2++)
-                        {
-                            fmatrix[j,1+j2] = qxybuf[j,j2]-xy[i,j2];
-                        }
-                        y[j] = qxybuf[j,nx];
-                        w[j] = 1;
-                    }
-                    nc = 1+nx;
-                }
-                if( d==2 )
-                {
-                    
-                    //
-                    // Quadratic nodal function calculated using
-                    // least squares fitting to its neighbors
-                    //
-                    for(j=0; j<=k-1; j++)
-                    {
-                        fmatrix[j,0] = 1;
-                        offs = 1;
-                        for(j2=0; j2<=nx-1; j2++)
-                        {
-                            fmatrix[j,offs] = qxybuf[j,j2]-xy[i,j2];
-                            offs = offs+1;
-                        }
-                        for(j2=0; j2<=nx-1; j2++)
-                        {
-                            for(j3=j2; j3<=nx-1; j3++)
-                            {
-                                fmatrix[j,offs] = (qxybuf[j,j2]-xy[i,j2])*(qxybuf[j,j3]-xy[i,j3]);
-                                offs = offs+1;
-                            }
-                        }
-                        y[j] = qxybuf[j,nx];
-                        w[j] = 1;
-                    }
-                    nc = 1+nx+(int)Math.Round(nx*(nx+1)*0.5);
-                }
-                idwinternalsolver(ref y, ref w, ref fmatrix, ref temp, k, nc, ref info, ref qsol, ref taskrcond);
-                
-                //
-                // Least squares models: copy results
-                //
-                if( info>0 )
-                {
-                    
-                    //
-                    // LLS task is solved, copy results
-                    //
-                    z.debugworstrcond = Math.Min(z.debugworstrcond, taskrcond);
-                    z.debugbestrcond = Math.Max(z.debugbestrcond, taskrcond);
-                    for(j=0; j<=nc-1; j++)
-                    {
-                        z.q[i,nx+j] = qsol[j];
-                    }
-                }
-                else
-                {
-                    
-                    //
-                    // Solver failure, very strange, but we will use
-                    // zero values to handle it.
-                    //
-                    z.debugsolverfailures = z.debugsolverfailures+1;
-                    v = 0;
-                    for(j=0; j<=k-1; j++)
-                    {
-                        v = v+qxybuf[j,nx];
-                    }
-                    z.q[i,nx] = v/k;
-                    for(j=0; j<=nc-2; j++)
-                    {
-                        z.q[i,nx+1+j] = 0;
-                    }
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        Internal subroutine: K-th nodal function calculation
-
-          -- ALGLIB --
-             Copyright 02.03.2010 by Bochkanov Sergey
-        *************************************************************************/
-        private static double idwcalcq(idwinterpolant z,
-            double[] x,
-            int k)
-        {
-            double result = 0;
-            int nx = 0;
-            int i = 0;
-            int j = 0;
-            int offs = 0;
-
-            nx = z.nx;
-            
-            //
-            // constant member
-            //
-            result = z.q[k,nx];
-            
-            //
-            // linear members
-            //
-            if( z.d>=1 )
-            {
-                for(i=0; i<=nx-1; i++)
-                {
-                    result = result+z.q[k,nx+1+i]*(x[i]-z.q[k,i]);
-                }
-            }
-            
-            //
-            // quadratic members
-            //
-            if( z.d>=2 )
-            {
-                offs = nx+1+nx;
-                for(i=0; i<=nx-1; i++)
-                {
-                    for(j=i; j<=nx-1; j++)
-                    {
-                        result = result+z.q[k,offs]*(x[i]-z.q[k,i])*(x[j]-z.q[k,j]);
-                        offs = offs+1;
-                    }
-                }
-            }
-            return result;
-        }
-
-
-        /*************************************************************************
-        Initialization of internal structures.
-
-        It assumes correctness of all parameters.
-
-          -- ALGLIB --
-             Copyright 02.03.2010 by Bochkanov Sergey
-        *************************************************************************/
-        private static void idwinit1(int n,
-            int nx,
-            int d,
-            int nq,
-            int nw,
-            idwinterpolant z)
-        {
-            z.debugsolverfailures = 0;
-            z.debugworstrcond = 1.0;
-            z.debugbestrcond = 0;
-            z.n = n;
-            z.nx = nx;
-            z.d = 0;
-            if( d==1 )
-            {
-                z.d = 1;
-            }
-            if( d==2 )
-            {
-                z.d = 2;
-            }
-            if( d==-1 )
-            {
-                z.d = 1;
-            }
-            z.nw = nw;
-            if( d==-1 )
-            {
-                z.q = new double[n, nx+1+nx];
-            }
-            if( d==0 )
-            {
-                z.q = new double[n, nx+1];
-            }
-            if( d==1 )
-            {
-                z.q = new double[n, nx+1+nx];
-            }
-            if( d==2 )
-            {
-                z.q = new double[n, nx+1+nx+(int)Math.Round(nx*(nx+1)*0.5)];
-            }
-            z.tbuf = new int[nw];
-            z.rbuf = new double[nw];
-            z.xybuf = new double[nw, nx+1];
-            z.xbuf = new double[nx];
-        }
-
-
-        /*************************************************************************
-        Linear least squares solver for small tasks.
-
-        Works faster than standard ALGLIB solver in non-degenerate cases  (due  to
-        absense of internal allocations and optimized row/colums).  In  degenerate
-        cases it calls standard solver, which results in small performance penalty
-        associated with preliminary steps.
-
-        INPUT PARAMETERS:
-            Y           array[0..N-1]
-            W           array[0..N-1]
-            FMatrix     array[0..N-1,0..M], have additional column for temporary
-                        values
-            Temp        array[0..N]
-        *************************************************************************/
-        private static void idwinternalsolver(ref double[] y,
-            ref double[] w,
-            ref double[,] fmatrix,
-            ref double[] temp,
-            int n,
-            int m,
-            ref int info,
-            ref double[] x,
-            ref double taskrcond)
-        {
-            int i = 0;
-            int j = 0;
-            double v = 0;
-            double tau = 0;
-            double[] b = new double[0];
-            densesolver.densesolverlsreport srep = new densesolver.densesolverlsreport();
-            int i_ = 0;
-            int i1_ = 0;
-
-            info = 0;
-
-            
-            //
-            // set up info
-            //
-            info = 1;
-            
-            //
-            // prepare matrix
-            //
-            for(i=0; i<=n-1; i++)
-            {
-                fmatrix[i,m] = y[i];
-                v = w[i];
-                for(i_=0; i_<=m;i_++)
-                {
-                    fmatrix[i,i_] = v*fmatrix[i,i_];
-                }
-            }
-            
-            //
-            // use either fast algorithm or general algorithm
-            //
-            if( m<=n )
-            {
-                
-                //
-                // QR decomposition
-                // We assume that M<=N (we would have called LSFit() otherwise)
-                //
-                for(i=0; i<=m-1; i++)
-                {
-                    if( i<n-1 )
-                    {
-                        i1_ = (i) - (1);
-                        for(i_=1; i_<=n-i;i_++)
-                        {
-                            temp[i_] = fmatrix[i_+i1_,i];
-                        }
-                        reflections.generatereflection(ref temp, n-i, ref tau);
-                        fmatrix[i,i] = temp[1];
-                        temp[1] = 1;
-                        for(j=i+1; j<=m; j++)
-                        {
-                            i1_ = (1)-(i);
-                            v = 0.0;
-                            for(i_=i; i_<=n-1;i_++)
-                            {
-                                v += fmatrix[i_,j]*temp[i_+i1_];
-                            }
-                            v = tau*v;
-                            i1_ = (1) - (i);
-                            for(i_=i; i_<=n-1;i_++)
-                            {
-                                fmatrix[i_,j] = fmatrix[i_,j] - v*temp[i_+i1_];
-                            }
-                        }
-                    }
-                }
-                
-                //
-                // Check condition number
-                //
-                taskrcond = rcond.rmatrixtrrcondinf(fmatrix, m, true, false);
-                
-                //
-                // use either fast algorithm for non-degenerate cases
-                // or slow algorithm for degenerate cases
-                //
-                if( (double)(taskrcond)>(double)(10000*n*math.machineepsilon) )
-                {
-                    
-                    //
-                    // solve triangular system R*x = FMatrix[0:M-1,M]
-                    // using fast algorithm, then exit
-                    //
-                    x[m-1] = fmatrix[m-1,m]/fmatrix[m-1,m-1];
-                    for(i=m-2; i>=0; i--)
-                    {
-                        v = 0.0;
-                        for(i_=i+1; i_<=m-1;i_++)
-                        {
-                            v += fmatrix[i,i_]*x[i_];
-                        }
-                        x[i] = (fmatrix[i,m]-v)/fmatrix[i,i];
-                    }
-                }
-                else
-                {
-                    
-                    //
-                    // use more general algorithm
-                    //
-                    b = new double[m];
-                    for(i=0; i<=m-1; i++)
-                    {
-                        for(j=0; j<=i-1; j++)
-                        {
-                            fmatrix[i,j] = 0.0;
-                        }
-                        b[i] = fmatrix[i,m];
-                    }
-                    densesolver.rmatrixsolvels(fmatrix, m, m, b, 10000*math.machineepsilon, ref info, srep, ref x);
-                }
-            }
-            else
-            {
-                
-                //
-                // use more general algorithm
-                //
-                b = new double[n];
-                for(i=0; i<=n-1; i++)
-                {
-                    b[i] = fmatrix[i,m];
-                }
-                densesolver.rmatrixsolvels(fmatrix, n, m, b, 10000*math.machineepsilon, ref info, srep, ref x);
-                taskrcond = srep.r2;
-            }
-        }
-
-
-    }
-    public class pspline
-    {
-        /*************************************************************************
-        Parametric spline inteprolant: 2-dimensional curve.
-
-        You should not try to access its members directly - use PSpline2XXXXXXXX()
-        functions instead.
-        *************************************************************************/
-        public class pspline2interpolant
-        {
-            public int n;
-            public bool periodic;
-            public double[] p;
-            public spline1d.spline1dinterpolant x;
-            public spline1d.spline1dinterpolant y;
-            public pspline2interpolant()
-            {
-                p = new double[0];
-                x = new spline1d.spline1dinterpolant();
-                y = new spline1d.spline1dinterpolant();
-            }
-        };
-
-
-        /*************************************************************************
-        Parametric spline inteprolant: 3-dimensional curve.
-
-        You should not try to access its members directly - use PSpline3XXXXXXXX()
-        functions instead.
-        *************************************************************************/
-        public class pspline3interpolant
-        {
-            public int n;
-            public bool periodic;
-            public double[] p;
-            public spline1d.spline1dinterpolant x;
-            public spline1d.spline1dinterpolant y;
-            public spline1d.spline1dinterpolant z;
-            public pspline3interpolant()
-            {
-                p = new double[0];
-                x = new spline1d.spline1dinterpolant();
-                y = new spline1d.spline1dinterpolant();
-                z = new spline1d.spline1dinterpolant();
-            }
-        };
-
-
-
-
-        /*************************************************************************
-        This function  builds  non-periodic 2-dimensional parametric spline  which
-        starts at (X[0],Y[0]) and ends at (X[N-1],Y[N-1]).
-
-        INPUT PARAMETERS:
-            XY  -   points, array[0..N-1,0..1].
-                    XY[I,0:1] corresponds to the Ith point.
-                    Order of points is important!
-            N   -   points count, N>=5 for Akima splines, N>=2 for other types  of
-                    splines.
-            ST  -   spline type:
-                    * 0     Akima spline
-                    * 1     parabolically terminated Catmull-Rom spline (Tension=0)
-                    * 2     parabolically terminated cubic spline
-            PT  -   parameterization type:
-                    * 0     uniform
-                    * 1     chord length
-                    * 2     centripetal
-
-        OUTPUT PARAMETERS:
-            P   -   parametric spline interpolant
-
-
-        NOTES:
-        * this function  assumes  that  there all consequent points  are distinct.
-          I.e. (x0,y0)<>(x1,y1),  (x1,y1)<>(x2,y2),  (x2,y2)<>(x3,y3)  and  so on.
-          However, non-consequent points may coincide, i.e. we can  have  (x0,y0)=
-          =(x2,y2).
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2build(double[,] xy,
-            int n,
-            int st,
-            int pt,
-            pspline2interpolant p)
-        {
-            double[] tmp = new double[0];
-            int i_ = 0;
-
-            xy = (double[,])xy.Clone();
-
-            ap.assert(st>=0 & st<=2, "PSpline2Build: incorrect spline type!");
-            ap.assert(pt>=0 & pt<=2, "PSpline2Build: incorrect parameterization type!");
-            if( st==0 )
-            {
-                ap.assert(n>=5, "PSpline2Build: N<5 (minimum value for Akima splines)!");
-            }
-            else
-            {
-                ap.assert(n>=2, "PSpline2Build: N<2!");
-            }
-            
-            //
-            // Prepare
-            //
-            p.n = n;
-            p.periodic = false;
-            tmp = new double[n];
-            
-            //
-            // Build parameterization, check that all parameters are distinct
-            //
-            pspline2par(xy, n, pt, ref p.p);
-            ap.assert(apserv.aredistinct(p.p, n), "PSpline2Build: consequent points are too close!");
-            
-            //
-            // Build splines
-            //
-            if( st==0 )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,0];
-                }
-                spline1d.spline1dbuildakima(p.p, tmp, n, p.x);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,1];
-                }
-                spline1d.spline1dbuildakima(p.p, tmp, n, p.y);
-            }
-            if( st==1 )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,0];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.x);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,1];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.y);
-            }
-            if( st==2 )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,0];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.x);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,1];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.y);
-            }
-        }
-
-
-        /*************************************************************************
-        This function  builds  non-periodic 3-dimensional parametric spline  which
-        starts at (X[0],Y[0],Z[0]) and ends at (X[N-1],Y[N-1],Z[N-1]).
-
-        Same as PSpline2Build() function, but for 3D, so we  won't  duplicate  its
-        description here.
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3build(double[,] xy,
-            int n,
-            int st,
-            int pt,
-            pspline3interpolant p)
-        {
-            double[] tmp = new double[0];
-            int i_ = 0;
-
-            xy = (double[,])xy.Clone();
-
-            ap.assert(st>=0 & st<=2, "PSpline3Build: incorrect spline type!");
-            ap.assert(pt>=0 & pt<=2, "PSpline3Build: incorrect parameterization type!");
-            if( st==0 )
-            {
-                ap.assert(n>=5, "PSpline3Build: N<5 (minimum value for Akima splines)!");
-            }
-            else
-            {
-                ap.assert(n>=2, "PSpline3Build: N<2!");
-            }
-            
-            //
-            // Prepare
-            //
-            p.n = n;
-            p.periodic = false;
-            tmp = new double[n];
-            
-            //
-            // Build parameterization, check that all parameters are distinct
-            //
-            pspline3par(xy, n, pt, ref p.p);
-            ap.assert(apserv.aredistinct(p.p, n), "PSpline3Build: consequent points are too close!");
-            
-            //
-            // Build splines
-            //
-            if( st==0 )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,0];
-                }
-                spline1d.spline1dbuildakima(p.p, tmp, n, p.x);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,1];
-                }
-                spline1d.spline1dbuildakima(p.p, tmp, n, p.y);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,2];
-                }
-                spline1d.spline1dbuildakima(p.p, tmp, n, p.z);
-            }
-            if( st==1 )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,0];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.x);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,1];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.y);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,2];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n, 0, 0.0, p.z);
-            }
-            if( st==2 )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,0];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.x);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,1];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.y);
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    tmp[i_] = xy[i_,2];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n, 0, 0.0, 0, 0.0, p.z);
-            }
-        }
-
-
-        /*************************************************************************
-        This  function  builds  periodic  2-dimensional  parametric  spline  which
-        starts at (X[0],Y[0]), goes through all points to (X[N-1],Y[N-1]) and then
-        back to (X[0],Y[0]).
-
-        INPUT PARAMETERS:
-            XY  -   points, array[0..N-1,0..1].
-                    XY[I,0:1] corresponds to the Ith point.
-                    XY[N-1,0:1] must be different from XY[0,0:1].
-                    Order of points is important!
-            N   -   points count, N>=3 for other types of splines.
-            ST  -   spline type:
-                    * 1     Catmull-Rom spline (Tension=0) with cyclic boundary conditions
-                    * 2     cubic spline with cyclic boundary conditions
-            PT  -   parameterization type:
-                    * 0     uniform
-                    * 1     chord length
-                    * 2     centripetal
-
-        OUTPUT PARAMETERS:
-            P   -   parametric spline interpolant
-
-
-        NOTES:
-        * this function  assumes  that there all consequent points  are  distinct.
-          I.e. (x0,y0)<>(x1,y1), (x1,y1)<>(x2,y2),  (x2,y2)<>(x3,y3)  and  so  on.
-          However, non-consequent points may coincide, i.e. we can  have  (x0,y0)=
-          =(x2,y2).
-        * last point of sequence is NOT equal to the first  point.  You  shouldn't
-          make curve "explicitly periodic" by making them equal.
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2buildperiodic(double[,] xy,
-            int n,
-            int st,
-            int pt,
-            pspline2interpolant p)
-        {
-            double[,] xyp = new double[0,0];
-            double[] tmp = new double[0];
-            int i_ = 0;
-
-            xy = (double[,])xy.Clone();
-
-            ap.assert(st>=1 & st<=2, "PSpline2BuildPeriodic: incorrect spline type!");
-            ap.assert(pt>=0 & pt<=2, "PSpline2BuildPeriodic: incorrect parameterization type!");
-            ap.assert(n>=3, "PSpline2BuildPeriodic: N<3!");
-            
-            //
-            // Prepare
-            //
-            p.n = n;
-            p.periodic = true;
-            tmp = new double[n+1];
-            xyp = new double[n+1, 2];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                xyp[i_,0] = xy[i_,0];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                xyp[i_,1] = xy[i_,1];
-            }
-            for(i_=0; i_<=1;i_++)
-            {
-                xyp[n,i_] = xy[0,i_];
-            }
-            
-            //
-            // Build parameterization, check that all parameters are distinct
-            //
-            pspline2par(xyp, n+1, pt, ref p.p);
-            ap.assert(apserv.aredistinct(p.p, n+1), "PSpline2BuildPeriodic: consequent (or first and last) points are too close!");
-            
-            //
-            // Build splines
-            //
-            if( st==1 )
-            {
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,0];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.x);
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,1];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.y);
-            }
-            if( st==2 )
-            {
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,0];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.x);
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,1];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.y);
-            }
-        }
-
-
-        /*************************************************************************
-        This  function  builds  periodic  3-dimensional  parametric  spline  which
-        starts at (X[0],Y[0],Z[0]), goes through all points to (X[N-1],Y[N-1],Z[N-1])
-        and then back to (X[0],Y[0],Z[0]).
-
-        Same as PSpline2Build() function, but for 3D, so we  won't  duplicate  its
-        description here.
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3buildperiodic(double[,] xy,
-            int n,
-            int st,
-            int pt,
-            pspline3interpolant p)
-        {
-            double[,] xyp = new double[0,0];
-            double[] tmp = new double[0];
-            int i_ = 0;
-
-            xy = (double[,])xy.Clone();
-
-            ap.assert(st>=1 & st<=2, "PSpline3BuildPeriodic: incorrect spline type!");
-            ap.assert(pt>=0 & pt<=2, "PSpline3BuildPeriodic: incorrect parameterization type!");
-            ap.assert(n>=3, "PSpline3BuildPeriodic: N<3!");
-            
-            //
-            // Prepare
-            //
-            p.n = n;
-            p.periodic = true;
-            tmp = new double[n+1];
-            xyp = new double[n+1, 3];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                xyp[i_,0] = xy[i_,0];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                xyp[i_,1] = xy[i_,1];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                xyp[i_,2] = xy[i_,2];
-            }
-            for(i_=0; i_<=2;i_++)
-            {
-                xyp[n,i_] = xy[0,i_];
-            }
-            
-            //
-            // Build parameterization, check that all parameters are distinct
-            //
-            pspline3par(xyp, n+1, pt, ref p.p);
-            ap.assert(apserv.aredistinct(p.p, n+1), "PSplineBuild2Periodic: consequent (or first and last) points are too close!");
-            
-            //
-            // Build splines
-            //
-            if( st==1 )
-            {
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,0];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.x);
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,1];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.y);
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,2];
-                }
-                spline1d.spline1dbuildcatmullrom(p.p, tmp, n+1, -1, 0.0, p.z);
-            }
-            if( st==2 )
-            {
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,0];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.x);
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,1];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.y);
-                for(i_=0; i_<=n;i_++)
-                {
-                    tmp[i_] = xyp[i_,2];
-                }
-                spline1d.spline1dbuildcubic(p.p, tmp, n+1, -1, 0.0, -1, 0.0, p.z);
-            }
-        }
-
-
-        /*************************************************************************
-        This function returns vector of parameter values correspoding to points.
-
-        I.e. for P created from (X[0],Y[0])...(X[N-1],Y[N-1]) and U=TValues(P)  we
-        have
-            (X[0],Y[0]) = PSpline2Calc(P,U[0]),
-            (X[1],Y[1]) = PSpline2Calc(P,U[1]),
-            (X[2],Y[2]) = PSpline2Calc(P,U[2]),
-            ...
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-
-        OUTPUT PARAMETERS:
-            N   -   array size
-            T   -   array[0..N-1]
-
-
-        NOTES:
-        * for non-periodic splines U[0]=0, U[0]<U[1]<...<U[N-1], U[N-1]=1
-        * for periodic splines     U[0]=0, U[0]<U[1]<...<U[N-1], U[N-1]<1
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2parametervalues(pspline2interpolant p,
-            ref int n,
-            ref double[] t)
-        {
-            int i_ = 0;
-
-            n = 0;
-            t = new double[0];
-
-            ap.assert(p.n>=2, "PSpline2ParameterValues: internal error!");
-            n = p.n;
-            t = new double[n];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                t[i_] = p.p[i_];
-            }
-            t[0] = 0;
-            if( !p.periodic )
-            {
-                t[n-1] = 1;
-            }
-        }
-
-
-        /*************************************************************************
-        This function returns vector of parameter values correspoding to points.
-
-        Same as PSpline2ParameterValues(), but for 3D.
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3parametervalues(pspline3interpolant p,
-            ref int n,
-            ref double[] t)
-        {
-            int i_ = 0;
-
-            n = 0;
-            t = new double[0];
-
-            ap.assert(p.n>=2, "PSpline3ParameterValues: internal error!");
-            n = p.n;
-            t = new double[n];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                t[i_] = p.p[i_];
-            }
-            t[0] = 0;
-            if( !p.periodic )
-            {
-                t[n-1] = 1;
-            }
-        }
-
-
-        /*************************************************************************
-        This function  calculates  the value of the parametric spline for a  given
-        value of parameter T
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X   -   X-position
-            Y   -   Y-position
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2calc(pspline2interpolant p,
-            double t,
-            ref double x,
-            ref double y)
-        {
-            x = 0;
-            y = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            x = spline1d.spline1dcalc(p.x, t);
-            y = spline1d.spline1dcalc(p.y, t);
-        }
-
-
-        /*************************************************************************
-        This function  calculates  the value of the parametric spline for a  given
-        value of parameter T.
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X   -   X-position
-            Y   -   Y-position
-            Z   -   Z-position
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3calc(pspline3interpolant p,
-            double t,
-            ref double x,
-            ref double y,
-            ref double z)
-        {
-            x = 0;
-            y = 0;
-            z = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            x = spline1d.spline1dcalc(p.x, t);
-            y = spline1d.spline1dcalc(p.y, t);
-            z = spline1d.spline1dcalc(p.z, t);
-        }
-
-
-        /*************************************************************************
-        This function  calculates  tangent vector for a given value of parameter T
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X    -   X-component of tangent vector (normalized)
-            Y    -   Y-component of tangent vector (normalized)
-            
-        NOTE:
-            X^2+Y^2 is either 1 (for non-zero tangent vector) or 0.
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2tangent(pspline2interpolant p,
-            double t,
-            ref double x,
-            ref double y)
-        {
-            double v = 0;
-            double v0 = 0;
-            double v1 = 0;
-
-            x = 0;
-            y = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            pspline2diff(p, t, ref v0, ref x, ref v1, ref y);
-            if( (double)(x)!=(double)(0) | (double)(y)!=(double)(0) )
-            {
-                
-                //
-                // this code is a bit more complex than X^2+Y^2 to avoid
-                // overflow for large values of X and Y.
-                //
-                v = apserv.safepythag2(x, y);
-                x = x/v;
-                y = y/v;
-            }
-        }
-
-
-        /*************************************************************************
-        This function  calculates  tangent vector for a given value of parameter T
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X    -   X-component of tangent vector (normalized)
-            Y    -   Y-component of tangent vector (normalized)
-            Z    -   Z-component of tangent vector (normalized)
-
-        NOTE:
-            X^2+Y^2+Z^2 is either 1 (for non-zero tangent vector) or 0.
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3tangent(pspline3interpolant p,
-            double t,
-            ref double x,
-            ref double y,
-            ref double z)
-        {
-            double v = 0;
-            double v0 = 0;
-            double v1 = 0;
-            double v2 = 0;
-
-            x = 0;
-            y = 0;
-            z = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            pspline3diff(p, t, ref v0, ref x, ref v1, ref y, ref v2, ref z);
-            if( ((double)(x)!=(double)(0) | (double)(y)!=(double)(0)) | (double)(z)!=(double)(0) )
-            {
-                v = apserv.safepythag3(x, y, z);
-                x = x/v;
-                y = y/v;
-                z = z/v;
-            }
-        }
-
-
-        /*************************************************************************
-        This function calculates derivative, i.e. it returns (dX/dT,dY/dT).
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X   -   X-value
-            DX  -   X-derivative
-            Y   -   Y-value
-            DY  -   Y-derivative
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2diff(pspline2interpolant p,
-            double t,
-            ref double x,
-            ref double dx,
-            ref double y,
-            ref double dy)
-        {
-            double d2s = 0;
-
-            x = 0;
-            dx = 0;
-            y = 0;
-            dy = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2s);
-            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2s);
-        }
-
-
-        /*************************************************************************
-        This function calculates derivative, i.e. it returns (dX/dT,dY/dT,dZ/dT).
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X   -   X-value
-            DX  -   X-derivative
-            Y   -   Y-value
-            DY  -   Y-derivative
-            Z   -   Z-value
-            DZ  -   Z-derivative
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3diff(pspline3interpolant p,
-            double t,
-            ref double x,
-            ref double dx,
-            ref double y,
-            ref double dy,
-            ref double z,
-            ref double dz)
-        {
-            double d2s = 0;
-
-            x = 0;
-            dx = 0;
-            y = 0;
-            dy = 0;
-            z = 0;
-            dz = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2s);
-            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2s);
-            spline1d.spline1ddiff(p.z, t, ref z, ref dz, ref d2s);
-        }
-
-
-        /*************************************************************************
-        This function calculates first and second derivative with respect to T.
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X   -   X-value
-            DX  -   derivative
-            D2X -   second derivative
-            Y   -   Y-value
-            DY  -   derivative
-            D2Y -   second derivative
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline2diff2(pspline2interpolant p,
-            double t,
-            ref double x,
-            ref double dx,
-            ref double d2x,
-            ref double y,
-            ref double dy,
-            ref double d2y)
-        {
-            x = 0;
-            dx = 0;
-            d2x = 0;
-            y = 0;
-            dy = 0;
-            d2y = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2x);
-            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2y);
-        }
-
-
-        /*************************************************************************
-        This function calculates first and second derivative with respect to T.
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            T   -   point:
-                    * T in [0,1] corresponds to interval spanned by points
-                    * for non-periodic splines T<0 (or T>1) correspond to parts of
-                      the curve before the first (after the last) point
-                    * for periodic splines T<0 (or T>1) are projected  into  [0,1]
-                      by making T=T-floor(T).
-
-        OUTPUT PARAMETERS:
-            X   -   X-value
-            DX  -   derivative
-            D2X -   second derivative
-            Y   -   Y-value
-            DY  -   derivative
-            D2Y -   second derivative
-            Z   -   Z-value
-            DZ  -   derivative
-            D2Z -   second derivative
-
-
-          -- ALGLIB PROJECT --
-             Copyright 28.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void pspline3diff2(pspline3interpolant p,
-            double t,
-            ref double x,
-            ref double dx,
-            ref double d2x,
-            ref double y,
-            ref double dy,
-            ref double d2y,
-            ref double z,
-            ref double dz,
-            ref double d2z)
-        {
-            x = 0;
-            dx = 0;
-            d2x = 0;
-            y = 0;
-            dy = 0;
-            d2y = 0;
-            z = 0;
-            dz = 0;
-            d2z = 0;
-
-            if( p.periodic )
-            {
-                t = t-(int)Math.Floor(t);
-            }
-            spline1d.spline1ddiff(p.x, t, ref x, ref dx, ref d2x);
-            spline1d.spline1ddiff(p.y, t, ref y, ref dy, ref d2y);
-            spline1d.spline1ddiff(p.z, t, ref z, ref dz, ref d2z);
-        }
-
-
-        /*************************************************************************
-        This function  calculates  arc length, i.e. length of  curve  between  t=a
-        and t=b.
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            A,B -   parameter values corresponding to arc ends:
-                    * B>A will result in positive length returned
-                    * B<A will result in negative length returned
-
-        RESULT:
-            length of arc starting at T=A and ending at T=B.
-
-
-          -- ALGLIB PROJECT --
-             Copyright 30.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static double pspline2arclength(pspline2interpolant p,
-            double a,
-            double b)
-        {
-            double result = 0;
-            autogk.autogkstate state = new autogk.autogkstate();
-            autogk.autogkreport rep = new autogk.autogkreport();
-            double sx = 0;
-            double dsx = 0;
-            double d2sx = 0;
-            double sy = 0;
-            double dsy = 0;
-            double d2sy = 0;
-
-            autogk.autogksmooth(a, b, state);
-            while( autogk.autogkiteration(state) )
-            {
-                spline1d.spline1ddiff(p.x, state.x, ref sx, ref dsx, ref d2sx);
-                spline1d.spline1ddiff(p.y, state.x, ref sy, ref dsy, ref d2sy);
-                state.f = apserv.safepythag2(dsx, dsy);
-            }
-            autogk.autogkresults(state, ref result, rep);
-            ap.assert(rep.terminationtype>0, "PSpline2ArcLength: internal error!");
-            return result;
-        }
-
-
-        /*************************************************************************
-        This function  calculates  arc length, i.e. length of  curve  between  t=a
-        and t=b.
-
-        INPUT PARAMETERS:
-            P   -   parametric spline interpolant
-            A,B -   parameter values corresponding to arc ends:
-                    * B>A will result in positive length returned
-                    * B<A will result in negative length returned
-
-        RESULT:
-            length of arc starting at T=A and ending at T=B.
-
-
-          -- ALGLIB PROJECT --
-             Copyright 30.05.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static double pspline3arclength(pspline3interpolant p,
-            double a,
-            double b)
-        {
-            double result = 0;
-            autogk.autogkstate state = new autogk.autogkstate();
-            autogk.autogkreport rep = new autogk.autogkreport();
-            double sx = 0;
-            double dsx = 0;
-            double d2sx = 0;
-            double sy = 0;
-            double dsy = 0;
-            double d2sy = 0;
-            double sz = 0;
-            double dsz = 0;
-            double d2sz = 0;
-
-            autogk.autogksmooth(a, b, state);
-            while( autogk.autogkiteration(state) )
-            {
-                spline1d.spline1ddiff(p.x, state.x, ref sx, ref dsx, ref d2sx);
-                spline1d.spline1ddiff(p.y, state.x, ref sy, ref dsy, ref d2sy);
-                spline1d.spline1ddiff(p.z, state.x, ref sz, ref dsz, ref d2sz);
-                state.f = apserv.safepythag3(dsx, dsy, dsz);
-            }
-            autogk.autogkresults(state, ref result, rep);
-            ap.assert(rep.terminationtype>0, "PSpline3ArcLength: internal error!");
-            return result;
-        }
-
-
-        /*************************************************************************
-        Builds non-periodic parameterization for 2-dimensional spline
-        *************************************************************************/
-        private static void pspline2par(double[,] xy,
-            int n,
-            int pt,
-            ref double[] p)
-        {
-            double v = 0;
-            int i = 0;
-            int i_ = 0;
-
-            p = new double[0];
-
-            ap.assert(pt>=0 & pt<=2, "PSpline2Par: internal error!");
-            
-            //
-            // Build parameterization:
-            // * fill by non-normalized values
-            // * normalize them so we have P[0]=0, P[N-1]=1.
-            //
-            p = new double[n];
-            if( pt==0 )
-            {
-                for(i=0; i<=n-1; i++)
-                {
-                    p[i] = i;
-                }
-            }
-            if( pt==1 )
-            {
-                p[0] = 0;
-                for(i=1; i<=n-1; i++)
-                {
-                    p[i] = p[i-1]+apserv.safepythag2(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1]);
-                }
-            }
-            if( pt==2 )
-            {
-                p[0] = 0;
-                for(i=1; i<=n-1; i++)
-                {
-                    p[i] = p[i-1]+Math.Sqrt(apserv.safepythag2(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1]));
-                }
-            }
-            v = 1/p[n-1];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                p[i_] = v*p[i_];
-            }
-        }
-
-
-        /*************************************************************************
-        Builds non-periodic parameterization for 3-dimensional spline
-        *************************************************************************/
-        private static void pspline3par(double[,] xy,
-            int n,
-            int pt,
-            ref double[] p)
-        {
-            double v = 0;
-            int i = 0;
-            int i_ = 0;
-
-            p = new double[0];
-
-            ap.assert(pt>=0 & pt<=2, "PSpline3Par: internal error!");
-            
-            //
-            // Build parameterization:
-            // * fill by non-normalized values
-            // * normalize them so we have P[0]=0, P[N-1]=1.
-            //
-            p = new double[n];
-            if( pt==0 )
-            {
-                for(i=0; i<=n-1; i++)
-                {
-                    p[i] = i;
-                }
-            }
-            if( pt==1 )
-            {
-                p[0] = 0;
-                for(i=1; i<=n-1; i++)
-                {
-                    p[i] = p[i-1]+apserv.safepythag3(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1], xy[i,2]-xy[i-1,2]);
-                }
-            }
-            if( pt==2 )
-            {
-                p[0] = 0;
-                for(i=1; i<=n-1; i++)
-                {
-                    p[i] = p[i-1]+Math.Sqrt(apserv.safepythag3(xy[i,0]-xy[i-1,0], xy[i,1]-xy[i-1,1], xy[i,2]-xy[i-1,2]));
-                }
-            }
-            v = 1/p[n-1];
-            for(i_=0; i_<=n-1;i_++)
-            {
-                p[i_] = v*p[i_];
             }
         }
 
