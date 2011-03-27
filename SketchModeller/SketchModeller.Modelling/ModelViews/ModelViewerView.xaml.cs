@@ -20,6 +20,8 @@ using Microsoft.Practices.Prism.Logging;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using SketchModeller.Infrastructure;
+using System.Windows.Media.Media3D;
+using Utils;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -32,6 +34,12 @@ namespace SketchModeller.Modelling.ModelViews
         private readonly ModelViewerViewModel viewModel;
         private readonly ILoggerFacade logger;
         private readonly Dictionary<Key, ICommand> keyDownCommands;
+
+        private const string POINT_VECTOR_FORMAT = "({0:F3}, {1:F3}, {2:F3})";
+        public static readonly IValueConverter VectorToTextConverter = new DelegateConverter<Vector3D>(
+            vec => string.Format(POINT_VECTOR_FORMAT, vec.X, vec.Y, vec.Z));
+        public static readonly IValueConverter PointToTextConverter = new DelegateConverter<Point3D>(
+            pnt => string.Format(POINT_VECTOR_FORMAT, pnt.X, pnt.Y, pnt.Z));
 
         public ModelViewerView()
         {

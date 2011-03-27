@@ -60,6 +60,26 @@
                         </Grid>
                     </Border>
                 </DataTemplate>
+				<DataTemplate DataType="{x:Type skm:Cocentrality}">
+					<Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="Cyan">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
+							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
+							<TextBlock TextWrapping="Wrap" Text="Cocentrality" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
+							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
+							<TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
+						</Grid>
+					
+					</Border>
+					
+				</DataTemplate>
             </ListBox.Resources>
         </ListBox>
     </DockPanel>

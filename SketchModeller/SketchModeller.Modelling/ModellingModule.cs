@@ -54,9 +54,9 @@ namespace SketchModeller.Modelling
             var sketchPlanesView = container.Resolve<SketchPlanesView>();
             var annotationsView = container.Resolve<AnnotationsView>();
             var sidebar = regionManager.Regions[RegionNames.SideBar];
-            sidebar.Add(sketchPlanesView);
             sidebar.Add(annotationsView);
-            sidebar.Activate(sketchPlanesView);
+            sidebar.Add(sketchPlanesView);
+            sidebar.Activate(annotationsView);
         }
     }
 }

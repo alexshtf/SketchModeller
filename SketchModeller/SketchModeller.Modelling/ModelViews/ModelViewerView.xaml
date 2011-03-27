@@ -66,9 +66,9 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Position" VerticalAlignment="Center" Margin="0,0,5,5" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Look direction" VerticalAlignment="Center" Margin="0,0,5,5" />
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Up direction" VerticalAlignment="Center" Margin="0,0,5,5" />
-                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position}" Margin="0,0,0,5" />
-                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection}" Margin="0,0,0,5" />
-                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection}" Margin="0,0,0,5" />
+                    <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=Position, Converter={x:Static local:ModelViewerView.PointToTextConverter}}" Margin="0,0,0,5" />
+                    <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=LookDirection, Converter={x:Static local:ModelViewerView.VectorToTextConverter}}" Margin="0,0,0,5" />
+                    <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Mode=OneWay, Path=UpDirection, Converter={x:Static local:ModelViewerView.VectorToTextConverter}}" Margin="0,0,0,5" />
                 </Grid>
             </Grid>
         </Border>

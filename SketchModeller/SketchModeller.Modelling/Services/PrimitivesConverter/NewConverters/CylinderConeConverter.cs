@@ -16,8 +16,8 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
                 Axis = source.Axis,
                 Center = source.Center + moveVector,
                 Length = source.Length,
-                TopRadius = source.Radius,
-                BottomRadius = source.Radius,
+                TopRadius = source.Radius * 0.8,
+                BottomRadius = source.Radius * 1.2,
             };
         }
 
