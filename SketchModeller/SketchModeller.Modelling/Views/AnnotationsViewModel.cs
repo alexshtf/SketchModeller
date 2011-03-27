@@ -104,8 +104,9 @@ namespace SketchModeller.Modelling.Views
         {
             if (SelectedAnnotationIndex >= 0)
             {
-                // unselect all sequences
-                foreach (var item in sessionData.SketchObjects)
+                // unselect all feature curves
+                var toUnSelect = sessionData.SelectedFeatureCurves.ToArray();
+                foreach (var item in toUnSelect)
                     item.IsSelected = false;
 
                 var currAnnotation = Annotations[SelectedAnnotationIndex];
@@ -115,8 +116,8 @@ namespace SketchModeller.Modelling.Views
                 currAnnotation.MatchClass<Cocentrality>(cocentrality => elements = cocentrality.Elements);
                 Contract.Assume(elements != null);
 
-                foreach (var ptsSequence in elements)
-                    ptsSequence.IsSelected = true;
+                foreach (var featureCurve in elements)
+                    featureCurve.IsSelected = true;
             }
         }
 
