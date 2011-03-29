@@ -19,7 +19,7 @@ namespace SketchModeller.Utilities
             double[] x = null, 
             double mu = 1,
             double tolerance = 1E-6,
-            Func<Term, Variable[], double[], double[]> minimizer = null)
+            Func<CompiledDifferentiator, double[], double[]> minimizer = null)
         {
             Contract.Requires(target != null);
             Contract.Requires(constraints != null);
@@ -46,21 +46,23 @@ namespace SketchModeller.Utilities
             var augmentedTarget = target + penalty;
 
             // a function we will use to constuct the augmented lagrangian A(x; lambda, mu).
-            Func<Term> augmentedLagrangian = () =>
+            Func<CompiledDifferentiator> augmentedLagrangian = () =>
                 {
                     var lagrangeTerms =
                         from i in Enumerable.Range(0, constraints.Length)
                         select lambda[i] * constraints[i];
-                    return augmentedTarget + TermUtils.SafeSum(lagrangeTerms);
+                    var term = augmentedTarget + TermUtils.SafeSum(lagrangeTerms);
+                    var result = new CompiledDifferentiator(term, vars);
+ 
+                    return result;
                 };
 
             // perform augmented lagrangian iterations.
-            Term currentLagrangian = augmentedLagrangian();
-            var lagrangianGrad = Differentiator.Differentiate(currentLagrangian, vars, x);
-            while (Norm2(lagrangianGrad) >= tolerance)
+            var currentLagrangian = augmentedLagrangian();
+            while (Norm2(currentLagrangian.Calculate(x).Item1) >= tolerance)
             {
                 // x <- argmin A(x; lambda, mu);
-                x = minimizer(currentLagrangian, vars, x);
+                x = minimizer(currentLagrangian, x);
 
                 // calculate constraint violations
                 var violations = new double[constraints.Length];
@@ -73,21 +75,20 @@ namespace SketchModeller.Utilities
 
                 // update the current Lagrangian using the new lambdas
                 currentLagrangian = augmentedLagrangian();
-                lagrangianGrad = Differentiator.Differentiate(currentLagrangian, vars, x);
             }
 
             return x;
         }
 
-        public static double[] MinimizeBFGS(Term targetFunc, Variable[] vars, double[] startVector = null)
+        public static double[] MinimizeBFGS(CompiledDifferentiator diff, double[] startVector = null)
         {
-            Contract.Requires(startVector == null || startVector.Length == vars.Length);
+            Contract.Requires(startVector == null || startVector.Length == diff.Dimension);
 
-            double[] x = startVector == null ? new double[vars.Length] : (double[])startVector.Clone();
+            double[] x = startVector == null ? new double[diff.Dimension] : (double[])startVector.Clone();
             alglib.minlbfgsstate state;
             alglib.minlbfgscreate(1, x, out state);
 
-            var gradProvider = new BFGSProvider(targetFunc, vars);
+            var gradProvider = new BFGSProvider(diff);
             alglib.minlbfgsoptimize(state, gradProvider.Grad, null, null);
 
             alglib.minlbfgsreport rep;
@@ -101,6 +102,13 @@ namespace SketchModeller.Utilities
                 return x;
             else
                 throw new InvalidOperationException("Iteration did not converge!");
+        }
+
+        public static double[] MinimizeBFGS(Term targetFunc, Variable[] vars, double[] startVector = null)
+        {
+            Contract.Requires(startVector == null || startVector.Length == vars.Length);
+
+            return MinimizeBFGS(new CompiledDifferentiator(targetFunc, vars), startVector);
         }
 
         #region GetLMFuncs implementation
@@ -284,21 +292,19 @@ namespace SketchModeller.Utilities
 
         private class BFGSProvider
         {
-            private readonly Term targetFunc;
-            private readonly Variable[] vars;
+            private readonly CompiledDifferentiator compiledDiff;
 
-            public BFGSProvider(Term targetFunc, Variable[] vars)
+            public BFGSProvider(CompiledDifferentiator compiledDiff)
             {
-                this.targetFunc = targetFunc;
-                this.vars = vars;
+                this.compiledDiff = compiledDiff;
             }
 
             public void Grad(double[] arg, ref double func, double[] grad, object obj)
             {
-                func = Evaluator.Evaluate(targetFunc, vars, arg);
-                var tempGrad = Differentiator.Differentiate(targetFunc, vars, arg);
-                Contract.Assume(tempGrad.Length == grad.Length);
-                Array.Copy(tempGrad, grad, grad.Length);
+                var diff = compiledDiff.Calculate(arg);
+                func = diff.Item2;
+                Contract.Assume(diff.Item1.Length == grad.Length);
+                Array.Copy(diff.Item1, grad, grad.Length);
             }
         }
     }
