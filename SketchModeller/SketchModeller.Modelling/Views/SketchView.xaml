@@ -17,14 +17,6 @@
             <GradientStop Color="Gray" Offset="0"/>
             <GradientStop Color="White" Offset="1"/>
         </LinearGradientBrush>
-        
-        <ObjectDataProvider x:Key="MouseModesSource"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="local:MouseInterationModes" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
     </UserControl.Resources>
     
     <Grid x:Name="root">
