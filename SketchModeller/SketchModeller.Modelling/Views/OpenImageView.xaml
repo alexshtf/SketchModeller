@@ -15,6 +15,7 @@
             <Setter Property="CommandParameter" Value="{Binding}" />
         </Style>
     </MenuItem.Resources>
+    <MenuItem Header="Create" Command="{Binding CreateSketchCommand}" />
     <MenuItem Header="Save" Command="{Binding SaveSketchCommand}" />
     <MenuItem Header="Load" ItemsSource="{Binding SketchNames}" ItemContainerStyle="{StaticResource itemContainerStyle}" />
     <MenuItem Header="TestCase" Command="{Binding TestCase}" />

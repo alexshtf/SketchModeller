@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
-using WPF.Themes;
 
 namespace SketchModeller
 {
@@ -17,7 +16,7 @@ namespace SketchModeller
         {
             base.OnStartup(e);
 
-            ThemeManager.ApplyTheme(this, "ExpressionDark");
+            //ThemeManager.ApplyTheme(this, "ExpressionDark");
             //ThemeManager.ApplyTheme(this, "ExpressionLight");
             //ThemeManager.ApplyTheme(this, "ShinyBlue");
             //ThemeManager.ApplyTheme(this, "ShinyRed");

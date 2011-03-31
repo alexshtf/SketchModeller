@@ -5,8 +5,8 @@
         xmlns:skm="http://SketchModeller"
         xmlns:utils="http://alex/xaml"
         xmlns:local="clr-namespace:SketchModeller"
-        Height="600" 
-        Width="1000"
+        Height="720" 
+        Width="1280"
         IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}"
         Title="{Binding Title}"
         Background="{DynamicResource WindowBackgroundBrush}">

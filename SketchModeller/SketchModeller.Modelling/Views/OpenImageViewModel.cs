@@ -21,10 +21,12 @@ namespace SketchModeller.Modelling.Views
     {
         private IEventAggregator eventAggregator;
         private ISketchCatalog sketchCatalog;
+        private IUnityContainer container;
 
         public OpenImageViewModel()
         {
             SketchNames = new ObservableCollection<string>();
+            CreateSketchCommand = new DelegateCommand(CreateSketchExecute);
             LoadSketchCommand = new DelegateCommand<string>(LoadSketchExecute);
             SaveSketchCommand = new DelegateCommand(SaveSketchExecute, SaveSketchCanExecute);
             TestCase = new DelegateCommand(TestCaseExecute);
@@ -33,11 +35,13 @@ namespace SketchModeller.Modelling.Views
         [InjectionConstructor]
         public OpenImageViewModel(
             IEventAggregator eventAggregator,
-            ISketchCatalog sketchCatalog)
+            ISketchCatalog sketchCatalog,
+            IUnityContainer container)
             : this()
         {
             this.eventAggregator = eventAggregator;
             this.sketchCatalog = sketchCatalog;
+            this.container = container;
 
             sketchCatalog.GetSketchNamesAsync().ObserveOnDispatcher().Subscribe(result =>
                 {
@@ -49,9 +53,17 @@ namespace SketchModeller.Modelling.Views
 
         public ObservableCollection<string> SketchNames { get; private set; }
 
+        public ICommand CreateSketchCommand { get; private set; }
         public ICommand LoadSketchCommand { get; private set; }
         public ICommand SaveSketchCommand { get; private set; }
         public ICommand TestCase { get; private set; }
+
+        private void CreateSketchExecute()
+        {
+            var sketchCreator = container.Resolve<SketchCreator.SketchCreatorView>();
+            sketchCreator.ShowDialog();
+            // TODO: Refresh the sketches list?
+        }
 
         private void LoadSketchExecute(string sketch)
         {

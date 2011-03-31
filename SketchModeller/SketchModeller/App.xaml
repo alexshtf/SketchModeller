@@ -3,28 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SketchModeller">
     <Application.Resources>
-        <Style TargetType="MenuItem" 
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/ExpressionDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <Style TargetType="MenuItem" 
                BasedOn="{StaticResource {x:Type MenuItem}}" 
                x:Key="{x:Static local:ContextMenuStyleSelector.SimpleStyleKey}">
-            <Setter Property="Command" Value="{Binding Command}" />
-        </Style>
-        <Style TargetType="MenuItem" 
+                <Setter Property="Command" Value="{Binding Command}" />
+            </Style>
+            <Style TargetType="MenuItem" 
                BasedOn="{StaticResource {x:Static local:ContextMenuStyleSelector.SimpleStyleKey}}" 
                x:Key="{x:Static local:ContextMenuStyleSelector.CheckedStyleKey}">
-            <Setter Property="IsCheckable" Value="True" />
-            <Setter Property="IsChecked" Value="{Binding IsChecked}" />
-            <Setter Property="CommandParameter" Value="{Binding IsChecked}" />
-        </Style>
-        <Style x:Key="commandsContextMenu" TargetType="ContextMenu" BasedOn="{StaticResource {x:Type ContextMenu}}">
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Title}" />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="ItemContainerStyleSelector" Value="{x:Static local:ContextMenuStyleSelector.Instance}" />
-        </Style>
+                <Setter Property="IsCheckable" Value="True" />
+                <Setter Property="IsChecked" Value="{Binding IsChecked}" />
+                <Setter Property="CommandParameter" Value="{Binding IsChecked}" />
+            </Style>
+            <Style x:Key="commandsContextMenu" TargetType="ContextMenu" BasedOn="{StaticResource {x:Type ContextMenu}}">
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}" />
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemContainerStyleSelector" Value="{x:Static local:ContextMenuStyleSelector.Instance}" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
    
 </Application>

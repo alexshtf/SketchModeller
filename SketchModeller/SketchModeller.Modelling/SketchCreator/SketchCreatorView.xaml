@@ -1,0 +1,24 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:SketchModeller.Modelling.SketchCreator" x:Name="DataCon" x:Class="SketchModeller.Modelling.SketchCreator.SketchCreatorView" 
+        mc:Ignorable="d" 
+        Background="{DynamicResource WindowBackgroundBrush}" Height="473" Width="534">
+    <DockPanel>
+    	<ToolBar DockPanel.Dock="Top" IsOverflowOpen="True">
+    		<Button Content="Save" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding SaveCommand}"/>
+    		<Button Content="Close" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click" />
+    		<Separator Margin="3,0" MinWidth="2"/>
+            <ToggleButton Content="Feature" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding FeatureCommand}" IsChecked="{Binding IsFeatureMode}"/>
+            <ToggleButton Content="Silhouette" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding SilhouetteCommand}" IsChecked="{Binding IsSilhouetteMode}"/>
+    	</ToolBar>
+    	<Grid>
+    		<Canvas x:Name="sketch" Background="LightGray" d:LayoutOverrides="Width" MouseLeftButtonDown="sketch_MouseLeftButtonDown" MouseLeftButtonUp="sketch_MouseLeftButtonUp" MouseMove="sketch_MouseMove" MouseRightButtonDown="sketch_MouseRightButtonDown" MouseRightButtonUp="sketch_MouseRightButtonUp"/>
+    		<Canvas>
+    			<Rectangle x:Name="selectionRect" Visibility="Collapsed" Height="100" Stroke="Orange" Width="100" RadiusX="3" RadiusY="3" StrokeThickness="2" Fill="#33FFA500"/>
+    		</Canvas>
+    	</Grid>
+    </DockPanel>
+</Window>
