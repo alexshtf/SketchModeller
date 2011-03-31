@@ -137,9 +137,6 @@
     <Compile Include="PrimitivesPickService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleSelector3D.cs" />
-    <Compile Include="SampleData\SampleSketchCreatorViewModel\SampleSketchCreatorViewModel.xaml.cs">
-      <DependentUpon>SampleSketchCreatorViewModel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Services\PrimitivesConverter\BaseNewConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\BaseSnappedConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\INewConverter.cs" />
@@ -216,15 +213,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ProjectDataSources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <ContainsDataSources>True</ContainsDataSources>
-    </Page>
-    <DesignTimeOnly Include="SampleData\SampleSketchCreatorViewModel\SampleSketchCreatorViewModel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </DesignTimeOnly>
     <Page Include="SketchCreator\SketchCreatorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -294,7 +282,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <DesignTimeOnly Include="SampleData\SampleSketchCreatorViewModel\SampleSketchCreatorViewModel.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
