@@ -14,6 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>4.0.20901.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -158,6 +160,10 @@
     <Compile Include="Services\Snap\Snapper.cs" />
     <Compile Include="Services\Snap\SnapperHelper.cs" />
     <Compile Include="Services\Snap\SnappersManager.cs" />
+    <Compile Include="SketchCreator\SketchCreatorView.xaml.cs">
+      <DependentUpon>SketchCreatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SketchCreator\SketchCreatorViewModel.cs" />
     <Compile Include="SketchLoader.cs" />
     <Compile Include="SketchSaver.cs" />
     <Compile Include="TestCaseCreator.cs" />
@@ -204,6 +210,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="ModelViews\ModelViewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SketchCreator\SketchCreatorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
