@@ -25,6 +25,54 @@ namespace SketchModeller.Modelling.Services.Sketch
         {
         }
 
+        public IObservable<Unit> CreateSketchAsync(string sketchName, SketchData sketchData)
+        {
+            var result =
+                from catalog in LoadCatalogAsync()
+                from i1 in Observable.If(() => !ExistsSketch(catalog, sketchName), AddToCatalogAsync(catalog, sketchName))
+                from i2 in SaveSketchAsync(sketchName, sketchData)
+                select default(Unit);
+            return result;
+        }
+
+        private IObservable<Unit> AddToCatalogAsync(SketchMetadata[] catalog, string sketchName)
+        {
+            var catalogList = new List<SketchMetadata>(catalog);
+            catalogList.Add(new SketchMetadata
+            {
+                Name = sketchName,
+                ModelFile = sketchName + ".model",
+                File = string.Empty,
+            });
+            var document = new XDocument(
+                new XElement("catalog",
+                    from catalogItem in catalogList
+                    select new XElement("sketch",
+                        new XAttribute("name", catalogItem.Name),
+                        new XAttribute("file", catalogItem.File),
+                        new XAttribute("modelFile", catalogItem.ModelFile))
+                    )
+            );
+
+            Action saveAction = () =>
+                {
+                    using (var stream = File.Create(CATALOG_FILE))
+                    {
+                        document.Save(stream);
+                    }
+                };
+            return Observable.ToAsync(saveAction)();
+        }
+
+        private bool ExistsSketch(SketchMetadata[] catalog, string sketchName)
+        {
+            var query =
+                from item in catalog
+                where item.Name == sketchName
+                select item;
+            return query.Any();
+        }
+
         public IObservable<string[]> GetSketchNamesAsync()
         {
             return
@@ -134,5 +182,6 @@ namespace SketchModeller.Modelling.Services.Sketch
             public string File { get; set; }
             public string ModelFile { get; set; }
         }
+
     }
 }

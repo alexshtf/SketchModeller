@@ -3,10 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:local="clr-namespace:SketchModeller.Modelling.SketchCreator" x:Name="DataCon" x:Class="SketchModeller.Modelling.SketchCreator.SketchCreatorView" 
+        xmlns:local="clr-namespace:SketchModeller.Modelling.SketchCreator" 
+		xmlns:skm="http://SketchModeller"
+		x:Class="SketchModeller.Modelling.SketchCreator.SketchCreatorView" 
         mc:Ignorable="d" 
         Background="{DynamicResource WindowBackgroundBrush}" Height="473" Width="534">
-    <DockPanel>
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="/SketchModeller.Modelling;component/ProjectDataSources.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+    <DockPanel d:DataContext="{Binding Source={StaticResource SampleSketchCreatorViewModel}}">
     	<ToolBar DockPanel.Dock="Top" IsOverflowOpen="True">
     		<Button Content="Save" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding SaveCommand}"/>
     		<Button Content="Close" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click" />
@@ -15,9 +24,28 @@
             <ToggleButton Content="Silhouette" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding SilhouetteCommand}" IsChecked="{Binding IsSilhouetteMode}"/>
     	</ToolBar>
     	<Grid>
-    		<Canvas x:Name="sketch" Background="LightGray" d:LayoutOverrides="Width" MouseLeftButtonDown="sketch_MouseLeftButtonDown" MouseLeftButtonUp="sketch_MouseLeftButtonUp" MouseMove="sketch_MouseMove" MouseRightButtonDown="sketch_MouseRightButtonDown" MouseRightButtonUp="sketch_MouseRightButtonUp"/>
+    		<ItemsControl x:Name="sketch" Background="LightGray" ItemsPanel="{DynamicResource SketchItemsPanel}" MouseLeftButtonDown="sketch_MouseLeftButtonDown" MouseLeftButtonUp="sketch_MouseLeftButtonUp" MouseMove="sketch_MouseMove" MouseRightButtonDown="sketch_MouseRightButtonDown" MouseRightButtonUp="sketch_MouseRightButtonUp" ItemsSource="{Binding Curves}">
+                <ItemsControl.Resources>
+    				<ItemsPanelTemplate x:Key="SketchItemsPanel">
+    					<Canvas/>
+    				</ItemsPanelTemplate>
+    				<DataTemplate DataType="{x:Type skm:Polyline}">
+                        <Polyline Points="{Binding Path=Points, Converter={x:Static local:SketchCreatorView.PointsConverter}}"
+                                  Stroke="{Binding Path=CurveCategory, Converter={x:Static local:SketchCreatorView.StrokeConverter}}"
+                                  StrokeThickness="2"
+                                  StrokeLineJoin="Round"/>
+    				</DataTemplate>
+                    <DataTemplate DataType="{x:Type skm:Polygon}">
+                        <Polygon Points="{Binding Path=Points, Converter={x:Static local:SketchCreatorView.PointsConverter}}"
+                                 Stroke="{Binding Path=CurveCategory, Converter={x:Static local:SketchCreatorView.StrokeConverter}}"
+                                 StrokeThickness="2"
+                                 StrokeLineJoin="Round"/>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+            </ItemsControl>
     		<Canvas>
-    			<Rectangle x:Name="selectionRect" Visibility="Collapsed" Height="100" Stroke="Orange" Width="100" RadiusX="3" RadiusY="3" StrokeThickness="2" Fill="#33FFA500"/>
+    			<Rectangle x:Name="selectionRect" Visibility="Collapsed" Stroke="Orange" RadiusX="3" RadiusY="3" StrokeThickness="2" Fill="#33FFA500"/>
+				<Polyline x:Name="currentStroke" Visibility="Collapsed" Stroke="Blue" StrokeThickness="2" StrokeLineJoin="Round" />
     		</Canvas>
     	</Grid>
     </DockPanel>

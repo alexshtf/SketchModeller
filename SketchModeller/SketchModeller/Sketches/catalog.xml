@@ -12,4 +12,7 @@
   <sketch name="lamp_hidden"
           file="lamp_hidden_plain.svg"
           modelFile="lamp_hidden.model" />
+  <sketch name="tap"
+          file="tap.svg"
+          modelFile="tap.model" />
 </catalog>

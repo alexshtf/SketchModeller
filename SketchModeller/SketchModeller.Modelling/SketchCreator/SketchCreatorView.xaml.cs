@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Practices.Unity;
+using Utils;
+using SketchModeller.Infrastructure.Data;
 
 namespace SketchModeller.Modelling.SketchCreator
 {
@@ -20,6 +22,22 @@ namespace SketchModeller.Modelling.SketchCreator
     /// </summary>
     public partial class SketchCreatorView 
     {
+        public static readonly IValueConverter PointsConverter =
+            new DelegateConverter<IEnumerable<Point>>(pts => new PointCollection(pts));
+        public static readonly IValueConverter StrokeConverter =
+            new DelegateConverter<CurveCategories>(cat =>
+            {
+                switch (cat)
+                {
+                    case CurveCategories.Feature:
+                        return Brushes.Black;
+                    case CurveCategories.Silhouette:
+                        return Brushes.Gray;
+                    default:
+                        return Binding.DoNothing;
+                }
+            });
+
         private readonly SketchCreatorViewModel viewModel;
         private bool isSelecting;
         private bool isDrawing;
@@ -35,21 +53,24 @@ namespace SketchModeller.Modelling.SketchCreator
             : this()
         {
             this.viewModel = viewModel;
+            DataContext = viewModel;
         }
 
         #region Curve drawing handling
 
-        private Polyline currentDrawing;
-        
         private void sketch_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!isDrawing && !isSelecting)
             {
-                sketch.CaptureMouse();
-                isDrawing = true;
-                currentDrawing = new Polyline() { Stroke = Brushes.Blue, StrokeThickness = 1, StrokeLineJoin = PenLineJoin.Round };
-                currentDrawing.Points.Add(e.GetPosition(sketch));
-                sketch.Children.Add(currentDrawing);
+                bool canDraw = viewModel.IsFeatureMode || viewModel.IsSilhouetteMode;
+                if (canDraw)
+                {
+                    sketch.CaptureMouse();
+                    isDrawing = true;
+                    currentStroke.Points.Clear();
+                    currentStroke.Points.Add(e.GetPosition(sketch));
+                    currentStroke.Visibility = Visibility.Visible;
+                }
             }
         }
 
@@ -59,10 +80,25 @@ namespace SketchModeller.Modelling.SketchCreator
             {
                 isDrawing = false;
                 sketch.ReleaseMouseCapture();
-                sketch.Children.Remove(currentDrawing);
-                // TODO: Do something with the points
-                currentDrawing = null;
+                currentStroke.Visibility = Visibility.Collapsed;
+                
+                var curveCategory = CurveCategories.None;
+                if (viewModel.IsFeatureMode)
+                    curveCategory = CurveCategories.Feature;
+                else if (viewModel.IsSilhouetteMode)
+                    curveCategory = CurveCategories.Silhouette;
+                
+                viewModel.Curves.Add(new SketchModeller.Infrastructure.Data.Polyline
+                    {
+                        CurveCategory = curveCategory,
+                        Points = currentStroke.Points.ToArray(),
+                    });
             }
+        }
+
+        private void DrawingMouseMove(Point position)
+        {
+            currentStroke.Points.Add(position);
         }
 
         #endregion
@@ -91,28 +127,28 @@ namespace SketchModeller.Modelling.SketchCreator
                 // TODO: Perform the actual selection
             }
         }
+
+        private void SelectionMouseMove(Point position)
+        {
+            var rect = new Rect(position, selectStartPos);
+            selectionRect.Width = rect.Width;
+            selectionRect.Height = rect.Height;
+            Canvas.SetLeft(selectionRect, rect.Left);
+            Canvas.SetTop(selectionRect, rect.Top);
+            selectionRect.Visibility = Visibility.Visible;
+        }
         
         #endregion
 
         private void sketch_MouseMove(object sender, MouseEventArgs e)
         {
             if (isSelecting)
-            {
-                var pos = e.GetPosition(this);
-                var rect = new Rect(pos, selectStartPos);
-                selectionRect.Width = rect.Width;
-                selectionRect.Height = rect.Height;
-                Canvas.SetLeft(selectionRect, rect.Left);
-                Canvas.SetTop(selectionRect, rect.Top);
-                selectionRect.Visibility = Visibility.Visible;
-            }
+                SelectionMouseMove(e.GetPosition(sketch));
             else if (isDrawing)
-            {
-                currentDrawing.Points.Add(e.GetPosition(sketch));
-            }
+                DrawingMouseMove(e.GetPosition(sketch));
         }
 
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }

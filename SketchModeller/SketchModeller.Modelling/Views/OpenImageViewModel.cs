@@ -42,13 +42,7 @@ namespace SketchModeller.Modelling.Views
             this.eventAggregator = eventAggregator;
             this.sketchCatalog = sketchCatalog;
             this.container = container;
-
-            sketchCatalog.GetSketchNamesAsync().ObserveOnDispatcher().Subscribe(result =>
-                {
-                    SketchNames.Clear();
-                    foreach (var name in result)
-                        SketchNames.Add(name);
-                });
+            RefreshSketches();
         }
 
         public ObservableCollection<string> SketchNames { get; private set; }
@@ -58,11 +52,21 @@ namespace SketchModeller.Modelling.Views
         public ICommand SaveSketchCommand { get; private set; }
         public ICommand TestCase { get; private set; }
 
+        private void RefreshSketches()
+        {
+            sketchCatalog.GetSketchNamesAsync().ObserveOnDispatcher().Subscribe(result =>
+            {
+                SketchNames.Clear();
+                foreach (var name in result)
+                    SketchNames.Add(name);
+            });
+        }
+
         private void CreateSketchExecute()
         {
             var sketchCreator = container.Resolve<SketchCreator.SketchCreatorView>();
             sketchCreator.ShowDialog();
-            // TODO: Refresh the sketches list?
+            RefreshSketches();
         }
 
         private void LoadSketchExecute(string sketch)

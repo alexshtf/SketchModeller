@@ -15,6 +15,14 @@ namespace SketchModeller.Infrastructure.Services
     public interface ISketchCatalog
     {
         /// <summary>
+        /// Asynchronously creates a new sketch with the given name and data
+        /// </summary>
+        /// <param name="sketchName">The name of the new sketch</param>
+        /// <param name="sketchData">The sketch data</param>
+        /// <returns>An observable that notifies when the operation completes.</returns>
+        IObservable<Unit> CreateSketchAsync(string sketchName, SketchData sketchData);
+
+        /// <summary>
         /// Asynchronously gets all the sketch names that exist in the system.
         /// </summary>
         /// <returns>An observable that provides the sketch names when the operation completes.</returns>
@@ -53,6 +61,14 @@ namespace SketchModeller.Infrastructure.Services
         }
 
         public IObservable<Unit> SaveSketchAsync(string sketchName, SketchData sketchData)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(sketchName));
+            Contract.Requires(sketchData != null);
+            Contract.Ensures(Contract.Result<IObservable<Unit>>() != null);
+            return null;
+        }
+
+        public IObservable<Unit> CreateSketchAsync(string sketchName, SketchData sketchData)
         {
             Contract.Requires(!string.IsNullOrEmpty(sketchName));
             Contract.Requires(sketchData != null);
