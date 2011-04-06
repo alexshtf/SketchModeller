@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Blocker.cs" />
     <Compile Include="CheckedMenuCommandData.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\CircleFeatureCurve.cs" />
     <Compile Include="Data\Cocentrality.cs" />

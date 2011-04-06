@@ -12,6 +12,7 @@ using Microsoft.Research.Science.Data;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Services.Sketch
 {
@@ -116,10 +117,37 @@ namespace SketchModeller.Modelling.Services.Sketch
                     if (sketchData.Curves == null)
                         sketchData.Curves = vectorImage.PolyLines.Cast<PointsSequence>().Concat(vectorImage.Polygons).ToArray();
 
+                    if (sketchData.DistanceTransforms == null)
+                        sketchData.DistanceTransforms = 
+                            sketchData.Curves
+                            .AsParallel()
+                            .Select(c => ComputeDistanceTransform(c))
+                            .ToArray();
+
                     return sketchData;
                 };
 
             return Observable.ToAsync(loadAction)();
+        }
+
+        private double[,] ComputeDistanceTransform(PointsSequence curve)
+        {
+            // create points transformed to the [0 .. MAX_RESOLUTION] range.
+            var points = curve.Points.ToArray();
+            foreach (var i in Enumerable.Range(0, points.Length))
+            {
+                points[i].X = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (points[i].X + 1);
+                points[i].Y = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (points[i].Y + 1);
+            }
+
+            // close the curve, if needed
+            if (curve is Polygon)
+                points = points.Concat(Enumerable.Repeat(points.First(), 1)).ToArray();
+
+            // compute distance transform and return it
+            double[,] result = new double[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
+            DistanceTransform.Compute(points, result);
+            return result;
         }
 
         public IObservable<Unit> SaveSketchAsync(string sketchName, SketchData sketchData)

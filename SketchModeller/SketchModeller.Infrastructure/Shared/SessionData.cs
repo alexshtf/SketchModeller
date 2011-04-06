@@ -109,6 +109,22 @@ namespace SketchModeller.Infrastructure.Shared
 
         #endregion
 
+        #region DistanceTransforms property
+
+        private double[][,] distanceTransforms;
+
+        public double[][,] DistanceTransforms
+        {
+            get { return distanceTransforms; }
+            set
+            {
+                distanceTransforms = value;
+                RaisePropertyChanged(() => DistanceTransforms);
+            }
+        }
+
+        #endregion
+
         public ReadOnlyObservableCollection<SelectablePrimitive> SelectedPrimitives { get; private set; }
         public ReadOnlyObservableCollection<NewPrimitive> SelectedNewPrimitives { get; private set; }
         public ReadOnlyObservableCollection<PointsSequence> SelectedSketchObjects { get; private set; }

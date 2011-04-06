@@ -47,6 +47,10 @@ namespace SketchModeller.Modelling
                 sessionData.SketchObjects
                 .ToArray();
 
+            sessionData.SketchData.DistanceTransforms =
+                sessionData.DistanceTransforms
+                .ToArray();
+
             // save the new SketchData to the relevant files
             Work.Execute(
                 eventAggregator,

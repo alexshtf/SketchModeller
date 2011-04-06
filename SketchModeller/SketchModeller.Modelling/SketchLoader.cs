@@ -66,6 +66,8 @@ namespace SketchModeller.Modelling
 
             var curves = sketchData.Curves ?? System.Linq.Enumerable.Empty<PointsSequence>();
             sessionData.SketchObjects = curves.ToArray();
+
+            sessionData.DistanceTransforms = sketchData.DistanceTransforms.ToArray();
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)
