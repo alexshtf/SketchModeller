@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media.Media3D;
 using AutoDiff;
 using System.Diagnostics.Contracts;
+using TermUtils = SketchModeller.Utilities.TermUtils;
 
 namespace SketchModeller.Modelling.Services.Snap
 {

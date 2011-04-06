@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using Enumerable = System.Linq.Enumerable;
+using TermUtils = SketchModeller.Utilities.TermUtils;
 
 namespace SketchModeller.Modelling.Services.Snap
 {

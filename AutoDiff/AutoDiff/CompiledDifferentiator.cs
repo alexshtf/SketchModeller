@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics.Contracts;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 
 namespace AutoDiff
 {
     /// <summary>
     /// Compiles the terms tree to a more efficient form for differentiation.
     /// </summary>
-    public partial class CompiledDifferentiator
+    internal partial class CompiledDifferentiator : ICompiledTerm
     {
         private readonly Compiled.TapeElement[] tape;
 
@@ -31,11 +32,12 @@ namespace AutoDiff
             tape = tapeList.ToArray();
 
             Dimension = variables.Length;
+            Variables = Array.AsReadOnly(variables);
         }
 
         public int Dimension { get; private set; }
 
-        public double Eval(double[] arg)
+        public double Evaluate(double[] arg)
         {
             Contract.Requires(arg != null);
             Contract.Requires(arg.Length == Dimension);
@@ -43,7 +45,7 @@ namespace AutoDiff
             return tape.Last().Value;
         }
 
-        public Tuple<double[], double> Calculate(double[] arg)
+        public Tuple<double[], double> Differentiate(double[] arg)
         {
             Contract.Requires(arg != null);
             Contract.Requires(arg.Length == Dimension);
@@ -91,5 +93,7 @@ namespace AutoDiff
         {
             return tape[index].Value;
         }
+
+        public ReadOnlyCollection<Variable> Variables { get; private set; }
     }
 }

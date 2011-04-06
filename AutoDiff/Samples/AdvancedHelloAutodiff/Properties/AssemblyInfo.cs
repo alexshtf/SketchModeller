@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NeuralNetworkSample")]
+[assembly: AssemblyTitle("AdvancedHelloAutodiff")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NeuralNetworkSample")]
+[assembly: AssemblyProduct("AdvancedHelloAutodiff")]
 [assembly: AssemblyCopyright("Copyright ©  2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0d31497b-b99b-4d34-aeb1-f78230759084")]
+[assembly: Guid("80245287-c752-42e4-a9b0-22c3f37d7e0e")]
 
 // Version information for an assembly consists of the following four values:
 //

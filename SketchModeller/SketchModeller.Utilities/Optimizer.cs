@@ -19,7 +19,7 @@ namespace SketchModeller.Utilities
             double[] x = null, 
             double mu = 1,
             double tolerance = 1E-6,
-            Func<CompiledDifferentiator, double[], double[]> minimizer = null)
+            Func<ICompiledTerm, double[], double[]> minimizer = null)
         {
             Contract.Requires(target != null);
             Contract.Requires(constraints != null);
@@ -38,6 +38,9 @@ namespace SketchModeller.Utilities
             if (minimizer == null)
                 minimizer = MinimizeBFGS;
 
+            // we compile the constraints to effectively evaluate them
+            var compiledConstraints = constraints.Select(c => c.Compile(vars)).ToArray();
+
             // lagrange multipliers. initialized to zero.
             double[] lambda = new double[constraints.Length];
 
@@ -46,20 +49,21 @@ namespace SketchModeller.Utilities
             var augmentedTarget = target + penalty;
 
             // a function we will use to constuct the augmented lagrangian A(x; lambda, mu).
-            Func<CompiledDifferentiator> augmentedLagrangian = () =>
+            Func<ICompiledTerm> augmentedLagrangian = () =>
                 {
                     var lagrangeTerms =
                         from i in Enumerable.Range(0, constraints.Length)
                         select lambda[i] * constraints[i];
                     var term = augmentedTarget + TermUtils.SafeSum(lagrangeTerms);
-                    var result = new CompiledDifferentiator(term, vars);
+                    var result = term.Compile(vars);
  
                     return result;
                 };
 
+
             // perform augmented lagrangian iterations.
             var currentLagrangian = augmentedLagrangian();
-            while (Norm2(currentLagrangian.Calculate(x).Item1) >= tolerance)
+            while (Norm2(currentLagrangian.Differentiate(x).Item1) >= tolerance)
             {
                 // x <- argmin A(x; lambda, mu);
                 x = minimizer(currentLagrangian, x);
@@ -67,7 +71,7 @@ namespace SketchModeller.Utilities
                 // calculate constraint violations
                 var violations = new double[constraints.Length];
                 for (int i = 0; i < constraints.Length; ++i)
-                    violations[i] = Evaluator.Evaluate(constraints[i], vars, x);
+                    violations[i] = compiledConstraints[i].Evaluate(x);
 
                 // lambda <- lambda + c(x) / mu
                 for (int i = 0; i < constraints.Length; ++i)
@@ -80,11 +84,11 @@ namespace SketchModeller.Utilities
             return x;
         }
 
-        public static double[] MinimizeBFGS(CompiledDifferentiator diff, double[] startVector = null)
+        public static double[] MinimizeBFGS(ICompiledTerm diff, double[] startVector = null)
         {
-            Contract.Requires(startVector == null || startVector.Length == diff.Dimension);
+            Contract.Requires(startVector == null || startVector.Length == diff.Variables.Count);
 
-            double[] x = startVector == null ? new double[diff.Dimension] : (double[])startVector.Clone();
+            double[] x = startVector == null ? new double[diff.Variables.Count] : (double[])startVector.Clone();
             alglib.minlbfgsstate state;
             alglib.minlbfgscreate(1, x, out state);
 
@@ -108,7 +112,7 @@ namespace SketchModeller.Utilities
         {
             Contract.Requires(startVector == null || startVector.Length == vars.Length);
 
-            return MinimizeBFGS(new CompiledDifferentiator(targetFunc, vars), startVector);
+            return MinimizeBFGS(targetFunc.Compile(vars), startVector);
         }
 
         #region GetLMFuncs implementation
@@ -267,8 +271,8 @@ namespace SketchModeller.Utilities
                 Contract.Assert(arg.Length == vars.Length);
                 Contract.Assert(fi.Length == targetFuncs.Length);
 
-                foreach(var i in Enumerable.Range(0, fi.Length))
-                    fi[i] = Evaluator.Evaluate(targetFuncs[i], vars, arg);
+                foreach (var i in Enumerable.Range(0, fi.Length))
+                    fi[i] = targetFuncs[i].Evaluate(vars, arg);
             }
 
             public void Jacobian(double[] arg, double[] fi, double[,] jac, object obj)
@@ -282,7 +286,7 @@ namespace SketchModeller.Utilities
                 Eval(arg, fi, obj);
                 foreach (var i in Enumerable.Range(0, jac.GetLength(0)))
                 {
-                    var grad = Differentiator.Differentiate(targetFuncs[i], vars, arg);
+                    var grad = targetFuncs[i].Differentiate(vars, arg);
                     foreach (var j in Enumerable.Range(0, jac.GetLength(1)))
                         jac[i, j] = grad[j];
                 }
@@ -292,16 +296,16 @@ namespace SketchModeller.Utilities
 
         private class BFGSProvider
         {
-            private readonly CompiledDifferentiator compiledDiff;
+            private readonly ICompiledTerm compiledDiff;
 
-            public BFGSProvider(CompiledDifferentiator compiledDiff)
+            public BFGSProvider(ICompiledTerm compiledDiff)
             {
                 this.compiledDiff = compiledDiff;
             }
 
             public void Grad(double[] arg, ref double func, double[] grad, object obj)
             {
-                var diff = compiledDiff.Calculate(arg);
+                var diff = compiledDiff.Differentiate(arg);
                 func = diff.Item2;
                 Contract.Assume(diff.Item1.Length == grad.Length);
                 Array.Copy(diff.Item1, grad, grad.Length);

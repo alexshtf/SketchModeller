@@ -15,4 +15,7 @@
   <sketch name="tap"
           file="tap.svg"
           modelFile="tap.model" />
+  <sketch name="danny_lamp"
+          file="danny_lamp.svg"
+          modelFile="danny_lamp.model" />
 </catalog>

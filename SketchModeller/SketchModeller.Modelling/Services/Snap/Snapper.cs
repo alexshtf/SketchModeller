@@ -16,6 +16,7 @@ using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using TermUtils = SketchModeller.Utilities.TermUtils;
 
 namespace SketchModeller.Modelling.Services.Snap
 {

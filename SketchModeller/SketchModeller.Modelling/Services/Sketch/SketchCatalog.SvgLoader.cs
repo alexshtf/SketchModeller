@@ -103,7 +103,7 @@ namespace SketchModeller.Modelling.Services.Sketch
             var pathName = XName.Get("path", xmlns);
 
             var g = document.Root.Element(gName);
-            var paths = g.Elements(pathName).ToArray();
+            var paths = g != null ? g.Elements(pathName).ToArray() : document.Root.Elements(pathName).ToArray();
             foreach (var path in paths)
             {
                 var data = (string)path.Attribute("d");
