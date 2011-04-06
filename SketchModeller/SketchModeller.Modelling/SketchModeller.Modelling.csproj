@@ -118,6 +118,7 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
+    <Compile Include="DistanceTransform.cs" />
     <Compile Include="Events\TestCaseEvent.cs" />
     <Compile Include="IFeatureCurveVisual.cs" />
     <Compile Include="ModellingModule.cs" />

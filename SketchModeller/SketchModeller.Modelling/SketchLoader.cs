@@ -64,9 +64,8 @@ namespace SketchModeller.Modelling
             if (sketchData.Annotations != null)
                 sessionData.Annotations.AddRange(sketchData.Annotations);
 
-            var polygons = sketchData.Polygons ?? System.Linq.Enumerable.Empty<PointsSequence>();
-            var polylines = sketchData.Polylines ?? System.Linq.Enumerable.Empty<PointsSequence>();
-            sessionData.SketchObjects = polygons.Concat(polylines).ToArray();
+            var curves = sketchData.Curves ?? System.Linq.Enumerable.Empty<PointsSequence>();
+            sessionData.SketchObjects = curves.ToArray();
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)

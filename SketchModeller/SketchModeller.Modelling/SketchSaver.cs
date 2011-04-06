@@ -43,16 +43,9 @@ namespace SketchModeller.Modelling
                 sessionData.Annotations
                 .ToArray();
 
-            sessionData.SketchData.Polygons =
+            sessionData.SketchData.Curves = 
                 sessionData.SketchObjects
-                .OfType<Polygon>()
                 .ToArray();
-
-            sessionData.SketchData.Polylines =
-                sessionData.SketchObjects
-                .OfType<Polyline>()
-                .ToArray();
-            
 
             // save the new SketchData to the relevant files
             Work.Execute(

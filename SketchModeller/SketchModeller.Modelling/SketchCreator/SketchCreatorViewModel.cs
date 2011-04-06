@@ -85,8 +85,7 @@ namespace SketchModeller.Modelling.SketchCreator
                 {
                     Annotations = new Annotation[0],
                     NewPrimitives = new NewPrimitive[0],
-                    Polygons = Curves.OfType<Polygon>().ToArray(),
-                    Polylines = Curves.OfType<Polyline>().ToArray(),
+                    Curves = Curves.ToArray(),
                     SnappedPrimitives = new SnappedPrimitive[0],
                 }));
         }

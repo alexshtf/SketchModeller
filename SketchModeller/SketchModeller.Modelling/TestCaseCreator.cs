@@ -99,8 +99,7 @@ namespace SketchModeller.Modelling
                 new SketchData
                 {
                     NewPrimitives = new NewPrimitive[] { newcylinder },
-                    Polygons = new Polygon[] { topCurve, bottomCurve },
-                    Polylines = new Polyline[] { leftCurve, rightCurve },
+                    Curves = new PointsSequence[] { topCurve, bottomCurve, leftCurve, rightCurve },
                     SnappedPrimitives = new SnappedPrimitive[0],
                     Annotations = new Annotation[0],
                 };
@@ -109,7 +108,7 @@ namespace SketchModeller.Modelling
             sessionData.Annotations.AddRange(sketchData.Annotations);
             sessionData.NewPrimitives.Clear();
             sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives);
-            sessionData.SketchObjects = sketchData.Polygons.Cast<PointsSequence>().Concat(sketchData.Polylines).ToArray();
+            sessionData.SketchObjects = sketchData.Curves.ToArray();
             sessionData.SnappedPrimitives.Clear();
             sessionData.SnappedPrimitives.AddRange(sessionData.SnappedPrimitives);
         }

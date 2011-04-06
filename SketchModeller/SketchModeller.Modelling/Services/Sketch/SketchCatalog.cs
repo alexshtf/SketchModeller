@@ -113,11 +113,8 @@ namespace SketchModeller.Modelling.Services.Sketch
                     else
                         sketchData = new SketchData();
 
-                    if (sketchData.Polylines == null)
-                        sketchData.Polylines = vectorImage.PolyLines;
-
-                    if (sketchData.Polygons == null)
-                        sketchData.Polygons = vectorImage.Polygons;
+                    if (sketchData.Curves == null)
+                        sketchData.Curves = vectorImage.PolyLines.Cast<PointsSequence>().Concat(vectorImage.Polygons).ToArray();
 
                     return sketchData;
                 };
