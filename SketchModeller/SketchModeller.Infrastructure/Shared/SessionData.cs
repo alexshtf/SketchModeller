@@ -111,9 +111,9 @@ namespace SketchModeller.Infrastructure.Shared
 
         #region DistanceTransforms property
 
-        private double[][,] distanceTransforms;
+        private int[][,] distanceTransforms;
 
-        public double[][,] DistanceTransforms
+        public int[][,] DistanceTransforms
         {
             get { return distanceTransforms; }
             set

@@ -150,7 +150,6 @@
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedCylinderConverter.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
-    <Compile Include="Services\Sketch\StreamUtils.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
     <Compile Include="Services\Snap\BasePrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\ConeSnapper.cs" />

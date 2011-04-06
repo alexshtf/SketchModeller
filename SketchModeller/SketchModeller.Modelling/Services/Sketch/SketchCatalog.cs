@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using SketchModeller.Infrastructure;
+using System.IO.Compression;
 
 namespace SketchModeller.Modelling.Services.Sketch
 {
@@ -106,9 +107,10 @@ namespace SketchModeller.Modelling.Services.Sketch
                     if (File.Exists(modelFile))
                     {
                         using (var stream = File.OpenRead(modelFile))
+                        using (var compressed = new DeflateStream(stream, CompressionMode.Decompress, true))
                         {
                             var serializer = new BinaryFormatter();
-                            sketchData = (SketchData)serializer.Deserialize(stream);
+                            sketchData = (SketchData)serializer.Deserialize(compressed);
                         }
                     }
                     else
@@ -130,7 +132,7 @@ namespace SketchModeller.Modelling.Services.Sketch
             return Observable.ToAsync(loadAction)();
         }
 
-        private double[,] ComputeDistanceTransform(PointsSequence curve)
+        private int[,] ComputeDistanceTransform(PointsSequence curve)
         {
             // create points transformed to the [0 .. MAX_RESOLUTION] range.
             var points = curve.Points.ToArray();
@@ -145,8 +147,21 @@ namespace SketchModeller.Modelling.Services.Sketch
                 points = points.Concat(Enumerable.Repeat(points.First(), 1)).ToArray();
 
             // compute distance transform and return it
-            double[,] result = new double[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
-            DistanceTransform.Compute(points, result);
+            double[,] transform = new double[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
+            DistanceTransform.Compute(points, transform);
+
+
+            var maxDistance = 1 + (int)Math.Ceiling(16 * Math.Sqrt(2) * Constants.DISTANCE_TRANSFORM_RESOLUTION);
+            int[,] result = new int[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
+            for (int x = 0; x < Constants.DISTANCE_TRANSFORM_RESOLUTION; ++x)
+            {
+                for (int y = 0; y < Constants.DISTANCE_TRANSFORM_RESOLUTION; ++y)
+                {
+                    result[x, y] = maxDistance - (int)Math.Round(16 * transform[x, y]);
+                    Debug.Assert(result[x, y] >= 0);
+                }
+            }
+
             return result;
         }
 
@@ -164,9 +179,11 @@ namespace SketchModeller.Modelling.Services.Sketch
             Action saveAction = () =>
                 {
                     using (var stream = File.Create(fileName))
+                    using (var compressed = new DeflateStream(stream, CompressionMode.Compress, true))
+                    using (var buffered = new BufferedStream(compressed, 65536))
                     {
                         var serializer = new BinaryFormatter();
-                        serializer.Serialize(stream, sketchData);
+                        serializer.Serialize(buffered, sketchData);
                     }
                 };
 

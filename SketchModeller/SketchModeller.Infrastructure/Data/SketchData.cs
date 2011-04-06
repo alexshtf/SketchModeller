@@ -10,7 +10,7 @@ namespace SketchModeller.Infrastructure.Data
     public class SketchData
     {
         public PointsSequence[] Curves { get; set; }
-        public double[][,] DistanceTransforms { get; set; }
+        public int[][,] DistanceTransforms { get; set; }
         public NewPrimitive[] NewPrimitives { get; set; }
         public SnappedPrimitive[] SnappedPrimitives { get; set; }
         public Annotation[] Annotations { get; set; }
