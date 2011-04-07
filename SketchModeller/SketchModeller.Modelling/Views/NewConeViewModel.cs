@@ -23,8 +23,8 @@ namespace SketchModeller.Modelling.Views
         private bool initializing;
 
         [InjectionConstructor]
-        public NewConeViewModel(UiState uiState = null)
-            : base(uiState)
+        public NewConeViewModel(UiState uiState = null, SessionData sessionData = null)
+            : base(uiState, sessionData)
         {
             topRadius = 0.2;
             bottomRadius = 0.2;

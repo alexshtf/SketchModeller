@@ -10,6 +10,13 @@ namespace Utils
 {
     public static class MathUtils
     {
+        public static double Clamp(this double x, double min, double max)
+        {
+            x = Math.Max(x, min);
+            x = Math.Min(x, max);
+            return x;
+        }
+
         /// <summary>
         /// Estimates curvature at the middle of 3 points that reside on a quadratic curve tha passes through the three points.
         /// </summary>

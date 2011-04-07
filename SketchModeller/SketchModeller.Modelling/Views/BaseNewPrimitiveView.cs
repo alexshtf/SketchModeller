@@ -15,6 +15,8 @@ using System.Diagnostics.Contracts;
 using System.Windows;
 using SketchModeller.Utilities;
 
+using Enumerable = System.Linq.Enumerable;
+
 namespace SketchModeller.Modelling.Views
 {
     public abstract class BaseNewPrimitiveView : ModelVisual3D, INewPrimitiveView
@@ -72,6 +74,7 @@ namespace SketchModeller.Modelling.Views
             {
                 var axisDragVector = MathUtils3D.ProjectVector(dragVector3d.Value, ApproximateAxis);
                 PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector);
+                SelectCandidateCurves();
             }
 
             if (currDragPosition != null)
@@ -90,7 +93,8 @@ namespace SketchModeller.Modelling.Views
         }
 
         protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector);
-        protected abstract Vector3D ApproximateAxis { get; }
+        protected abstract Vector3D ApproximateAxis { get; }        
+        protected abstract IEnumerable<Point3D[]> GetFeatureCurves();
 
         protected void SetDefaultMaterial(ModelVisualBase mv3d, NewPrimitiveViewModel viewModel)
         {
@@ -134,6 +138,32 @@ namespace SketchModeller.Modelling.Views
         {
             var sketchPlane = viewModel.SketchPlane;
             return sketchPlane.PointFromRay(lineRange);
+        }
+
+        private void SelectCandidateCurves()
+        {
+            var curves3d = GetFeatureCurves();
+            var curves2d = ProjectCurves(curves3d);
+            viewModel.SelectCandidateCurves(curves2d);
+        }
+
+        private IEnumerable<Point[]> ProjectCurves(IEnumerable<Point3D[]> curves3d)
+        {
+            return
+                from curve in curves3d
+                select ProjectCurve(curve);
+        }
+
+        private Point[] ProjectCurve(Point3D[] curve)
+        {
+            var result = new Point[curve.Length];
+            for (int i = 0; i < curve.Length; ++i)
+            {
+                result[i].X = curve[i].X;
+                result[i].Y = -curve[i].Y;
+            }
+
+            return result;
         }
     }
 }

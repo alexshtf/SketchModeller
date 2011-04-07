@@ -15,27 +15,24 @@ namespace SketchModeller.Modelling
 {
     static class DistanceTransformIntegral
     {
-        public static double Compute(PointsSequence curve, int[,] distanceTransform)
+        public static double Compute(Point[] curve, int[,] distanceTransform)
         {
-            var pnts = (from pnt in curve.Points
-                        let x = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (pnt.X + 1)
-                        let y = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (pnt.Y + 1)
-                        select new Point(x, y)
-                       ).ToArray();
-
-            if (curve is Polygon)
-                pnts = pnts.Append(pnts.First()).ToArray();
+            var pntsArray = (from pnt in curve
+                             let x = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (pnt.X + 1)
+                             let y = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (pnt.Y + 1)
+                             select new Point(x, y)
+                            ).ToArray();
 
             double integral = 0;
-            for (int i = 0; i < pnts.Length - 1; ++i)
+            for (int i = 0; i < pntsArray.Length - 1; ++i)
             {
-                var curr = pnts[i];
-                var next = pnts[i + 1];
-                bool truncated = i < pnts.Length - 2;
+                var curr = pntsArray[i];
+                var next = pntsArray[i + 1];
+                bool truncated = i < pntsArray.Length - 2;
                 integral += Compute(curr, next, distanceTransform, truncated);
             }
 
-            return 0;
+            return integral;
         }
 
         public static double Compute(Point segStart, Point segEnd, int[,] distanceTransform, bool truncated = true, double minSamplesInterval = 0.0625)

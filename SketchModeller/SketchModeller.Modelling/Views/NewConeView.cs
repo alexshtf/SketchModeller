@@ -141,5 +141,9 @@ namespace SketchModeller.Modelling.Views
             Bottom,
         }
 
+        protected override IEnumerable<Point3D[]> GetFeatureCurves()
+        {
+            yield break;
+        }
     }
 }

@@ -26,8 +26,8 @@ namespace SketchModeller.Modelling.Views
         private bool isUpdating;
 
         [InjectionConstructor]
-        public NewCylinderViewModel(UiState uiState = null)
-            : base(uiState)
+        public NewCylinderViewModel(UiState uiState = null, SessionData sessionData = null)
+            : base(uiState, sessionData)
         {
             // set default data
             diameter = 0.2;

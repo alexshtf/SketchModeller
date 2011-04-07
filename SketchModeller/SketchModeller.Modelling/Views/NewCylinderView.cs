@@ -26,7 +26,6 @@ namespace SketchModeller.Modelling.Views
         private readonly NewCylinderViewModel viewModel;
         private readonly Cylinder cylinder;
 
-
         public NewCylinderView(NewCylinderViewModel viewModel, ILoggerFacade logger)
             : base(viewModel, logger)
         {
@@ -82,6 +81,18 @@ namespace SketchModeller.Modelling.Views
                 var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
                 viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
             }
+        }
+
+        protected override IEnumerable<Point3D[]> GetFeatureCurves()
+        {
+            var top = viewModel.Center + 0.5 * viewModel.Length * viewModel.Axis;
+            var topCircle = ShapeHelper.GenerateCircle(top, viewModel.Axis, 0.5 * viewModel.Diameter, 10);
+
+            var bottom = viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis;
+            var bottomCircle = ShapeHelper.GenerateCircle(bottom, viewModel.Axis, 0.5 * viewModel.Diameter, 10);
+
+            yield return bottomCircle;
+            yield return topCircle;
         }
     }
 }
