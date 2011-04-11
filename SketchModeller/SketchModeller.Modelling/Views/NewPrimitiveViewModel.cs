@@ -33,17 +33,44 @@ namespace SketchModeller.Modelling.Views
 
         public abstract void UpdateFromModel();
 
-        public void SelectCandidateCurves(IEnumerable<Point[]> featureCurves)
+        public void SelectCandidateCurves(IEnumerable<Point[]> featureCurves, IEnumerable<Point[]> silhouetteCurves)
         {
-            var featureCurvesArray = featureCurves.ToArray();
-            int[,] matchCosts = new int[featureCurvesArray.Length, sessionData.DistanceTransforms.Length];
+            var featureCurveInfos = GetDistanceTransformsByCategory(CurveCategories.Feature);
+            var silhouetteCurveInfos = GetDistanceTransformsByCategory(CurveCategories.Silhouette);
+            
+            var featuresToSelect = SelectSpecificCurves(featureCurves, featureCurveInfos);
+            var silhouettesToSelect = SelectSpecificCurves(silhouetteCurves, silhouetteCurveInfos);
+
+            var selectedCurves = sessionData.SelectedSketchObjects.ToArray();
+            foreach (var sc in selectedCurves)
+                sc.IsSelected = false;
+
+            foreach (var idx in featuresToSelect.Concat(silhouettesToSelect))
+                sessionData.SketchObjects[idx].IsSelected = true;
+        }
+
+        private Tuple<int, int[,]>[] GetDistanceTransformsByCategory(CurveCategories category)
+        {
+            var result =
+                (from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
+                 where sessionData.SketchObjects[idx].CurveCategory == category
+                 select Tuple.Create(idx, sessionData.DistanceTransforms[idx])
+                ).ToArray();
+            return result;
+        }
+
+        private int[] SelectSpecificCurves(IEnumerable<Point[]> curves, Tuple<int, int[,]>[] curveInfos)
+        {
+            var featureCurvesArray = curves.ToArray();
+            int[,] matchCosts = new int[featureCurvesArray.Length, curveInfos.Length];
 
             // compute matching costs using distance transform integral and put them in matchCosts
             for (int i = 0; i < featureCurvesArray.Length; ++i)
             {
-                for (int j = 0; j < sessionData.DistanceTransforms.Length; ++j)
+                for (int j = 0; j < curveInfos.Length; ++j)
                 {
-                    var integral = DistanceTransformIntegral.Compute(featureCurvesArray[i], sessionData.DistanceTransforms[j]);
+                    var integral =
+                        DistanceTransformIntegral.Compute(featureCurvesArray[i], curveInfos[j].Item2);
                     matchCosts[i, j] = (int)Math.Round(integral);
                 }
             }
@@ -51,14 +78,10 @@ namespace SketchModeller.Modelling.Views
             // find best assignments of feature curves to sketch curves
             var assignments = HungarianAlgorithm.FindAssignments(matchCosts);
 
-            // unselect all curves
-            var selectedCurves = sessionData.SelectedSketchObjects.ToArray();
-            foreach(var sc in selectedCurves)
-                sc.IsSelected = false;
-
-            // select the relevant sketch curves
-            foreach (var assignment in assignments)
-                sessionData.SketchObjects[assignment].IsSelected = true;
+            var result = (from assignment in assignments
+                          select curveInfos[assignment].Item1
+                         ).ToArray();
+            return result;
         }
     }
 }

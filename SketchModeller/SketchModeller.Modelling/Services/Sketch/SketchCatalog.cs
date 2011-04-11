@@ -150,14 +150,12 @@ namespace SketchModeller.Modelling.Services.Sketch
             double[,] transform = new double[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
             DistanceTransform.Compute(points, transform);
 
-
-            var maxDistance = 1 + (int)Math.Ceiling(16 * Math.Sqrt(2) * Constants.DISTANCE_TRANSFORM_RESOLUTION);
             int[,] result = new int[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
             for (int x = 0; x < Constants.DISTANCE_TRANSFORM_RESOLUTION; ++x)
             {
                 for (int y = 0; y < Constants.DISTANCE_TRANSFORM_RESOLUTION; ++y)
                 {
-                    result[x, y] = maxDistance - (int)Math.Round(16 * transform[x, y]);
+                    result[x, y] = (int)Math.Round(16 * transform[x, y]);
                     Debug.Assert(result[x, y] >= 0);
                 }
             }

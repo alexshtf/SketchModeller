@@ -93,8 +93,8 @@ namespace SketchModeller.Modelling.Views
         }
 
         protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector);
-        protected abstract Vector3D ApproximateAxis { get; }        
-        protected abstract IEnumerable<Point3D[]> GetFeatureCurves();
+        protected abstract Vector3D ApproximateAxis { get; }
+        protected abstract CurvesInfo GetFeatureCurves();
 
         protected void SetDefaultMaterial(ModelVisualBase mv3d, NewPrimitiveViewModel viewModel)
         {
@@ -143,8 +143,9 @@ namespace SketchModeller.Modelling.Views
         private void SelectCandidateCurves()
         {
             var curves3d = GetFeatureCurves();
-            var curves2d = ProjectCurves(curves3d);
-            viewModel.SelectCandidateCurves(curves2d);
+            var featureCurves2d = ProjectCurves(curves3d.FeatureCurves);
+            var silhouetteCurves2d = ProjectCurves(curves3d.SilhouetteCurves);
+            viewModel.SelectCandidateCurves(featureCurves2d, silhouetteCurves2d);
         }
 
         private IEnumerable<Point[]> ProjectCurves(IEnumerable<Point3D[]> curves3d)
@@ -164,6 +165,18 @@ namespace SketchModeller.Modelling.Views
             }
 
             return result;
+        }
+
+        protected class CurvesInfo
+        {
+            public CurvesInfo()
+            {
+                FeatureCurves = Enumerable.Empty<Point3D[]>();
+                SilhouetteCurves = Enumerable.Empty<Point3D[]>();
+            }
+
+            public IEnumerable<Point3D[]> FeatureCurves { get; set; }
+            public IEnumerable<Point3D[]> SilhouetteCurves { get; set; }
         }
     }
 }
