@@ -50,7 +50,7 @@ namespace SketchModeller.Modelling
             if (truncated) // we discard the end-point
                 b = ((double)numOfSamples - 1) / numOfSamples;
 
-            var integral = Simpson(sample, 0, b, numOfSamples);
+            var integral = segLen * Simpson(sample, 0, b, numOfSamples);
             return integral;
         }
 
