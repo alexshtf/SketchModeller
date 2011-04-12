@@ -143,9 +143,9 @@ namespace SketchModeller.Modelling.Views
         private void SelectCandidateCurves()
         {
             var curves3d = GetFeatureCurves();
-            var featureCurves2d = ProjectCurves(curves3d.FeatureCurves);
-            var silhouetteCurves2d = ProjectCurves(curves3d.SilhouetteCurves);
-            viewModel.SelectCandidateCurves(featureCurves2d, silhouetteCurves2d);
+            viewModel.SelectCandidateCurves(
+                curves3d.FeatureCurves.ToArray(),
+                curves3d.SilhouetteCurves.ToArray());
         }
 
         private IEnumerable<Point[]> ProjectCurves(IEnumerable<Point3D[]> curves3d)
@@ -155,7 +155,7 @@ namespace SketchModeller.Modelling.Views
                 select ProjectCurve(curve);
         }
 
-        private Point[] ProjectCurve(Point3D[] curve)
+        protected Point[] ProjectCurve(params Point3D[] curve)
         {
             var result = new Point[curve.Length];
             for (int i = 0; i < curve.Length; ++i)
@@ -171,12 +171,12 @@ namespace SketchModeller.Modelling.Views
         {
             public CurvesInfo()
             {
-                FeatureCurves = Enumerable.Empty<Point3D[]>();
-                SilhouetteCurves = Enumerable.Empty<Point3D[]>();
+                FeatureCurves = Enumerable.Empty<Point[]>();
+                SilhouetteCurves = Enumerable.Empty<Point[]>();
             }
 
-            public IEnumerable<Point3D[]> FeatureCurves { get; set; }
-            public IEnumerable<Point3D[]> SilhouetteCurves { get; set; }
+            public IEnumerable<Point[]> FeatureCurves { get; set; }
+            public IEnumerable<Point[]> SilhouetteCurves { get; set; }
         }
     }
 }
