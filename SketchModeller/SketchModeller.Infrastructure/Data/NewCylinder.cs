@@ -11,6 +11,11 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class NewCylinder : NewCylindricalPrimitive
     {
+        public NewCylinder()
+        {
+
+        }
+
         #region Diameter property
 
         private double diameter;
@@ -30,6 +35,11 @@ namespace SketchModeller.Infrastructure.Data
         public double Radius
         {
             get { return Diameter / 2; }
+        }
+
+        public override void UpdateCurvesGeometry()
+        {
+            throw new NotImplementedException();
         }
     }
 }

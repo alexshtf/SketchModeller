@@ -108,7 +108,6 @@
     <Compile Include="ReadOnlyObservableCollection.cs" />
     <Compile Include="RotationHelper.cs" />
     <Compile Include="SegmentApproximator.cs" />
-    <Compile Include="ShapeHelper.cs" />
     <Compile Include="ShortcutTextExtension.cs" />
     <Compile Include="TermUtils.cs" />
     <Compile Include="UiStateExtensions.cs" />

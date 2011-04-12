@@ -40,5 +40,9 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         #endregion
+
+        public override void UpdateCurvesGeometry()
+        {
+        }
     }
 }
