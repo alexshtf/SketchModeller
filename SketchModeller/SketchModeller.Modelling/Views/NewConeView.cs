@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Diagnostics;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -139,38 +140,6 @@ namespace SketchModeller.Modelling.Views
         {
             Top,
             Bottom,
-        }
-
-        protected override CurvesInfo GetFeatureCurves()
-        {
-            var top = viewModel.Center + 0.5 * viewModel.Length * viewModel.Axis;
-            var topCircle3d = ShapeHelper.GenerateCircle(top, viewModel.Axis, viewModel.TopRadius, 10);
-            var topCircle = ProjectCurve(topCircle3d);
-
-            var bottom = viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis;
-            var bottomCircle3d = ShapeHelper.GenerateCircle(bottom, viewModel.Axis, viewModel.BottomRadius, 10);
-            var bottomCircle = ProjectCurve(bottomCircle3d);
-
-            // find the axis in projected coordinates
-            var tb = ProjectCurve(top, bottom);
-            var axis2d = tb[0] - tb[1];
-
-            // find the 2 silhouette lines
-            var perp = new Vector(axis2d.Y, -axis2d.X);
-            perp.Normalize();
-            var lt = tb[0] + viewModel.TopRadius * perp;
-            var lb = tb[1] + viewModel.BottomRadius * perp;
-            var rt = tb[0] - viewModel.TopRadius * perp;
-            var rb = tb[1] - viewModel.BottomRadius * perp;
-
-            var leftLine = new Point[] { lt, lb };
-            var rightLine = new Point[] { rt, rb };
-
-            return new CurvesInfo
-            {
-                FeatureCurves = new Point[][] { topCircle, bottomCircle },
-                SilhouetteCurves = new Point[][] { leftLine, rightLine },
-            };
         }
     }
 }

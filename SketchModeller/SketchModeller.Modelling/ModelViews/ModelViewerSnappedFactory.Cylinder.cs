@@ -8,6 +8,7 @@ using System.Diagnostics.Contracts;
 using Utils;
 using SketchModeller.Utilities;
 using SketchModeller.Infrastructure.Data;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.ModelViews
 {

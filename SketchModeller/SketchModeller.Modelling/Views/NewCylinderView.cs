@@ -82,37 +82,5 @@ namespace SketchModeller.Modelling.Views
                 viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
             }
         }
-
-        protected override CurvesInfo GetFeatureCurves()
-        {
-            var top = viewModel.Center + 0.5 * viewModel.Length * viewModel.Axis;
-            var topCircle3d = ShapeHelper.GenerateCircle(top, viewModel.Axis, 0.5 * viewModel.Diameter, 10);
-            var topCircle = ProjectCurve(topCircle3d);
-
-            var bottom = viewModel.Center - 0.5 * viewModel.Length * viewModel.Axis;
-            var bottomCircle3d = ShapeHelper.GenerateCircle(bottom, viewModel.Axis, 0.5 * viewModel.Diameter, 10);
-            var bottomCircle = ProjectCurve(bottomCircle3d);
-
-            // find the axis in projected coordinates
-            var tb = ProjectCurve(top, bottom);
-            var axis2d = tb[0] - tb[1];
-
-            // find the 2 silhouette lines
-            var perp = new Vector(axis2d.Y, -axis2d.X);
-            perp.Normalize();
-            var lt = tb[0] + 0.5 * viewModel.Diameter * perp;
-            var lb = tb[1] + 0.5 * viewModel.Diameter * perp;
-            var rt = tb[0] - 0.5 * viewModel.Diameter * perp;
-            var rb = tb[1] - 0.5 * viewModel.Diameter * perp;
-
-            var leftLine = new Point[] { lt, lb };
-            var rightLine = new Point[] { rt, rb };
-
-            return new CurvesInfo
-            {
-                FeatureCurves = new Point[][] { topCircle, bottomCircle },
-                SilhouetteCurves = new Point[][] {  leftLine, rightLine },
-            };
-        }
     }
 }

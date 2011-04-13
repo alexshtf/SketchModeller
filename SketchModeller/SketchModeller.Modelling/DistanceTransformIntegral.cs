@@ -35,6 +35,37 @@ namespace SketchModeller.Modelling
             return integral;
         }
 
+        public static Point MinDistancePoint(Point[] curve, int[,] distanceTransform, double minSamplesInterval = 0.0625)
+        {
+            var pntsArray = (from pnt in curve
+                             let x = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (pnt.X + 1)
+                             let y = 0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION * (pnt.Y + 1)
+                             select new Point(x, y)
+                            ).ToArray();
+
+            var result = pntsArray.First();
+            var minDistance = double.MaxValue;
+            for (int i = 0; i < pntsArray.Length - 1; ++i)
+            {
+                var curr = pntsArray[i];
+                var next = pntsArray[i + 1];
+                var segLen = (next - curr).Length;
+                var numOfSamples = 1 + (int)Math.Ceiling(segLen / minSamplesInterval);
+                for (int j = 0; j < numOfSamples; ++j)
+                {
+                    var pnt = WpfUtils.Lerp(curr, next, j / (double)(numOfSamples - 1));
+                    var value = SampleImage(distanceTransform, pnt.X, pnt.Y);
+                    if (value < minDistance)
+                    {
+                        result = pnt;
+                        minDistance = value;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public static double Compute(Point segStart, Point segEnd, int[,] distanceTransform, bool truncated = true, double minSamplesInterval = 0.0625)
         {
             var segLen = (segEnd - segStart).Length;

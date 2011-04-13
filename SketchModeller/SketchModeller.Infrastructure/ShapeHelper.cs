@@ -5,11 +5,33 @@ using System.Text;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
 using Utils;
+using System.Windows;
 
-namespace SketchModeller.Utilities
+namespace SketchModeller.Infrastructure
 {
     public static class ShapeHelper
     {
+        /// <summary>
+        /// Projects a 3D curve to 2D using the standard orthographic projection used in this application.
+        /// </summary>
+        /// <param name="curve">The 3D curve to project</param>
+        /// <returns></returns>
+        public static Point[] ProjectCurve(params Point3D[] curve)
+        {
+            Contract.Requires(curve != null);
+            Contract.Ensures(Contract.Result<Point[]>() != null);
+            Contract.Ensures(Contract.Result<Point[]>().Length == curve.Length);
+
+            var result = new Point[curve.Length];
+            for (int i = 0; i < curve.Length; ++i)
+            {
+                result[i].X = curve[i].X;
+                result[i].Y = -curve[i].Y;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Generates an approximation of a circle given its center, a normal vector for the plane, and its radius.
         /// </summary>

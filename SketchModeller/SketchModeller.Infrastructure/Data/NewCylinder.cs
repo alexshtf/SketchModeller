@@ -37,9 +37,14 @@ namespace SketchModeller.Infrastructure.Data
             get { return Diameter / 2; }
         }
 
-        public override void UpdateCurvesGeometry()
+        protected override double BottomRadiusInternal
         {
-            throw new NotImplementedException();
+            get { return Radius; }
+        }
+
+        protected override double TopRadiusInternal
+        {
+            get { return Radius; }
         }
     }
 }

@@ -12,6 +12,9 @@ using SketchPlane = SketchModeller.Infrastructure.Data.SketchPlane;
 using System.Windows;
 using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Utilities;
+using Microsoft.Practices.Prism.Events;
+using SketchModeller.Modelling.Events;
+using System.Threading.Tasks;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -19,12 +22,14 @@ namespace SketchModeller.Modelling.Views
     {
         protected UiState uiState;
         protected SessionData sessionData;
+        protected IEventAggregator eventAggregator;
 
-        public NewPrimitiveViewModel(UiState uiState = null, SessionData sessionData = null)
+        public NewPrimitiveViewModel(UiState uiState, SessionData sessionData, IEventAggregator eventAggregator)
         {
             ContextMenu = new ObservableCollection<MenuCommandData>();
             this.uiState = uiState;
             this.sessionData = sessionData;
+            this.eventAggregator = eventAggregator;
         }
 
         public ObservableCollection<MenuCommandData> ContextMenu { get; private set; }
@@ -33,55 +38,54 @@ namespace SketchModeller.Modelling.Views
 
         public abstract void UpdateFromModel();
 
-        public void SelectCandidateCurves(IEnumerable<Point[]> featureCurves, IEnumerable<Point[]> silhouetteCurves)
+        public void NotifyDragged()
         {
-            var featureCurveInfos = GetDistanceTransformsByCategory(CurveCategories.Feature);
-            var silhouetteCurveInfos = GetDistanceTransformsByCategory(CurveCategories.Silhouette);
-            
-            var featuresToSelect = SelectSpecificCurves(featureCurves, featureCurveInfos);
-            var silhouettesToSelect = SelectSpecificCurves(silhouetteCurves, silhouetteCurveInfos);
-
-            var selectedCurves = sessionData.SelectedSketchObjects.ToArray();
-            foreach (var sc in selectedCurves)
-                sc.IsSelected = false;
-
-            foreach (var idx in featuresToSelect.Concat(silhouettesToSelect))
-                sessionData.SketchObjects[idx].IsSelected = true;
+            Model.UpdateCurvesGeometry();
+            ComputeCurvesAssignment();
+            eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(Model);
         }
 
-        private Tuple<int, int[,]>[] GetDistanceTransformsByCategory(CurveCategories category)
+        private void ComputeCurvesAssignment()
         {
-            var result =
+            ComputeAssignments(Model.FeatureCurves, CurveCategories.Feature);
+            ComputeAssignments(Model.SilhouetteCurves, CurveCategories.Silhouette);
+        }
+
+        private void ComputeAssignments(PrimitiveCurve[] curves, CurveCategories category)
+        {
+            // get distance transforms of sketch curves according to the given category
+            var distanceTransforms =
                 (from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
                  where sessionData.SketchObjects[idx].CurveCategory == category
-                 select Tuple.Create(idx, sessionData.DistanceTransforms[idx])
+                 select new { Index = idx, DistanceTransform = sessionData.DistanceTransforms[idx] }
                 ).ToArray();
-            return result;
-        }
 
-        private int[] SelectSpecificCurves(IEnumerable<Point[]> curves, Tuple<int, int[,]>[] curveInfos)
-        {
-            var featureCurvesArray = curves.ToArray();
-            int[,] matchCosts = new int[featureCurvesArray.Length, curveInfos.Length];
 
-            // compute matching costs using distance transform integral and put them in matchCosts
-            for (int i = 0; i < featureCurvesArray.Length; ++i)
-            {
-                for (int j = 0; j < curveInfos.Length; ++j)
+            // compute matching costs using distance transform integral
+            int[,] matchingMatrix = new int[curves.Length, distanceTransforms.Length];
+            var matchingMatrixIndices =
+                from i in Enumerable.Range(0, curves.Length)
+                from j in Enumerable.Range(0, distanceTransforms.Length)
+                select new { I = i, J = j };
+            Parallel.ForEach(matchingMatrixIndices, item =>
                 {
-                    var integral =
-                        DistanceTransformIntegral.Compute(featureCurvesArray[i], curveInfos[j].Item2);
-                    matchCosts[i, j] = (int)Math.Round(integral);
-                }
+                    var i = item.I;
+                    var j = item.J;
+                    var integral = DistanceTransformIntegral.Compute(curves[i].Points, distanceTransforms[j].DistanceTransform);
+                    matchingMatrix[i, j] = (int)Math.Round(integral);
+                });
+
+            // compute minimum-cost assignments of primitive curves to sketch curves
+            var assignments = HungarianAlgorithm.FindAssignments(matchingMatrix);
+
+            // assign object curves to sketch curves according to the computed assignments
+            for (int i = 0; i < assignments.Length; ++i)
+            {
+                var assignedTo = assignments[i];
+                curves[i].AssignedTo =
+                    sessionData.SketchObjects[distanceTransforms[assignedTo].Index];
             }
-
-            // find best assignments of feature curves to sketch curves
-            var assignments = HungarianAlgorithm.FindAssignments(matchCosts);
-
-            var result = (from assignment in assignments
-                          select curveInfos[assignment].Item1
-                         ).ToArray();
-            return result;
         }
+
     }
 }

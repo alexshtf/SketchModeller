@@ -11,6 +11,7 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Prism.Commands;
 using System.Diagnostics.Contracts;
 using SketchModeller.Utilities;
+using Microsoft.Practices.Prism.Events;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -23,8 +24,8 @@ namespace SketchModeller.Modelling.Views
         private bool initializing;
 
         [InjectionConstructor]
-        public NewConeViewModel(UiState uiState = null, SessionData sessionData = null)
-            : base(uiState, sessionData)
+        public NewConeViewModel(UiState uiState = null, SessionData sessionData = null, IEventAggregator eventAggregator = null)
+            : base(uiState, sessionData, eventAggregator)
         {
             topRadius = 0.2;
             bottomRadius = 0.2;

@@ -8,6 +8,7 @@ using Utils;
 using SketchModeller.Infrastructure.Data;
 using System.Windows.Media;
 using System.Diagnostics.Contracts;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.ModelViews
 {

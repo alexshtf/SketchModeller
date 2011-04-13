@@ -6,6 +6,7 @@ using System.Windows.Media.Media3D;
 using SketchModeller.Infrastructure.Data;
 using System.Diagnostics.Contracts;
 using SketchModeller.Utilities;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.ModelViews
 {

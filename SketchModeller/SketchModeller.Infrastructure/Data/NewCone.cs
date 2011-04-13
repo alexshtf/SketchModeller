@@ -41,8 +41,14 @@ namespace SketchModeller.Infrastructure.Data
 
         #endregion
 
-        public override void UpdateCurvesGeometry()
+        protected override double TopRadiusInternal
         {
+            get { return TopRadius; }
+        }
+
+        protected override double BottomRadiusInternal
+        {
+            get { return BottomRadius; }
         }
     }
 }
