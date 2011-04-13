@@ -18,6 +18,8 @@ using SketchModeller.Utilities;
 using System.Collections.Generic;
 using SketchModeller.Infrastructure.Data;
 using System.Diagnostics;
+using SketchModeller.Modelling.Events;
+using System.Linq;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -84,6 +86,19 @@ namespace SketchModeller.Modelling.Views
             newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
             snappedDragStrategy = new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
+
+            eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Subscribe(OnPrimitiveCurvesChanged);
+        }
+
+        private void OnPrimitiveCurvesChanged(NewPrimitive primitive)
+        {
+            var container = primitiveCurvesRoot.ItemContainerGenerator.ContainerFromItem(primitive);
+            if (container != null)
+            {
+                var primitiveView = 
+                    container.VisualTree().OfType<NewPrimitiveCurvesControl>().First();
+                primitiveView.Update();
+            }
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using Microsoft.Practices.Prism.Commands;
 using SketchModeller.Infrastructure.Services;
+using System.Collections.ObjectModel;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -44,6 +45,8 @@ namespace SketchModeller.Modelling.Views
             uiState.AddListener(this, () => uiState.SketchPlane);
             sessionData.AddListener(this, () => sessionData.SketchName);
 
+            NewPrimitives = sessionData.NewPrimitives.AsReadOnlyObservable();
+
             SketchModellingViewModel = container.Resolve<SketchModellingViewModel>();
             SketchImageViewModel = container.Resolve<SketchImageViewModel>();
 
@@ -53,6 +56,7 @@ namespace SketchModeller.Modelling.Views
             MarkSilhouette = new DelegateCommand(MarkSilhouetteExecute, MarkSilhouetteCanExecute);
         }
 
+        public ReadOnlyObservableCollection<NewPrimitive> NewPrimitives { get; private set; }
         public SketchModellingViewModel SketchModellingViewModel { get; private set; }
 
         public SketchImageViewModel SketchImageViewModel { get; private set; }
@@ -112,6 +116,9 @@ namespace SketchModeller.Modelling.Views
                         Trace.Fail("Invalid primitive kind");
                         break;
                 }
+
+                if (sessionData.NewPrimitives.Any())
+                    sessionData.NewPrimitives.Last().UpdateCurvesGeometry();
             }
         }
 

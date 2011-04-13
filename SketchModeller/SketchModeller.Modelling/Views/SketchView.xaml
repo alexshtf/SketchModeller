@@ -58,6 +58,24 @@
             </Viewport3D>
         </Border>
 
+        <ItemsControl x:Name="primitiveCurvesRoot"
+                      Grid.Row="1" 
+                      ItemsSource="{Binding NewPrimitives}" 
+                      Background="Transparent"
+                      IsHitTestVisible="False"
+                      Margin="10">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:NewPrimitiveCurvesControl Primitive="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
         <Canvas Grid.Row="1"
                 Margin="{Binding ElementName=vpRoot, Path=Margin}">
             <Border BorderBrush="Blue"

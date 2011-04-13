@@ -170,6 +170,7 @@ namespace SketchModeller.Modelling.Views
         public void DuplicateSnapped(SnappedPrimitive primitiveData, out NewPrimitive newPrimitive, out NewPrimitive clone)
         {
             newPrimitive = primitivesConverter.SnappedToNew(primitiveData);
+            newPrimitive.UpdateCurvesGeometry();
             sessionData.NewPrimitives.Add(newPrimitive);
             clone = primitivesConverter.NewToNew(newPrimitive, newPrimitive.GetType(), new Vector3D(0, 0, 0));
             SelectPrimitive(newPrimitive);
@@ -189,6 +190,7 @@ namespace SketchModeller.Modelling.Views
 
             sessionData.NewPrimitives.Remove(currentDuplicate);
             currentDuplicate = primitivesConverter.NewToNew(originalDuplicate, targetTypes[nextIndex], currentDragVector);
+            currentDuplicate.UpdateCurvesGeometry();
             sessionData.NewPrimitives.Add(currentDuplicate);
             SelectPrimitive(currentDuplicate);
         }
