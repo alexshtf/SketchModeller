@@ -84,6 +84,10 @@ namespace SketchModeller.Modelling.Views
                 var assignedTo = assignments[i];
                 curves[i].AssignedTo =
                     sessionData.SketchObjects[distanceTransforms[assignedTo].Index];
+                curves[i].ClosestPoint =
+                    DistanceTransformIntegral.MinDistancePoint(
+                        curves[i].Points, 
+                        distanceTransforms[assignedTo].DistanceTransform);
             }
         }
 

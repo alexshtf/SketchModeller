@@ -54,23 +54,35 @@ namespace SketchModeller.Modelling.Views
             if (Primitive == null)
                 return;
 
-            foreach (var curve in Primitive.FeatureCurves)
+            var featureInfos =
+                from c in Primitive.FeatureCurves
+                select new { Curve = c, Brush = Brushes.Orange };
+
+            var silhouetteInfos =
+                from c in Primitive.SilhouetteCurves
+                select new { Curve = c, Brush = Brushes.DarkOrange };
+
+            var allCurveInfos = featureInfos.Concat(silhouetteInfos);
+            foreach (var curveInfo in allCurveInfos)
             {
-                // create feature curve stroke
-                var path = CreatePolyline(curve.Points);
-                path.Stroke = Brushes.Orange;
+                // create curve stroke
+                var path = CreatePolyline(curveInfo.Curve.Points);
+                path.Stroke = curveInfo.Brush;
                 path.StrokeThickness = 2;
-
                 grid.Children.Add(path);
-            }
 
-            foreach (var curve in Primitive.SilhouetteCurves)
-            {
-                var path = CreatePolyline(curve.Points);
-                path.Stroke = Brushes.DarkOrange;
-                path.StrokeThickness = 2;
+                if (curveInfo.Curve.AssignedTo != null)
+                {
+                    // create perpendicular line towards the assigned curve
+                    var fstPoint = curveInfo.Curve.ClosestPoint;
+                    var sndPoint = fstPoint.ProjectionOnCurve(curveInfo.Curve.AssignedTo.Points).Item1;
+                    var line = CreatePolyline(new Point[] { fstPoint, sndPoint });
+                    line.Stroke = Brushes.Black;
+                    line.StrokeThickness = 1;
+                    line.StrokeDashArray = new DoubleCollection(new double[] { 5, 5 });
 
-                grid.Children.Add(path);
+                    grid.Children.Add(line);
+                }
             }
         }
 

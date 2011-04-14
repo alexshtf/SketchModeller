@@ -11,11 +11,18 @@ namespace SketchModeller.Infrastructure.Data
     {
         private Point[] points;
         private PointsSequence assignedTo;
+        private Point closestPoint;
 
         public Point[] Points
         {
             get { return points; }
             set { points = value; }
+        }
+
+        public Point ClosestPoint
+        {
+            get { return closestPoint; }
+            set { closestPoint = value; }
         }
 
         public PointsSequence AssignedTo

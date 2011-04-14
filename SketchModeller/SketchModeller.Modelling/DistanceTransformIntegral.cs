@@ -63,6 +63,9 @@ namespace SketchModeller.Modelling
                 }
             }
 
+            result.X = result.X / (0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION) - 1;
+            result.Y = result.Y / (0.5 * Constants.DISTANCE_TRANSFORM_RESOLUTION) - 1;
+
             return result;
         }
 

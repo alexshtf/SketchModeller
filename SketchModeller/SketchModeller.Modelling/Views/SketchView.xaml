@@ -63,6 +63,7 @@
                       ItemsSource="{Binding NewPrimitives}" 
                       Background="Transparent"
                       IsHitTestVisible="False"
+                      ClipToBounds="True"
                       Margin="10">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
