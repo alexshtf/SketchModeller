@@ -24,6 +24,16 @@ namespace SketchModeller.Infrastructure.Data
             protected set { silhouetteCurves = value; }
         }
 
+        public PrimitiveCurve[] AllCurves
+        {
+            get
+            {
+                var featuresOrEmpty = featureCurves == null ? Enumerable.Empty<PrimitiveCurve>() : featureCurves;
+                var silhouettesOrEmpty = silhouetteCurves == null ? Enumerable.Empty<PrimitiveCurve>() : silhouetteCurves;
+                return featuresOrEmpty.Concat(silhouettesOrEmpty).ToArray();
+            }
+        }
+
         public abstract void UpdateCurvesGeometry();
     }
 }

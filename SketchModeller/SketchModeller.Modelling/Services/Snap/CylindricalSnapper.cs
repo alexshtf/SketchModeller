@@ -20,37 +20,31 @@ namespace SketchModeller.Modelling.Services.Snap
     {
         protected override TSnapped Create(PointsSequence[] selectedCurves, TNew newPrimitive)
         {
-            var snappedCone = InitNewSnapped(newPrimitive);
+            var snappedPrimitive = InitNewSnapped(newPrimitive);
+            snappedPrimitive.SnappedTo = 
+                newPrimitive.AllCurves
+                .Select(c => c.AssignedTo)
+                .Where(c => c != null)
+                .ToArray();
 
-            var allSequences = selectedCurves;
-            snappedCone.SnappedTo = selectedCurves;
+            snappedPrimitive.TopFeatureCurve.SnappedTo 
+                = snappedPrimitive.TopCurve 
+                = newPrimitive.TopCircle.AssignedTo;
+            snappedPrimitive.BottomFeatureCurve.SnappedTo 
+                = snappedPrimitive.BottomCurve 
+                = newPrimitive.BottomCircle.AssignedTo;
 
-            var features = allSequences.Where(x => x.CurveCategory == CurveCategories.Feature).ToArray();
-            var silhouettes = allSequences.Except(features).ToArray();
+            snappedPrimitive.LeftSilhouette = newPrimitive.LeftSilhouette.AssignedTo;
+            snappedPrimitive.RightSilhouette = newPrimitive.RightSilhouette.AssignedTo;
 
-            var topPts = features.Where(x => SnapperHelper.IsTop(x, snappedCone)).ToArray();
-            var botPts = features.Except(topPts).ToArray();
-
-            Debug.Assert(topPts.Length <= 1, "The algorithm cannot handle more than one top curve");
-            Debug.Assert(botPts.Length <= 1, "The algorithm cannot handle more than one bottom curve");
-
-            snappedCone.TopCurve = topPts.FirstOrDefault();
-            snappedCone.BottomCurve = botPts.FirstOrDefault();
-            snappedCone.Silhouettes = silhouettes;
-
-            if (topPts.Length > 0)
-                snappedCone.TopFeatureCurve.SnappedTo = topPts[0];
-            if (botPts.Length > 0)
-                snappedCone.BottomFeatureCurve.SnappedTo = botPts[0];
-
-            return snappedCone;
+            return snappedPrimitive;
         }
 
         protected override Tuple<Term, Term[]> Reconstruct(TSnapped snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)
         {
             var topCurve = snappedPrimitive.TopCurve;
             var botCurve = snappedPrimitive.BottomCurve;
-            var silhouettes = snappedPrimitive.Silhouettes;
+            var silhouettes = new PointsSequence[] { snappedPrimitive.LeftSilhouette, snappedPrimitive.RightSilhouette };
 
             // get annotated feature curves of this primitive.
             var annotated = new HashSet<FeatureCurve>(curvesToAnnotations.Keys.Where(key => curvesToAnnotations[key].Count > 0));
@@ -80,8 +74,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private Tuple<Term, Term[]> TwoSilhouettesNoFeatures(TSnapped snappedPrimitive, ISet<FeatureCurve> annotated)
         {
-            var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
-            var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
+            var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.LeftSilhouette.Points);
+            var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.RightSilhouette.Points);
             var axis2d = Get2DVector(snappedPrimitive.AxisResult);
 
             var sil0Top = GetForwardPoint(sil0, axis2d);
@@ -105,8 +99,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private Tuple<Term, Term[]> TwoSilhouettesSingleFeature(TSnapped snappedPrimitive, ISet<FeatureCurve> annotated)
         {
-            var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[0].Points);
-            var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.Silhouettes[1].Points);
+            var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.LeftSilhouette.Points);
+            var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.RightSilhouette.Points);
 
             var snappedFeatureCurve = snappedPrimitive.TopCurve == null ? snappedPrimitive.BottomFeatureCurve : snappedPrimitive.TopFeatureCurve;
             var unsnappedFeatureCurve = snappedPrimitive.TopCurve == null ? snappedPrimitive.TopFeatureCurve : snappedPrimitive.BottomFeatureCurve;
