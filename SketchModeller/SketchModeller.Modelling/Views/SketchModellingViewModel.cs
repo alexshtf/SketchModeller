@@ -150,7 +150,10 @@ namespace SketchModeller.Modelling.Views
                 select vm;
             var viewModel = query.FirstOrDefault();
             if (viewModel != null)
+            {
                 viewModel.UpdateFromModel();
+                viewModel.NotifyDragged();
+            }
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -171,6 +174,7 @@ namespace SketchModeller.Modelling.Views
         {
             newPrimitive = primitivesConverter.SnappedToNew(primitiveData);
             newPrimitive.UpdateCurvesGeometry();
+
             sessionData.NewPrimitives.Add(newPrimitive);
             clone = primitivesConverter.NewToNew(newPrimitive, newPrimitive.GetType(), new Vector3D(0, 0, 0));
             SelectPrimitive(newPrimitive);
@@ -190,8 +194,10 @@ namespace SketchModeller.Modelling.Views
 
             sessionData.NewPrimitives.Remove(currentDuplicate);
             currentDuplicate = primitivesConverter.NewToNew(originalDuplicate, targetTypes[nextIndex], currentDragVector);
+            
             currentDuplicate.UpdateCurvesGeometry();
             sessionData.NewPrimitives.Add(currentDuplicate);
+
             SelectPrimitive(currentDuplicate);
         }
 

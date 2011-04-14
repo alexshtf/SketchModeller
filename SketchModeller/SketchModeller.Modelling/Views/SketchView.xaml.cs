@@ -96,8 +96,9 @@ namespace SketchModeller.Modelling.Views
             if (container != null)
             {
                 var primitiveView = 
-                    container.VisualTree().OfType<NewPrimitiveCurvesControl>().First();
-                primitiveView.Update();
+                    container.VisualTree().OfType<NewPrimitiveCurvesControl>().FirstOrDefault();
+                if (primitiveView != null)
+                    primitiveView.Update();
             }
         }
 
