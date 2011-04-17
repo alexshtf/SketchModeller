@@ -12,6 +12,7 @@ using Microsoft.Practices.Prism.Commands;
 using System.Diagnostics.Contracts;
 using SketchModeller.Utilities;
 using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -24,8 +25,8 @@ namespace SketchModeller.Modelling.Views
         private bool initializing;
 
         [InjectionConstructor]
-        public NewConeViewModel(UiState uiState = null, SessionData sessionData = null, IEventAggregator eventAggregator = null)
-            : base(uiState, sessionData, eventAggregator)
+        public NewConeViewModel(UiState uiState = null, ICurveAssigner curveAssigner = null, IEventAggregator eventAggregator = null)
+            : base(uiState, curveAssigner, eventAggregator)
         {
             topRadius = 0.2;
             bottomRadius = 0.2;

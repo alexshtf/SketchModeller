@@ -19,7 +19,7 @@
         </LinearGradientBrush>
     </UserControl.Resources>
     
-    <Grid x:Name="root">
+    <Grid x:Name="root" AllowDrop="True" Drop="vpRoot_Drop">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"  />
             <RowDefinition />
@@ -28,8 +28,6 @@
                 Margin="10"
                 Background="LightGray" 
                 Grid.Row="1"
-                AllowDrop="True"
-                Drop="vpRoot_Drop"
                 Focusable="True"
                 MouseLeftButtonDown="vpRoot_MouseLeftButtonDown"
                 MouseLeftButtonUp="vpRoot_MouseLeftButtonUp"
@@ -61,8 +59,7 @@
         <ItemsControl x:Name="primitiveCurvesRoot"
                       Grid.Row="1" 
                       ItemsSource="{Binding NewPrimitives}" 
-                      Background="Transparent"
-                      IsHitTestVisible="False"
+                      Background="{x:Null}"
                       ClipToBounds="True"
                       Margin="10">
             <ItemsControl.ItemsPanel>

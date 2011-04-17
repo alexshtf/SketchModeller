@@ -15,6 +15,7 @@ using CollectionUtils = Utils.CollectionUtils;
 using MathUtils3D = Utils.MathUtils3D;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Events;
+using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -27,8 +28,8 @@ namespace SketchModeller.Modelling.Views
         private bool isUpdating;
 
         [InjectionConstructor]
-        public NewCylinderViewModel(UiState uiState = null, SessionData sessionData = null, IEventAggregator eventAggregator = null)
-            : base(uiState, sessionData, eventAggregator)
+        public NewCylinderViewModel(UiState uiState = null, ICurveAssigner curveAssigner = null, IEventAggregator eventAggregator = null)
+            : base(uiState, curveAssigner, eventAggregator)
         {
             // set default data
             diameter = 0.2;

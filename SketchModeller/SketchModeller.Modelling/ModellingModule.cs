@@ -15,6 +15,7 @@ using System.Windows;
 using SketchModeller.Modelling.ModelViews;
 using SketchModeller.Modelling.Services.Snap;
 using SketchModeller.Modelling.Services.PrimitivesConverter;
+using SketchModeller.Modelling.Services.Assign;
 
 namespace SketchModeller.Modelling
 {
@@ -31,14 +32,11 @@ namespace SketchModeller.Modelling
 
         public void Initialize()
         {
-            // load styles
-            var stylesDictionary = new ResourceDictionary { Source = new Uri("/SketchModeller.Modelling;component/styles.xaml", UriKind.Relative) };
-            Application.Current.Resources.MergedDictionaries.Add(stylesDictionary);
-
             // register services
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPrimitivesConverter, PrimitivesConverter>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ICurveAssigner, CurveAssigner>(new ContainerControlledLifetimeManager());
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());

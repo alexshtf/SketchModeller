@@ -106,11 +106,11 @@ namespace SketchModeller.Infrastructure.Data
         {
             // get projected versions of top/bottom circles
             var top = Center + 0.5 * Length * Axis;
-            var topCircle3d = ShapeHelper.GenerateCircle(top, Axis, TopRadiusInternal, 10);
+            var topCircle3d = ShapeHelper.GenerateCircle(top, Axis, TopRadiusInternal, 20);
             var topCircle = ShapeHelper.ProjectCurve(topCircle3d);
 
             var bottom = Center - 0.5 * Length * Axis;
-            var bottomCircle3d = ShapeHelper.GenerateCircle(bottom, Axis, BottomRadiusInternal, 10);
+            var bottomCircle3d = ShapeHelper.GenerateCircle(bottom, Axis, BottomRadiusInternal, 20);
             var bottomCircle = ShapeHelper.ProjectCurve(bottomCircle3d);
 
             // find the axis in projected coordinates

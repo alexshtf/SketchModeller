@@ -135,6 +135,7 @@
     <Compile Include="PrimitiveKinds.cs" />
     <Compile Include="PropertyChangedEventManagerHelper.cs" />
     <Compile Include="RoutedEvents.cs" />
+    <Compile Include="Services\ICurveAssigner.cs" />
     <Compile Include="Services\IPrimitivesConverter.cs" />
     <Compile Include="Services\ISnapper.cs" />
     <Compile Include="ShapeHelper.cs" />

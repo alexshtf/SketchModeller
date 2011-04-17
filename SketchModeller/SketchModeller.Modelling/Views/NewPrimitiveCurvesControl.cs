@@ -10,6 +10,8 @@ using Polyline = System.Windows.Shapes.Polyline;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
+using System.Windows.Input;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -42,6 +44,57 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        #region PrimitiveCurve attached property
+
+        public static readonly DependencyProperty PrimitiveCurveProperty =
+            DependencyProperty.RegisterAttached("PrimitiveCurve", typeof(PrimitiveCurve), typeof(NewPrimitiveCurvesControl));
+
+        public static void SetPrimitiveCurve(FrameworkElement target, PrimitiveCurve value)
+        {
+            target.SetValue(PrimitiveCurveProperty, value);
+        }
+
+        public static PrimitiveCurve GetPrimitiveCurve(FrameworkElement target)
+        {
+            return (PrimitiveCurve)target.GetValue(PrimitiveCurveProperty);
+        }
+
+        #endregion
+
+        #region IsEmphasized attached property
+
+        public static readonly DependencyProperty IsEmphasizedProperty =
+            DependencyProperty.RegisterAttached("IsEmphasized", typeof(bool), typeof(NewPrimitiveCurvesControl));
+
+        public static void SetIsEmphasized(FrameworkElement target, bool value)
+        {
+            target.SetValue(IsEmphasizedProperty, value);
+        }
+
+        public static bool GetIsEmphasized(FrameworkElement target)
+        {
+            return (bool)target.GetValue(IsEmphasizedProperty);
+        }
+
+        #endregion
+
+        #region ColorCodingIndex
+
+        public static readonly DependencyProperty ColorCodingIndexProperty =
+            DependencyProperty.RegisterAttached("ColorCodingIndex", typeof(int), typeof(NewPrimitiveCurvesControl));
+
+        public static void SetColorCodingIndex(FrameworkElement target, int value)
+        {
+            target.SetValue(ColorCodingIndexProperty, value);
+        }
+
+        public static int GetColorCodingIndex(FrameworkElement target)
+        {
+            return (int)target.GetValue(ColorCodingIndexProperty);
+        }
+
+        #endregion
+
         private void OnPrimitiveChanged()
         {
             Update();
@@ -55,21 +108,29 @@ namespace SketchModeller.Modelling.Views
                 return;
 
             var featureInfos =
-                from c in Primitive.FeatureCurves
-                select new { Curve = c, Brush = Brushes.Orange };
+                from c in Primitive.FeatureCurves.ZipIndex()
+                select new { Curve = c.Value, Index = c.Index };
 
             var silhouetteInfos =
-                from c in Primitive.SilhouetteCurves
-                select new { Curve = c, Brush = Brushes.DarkOrange };
+                from c in Primitive.SilhouetteCurves.ZipIndex(Primitive.FeatureCurves.Length)
+                select new { Curve = c.Value, Index = c.Index };
 
             var allCurveInfos = featureInfos.Concat(silhouetteInfos);
             foreach (var curveInfo in allCurveInfos)
             {
+                var strokeConverter = 
+                    new DelegateConverter<int>(index => Constants.PRIMITIVE_CURVES_COLOR_CODING[index]);
+
                 // create curve stroke
                 var path = CreatePolyline(curveInfo.Curve.Points);
-                path.Stroke = curveInfo.Brush;
-                path.StrokeThickness = 2;
+                path.Bind(Path.StrokeThicknessProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
+                    isEmphasized => isEmphasized ? 4.0 : 2.0));
+                SetColorCodingIndex(path, curveInfo.Index);
+                path.Stroke = Constants.PRIMITIVE_CURVES_COLOR_CODING[curveInfo.Index];
+
                 grid.Children.Add(path);
+
+                SetPrimitiveCurve(path, curveInfo.Curve);
 
                 if (curveInfo.Curve.AssignedTo != null)
                 {
@@ -77,9 +138,13 @@ namespace SketchModeller.Modelling.Views
                     var fstPoint = curveInfo.Curve.ClosestPoint;
                     var sndPoint = fstPoint.ProjectionOnCurve(curveInfo.Curve.AssignedTo.Points).Item1;
                     var line = CreatePolyline(new Point[] { fstPoint, sndPoint });
-                    line.Stroke = Brushes.Black;
-                    line.StrokeThickness = 1;
-                    line.StrokeDashArray = new DoubleCollection(new double[] { 5, 5 });
+                    line.Stroke = Constants.PRIMITIVE_CURVES_COLOR_CODING[curveInfo.Index];
+
+                    line.Bind(Path.StrokeThicknessProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
+                        isEmphasized => isEmphasized ? 2.0 : 1.0));
+
+                    line.Bind(Path.StrokeDashArrayProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
+                        isEmphasized => isEmphasized ? new DoubleCollection(new double[] { 2.5, 2.5 }) : new DoubleCollection(new double[] { 5, 5 })));
 
                     grid.Children.Add(line);
                 }

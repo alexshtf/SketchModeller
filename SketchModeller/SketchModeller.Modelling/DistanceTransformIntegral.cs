@@ -109,7 +109,7 @@ namespace SketchModeller.Modelling
             // safely take image values - if we go out of range we return 0.
             Func<int, int, int> safeImg = (i, j) =>
             {
-                if (i < width && j < height)
+                if (i < width && j < height && i >= 0 && j >= 0)
                     return img[i, j];
                 else
                     return 0;

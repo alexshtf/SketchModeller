@@ -51,6 +51,7 @@ namespace SketchModeller.Modelling.Views
         private readonly IDragStrategy newPrimitiveDragStrategy;
         private readonly IDragStrategy snappedDragStrategy;
         private readonly IDragStrategy curveDragStrategy;
+        private readonly AssignDragStrategy assignDragStrategy;
         private IDragStrategy currentDragStrategy;
 
         private readonly SketchModellingView sketchModellingView;
@@ -86,6 +87,7 @@ namespace SketchModeller.Modelling.Views
             newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
             snappedDragStrategy = new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
+            assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot);
 
             eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Subscribe(OnPrimitiveCurvesChanged);
         }
@@ -182,8 +184,12 @@ namespace SketchModeller.Modelling.Views
 
         private void vpRoot_MouseMove(object sender, MouseEventArgs e)
         {
+            var position3d = GetPosition3D(e);
+
             if (currentDragStrategy != null && currentDragStrategy.IsDragging)
-                currentDragStrategy.OnMouseMove(GetPosition3D(e));
+                currentDragStrategy.OnMouseMove(position3d);
+            else
+                assignDragStrategy.EmphasizeCurves(position3d.Pos2D);
         }
 
         private MousePosInfo3D GetPosition3D(MouseEventArgs e)
@@ -200,6 +206,7 @@ namespace SketchModeller.Modelling.Views
             else
                 return new MousePosInfo3D { Pos2D = pos2d, Ray3D = null };
         }
+
 
         #endregion
 
@@ -245,7 +252,7 @@ namespace SketchModeller.Modelling.Views
 
         #region IDragStrategy interface
 
-        [ContractClass(typeof(IDragStragegyContract))]
+        [ContractClass(typeof(DragStragegyContract))]
         private interface IDragStrategy
         {
             /// <summary>
@@ -279,7 +286,7 @@ namespace SketchModeller.Modelling.Views
         }
 
         [ContractClassFor(typeof(IDragStrategy))]
-        private abstract class IDragStragegyContract : IDragStrategy
+        private abstract class DragStragegyContract : IDragStrategy
         {
             public void OnMouseDown(MousePosInfo3D position, dynamic data)
             {
