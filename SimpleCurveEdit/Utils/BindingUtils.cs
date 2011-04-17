@@ -28,10 +28,26 @@ namespace Utils
             Contract.Requires(target != null);
             Contract.Requires(prop != null);
 
+            target.Bind(prop, new PropertyPath(path), source, converter);
+        }
+
+        /// <summary>
+        /// Binds a dependency property of a dependency object to the specified source, source path and converter.
+        /// </summary>
+        /// <param name="target">The binding target object.</param>
+        /// <param name="prop">The binding target property.</param>
+        /// <param name="path">The source path</param>
+        /// <param name="source">The binding source object.</param>
+        /// <param name="converter">An optional converter for the binding.</param>
+        public static void Bind(this DependencyObject target, DependencyProperty prop, PropertyPath path, object source, IValueConverter converter = null)
+        {
+            Contract.Requires(target != null);
+            Contract.Requires(prop != null);
+
             var binding = new Binding
             {
-                Path      = new PropertyPath(path),
-                Source    = source,
+                Path = path,
+                Source = source,
                 Converter = converter,
             };
             BindingOperations.SetBinding(target, prop, binding);

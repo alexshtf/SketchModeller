@@ -12,6 +12,58 @@ namespace Utils
 {
     public static class WpfUtils
     {
+        public static DependencyObject HitTestFirst(this Visual reference, HitTestParameters htParams, Predicate<DependencyObject> filter)
+        {
+            Contract.Requires(reference != null);
+            Contract.Requires(htParams != null);
+            Contract.Requires(filter != null);
+            Contract.Ensures(Contract.Result<DependencyObject>() == null || filter(Contract.Result<DependencyObject>()));
+
+            DependencyObject result = null;
+            VisualTreeHelper.HitTest(
+                reference,
+                null,
+                htResult =>
+                {
+                    var visual = htResult.VisualHit;
+                    if (filter(visual))
+                    {
+                        result = visual;
+                        return HitTestResultBehavior.Stop;
+                    }
+                    else
+                        return HitTestResultBehavior.Continue;
+                },
+                htParams);
+            return result;
+        }
+
+        public static IList<DependencyObject> HitTestAll(this Visual reference, HitTestParameters htParams, Predicate<DependencyObject> filter = null)
+        {
+            Contract.Requires(reference != null);
+            Contract.Requires(htParams != null);
+            Contract.Ensures(Contract.Result<IList<DependencyObject>>() != null);
+            Contract.Ensures(filter == null || Contract.ForAll(Contract.Result<IList<DependencyObject>>(), d => filter(d)));
+
+            // null filter means filter nothing (we return everything we can)
+            if (filter == null)
+                filter = _ => true;
+
+            var result = new List<DependencyObject>();
+            VisualTreeHelper.HitTest(
+                reference,
+                null,
+                htResult =>
+                {
+                    var visual = htResult.VisualHit;
+                    if (filter(visual))
+                        result.Add(visual);
+                    return HitTestResultBehavior.Continue;
+                },
+                htParams);
+            return result;
+        }
+
         public static Vector IgnoreZ(this Vector3D p)
         {
             return new Vector(p.X, p.Y);
