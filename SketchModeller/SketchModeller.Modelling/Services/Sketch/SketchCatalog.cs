@@ -120,16 +120,30 @@ namespace SketchModeller.Modelling.Services.Sketch
                         sketchData.Curves = vectorImage.PolyLines.Cast<PointsSequence>().Concat(vectorImage.Polygons).ToArray();
 
                     if (sketchData.DistanceTransforms == null)
+                    {
                         sketchData.DistanceTransforms = 
                             sketchData.Curves
                             .AsParallel()
                             .Select(c => ComputeDistanceTransform(c))
                             .ToArray();
 
+                        Parallel.ForEach(sketchData.DistanceTransforms, dt => Negate(dt));
+                    }
+
                     return sketchData;
                 };
 
             return Observable.ToAsync(loadAction)();
+        }
+
+        private static void Negate(int[,] matrix)
+        {
+            var width = matrix.GetLength(0);
+            var height = matrix.GetLength(1);
+
+            for (int y = 0; y < height; ++y)
+                for (int x = 0; x < width; ++x)
+                    matrix[x, y] = -matrix[x, y];
         }
 
         private int[,] ComputeDistanceTransform(PointsSequence curve)

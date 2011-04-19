@@ -50,31 +50,19 @@ namespace SketchModeller.Modelling.Services.Assign
             });
 
             // compute minimum-cost assignments of primitive curves to sketch curves
-            var matchingMatrixCopy = (int[,])matchingMatrix.Clone();
-            var assignments = HungarianAlgorithm.FindAssignments(matchingMatrixCopy);
+            var assignments = HungarianAlgorithm.FindMaxWeightAssignments(matchingMatrix);
 
             // assign object curves to sketch curves according to the computed assignments
             for (int i = 0; i < assignments.Length; ++i)
             {
-                const double ASSIGN_THRESHOLD = 1000000;
-
                 var assignedTo = assignments[i];
                 var assignedToCurve = sessionData.SketchObjects[distanceTransforms[assignedTo].Index];
 
-                var normalizationFactor = assignedToCurve.ComputeLength() * curves[i].Points.ComputeCurveLength();
-                var normalizedIntegral =
-                    (double)matchingMatrix[i, assignedTo] / normalizationFactor;
-
-                if (normalizedIntegral <= ASSIGN_THRESHOLD)
-                {
-                    curves[i].AssignedTo = assignedToCurve;
-                    curves[i].ClosestPoint =
-                        DistanceTransformIntegral.MinDistancePoint(
-                            curves[i].Points,
-                            distanceTransforms[assignedTo].DistanceTransform);
-                }
-                else
-                    curves[i].AssignedTo = null;
+                curves[i].AssignedTo = assignedToCurve;
+                curves[i].ClosestPoint =
+                    DistanceTransformIntegral.MinDistancePoint(
+                        curves[i].Points,
+                        distanceTransforms[assignedTo].DistanceTransform);
             }
         }
     }

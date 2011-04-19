@@ -10,6 +10,35 @@ namespace SketchModeller.Utilities
     // Version 1.3, released 22nd May 2010.
     public static class HungarianAlgorithm
     {
+        public static int[] FindMaxWeightAssignments(this int[,] costs)
+        {
+            if (costs == null)
+                throw new ArgumentNullException("costs");
+
+            // clone original costs
+            costs = (int[,])costs.Clone();
+
+            // negate all costs
+            var width = costs.GetLength(0);
+            var height = costs.GetLength(1);
+            for (int y = 0; y < height; ++y)
+                for (int x = 0; x < width; ++x)
+                    costs[x, y] = -costs[x, y];
+
+            // substract the minimal value from all costs
+            var min = int.MaxValue;
+            for (int y = 0; y < height; ++y)
+                for (int x = 0; x < width; ++x)
+                    min = Math.Min(min, costs[x, y]);
+
+            for (int y = 0; y < height; ++y)
+                for (int x = 0; x < width; ++x)
+                    costs[x, y] = costs[x, y] - min;
+
+            // return the solution of the assignment problem on the new costs
+            return costs.FindMinWeightAssignments();
+        }
+
         /// <summary>
         /// Finds the optimal assignments for a given matrix of agents and costed tasks such that the total cost is
         /// minimized.
@@ -19,7 +48,7 @@ namespace SketchModeller.Utilities
         /// <returns>A matrix of assignments; the value of element <em>i</em> is the column of the task assigned to agent
         /// <em>i</em>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="costs"/> is <see langword="null"/>.</exception>
-        public static int[] FindAssignments(this int[,] costs)
+        public static int[] FindMinWeightAssignments(this int[,] costs)
         {
             if (costs == null)
                 throw new ArgumentNullException("costs");
