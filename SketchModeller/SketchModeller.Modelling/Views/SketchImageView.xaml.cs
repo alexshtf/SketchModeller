@@ -106,12 +106,17 @@ namespace SketchModeller.Modelling.Views
             var path = new Path();
             path.Data = geometry;
             path.DataContext = polylineData;
-            BindingOperations.SetBinding(path, Path.StrokeProperty, new Binding
+            
+            path.Bind(Path.StrokeProperty, 
+                () => polylineData.CurveCategory,
+                () => polylineData.ColorCodingIndex,
+                (curveCategory, colorCodingIndex) =>
                 {
-                    Path = new PropertyPath("CurveCategory"),
-                    Converter = new DelegateConverter<CurveCategories>(category =>
+                    if (colorCodingIndex != PointsSequence.INVALID_COLOR_CODING)
+                        return Constants.PRIMITIVE_CURVES_COLOR_CODING[colorCodingIndex];
+                    else
                     {
-                        switch (category)
+                        switch (curveCategory)
                         {
                             case CurveCategories.None:
                                 return SKETCH_STROKE_UNCATEGORIZED;
@@ -122,19 +127,19 @@ namespace SketchModeller.Modelling.Views
                             default:
                                 return Binding.DoNothing;
                         }
-                    }),
+                    }
                 });
-            BindingOperations.SetBinding(path, Path.StrokeThicknessProperty, new Binding
+            path.Bind(Path.StrokeThicknessProperty,
+                () => polylineData.IsSelected,
+                () => polylineData.IsEmphasized,
+                (isSelected, isEmphasized) =>
                 {
-                    Path = new PropertyPath("IsSelected"),
-                    Converter = new DelegateConverter<bool>(isSelected =>
-                    { 
-                        if (isSelected)
-                            return 3;
-                        else
-                            return 1;
-                    }),
+                    if (isSelected || isEmphasized)
+                        return 3.0;
+                    else
+                        return 1.0;
                 });
+
 
             SetVGKind(path, vgKind);
             return path;
@@ -169,19 +174,12 @@ namespace SketchModeller.Modelling.Views
 
         public void SelectCurves(Rect rect)
         {
-            var htParams = new GeometryHitTestParameters(new RectangleGeometry(rect));
-            var results = new HashSet<Path>();
-            VisualTreeHelper.HitTest(
-                this,
-                null, // filter callback
-                htResult => // result callback
-                {
-                    var path = htResult.VisualHit as Path;
-                    if (path != null)
-                        results.Add(path);
-                    return HitTestResultBehavior.Continue;
-                },
-                htParams);
+            var results = this.HitTestAll(
+                new GeometryHitTestParameters(
+                    new RectangleGeometry(rect)), 
+                    dp => dp is Path)
+                .Cast<Path>()
+                .ToArray();
 
             var selectedSequences = results.Select(x => x.DataContext).OfType<PointsSequence>();
 

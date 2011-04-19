@@ -143,8 +143,9 @@ namespace SketchModeller.Modelling.Views
                     line.Bind(Path.StrokeThicknessProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
                         isEmphasized => isEmphasized ? 2.0 : 1.0));
 
-                    line.Bind(Path.StrokeDashArrayProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
-                        isEmphasized => isEmphasized ? new DoubleCollection(new double[] { 2.5, 2.5 }) : new DoubleCollection(new double[] { 5, 5 })));
+                    if (!curveInfo.Curve.IsUserAssignment)
+                        line.Bind(Path.StrokeDashArrayProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
+                            isEmphasized => isEmphasized ? new DoubleCollection(new double[] { 2.5, 2.5 }) : new DoubleCollection(new double[] { 5, 5 })));
 
                     grid.Children.Add(line);
                 }

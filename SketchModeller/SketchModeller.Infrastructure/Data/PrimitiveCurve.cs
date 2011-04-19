@@ -12,6 +12,7 @@ namespace SketchModeller.Infrastructure.Data
         private Point[] points;
         private PointsSequence assignedTo;
         private Point closestPoint;
+        private bool isUserAssignment;
 
         public Point[] Points
         {
@@ -29,6 +30,12 @@ namespace SketchModeller.Infrastructure.Data
         {
             get { return assignedTo; }
             set { assignedTo = value; }
+        }
+
+        public bool IsUserAssignment
+        {
+            get { return isUserAssignment; }
+            set { isUserAssignment = true; }
         }
     }
 }

@@ -110,7 +110,7 @@ namespace Utils
         /// <param name="converter">A converter delegate to convert two source values to the target value.</param>
         /// <remarks>The expressions <paramref name="expr1"/> and <paramref name="expr2"/> must be of the form <c>() => source.Property</c></remarks>
         /// <seealso cref="Bind{T}"/>
-        public static void Bind<T1, T2>(this DependencyObject target, DependencyProperty prop, Expression<Func<T1>> expr1, Expression<Func<T1>> expr2, Func<T1, T2, object> converter)
+        public static void Bind<T1, T2>(this DependencyObject target, DependencyProperty prop, Expression<Func<T1>> expr1, Expression<Func<T2>> expr2, Func<T1, T2, object> converter)
         {
             Contract.Requires(target != null);
             Contract.Requires(prop != null);

@@ -87,7 +87,7 @@ namespace SketchModeller.Modelling.Views
             newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
             snappedDragStrategy = new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
-            assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot);
+            assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot, sketchImageView, eventAggregator);
 
             eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Subscribe(OnPrimitiveCurvesChanged);
         }
@@ -166,15 +166,18 @@ namespace SketchModeller.Modelling.Views
         {
             if (currentDragStrategy == null)
             {
-                currentDragStrategy = curveDragStrategy;
-                curveDragStrategy.OnMouseDown(GetPosition3D(e), null);
+                if (assignDragStrategy.IsReadyToAssign)
+                    currentDragStrategy = assignDragStrategy;
+                else
+                    currentDragStrategy = curveDragStrategy;
+                currentDragStrategy.OnMouseDown(GetPosition3D(e), null);
                 vpRoot.CaptureMouse();
             }
         }
 
         private void vpRoot_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (currentDragStrategy == curveDragStrategy)
+            if (currentDragStrategy == curveDragStrategy || currentDragStrategy == assignDragStrategy)
             {
                 currentDragStrategy.OnMouseUp(GetPosition3D(e));
                 currentDragStrategy = null;

@@ -66,6 +66,8 @@ namespace SketchModeller.Modelling
 
             var curves = sketchData.Curves ?? System.Linq.Enumerable.Empty<PointsSequence>();
             sessionData.SketchObjects = curves.ToArray();
+            foreach (var item in sessionData.SketchObjects)
+                item.ColorCodingIndex = PointsSequence.INVALID_COLOR_CODING;
 
             sessionData.DistanceTransforms = sketchData.DistanceTransforms.ToArray();
             

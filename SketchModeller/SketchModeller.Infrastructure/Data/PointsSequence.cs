@@ -16,6 +16,8 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class PointsSequence : NotificationObject
     {
+        public const int INVALID_COLOR_CODING = -1;
+
         /// <summary>
         /// The collection of points. Please do NOT assign to this property. The assignment is only for
         /// xml serialization support.
@@ -56,6 +58,40 @@ namespace SketchModeller.Infrastructure.Data
             {
                 isSelecgted = value;
                 RaisePropertyChanged(() => IsSelected);
+            }
+        }
+
+        #endregion
+
+        #region ColorCodingIndex property
+
+        [NonSerialized]
+        private int colorCodingIndex = INVALID_COLOR_CODING;
+
+        public int ColorCodingIndex
+        {
+            get { return colorCodingIndex; }
+            set
+            {
+                colorCodingIndex = value;
+                RaisePropertyChanged(() => ColorCodingIndex);
+            }
+        }
+
+        #endregion
+
+        #region IsEmphasized property
+
+        [NonSerialized]
+        private bool isEmphasized;
+
+        public bool IsEmphasized
+        {
+            get { return isEmphasized; }
+            set
+            {
+                isEmphasized = value;
+                RaisePropertyChanged(() => IsEmphasized);
             }
         }
 
