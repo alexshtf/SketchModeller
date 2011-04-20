@@ -75,16 +75,15 @@ namespace SketchModeller.Modelling.Views
                 EmphasizeCurves(position.Pos2D);
 
                 if (lastEmphasizedSketchCurve != null)
-                {
                     lastEmphasizedSketchCurve.IsEmphasized = false;
-                    if (lastEmphasizedPrimitiveCurve != null)
-                    {
-                        var primCurveData = NewPrimitiveCurvesControl.GetPrimitiveCurve(lastEmphasizedPrimitiveCurve);
-                        primCurveData.IsUserAssignment = true;
-                        primCurveData.AssignedTo = lastEmphasizedSketchCurve;
-                        var npcControl = lastEmphasizedPrimitiveCurve.VisualPathUp().OfType<NewPrimitiveCurvesControl>().First();
-                        eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(npcControl.Primitive);
-                    }
+
+                if (lastEmphasizedPrimitiveCurve != null)
+                {
+                    var primCurveData = NewPrimitiveCurvesControl.GetPrimitiveCurve(lastEmphasizedPrimitiveCurve);
+                    primCurveData.IsUserAssignment = true;
+                    primCurveData.AssignedTo = lastEmphasizedSketchCurve;
+                    var npcControl = lastEmphasizedPrimitiveCurve.VisualPathUp().OfType<NewPrimitiveCurvesControl>().First();
+                    eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(npcControl.Primitive);
                 }
                 lastEmphasizedSketchCurve = null;
             }

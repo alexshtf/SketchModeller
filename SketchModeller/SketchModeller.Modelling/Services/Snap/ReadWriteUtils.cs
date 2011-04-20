@@ -32,7 +32,7 @@ namespace SketchModeller.Modelling.Services.Snap
             cylinder.BottomCenterResult = reader.ReadPoint3D();
             cylinder.AxisResult = reader.ReadVector3D();
             cylinder.LengthResult = reader.ReadValue();
-            cylinder.RadiusResult = reader.ReadValue();
+            cylinder.RadiusResult = Math.Abs(reader.ReadValue());
         }
 
         public static VectorsWriter Write(this VectorsWriter writer, SnappedCone cone)
@@ -60,8 +60,8 @@ namespace SketchModeller.Modelling.Services.Snap
             cone.BottomCenterResult = reader.ReadPoint3D();
             cone.AxisResult = reader.ReadVector3D();
             cone.LengthResult = reader.ReadValue();
-            cone.TopRadiusResult = reader.ReadValue();
-            cone.BottomRadiusResult = reader.ReadValue();
+            cone.TopRadiusResult = Math.Abs(reader.ReadValue());
+            cone.BottomRadiusResult = Math.Abs(reader.ReadValue());
         }
     }
 }
