@@ -27,6 +27,11 @@ namespace SketchModeller.Modelling.Services.Assign
 
         private void ComputeAssignments(PrimitiveCurve[] curves, CurveCategories category)
         {
+            curves = curves.Where(curve => !curve.IsUserAssignment).ToArray();
+
+            if (curves.Length == 0)
+                return;
+
             // get distance transforms of sketch curves according to the given category
             var distanceTransforms =
                 (from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
