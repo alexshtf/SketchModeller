@@ -58,8 +58,6 @@ namespace SketchModeller.Infrastructure.Data
         public CircleFeatureCurve BottomFeatureCurve { get; private set; }
 
         // sketch curves 
-        public PointsSequence TopCurve { get; set; }
-        public PointsSequence BottomCurve { get; set; }
         public PointsSequence LeftSilhouette { get; set; }
         public PointsSequence RightSilhouette { get; set; }
 

@@ -67,7 +67,6 @@ namespace SketchModeller.Modelling.Views
         public ICommand MarkFeature { get; private set; }
         public ICommand MarkSilhouette { get; private set; }
 
-
         #region SketchPlane property
 
         private SketchPlane sketchPlane;
@@ -79,6 +78,22 @@ namespace SketchModeller.Modelling.Views
             {
                 sketchPlane = value;
                 RaisePropertyChanged(() => SketchPlane);
+            }
+        }
+
+        #endregion
+
+        #region IsPreviewing property
+
+        private bool isPreviewing;
+
+        public bool IsPreviewing
+        {
+            get { return isPreviewing; }
+            set
+            {
+                isPreviewing = value;
+                RaisePropertyChanged(() => IsPreviewing);
             }
         }
 

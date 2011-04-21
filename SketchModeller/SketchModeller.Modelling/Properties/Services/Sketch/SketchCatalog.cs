@@ -121,13 +121,12 @@ namespace SketchModeller.Modelling.Services.Sketch
 
                     if (sketchData.DistanceTransforms == null)
                     {
-                        sketchData.DistanceTransforms = 
+                        sketchData.DistanceTransforms =
                             sketchData.Curves
                             .AsParallel()
                             .Select(c => ComputeDistanceTransform(c))
                             .ToArray();
-
-                        Parallel.ForEach(sketchData.DistanceTransforms, dt => Negate(dt));
+                        Parallel.ForEach(sketchData.DistanceTransforms, t => InvertDistanceTransform(t));
                     }
 
                     return sketchData;
@@ -136,14 +135,18 @@ namespace SketchModeller.Modelling.Services.Sketch
             return Observable.ToAsync(loadAction)();
         }
 
-        private static void Negate(int[,] matrix)
+        private void InvertDistanceTransform(int[,] t)
         {
-            var width = matrix.GetLength(0);
-            var height = matrix.GetLength(1);
+            var width = t.GetLength(0);
+            var height = t.GetLength(1);
+            var max = int.MinValue;
+            for (var y = 0; y < height; ++y)
+                for (var x = 0; x < width; ++x)
+                    max = Math.Max(max, t[x, y]);
 
-            for (int y = 0; y < height; ++y)
-                for (int x = 0; x < width; ++x)
-                    matrix[x, y] = -matrix[x, y];
+            for (var y = 0; y < height; ++y)
+                for (var x = 0; x < width; ++x)
+                    t[x, y] = max - t[x, y];
         }
 
         private int[,] ComputeDistanceTransform(PointsSequence curve)
@@ -162,7 +165,7 @@ namespace SketchModeller.Modelling.Services.Sketch
 
             // compute distance transform and return it
             double[,] transform = new double[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
-            ChamferDistanceTransform.Compute(points, transform);
+            DistanceTransform.Compute(points, transform);
 
             int[,] result = new int[Constants.DISTANCE_TRANSFORM_RESOLUTION, Constants.DISTANCE_TRANSFORM_RESOLUTION];
             for (int x = 0; x < Constants.DISTANCE_TRANSFORM_RESOLUTION; ++x)

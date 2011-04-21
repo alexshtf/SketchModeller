@@ -46,7 +46,8 @@ namespace SketchModeller
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
+            if (!viewModel.IsWorking)
+                eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
         }
 
         private void OnDebugClick(object sender, RoutedEventArgs e)

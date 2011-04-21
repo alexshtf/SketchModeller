@@ -28,9 +28,10 @@ namespace SketchModeller.Modelling.Services.Snap
                 .ToArray();
 
             snappedPrimitive.TopFeatureCurve.SnappedTo 
+                = snappedPrimitive.TopCurve 
                 = newPrimitive.TopCircle.AssignedTo;
-
             snappedPrimitive.BottomFeatureCurve.SnappedTo 
+                = snappedPrimitive.BottomCurve 
                 = newPrimitive.BottomCircle.AssignedTo;
 
             snappedPrimitive.LeftSilhouette = newPrimitive.LeftSilhouette.AssignedTo;
@@ -41,8 +42,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
         protected override Tuple<Term, Term[]> Reconstruct(TSnapped snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)
         {
-            var topCurve = snappedPrimitive.TopFeatureCurve.SnappedTo;
-            var botCurve = snappedPrimitive.BottomFeatureCurve.SnappedTo;;
+            var topCurve = snappedPrimitive.TopCurve;
+            var botCurve = snappedPrimitive.BottomCurve;
             var silhouettes = new PointsSequence[] { snappedPrimitive.LeftSilhouette, snappedPrimitive.RightSilhouette };
 
             // get annotated feature curves of this primitive.
@@ -101,19 +102,19 @@ namespace SketchModeller.Modelling.Services.Snap
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.LeftSilhouette.Points);
             var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.RightSilhouette.Points);
 
-            var snappedFeatureCurve = snappedPrimitive.TopFeatureCurve.SnappedTo == null ? snappedPrimitive.BottomFeatureCurve : snappedPrimitive.TopFeatureCurve;
-            var unsnappedFeatureCurve = snappedPrimitive.TopFeatureCurve.SnappedTo == null ? snappedPrimitive.TopFeatureCurve : snappedPrimitive.BottomFeatureCurve;
+            var snappedFeatureCurve = snappedPrimitive.TopCurve == null ? snappedPrimitive.BottomFeatureCurve : snappedPrimitive.TopFeatureCurve;
+            var unsnappedFeatureCurve = snappedPrimitive.TopCurve == null ? snappedPrimitive.TopFeatureCurve : snappedPrimitive.BottomFeatureCurve;
 
             var sil0Far = GetFarPoint(sil0, snappedFeatureCurve.SnappedTo);
             var sil1Far = GetFarPoint(sil1, snappedFeatureCurve.SnappedTo);
 
             var featureProj = ProjectionFit(snappedFeatureCurve);
-            var farProj = Enumerable.Repeat(EndpointsProjectionFit(unsnappedFeatureCurve, sil0Far, sil1Far), 1);
+            var farProj = ProjectionFit(unsnappedFeatureCurve, new Point[] { sil0Far, sil1Far });
 
             if (annotated.Contains(unsnappedFeatureCurve))
                 farProj = Enumerable.Empty<Term>();
 
-            var objective = TermUtils.SafeSum(new Term[] { TermUtils.SafeAvg(featureProj), TermUtils.SafeAvg(farProj) });
+            var objective = TermUtils.SafeSum(featureProj.Concat(farProj));
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
 
             return Tuple.Create(objective, constraints);
@@ -182,7 +183,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         protected IEnumerable<Term> ProjectionFit(CircleFeatureCurve item)
         {
-            const int SAMPLE_SIZE = 20;
+            const int SAMPLE_SIZE = 10;
             var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);
             return ProjectionFit(item, sample);
         }
@@ -202,26 +203,6 @@ namespace SketchModeller.Modelling.Services.Snap
                 select ProjectionFit(pointsSet, point);
 
             return terms;
-        }
-
-        protected Term EndpointsProjectionFit(CircleFeatureCurve pointsSet, Point p1, Point p2)
-        {
-            var x1 = p1.X;
-            var y1 = -p1.Y;
-            
-            var x2 = p2.X;
-            var y2 = -p2.Y;
-
-            var cx = pointsSet.Center.X;
-            var cy = pointsSet.Center.Y;
-            var r = pointsSet.Radius;
-
-            var eq1 = TermBuilder.Power(x1 - cx, 2) + TermBuilder.Power(y1 - cy, 2) - TermBuilder.Power(r, 2);
-            var eq2 = TermBuilder.Power(x2 - cx, 2) + TermBuilder.Power(y2 - cy, 2) - TermBuilder.Power(r, 2);
-
-            var result = TermBuilder.Power(eq1, 2) + TermBuilder.Power(eq2, 2);
-
-            return result;
         }
 
         /// <summary>

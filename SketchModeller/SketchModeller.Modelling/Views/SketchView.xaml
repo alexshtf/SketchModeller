@@ -134,8 +134,9 @@
             </GroupBox>
             <GroupBox Header="Primive operations">
                 <StackPanel Orientation="Vertical">
-                    <Button Margin="3" Command="{Binding DeletePrimitive}">Delete</Button>
-                    <Button Margin="3" Command="{Binding SnapPrimitive}">Snap</Button>
+                    <Button Margin="3" Command="{Binding DeletePrimitive}">Delete (T)</Button>
+                    <Button Margin="3" Command="{Binding SnapPrimitive}">Snap (P)</Button>
+                    <ToggleButton Margin="3" IsChecked="{Binding IsPreviewing}">Preview (R)</ToggleButton>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Curve types">
