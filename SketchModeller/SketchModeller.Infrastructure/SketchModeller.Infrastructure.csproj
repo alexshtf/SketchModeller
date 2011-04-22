@@ -102,6 +102,7 @@
     <Compile Include="Data\CircleFeatureCurve.cs" />
     <Compile Include="Data\Cocentrality.cs" />
     <Compile Include="Data\ColinearCenters.cs" />
+    <Compile Include="Data\CoplanarCenters.cs" />
     <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\FeatureCurve.cs" />

@@ -130,6 +130,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 annotation.MatchClass<Coplanarity>(ca => curves = ca.Elements);
                 annotation.MatchClass<Cocentrality>(ca => curves = ca.Elements);
                 annotation.MatchClass<ColinearCenters>(cc => curves = cc.Elements);
+                annotation.MatchClass<CoplanarCenters>(cc => curves = cc.Elements);
                 Debug.Assert(curves != null);
                 foreach (var fc in curves)
                     curvesToAnnotations[fc].Add(annotation);
@@ -196,7 +197,28 @@ namespace SketchModeller.Modelling.Services.Snap
             x.MatchClass<Coplanarity>(coplanarity => constraints = GetConcreteAnnotationTerm(coplanarity));
             x.MatchClass<Cocentrality>(cocentrality => constraints = GetConcreteAnnotationTerm(cocentrality));
             x.MatchClass<ColinearCenters>(colinearCenters => constraints = GetConcreteAnnotationTerm(colinearCenters));
+            x.MatchClass<CoplanarCenters>(coplanarCenters => constraints = GetConcreteAnnotationTerm(coplanarCenters));
             return constraints;
+        }
+
+        private Term[] GetConcreteAnnotationTerm(CoplanarCenters coplanarCenters)
+        {
+            var constraints = new List<Term>();
+            if (coplanarCenters.Elements.Length >= 2)
+            {
+                foreach (var pair in coplanarCenters.Elements.SeqPairs())
+                {
+                    var c1 = pair.Item1.Center;
+                    var n1 = pair.Item1.Normal;
+                    var c2 = pair.Item2.Center;
+                    var n2 = pair.Item2.Normal;
+
+                    var term = (c2 - c1) * TVec.CrossProduct(n1, n2);
+                    constraints.Add(term);
+                }
+            }
+
+            return constraints.ToArray();
         }
 
         private Term[] GetConcreteAnnotationTerm(Cocentrality cocentrality)

@@ -19,7 +19,7 @@
             <Button Command="{Binding ParallelCommand}">Parallel</Button>
             <Button Command="{Binding CocentricCommand}">Cocentric</Button>
             <Button Command="{Binding ColinearCentersCommand}" Content="Colinear centers"/>
-            <Button Content="Coplanar centers"/>
+            <Button Command="{Binding CoplanarCentersCommand}" Content="Coplanar centers"/>
         </StackPanel>
         <ListBox ItemsSource="{Binding Annotations}" SelectedIndex="{Binding SelectedAnnotationIndex}">
             <ListBox.Resources>
@@ -78,10 +78,44 @@
 							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
 							<TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
 						</Grid>
-					
 					</Border>
-					
 				</DataTemplate>
+                <DataTemplate DataType="{x:Type skm:ColinearCenters}">
+                    <Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="CornflowerBlue">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
+                            <TextBlock TextWrapping="Wrap" Text="Colinear centers" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
+                            <TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:CoplanarCenters}">
+                    <Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="Thistle">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
+                            <TextBlock TextWrapping="Wrap" Text="Coplanar centers" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
+                            <TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
             </ListBox.Resources>
         </ListBox>
     </DockPanel>
