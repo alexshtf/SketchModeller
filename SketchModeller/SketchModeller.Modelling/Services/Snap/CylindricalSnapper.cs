@@ -49,18 +49,22 @@ namespace SketchModeller.Modelling.Services.Snap
             var annotated = new HashSet<FeatureCurve>(curvesToAnnotations.Keys.Where(key => curvesToAnnotations[key].Count > 0));
             annotated.Intersect(snappedPrimitive.FeatureCurves);
 
+            Tuple<Term, Term[]> result = null;
             if (topCurve != null && botCurve != null)
                 // simple case - we use the two curves to reconstruct the cylinder
-                return FullInfo(snappedPrimitive);
+                result = FullInfo(snappedPrimitive);
             else if (silhouettes.Length == 2)
             {
                 if (!(topCurve == null && botCurve == null))
-                    return TwoSilhouettesSingleFeature(snappedPrimitive, annotated);
+                    result = TwoSilhouettesSingleFeature(snappedPrimitive, annotated);
                 else
-                    return TwoSilhouettesNoFeatures(snappedPrimitive, annotated);
+                    result = TwoSilhouettesNoFeatures(snappedPrimitive, annotated);
             }
 
-            throw new NotImplementedException("Not implemented all missing info yet");
+            if (result != null)
+                return IncorporateRadiusConstraint(snappedPrimitive, result);
+            else
+                throw new NotImplementedException("Not implemented all missing info yet");
         }
 
         #region abstract methods
@@ -68,8 +72,38 @@ namespace SketchModeller.Modelling.Services.Snap
         protected abstract void SpecificInit(TNew newPrimitive, TSnapped snapped);
         protected abstract Term GetTopRadius(TSnapped snapped);
         protected abstract Term GetBottomRadius(TSnapped snapped);
+        protected abstract Term GetRadiusSoftConstraint(TSnapped snapped, double expectedTop, double expectedBottom);
 
         #endregion
+
+        private Tuple<Term, Term[]> IncorporateRadiusConstraint(TSnapped snappedPrimitive, Tuple<Term, Term[]> result)
+        {
+            if (snappedPrimitive.LeftSilhouette != null && snappedPrimitive.RightSilhouette != null)
+            {
+                var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.LeftSilhouette.Points);
+                var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.RightSilhouette.Points);
+                var axis2d = Get2DVector(snappedPrimitive.AxisResult);
+
+                var sil0Top = GetForwardPoint(sil0, axis2d);
+                var sil0Bot = GetForwardPoint(sil0, -axis2d);
+                var sil1Top = GetForwardPoint(sil1, axis2d);
+                var sil1Bot = GetForwardPoint(sil1, -axis2d);
+
+                var expectedTop = 0.5 * Math.Min(
+                    sil0Top.DistanceFromSegment(sil1.Item1, sil1.Item2),
+                    sil1Top.DistanceFromSegment(sil0.Item1, sil0.Item2));
+                var expectedBottom = 0.5 * Math.Min(
+                    sil0Bot.DistanceFromSegment(sil1.Item1, sil1.Item2),
+                    sil1Bot.DistanceFromSegment(sil0.Item1, sil0.Item2));
+
+                var radiusTerm = GetRadiusSoftConstraint(snappedPrimitive, expectedTop, expectedBottom);
+                var newTargetFunc = 0.95 * radiusTerm + 0.05 * result.Item1;
+
+                return Tuple.Create(newTargetFunc, result.Item2);
+            }
+            else
+                return result;
+        }
 
         private Tuple<Term, Term[]> TwoSilhouettesNoFeatures(TSnapped snappedPrimitive, ISet<FeatureCurve> annotated)
         {
@@ -100,12 +134,21 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var sil0 = SegmentApproximator.ApproximateSegment(snappedPrimitive.LeftSilhouette.Points);
             var sil1 = SegmentApproximator.ApproximateSegment(snappedPrimitive.RightSilhouette.Points);
+            var axis2d = Get2DVector(snappedPrimitive.AxisResult);
 
-            var snappedFeatureCurve = snappedPrimitive.TopFeatureCurve.SnappedTo == null ? snappedPrimitive.BottomFeatureCurve : snappedPrimitive.TopFeatureCurve;
-            var unsnappedFeatureCurve = snappedPrimitive.TopFeatureCurve.SnappedTo == null ? snappedPrimitive.TopFeatureCurve : snappedPrimitive.BottomFeatureCurve;
+            var isTopSnapped = snappedPrimitive.TopFeatureCurve.SnappedTo != null;
+            var isBottomSnapped = snappedPrimitive.BottomFeatureCurve.SnappedTo != null;
 
-            var sil0Far = GetFarPoint(sil0, snappedFeatureCurve.SnappedTo);
-            var sil1Far = GetFarPoint(sil1, snappedFeatureCurve.SnappedTo);
+            var snappedFeatureCurve = isTopSnapped ? snappedPrimitive.TopFeatureCurve : snappedPrimitive.BottomFeatureCurve;
+            var unsnappedFeatureCurve = isTopSnapped ? snappedPrimitive.BottomFeatureCurve : snappedPrimitive.TopFeatureCurve;
+
+            var sil0Top = GetForwardPoint(sil0, axis2d);
+            var sil0Bot = GetForwardPoint(sil0, -axis2d);
+            var sil1Top = GetForwardPoint(sil1, axis2d);
+            var sil1Bot = GetForwardPoint(sil1, -axis2d);
+
+            var sil0Far = isTopSnapped ? sil0Bot : sil0Top;
+            var sil1Far = isTopSnapped ? sil1Bot : sil1Top;
 
             var featureProj = ProjectionFit(snappedFeatureCurve);
             var farProj = Enumerable.Repeat(EndpointsProjectionFit(unsnappedFeatureCurve, sil0Far, sil1Far), 1);

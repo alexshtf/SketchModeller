@@ -153,6 +153,36 @@ namespace Utils
         }
 
         /// <summary>
+        /// Computes the distance from the given point to the given line.
+        /// </summary>
+        /// <param name="pnt">The point to compute the distance for</param>
+        /// <param name="p">First point defining the line</param>
+        /// <param name="q">Second point defining the line</param>
+        /// <returns>The distance from <paramref name="pnt"/> to the line defined by <paramref name="p"/> and <paramref name="q"/>.</returns>
+        public static double DistanceToLine(this Point pnt, Point p, Point q)
+        {
+            return (pnt - pnt.ProjectOnLine(p, q)).Length;
+        }
+
+        /// <summary>
+        /// Projects a point on a line passing through p and q
+        /// </summary>
+        /// <param name="pnt">The point to be projected</param>
+        /// <param name="p">First point defining the line</param>
+        /// <param name="q">Second point defining the line</param>
+        /// <returns>The point <paramref name="pnt"/> projected on the specified line segment.</returns>
+        public static Point ProjectOnLine(this Point pnt, Point p, Point q)
+        {
+            var v = q - p;
+            var u = pnt - p;
+
+            var t = (u * v) / v.LengthSquared;
+            var candidate = p + t * v;
+
+            return candidate;
+        }
+
+        /// <summary>
         /// Projects a point on a segment.
         /// </summary>
         /// <param name="pnt">The point to project</param>

@@ -29,5 +29,12 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             return snapped.BottomRadius;
         }
+
+        protected override Term GetRadiusSoftConstraint(SnappedCone snapped, double expectedTop, double expectedBottom)
+        {
+            return 0.5 * (
+                TermBuilder.Power(snapped.TopRadius - expectedTop, 2) + 
+                TermBuilder.Power(snapped.BottomRadius - expectedBottom, 2));
+        }
     }
 }

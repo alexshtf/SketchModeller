@@ -29,5 +29,11 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             return snapped.Radius;
         }
+
+        protected override Term GetRadiusSoftConstraint(SnappedCylinder snapped, double expectedTop, double expectedBottom)
+        {
+            var avg = 0.5 * (expectedTop + expectedBottom);
+            return TermBuilder.Power(snapped.Radius - avg, 2);
+        }
     }
 }
