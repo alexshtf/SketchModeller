@@ -31,6 +31,7 @@ namespace SketchModeller.Modelling.Views
             CoplanarCommand = new DelegateCommand(CoplanarExecute);
             ParallelCommand = new DelegateCommand(ParallelExecute);
             CocentricCommand = new DelegateCommand(CocentricExecue);
+            ColinearCentersCommand = new DelegateCommand(ColinearCentersExecute);
             Annotations = new ObservableCollection<Annotation>();
         }
 
@@ -48,6 +49,7 @@ namespace SketchModeller.Modelling.Views
         public ICommand CoplanarCommand { get; private set; }
         public ICommand ParallelCommand { get; private set; }
         public ICommand CocentricCommand { get; private set; }
+        public ICommand ColinearCentersCommand { get; private set; }
 
         public ObservableCollection<Annotation> Annotations { get; private set; }
 
@@ -96,6 +98,11 @@ namespace SketchModeller.Modelling.Views
             AddAnnotation(selectedElements => new Cocentrality { Elements = selectedElements });
         }
 
+        private void ColinearCentersExecute()
+        {
+            AddAnnotation(selectedElements => new ColinearCenters { Elements = selectedElements });
+        }
+
         #endregion
 
         #region Helper methods
@@ -114,6 +121,7 @@ namespace SketchModeller.Modelling.Views
                 currAnnotation.MatchClass<Coplanarity>(coplarity => elements = coplarity.Elements);
                 currAnnotation.MatchClass<Parallelism>(parallelism => elements = parallelism.Elements);
                 currAnnotation.MatchClass<Cocentrality>(cocentrality => elements = cocentrality.Elements);
+                currAnnotation.MatchClass<ColinearCenters>(colinearCenters => elements = colinearCenters.Elements);
                 Contract.Assume(elements != null);
 
                 foreach (var featureCurve in elements)

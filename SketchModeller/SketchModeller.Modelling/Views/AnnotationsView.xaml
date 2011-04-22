@@ -18,6 +18,8 @@
             <Button Command="{Binding CoplanarCommand}">Coplanar</Button>
             <Button Command="{Binding ParallelCommand}">Parallel</Button>
             <Button Command="{Binding CocentricCommand}">Cocentric</Button>
+            <Button Command="{Binding ColinearCentersCommand}" Content="Colinear centers"/>
+            <Button Content="Coplanar centers"/>
         </StackPanel>
         <ListBox ItemsSource="{Binding Annotations}" SelectedIndex="{Binding SelectedAnnotationIndex}">
             <ListBox.Resources>

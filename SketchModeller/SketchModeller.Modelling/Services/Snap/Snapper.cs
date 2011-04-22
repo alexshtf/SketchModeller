@@ -129,6 +129,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 annotation.MatchClass<Parallelism>(pa => curves = pa.Elements);
                 annotation.MatchClass<Coplanarity>(ca => curves = ca.Elements);
                 annotation.MatchClass<Cocentrality>(ca => curves = ca.Elements);
+                annotation.MatchClass<ColinearCenters>(cc => curves = cc.Elements);
                 Debug.Assert(curves != null);
                 foreach (var fc in curves)
                     curvesToAnnotations[fc].Add(annotation);
@@ -194,6 +195,7 @@ namespace SketchModeller.Modelling.Services.Snap
             x.MatchClass<Parallelism>(parallelism => constraints = GetConcreteAnnotationTerm(parallelism));
             x.MatchClass<Coplanarity>(coplanarity => constraints = GetConcreteAnnotationTerm(coplanarity));
             x.MatchClass<Cocentrality>(cocentrality => constraints = GetConcreteAnnotationTerm(cocentrality));
+            x.MatchClass<ColinearCenters>(colinearCenters => constraints = GetConcreteAnnotationTerm(colinearCenters));
             return constraints;
         }
 
@@ -269,7 +271,47 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private Term[] GetConcreteAnnotationTerm(Parallelism parallelism)
         {
-            throw new NotImplementedException();// we still don't handle parallelism
+            var terms = new List<Term>();
+            if (parallelism.Elements.Length >= 2)
+            {
+                var normals = from elem in parallelism.Elements
+                              select elem.Normal;
+
+                foreach (var normalsPair in normals.SeqPairs())
+                {
+                    var n1 = normalsPair.Item1;
+                    var n2 = normalsPair.Item2;
+
+                    terms.AddRange(VectorParallelism(n1, n2));
+                }
+            }
+            return terms.ToArray();
+        }
+
+        private Term[] GetConcreteAnnotationTerm(ColinearCenters colinearCenters)
+        {
+            var terms = new List<Term>();
+            if (colinearCenters.Elements.Length >= 3)
+            {
+                var centers = from elem in colinearCenters.Elements
+                              select elem.Center;
+
+                foreach (var triple in centers.SeqTripples())
+                {
+                    var u = triple.Item1 - triple.Item2;
+                    var v = triple.Item2 - triple.Item3;
+                    
+                    terms.AddRange(VectorParallelism(u, v));
+                }
+            }
+            return terms.ToArray();
+        }
+
+        private static IEnumerable<Term> VectorParallelism(TVec u, TVec v)
+        {
+            yield return u.X * v.Y - v.X * u.Y;
+            yield return u.Y * v.Z - u.Z * v.Y;
+            yield return u.X * v.Z - v.X * u.Z;
         }
 
         #endregion
