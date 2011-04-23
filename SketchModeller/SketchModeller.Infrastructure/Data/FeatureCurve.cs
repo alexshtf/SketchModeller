@@ -36,7 +36,7 @@ namespace SketchModeller.Infrastructure.Data
         public Vector3D NormalResult { get; set; }
 
         /// <summary>
-        /// 
+        /// The sketch curve that this feature curve is snapped to.
         /// </summary>
         public PointsSequence SnappedTo { get; set; }
 
