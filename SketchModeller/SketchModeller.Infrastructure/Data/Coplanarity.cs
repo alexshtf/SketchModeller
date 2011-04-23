@@ -9,6 +9,5 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class Coplanarity : Annotation
     {
-        public FeatureCurve[] Elements { get; set; }
     }
 }

@@ -124,12 +124,7 @@ namespace SketchModeller.Modelling.Views
                     item.IsSelected = false;
 
                 var currAnnotation = Annotations[SelectedAnnotationIndex];
-                FeatureCurve[] elements = null;
-                currAnnotation.MatchClass<Coplanarity>(coplarity => elements = coplarity.Elements);
-                currAnnotation.MatchClass<Parallelism>(parallelism => elements = parallelism.Elements);
-                currAnnotation.MatchClass<Cocentrality>(cocentrality => elements = cocentrality.Elements);
-                currAnnotation.MatchClass<ColinearCenters>(colinearCenters => elements = colinearCenters.Elements);
-                currAnnotation.MatchClass<CoplanarCenters>(coplanarCenters => elements = coplanarCenters.Elements);
+                FeatureCurve[] elements = currAnnotation.Elements;
                 Contract.Assume(elements != null);
 
                 foreach (var featureCurve in elements)

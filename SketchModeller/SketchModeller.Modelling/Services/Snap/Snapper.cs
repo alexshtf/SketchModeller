@@ -125,12 +125,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             foreach (var annotation in sessionData.Annotations)
             {
-                IEnumerable<FeatureCurve> curves = null;
-                annotation.MatchClass<Parallelism>(pa => curves = pa.Elements);
-                annotation.MatchClass<Coplanarity>(ca => curves = ca.Elements);
-                annotation.MatchClass<Cocentrality>(ca => curves = ca.Elements);
-                annotation.MatchClass<ColinearCenters>(cc => curves = cc.Elements);
-                annotation.MatchClass<CoplanarCenters>(cc => curves = cc.Elements);
+                IEnumerable<FeatureCurve> curves = annotation.Elements;
                 Debug.Assert(curves != null);
                 foreach (var fc in curves)
                     curvesToAnnotations[fc].Add(annotation);

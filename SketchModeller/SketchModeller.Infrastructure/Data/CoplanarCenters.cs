@@ -8,6 +8,5 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class CoplanarCenters : Annotation
     {
-        public FeatureCurve[] Elements { get; set; }
     }
 }

@@ -8,6 +8,5 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class Cocentrality : Annotation
     {
-        public FeatureCurve[] Elements { get; set; }
     }
 }
