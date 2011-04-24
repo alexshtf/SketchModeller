@@ -189,6 +189,8 @@
     <Compile Include="Views\NewCylinderViewModel.cs" />
     <Compile Include="Views\NewPrimitiveCurvesControl.cs" />
     <Compile Include="Views\NewPrimitiveViewModel.cs" />
+    <Compile Include="Views\NewSphereView.cs" />
+    <Compile Include="Views\NewSphereViewModel.cs" />
     <Compile Include="Views\OpenImageView.xaml.cs">
       <DependentUpon>OpenImageView.xaml</DependentUpon>
     </Compile>

@@ -127,6 +127,13 @@ namespace SketchModeller.Modelling.Views
                                 Length = 0.6,
                             });
                         break;
+                    case PrimitiveKinds.Sphere:
+                        sessionData.NewPrimitives.Add(new NewSphere
+                            {
+                                Center = pos3d.Value,
+                                Radius = 0.2,
+                            });
+                        break;
                     default:
                         Trace.Fail("Invalid primitive kind");
                         break;

@@ -238,6 +238,8 @@ namespace SketchModeller.Modelling.Views
                 primitiveKind = PrimitiveKinds.Cylinder;
             else if (sender == coneThumb)
                 primitiveKind = PrimitiveKinds.Cone;
+            else if (sender == sphereThumb)
+                primitiveKind = PrimitiveKinds.Sphere;
             else
                 logger.Log("Invalid event sender", Category.Exception, Priority.High);
 

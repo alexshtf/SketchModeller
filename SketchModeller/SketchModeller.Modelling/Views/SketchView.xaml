@@ -130,6 +130,7 @@
                     </UniformGrid.Resources>
                     <Thumb x:Name="cylinderThumb" Tag="Cylinder" />
                     <Thumb x:Name="coneThumb" Tag="Cone" />
+                    <Thumb x:Name="sphereThumb" d:LayoutOverrides="Height" Tag="Sphere"/>
                 </UniformGrid>
             </GroupBox>
             <GroupBox Header="Primive operations">

@@ -107,6 +107,7 @@
     <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />
+    <Compile Include="Data\NewSphere.cs" />
     <Compile Include="Data\PrimitiveCurve.cs" />
     <Compile Include="Data\SelectablePrimitive.cs" />
     <Compile Include="Data\SnappedCylindricalPrimitive.cs" />

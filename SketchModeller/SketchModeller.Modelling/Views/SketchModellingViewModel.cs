@@ -131,9 +131,15 @@ namespace SketchModeller.Modelling.Views
                     viewModel.Init(newCone);
                     result = viewModel;
                 });
+            data.MatchClass<NewSphere>(newSphere =>
+                {
+                    var viewModel = container.Resolve<NewSphereViewModel>();
+                    viewModel.Init(newSphere);
+                    result = viewModel;
+                });
+            Contract.Assume(result != null);
 
-            if (result != null)
-                result.Model = data;
+            result.Model = data;
             return result;
         }
 

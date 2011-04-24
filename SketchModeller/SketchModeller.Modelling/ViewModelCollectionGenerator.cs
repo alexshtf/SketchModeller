@@ -89,6 +89,7 @@ namespace SketchModeller.Modelling
             foreach (var item in items.Cast<TModel>())
             {
                 var viewModel = viewModelFactory(item);
+                Contract.Assume(viewModel != null);
                 viewModels.Insert(index, viewModel);
                 ++index;
             }
