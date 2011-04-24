@@ -73,7 +73,7 @@ namespace SketchModeller.Modelling.Views
             if (dragVector3d != null)
             {
                 var axisDragVector = MathUtils3D.ProjectVector(dragVector3d.Value, ApproximateAxis);
-                PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector);
+                PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector, currDragPosition);
                 viewModel.NotifyDragged();
             }
 
@@ -92,7 +92,7 @@ namespace SketchModeller.Modelling.Views
             get { return isDragging; }
         }
 
-        protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector);
+        protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition);
         protected abstract Vector3D ApproximateAxis { get; }
 
         protected void SetDefaultMaterial(ModelVisualBase mv3d, NewPrimitiveViewModel viewModel)

@@ -55,7 +55,7 @@ namespace SketchModeller.Modelling.Views
             get { return viewModel.Axis; }
         }
 
-        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector)
+        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
         {
             if (Keyboard.Modifiers == ModifierKeys.None)
                 viewModel.Center = viewModel.Center + dragVector3d;
