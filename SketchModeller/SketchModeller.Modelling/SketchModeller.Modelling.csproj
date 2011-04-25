@@ -129,9 +129,11 @@
     <Compile Include="ModelViews\ModelViewerFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Cylinder.cs" />
+    <Compile Include="ModelViews\ModelViewerFactory.Sphere.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cylinder.cs" />
+    <Compile Include="ModelViews\ModelViewerSnappedFactory.Sphere.cs" />
     <Compile Include="ModelViews\ModelViewerView.xaml.cs">
       <DependentUpon>ModelViewerView.xaml</DependentUpon>
     </Compile>
@@ -164,6 +166,7 @@
     <Compile Include="Services\Snap\Snapper.cs" />
     <Compile Include="Services\Snap\SnapperHelper.cs" />
     <Compile Include="Services\Snap\SnappersManager.cs" />
+    <Compile Include="Services\Snap\SphereSnapper.cs" />
     <Compile Include="SketchCreator\SketchCreatorView.xaml.cs">
       <DependentUpon>SketchCreatorView.xaml</DependentUpon>
     </Compile>

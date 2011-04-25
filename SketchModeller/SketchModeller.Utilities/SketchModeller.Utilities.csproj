@@ -96,6 +96,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CircleFitter.cs" />
     <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
     <Compile Include="DebugPrint.cs" />

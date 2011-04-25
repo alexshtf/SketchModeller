@@ -8,6 +8,7 @@ using Utils;
 using SketchModeller.Infrastructure.Data;
 using Petzold.Media3D;
 using System.Windows.Media;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -20,7 +21,9 @@ namespace SketchModeller.Modelling.ModelViews
             Visual3D result = new ModelVisual3D();
             item.MatchClass<NewCylinder>(cylinderData => result = CreateCylinderView(cylinderData));
             item.MatchClass<NewCone>(coneData => result = CreateConeView(coneData));
+            item.MatchClass<NewSphere>(sphereData => result = CreateSphereView(sphereData));
 
+            Contract.Assume(result != null);
             return result;
         }
     }

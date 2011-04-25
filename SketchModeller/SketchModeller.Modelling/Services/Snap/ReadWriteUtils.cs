@@ -9,6 +9,8 @@ namespace SketchModeller.Modelling.Services.Snap
 {
     static class ReadWriteUtils
     {
+        #region SnappedCylinder methods
+
         public static VectorsWriter Write(this VectorsWriter writer, SnappedCylinder cylinder)
         {
             return writer
@@ -34,6 +36,10 @@ namespace SketchModeller.Modelling.Services.Snap
             cylinder.LengthResult = reader.ReadValue();
             cylinder.RadiusResult = Math.Abs(reader.ReadValue());
         }
+        
+        #endregion
+
+        #region SnappedCone methods
 
         public static VectorsWriter Write(this VectorsWriter writer, SnappedCone cone)
         {
@@ -63,5 +69,31 @@ namespace SketchModeller.Modelling.Services.Snap
             cone.TopRadiusResult = Math.Abs(reader.ReadValue());
             cone.BottomRadiusResult = Math.Abs(reader.ReadValue());
         }
+        
+        #endregion
+
+        #region SnappedSphere methods
+
+        public static VectorsWriter Write(this VectorsWriter writer, SnappedSphere sphere)
+        {
+            return writer
+                .Write(sphere.CenterResult)
+                .Write(sphere.RadiusResult);
+        }
+
+        public static VariableVectorsWriter Write(this VariableVectorsWriter writer, SnappedSphere sphere)
+        {
+            return writer
+                .Write(sphere.Center)
+                .Write(sphere.Radius);
+        }
+
+        public static void Read(this VectorsReader reader, SnappedSphere sphere)
+        {
+            sphere.CenterResult = reader.ReadPoint3D();
+            sphere.RadiusResult = reader.ReadValue();
+        }
+
+        #endregion
     }
 }

@@ -48,6 +48,7 @@ namespace SketchModeller.Modelling.Services.Snap
             snappersManager = new SnappersManager(uiState, sessionData);
             snappersManager.RegisterSnapper(new ConeSnapper());
             snappersManager.RegisterSnapper(new CylinderSnapper());
+            snappersManager.RegisterSnapper(new SphereSnapper());
 
             logger.Log("NewSnapper created", Category.Debug, Priority.None);
         }
@@ -106,6 +107,13 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 variablesWriter.Write(snappedCone);
                 startVectorWriter.Write(snappedCone);
+            }
+
+            // write spheres
+            foreach (var snappedSphere in sessionData.SnappedPrimitives.OfType<SnappedSphere>())
+            {
+                variablesWriter.Write(snappedSphere);
+                startVectorWriter.Write(snappedSphere);
             }
 
             #endregion
@@ -172,6 +180,9 @@ namespace SketchModeller.Modelling.Services.Snap
 
             foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
                 resultReader.Read(snappedCone);
+
+            foreach (var snappedSphere in sessionData.SnappedPrimitives.OfType<SnappedSphere>())
+                resultReader.Read(snappedSphere);
 
             #endregion
 

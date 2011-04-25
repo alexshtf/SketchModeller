@@ -23,9 +23,12 @@ namespace SketchModeller.Modelling.ModelViews
 
         public Visual3D Create(object item)
         {
-            Visual3D result = new ModelVisual3D();
+            Visual3D result = null;
             item.MatchClass<SnappedCylinder>(cylinderData => result = CreateCylinderView(cylinderData));
             item.MatchClass<SnappedCone>(coneData => result = CreateConeView(coneData));
+            item.MatchClass<SnappedSphere>(sphereData => result = CreateSphereView(sphereData));
+            
+            Contract.Assume(result != null);
             PrimitivesPickService.SetPrimitiveData(result, item as SnappedPrimitive);
             return result;
         }

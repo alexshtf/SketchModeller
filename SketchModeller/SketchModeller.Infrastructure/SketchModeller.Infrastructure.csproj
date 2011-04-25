@@ -123,6 +123,7 @@
     <Compile Include="Data\SnappedCone.cs" />
     <Compile Include="Data\SnappedCylinder.cs" />
     <Compile Include="Data\SnappedPrimitive.cs" />
+    <Compile Include="Data\SnappedSphere.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\GlobalShortcutEvent.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />
