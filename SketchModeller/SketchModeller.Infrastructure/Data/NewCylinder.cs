@@ -11,11 +11,6 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class NewCylinder : NewCylindricalPrimitive
     {
-        public NewCylinder()
-        {
-
-        }
-
         #region Diameter property
 
         private double diameter;
