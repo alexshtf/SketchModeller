@@ -121,6 +121,7 @@
     <Compile Include="ReadOnlySet.cs" />
     <Compile Include="SelectionListener.cs" />
     <Compile Include="SingletonSet.cs" />
+    <Compile Include="TupleExtensions.cs" />
     <Compile Include="WeakDictionary.cs" />
     <Compile Include="WpfUtils.cs" />
   </ItemGroup>
