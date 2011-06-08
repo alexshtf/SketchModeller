@@ -152,10 +152,12 @@
     <Compile Include="Services\PrimitivesConverter\NewConverters\ConeCylinderConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderCylinderConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\SgcSgcConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\SphereSphereConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\PrimitivesConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedCylinderConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedSgcConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedSphereConverter.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />

@@ -21,12 +21,14 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             RegisterConverter(new SnappedConeConverter());
             RegisterConverter(new SnappedCylinderConverter());
             RegisterConverter(new SnappedSphereConverter());
+            RegisterConverter(new SnappedSgcConverter());
 
             RegisterConverter(new ConeConeConverter());
             RegisterConverter(new ConeCylinderConverter());
             RegisterConverter(new CylinderConeConverter());
             RegisterConverter(new CylinderCylinderConverter());
             RegisterConverter(new SphereSphereConverter());
+            RegisterConverter(new SgcSgcConverter());
         }
 
         public NewPrimitive SnappedToNew(SnappedPrimitive source)

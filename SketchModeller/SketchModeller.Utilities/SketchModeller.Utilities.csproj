@@ -99,6 +99,7 @@
     <Compile Include="CircleFitter.cs" />
     <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
+    <Compile Include="CylinderComponentExtensions.cs" />
     <Compile Include="DebugPrint.cs" />
     <Compile Include="EllipseFitter.cs" />
     <Compile Include="FloatUtils.cs" />
