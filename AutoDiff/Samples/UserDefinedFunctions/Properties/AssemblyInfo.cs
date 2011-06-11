@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AutoDiff")]
-[assembly: AssemblyDescription("High-performance and high-accuracy automatic function-differentiation library suitable for optimization and numeric computing.")]
+[assembly: AssemblyTitle("UserDefinedFunctions")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Alex Shtof")]
-[assembly: AssemblyProduct("AutoDiff")]
-[assembly: AssemblyCopyright("Copyright © NA 2010")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("UserDefinedFunctions")]
+[assembly: AssemblyCopyright("Copyright ©  2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e294e492-271d-48ae-a047-c03bc13b9f6f")]
+[assembly: Guid("7d4e3b0a-8f7d-4ccd-ad25-e064ecbc6ff7")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.4.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

@@ -78,6 +78,9 @@
   <ItemGroup>
     <Reference Include="Accord.Math, Version=2.1.5.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL" />
     <Reference Include="AForge.Math, Version=2.1.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL" />
+    <Reference Include="Meta.Numerics">
+      <HintPath>..\packages\Meta.Numerics.2.0.0\lib\Meta.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
@@ -101,15 +104,19 @@
     <Compile Include="CurveSampler.cs" />
     <Compile Include="CylinderComponentExtensions.cs" />
     <Compile Include="DebugPrint.cs" />
+    <Compile Include="DelegateComparer.cs" />
     <Compile Include="EllipseFitter.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="FloatUtils.cs" />
     <Compile Include="GeometricTests.cs" />
+    <Compile Include="Graphs\Dijkstra.cs" />
     <Compile Include="Graphs\IndicesGraph.cs" />
     <Compile Include="Hungarian.cs" />
     <Compile Include="IndexedUnionFind.cs" />
     <Compile Include="NewPrimitiveExtensions.cs" />
     <Compile Include="Optimizer.cs" />
     <Compile Include="PCA2D.cs" />
+    <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
     <Compile Include="PolarPointsGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -145,6 +152,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
