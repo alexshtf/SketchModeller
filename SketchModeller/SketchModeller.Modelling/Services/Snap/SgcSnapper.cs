@@ -92,6 +92,11 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private Tuple<Term, Term[]> FullInfo(SnappedStraightGenCylinder snappedPrimitive)
         {
+            var spine = GenerateSpine(snappedPrimitive.LeftSilhouette, snappedPrimitive.RightSilhouette);
+        }
+
+        private object GenerateSpine(PointsSequence l1, PointsSequence l2)
+        {
             throw new NotImplementedException();
         }
 

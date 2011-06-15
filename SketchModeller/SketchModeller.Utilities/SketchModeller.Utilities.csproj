@@ -107,6 +107,8 @@
     <Compile Include="DelegateComparer.cs" />
     <Compile Include="EllipseFitter.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Fitting\LSIntervalsFitter.cs" />
+    <Compile Include="Fitting\LSPointsIntervalsFitter.cs" />
     <Compile Include="FloatUtils.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Graphs\Dijkstra.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="PCA2D.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
+    <Compile Include="PointsToPolylineConverter.cs" />
     <Compile Include="PolarPointsGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rasterizer.cs" />

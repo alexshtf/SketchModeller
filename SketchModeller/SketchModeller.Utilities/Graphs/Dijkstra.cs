@@ -13,6 +13,33 @@ namespace SketchModeller.Utilities.Graphs
     public static class Dijkstra
     {
         /// <summary>
+        /// Computes the distances from the source vertex to all the graph's vertices.
+        /// </summary>
+        /// <param name="edges">The list of graph edges. Each node </param>
+        /// <param name="weight">The weight function that assigns each edge a non-negative weight</param>
+        /// <param name="source">The source vertex</param>
+        /// <returns>A distances array, such that <c>result[i]</c> is the distance to vertex <c>i</c>.</returns>
+        public static double[] ComputeDistnces(IEnumerable<Tuple<int, int>> edges, [Pure] Func<int, int, double> weight, int source)
+        {
+            Contract.Requires(edges != null);
+            Contract.Requires(Contract.ForAll(edges, edge => edge.Item1 >= 0 && edge.Item2 >= 0)); // vertices are non-negative integers.
+
+            Contract.Requires(weight != null);
+            Contract.Requires(Contract.ForAll(edges, edge => weight(edge.Item1, edge.Item2) >= 0)); // non-negative edge weights
+
+            Contract.Requires(source <= edges.MaxNodeIndex()); // source and target are valid nodes
+
+            Contract.Ensures(Contract.Result<double[]>() != null);
+            Contract.Ensures(Contract.Result<double[]>().Length == edges.MaxNodeIndex() + 1);
+            Contract.Ensures(Contract.Result<double[]>()[source] == 0); // the distance from source to itself it zero
+            Contract.Ensures(Contract.ForAll(Contract.Result<double[]>(), d => d >= 0)); // all distances are non-negative
+
+            var result = ShortestPaths(edges, weight, source).Item2;
+
+            return result;
+        }
+
+        /// <summary>
         /// Computes the shortest path between two graph vertices using the Dijkstra algorithm.
         /// </summary>
         /// <param name="edges">The list of graph edges. Each node </param>
@@ -21,7 +48,7 @@ namespace SketchModeller.Utilities.Graphs
         /// <param name="target">The target vertex</param>
         /// <returns>A list of vertices on the shortest path from <paramref name="source"/> to <paramref name="target"/>, or an empty
         /// list of no path exists.</returns>
-        public static IList<int> Compute(IEnumerable<Tuple<int, int>> edges, [Pure] Func<int, int, double> weight, int source, int target)
+        public static IList<int> ComputePath(IEnumerable<Tuple<int, int>> edges, [Pure] Func<int, int, double> weight, int source, int target)
         {
             Contract.Requires(edges != null);
             Contract.Requires(Contract.ForAll(edges, edge => edge.Item1 >= 0 && edge.Item2 >= 0)); // vertices are non-negative integers.
@@ -37,7 +64,7 @@ namespace SketchModeller.Utilities.Graphs
             Contract.Ensures(Contract.Result<IList<int>>().Count == 0 || Contract.Result<IList<int>>().First() == source); // the first path vertex is source
             Contract.Ensures(Contract.Result<IList<int>>().Count == 0 || Contract.Result<IList<int>>().Last() == target); // the last path vertex is target
 
-            var previous = ShortestPaths(edges, weight, source);
+            var previous = ShortestPaths(edges, weight, source).Item1;
 
             var path = new List<int>();
             var current = target;
@@ -54,7 +81,7 @@ namespace SketchModeller.Utilities.Graphs
                 return new int[0]; // empty path.. source and target are not connected
         }
 
-        private static int[] ShortestPaths(IEnumerable<Tuple<int, int>> edges, Func<int, int, double> weight, int source)
+        private static Tuple<int[], double[]> ShortestPaths(IEnumerable<Tuple<int, int>> edges, Func<int, int, double> weight, int source)
         {
             var neighborsOf = edges.ToNeighborhoodLists();
             var vertices = Enumerable.Range(0, neighborsOf.Count);
@@ -101,7 +128,7 @@ namespace SketchModeller.Utilities.Graphs
                     }
                 }
             }
-            return previous;
+            return Tuple.Create(previous, distanceTo);
         }
     }
 }
