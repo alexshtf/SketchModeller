@@ -116,8 +116,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChamferDistanceTransform.cs" />
+    <Compile Include="Computations\CurvedSubdividor.cs" />
+    <Compile Include="Computations\IntervalsSampler.cs" />
     <Compile Include="Computations\LSIntervalsFitter.cs" />
     <Compile Include="Computations\LSPointsIntervalsFitter.cs" />
+    <Compile Include="Computations\PointsToPolylineConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
@@ -174,6 +177,7 @@
     <Compile Include="Services\Snap\SnapperHelper.cs" />
     <Compile Include="Services\Snap\SnappersManager.cs" />
     <Compile Include="Services\Snap\SphereSnapper.cs" />
+    <Compile Include="Computations\TwoLinesMedialAxis.cs" />
     <Compile Include="SketchCreator\SketchCreatorView.xaml.cs">
       <DependentUpon>SketchCreatorView.xaml</DependentUpon>
     </Compile>

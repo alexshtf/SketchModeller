@@ -7,14 +7,15 @@ using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.Computations
 {
-    class LSPointsIntervalsFitter
+    static class LSPointsIntervalsFitter
     {
         /// <summary>
         /// Computes a least-squares fit for X and Y coordinates such that the intervals are broken at the same indices for both X and Y.
         /// </summary>
         /// <param name="xs">The X coordinates array</param>
         /// <param name="ys">The Y coordinates array</param>
-        /// <param name="threshold">Error threahold. For a value of <c>double.NaN</c> the threshold will be automatically selected</param>
+        /// <param name="threshold">Error threahold. For a value of <c>double.NaN</c> the threshold will be automatically selected 
+        /// based on the standard deviation of the data</param>
         /// <returns>A tuple such that the first and second items are interval coefficients for X and Y respectively. The third item
         /// contains the breaking indices.</returns>
         public static Tuple<double[][], double[][], int[]> FitOptimalIntervals(double[] xs, double[] ys, double threshold = double.NaN)
@@ -27,7 +28,7 @@ namespace SketchModeller.Modelling.Computations
             {
                 var xStd = Math.Sqrt(xs.Variance());
                 var yStr = Math.Sqrt(ys.Variance());
-                threshold = Math.Max(xStd, yStr) / 50;
+                threshold = Math.Min(xStd, yStr) / 100;
             }
 
             var result = EnumerateFits(xs, ys, threshold).Last(); // fits sequence improves until the last (best) fit is reached.
@@ -108,4 +109,5 @@ namespace SketchModeller.Modelling.Computations
             public int[] breakIndices;
         }
     }
+
 }

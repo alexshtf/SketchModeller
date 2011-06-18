@@ -8,8 +8,9 @@ using SketchModeller.Utilities.Graphs;
 using Utils;
 
 using Enumerable = System.Linq.Enumerable;
+using SketchModeller.Utilities;
 
-namespace SketchModeller.Utilities
+namespace SketchModeller.Modelling.Computations
 {
     /// <summary>
     /// Converts a single points cloud sampled from a polyline to a polyline that approximates it.
