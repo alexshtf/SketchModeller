@@ -87,20 +87,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="alglibinternal.cs" />
-    <Compile Include="alglibmisc.cs" />
-    <Compile Include="ap.cs" />
-    <Compile Include="dataanalysis.cs" />
-    <Compile Include="diffequations.cs" />
-    <Compile Include="fasttransforms.cs" />
-    <Compile Include="integration.cs" />
-    <Compile Include="interpolation.cs" />
-    <Compile Include="linalg.cs" />
-    <Compile Include="optimization.cs" />
+    <Compile Include="alglibinternal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="alglibmisc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="dataanalysis.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="diffequations.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="fasttransforms.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="integration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="interpolation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="linalg.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="optimization.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="solvers.cs" />
-    <Compile Include="specialfunctions.cs" />
-    <Compile Include="statistics.cs" />
+    <Compile Include="solvers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="specialfunctions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="statistics.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

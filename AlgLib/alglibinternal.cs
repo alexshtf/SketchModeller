@@ -28,6 +28,36 @@ public partial class alglib
 }
 public partial class alglib
 {
+    public class scodes
+    {
+        public static int getrdfserializationcode()
+        {
+            int result = 0;
+
+            result = 1;
+            return result;
+        }
+
+
+        public static int getkdtreeserializationcode()
+        {
+            int result = 0;
+
+            result = 2;
+            return result;
+        }
+
+
+        public static int getmlpserializationcode()
+        {
+            int result = 0;
+
+            result = 3;
+            return result;
+        }
+
+
+    }
     public class apserv
     {
         /*************************************************************************
@@ -372,6 +402,45 @@ public partial class alglib
             if( ap.rows(x)<m | ap.cols(x)<n )
             {
                 x = new double[m, n];
+            }
+        }
+
+
+        /*************************************************************************
+        Resizes X and:
+        * preserves old contents of X
+        * fills new elements by zeros
+
+          -- ALGLIB --
+             Copyright 20.03.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void rmatrixresize(ref double[,] x,
+            int m,
+            int n)
+        {
+            double[,] oldx = new double[0,0];
+            int i = 0;
+            int j = 0;
+            int m2 = 0;
+            int n2 = 0;
+
+            m2 = ap.rows(x);
+            n2 = ap.cols(x);
+            ap.swap(ref x, ref oldx);
+            x = new double[m, n];
+            for(i=0; i<=m-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    if( i<m2 & j<n2 )
+                    {
+                        x[i,j] = oldx[i,j];
+                    }
+                    else
+                    {
+                        x[i,j] = 0.0;
+                    }
+                }
             }
         }
 
@@ -888,6 +957,406 @@ public partial class alglib
                 return result;
             }
             result = x;
+            return result;
+        }
+
+
+        /*************************************************************************
+        Allocation of serializer: complex value
+        *************************************************************************/
+        public static void alloccomplex(alglib.serializer s,
+            complex v)
+        {
+            s.alloc_entry();
+            s.alloc_entry();
+        }
+
+
+        /*************************************************************************
+        Serialization: complex value
+        *************************************************************************/
+        public static void serializecomplex(alglib.serializer s,
+            complex v)
+        {
+            s.serialize_double(v.x);
+            s.serialize_double(v.y);
+        }
+
+
+        /*************************************************************************
+        Unserialization: complex value
+        *************************************************************************/
+        public static complex unserializecomplex(alglib.serializer s)
+        {
+            complex result = 0;
+
+            result.x = s.unserialize_double();
+            result.y = s.unserialize_double();
+            return result;
+        }
+
+
+        /*************************************************************************
+        Allocation of serializer: real array
+        *************************************************************************/
+        public static void allocrealarray(alglib.serializer s,
+            double[] v,
+            int n)
+        {
+            int i = 0;
+
+            if( n<0 )
+            {
+                n = ap.len(v);
+            }
+            s.alloc_entry();
+            for(i=0; i<=n-1; i++)
+            {
+                s.alloc_entry();
+            }
+        }
+
+
+        /*************************************************************************
+        Serialization: complex value
+        *************************************************************************/
+        public static void serializerealarray(alglib.serializer s,
+            double[] v,
+            int n)
+        {
+            int i = 0;
+
+            if( n<0 )
+            {
+                n = ap.len(v);
+            }
+            s.serialize_int(n);
+            for(i=0; i<=n-1; i++)
+            {
+                s.serialize_double(v[i]);
+            }
+        }
+
+
+        /*************************************************************************
+        Unserialization: complex value
+        *************************************************************************/
+        public static void unserializerealarray(alglib.serializer s,
+            ref double[] v)
+        {
+            int n = 0;
+            int i = 0;
+            double t = 0;
+
+            v = new double[0];
+
+            n = s.unserialize_int();
+            if( n==0 )
+            {
+                return;
+            }
+            v = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                t = s.unserialize_double();
+                v[i] = t;
+            }
+        }
+
+
+        /*************************************************************************
+        Allocation of serializer: Integer array
+        *************************************************************************/
+        public static void allocintegerarray(alglib.serializer s,
+            int[] v,
+            int n)
+        {
+            int i = 0;
+
+            if( n<0 )
+            {
+                n = ap.len(v);
+            }
+            s.alloc_entry();
+            for(i=0; i<=n-1; i++)
+            {
+                s.alloc_entry();
+            }
+        }
+
+
+        /*************************************************************************
+        Serialization: Integer array
+        *************************************************************************/
+        public static void serializeintegerarray(alglib.serializer s,
+            int[] v,
+            int n)
+        {
+            int i = 0;
+
+            if( n<0 )
+            {
+                n = ap.len(v);
+            }
+            s.serialize_int(n);
+            for(i=0; i<=n-1; i++)
+            {
+                s.serialize_int(v[i]);
+            }
+        }
+
+
+        /*************************************************************************
+        Unserialization: complex value
+        *************************************************************************/
+        public static void unserializeintegerarray(alglib.serializer s,
+            ref int[] v)
+        {
+            int n = 0;
+            int i = 0;
+            int t = 0;
+
+            v = new int[0];
+
+            n = s.unserialize_int();
+            if( n==0 )
+            {
+                return;
+            }
+            v = new int[n];
+            for(i=0; i<=n-1; i++)
+            {
+                t = s.unserialize_int();
+                v[i] = t;
+            }
+        }
+
+
+        /*************************************************************************
+        Allocation of serializer: real matrix
+        *************************************************************************/
+        public static void allocrealmatrix(alglib.serializer s,
+            double[,] v,
+            int n0,
+            int n1)
+        {
+            int i = 0;
+            int j = 0;
+
+            if( n0<0 )
+            {
+                n0 = ap.rows(v);
+            }
+            if( n1<0 )
+            {
+                n1 = ap.cols(v);
+            }
+            s.alloc_entry();
+            s.alloc_entry();
+            for(i=0; i<=n0-1; i++)
+            {
+                for(j=0; j<=n1-1; j++)
+                {
+                    s.alloc_entry();
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Serialization: complex value
+        *************************************************************************/
+        public static void serializerealmatrix(alglib.serializer s,
+            double[,] v,
+            int n0,
+            int n1)
+        {
+            int i = 0;
+            int j = 0;
+
+            if( n0<0 )
+            {
+                n0 = ap.rows(v);
+            }
+            if( n1<0 )
+            {
+                n1 = ap.cols(v);
+            }
+            s.serialize_int(n0);
+            s.serialize_int(n1);
+            for(i=0; i<=n0-1; i++)
+            {
+                for(j=0; j<=n1-1; j++)
+                {
+                    s.serialize_double(v[i,j]);
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Unserialization: complex value
+        *************************************************************************/
+        public static void unserializerealmatrix(alglib.serializer s,
+            ref double[,] v)
+        {
+            int i = 0;
+            int j = 0;
+            int n0 = 0;
+            int n1 = 0;
+            double t = 0;
+
+            v = new double[0,0];
+
+            n0 = s.unserialize_int();
+            n1 = s.unserialize_int();
+            if( n0==0 | n1==0 )
+            {
+                return;
+            }
+            v = new double[n0, n1];
+            for(i=0; i<=n0-1; i++)
+            {
+                for(j=0; j<=n1-1; j++)
+                {
+                    t = s.unserialize_double();
+                    v[i,j] = t;
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Copy integer array
+        *************************************************************************/
+        public static void copyintegerarray(int[] src,
+            ref int[] dst)
+        {
+            int i = 0;
+
+            dst = new int[0];
+
+            if( ap.len(src)>0 )
+            {
+                dst = new int[ap.len(src)];
+                for(i=0; i<=ap.len(src)-1; i++)
+                {
+                    dst[i] = src[i];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Copy real array
+        *************************************************************************/
+        public static void copyrealarray(double[] src,
+            ref double[] dst)
+        {
+            int i = 0;
+
+            dst = new double[0];
+
+            if( ap.len(src)>0 )
+            {
+                dst = new double[ap.len(src)];
+                for(i=0; i<=ap.len(src)-1; i++)
+                {
+                    dst[i] = src[i];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        Copy real matrix
+        *************************************************************************/
+        public static void copyrealmatrix(double[,] src,
+            ref double[,] dst)
+        {
+            int i = 0;
+            int j = 0;
+
+            dst = new double[0,0];
+
+            if( ap.rows(src)>0 & ap.cols(src)>0 )
+            {
+                dst = new double[ap.rows(src), ap.cols(src)];
+                for(i=0; i<=ap.rows(src)-1; i++)
+                {
+                    for(j=0; j<=ap.cols(src)-1; j++)
+                    {
+                        dst[i,j] = src[i,j];
+                    }
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function searches integer array. Elements in this array are actually
+        records, each NRec elements wide. Each record has unique header - NHeader
+        integer values, which identify it. Records are lexicographically sorted by
+        header.
+
+        Records are identified by their index, not offset (offset = NRec*index).
+
+        This function searches A (records with indices [I0,I1)) for a record with
+        header B. It returns index of this record (not offset!), or -1 on failure.
+
+          -- ALGLIB --
+             Copyright 28.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static int recsearch(ref int[] a,
+            int nrec,
+            int nheader,
+            int i0,
+            int i1,
+            int[] b)
+        {
+            int result = 0;
+            int mididx = 0;
+            int cflag = 0;
+            int k = 0;
+            int offs = 0;
+
+            result = -1;
+            while( true )
+            {
+                if( i0>=i1 )
+                {
+                    break;
+                }
+                mididx = (i0+i1)/2;
+                offs = nrec*mididx;
+                cflag = 0;
+                for(k=0; k<=nheader-1; k++)
+                {
+                    if( a[offs+k]<b[k] )
+                    {
+                        cflag = -1;
+                        break;
+                    }
+                    if( a[offs+k]>b[k] )
+                    {
+                        cflag = 1;
+                        break;
+                    }
+                }
+                if( cflag==0 )
+                {
+                    result = mididx;
+                    return result;
+                }
+                if( cflag<0 )
+                {
+                    i0 = mididx+1;
+                }
+                else
+                {
+                    i1 = mididx;
+                }
+            }
             return result;
         }
 
@@ -7958,7 +8427,6 @@ public partial class alglib
 
         public const double ftol = 0.001;
         public const double xtol = 100*math.machineepsilon;
-        public const double gtol = 0.3;
         public const int maxfev = 20;
         public const double stpmin = 1.0E-50;
         public const double defstpmax = 1.0E+50;
@@ -8130,6 +8598,7 @@ public partial class alglib
             double[] s,
             ref double stp,
             double stpmax,
+            double gtol,
             ref int info,
             ref int nfev,
             ref double[] wa,
@@ -9063,6 +9532,61 @@ public partial class alglib
                 else
                 {
                     stp = Math.Max(stx+0.66*(sty-stx), stp);
+                }
+            }
+        }
+
+
+    }
+    public class optserv
+    {
+        /*************************************************************************
+        This subroutine is used to prepare threshold value which will be used for
+        trimming of the target function (see comments on TrimFunction() for more
+        information).
+
+        This function accepts only one parameter: function value at the starting
+        point. It returns threshold which will be used for trimming.
+
+          -- ALGLIB --
+             Copyright 10.05.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void trimprepare(double f,
+            ref double threshold)
+        {
+            threshold = 0;
+
+            threshold = 10*(Math.Abs(f)+1);
+        }
+
+
+        /*************************************************************************
+        This subroutine is used to "trim" target function, i.e. to do following
+        transformation:
+
+                           { {F,G}          if F<Threshold
+            {F_tr, G_tr} = {
+                           { {Threshold, 0} if F>=Threshold
+                           
+        Such transformation allows us to  solve  problems  with  singularities  by
+        redefining function in such way that it becomes bounded from above.
+
+          -- ALGLIB --
+             Copyright 10.05.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void trimfunction(ref double f,
+            ref double[] g,
+            int n,
+            double threshold)
+        {
+            int i = 0;
+
+            if( (double)(f)>=(double)(threshold) )
+            {
+                f = threshold;
+                for(i=0; i<=n-1; i++)
+                {
+                    g[i] = 0.0;
                 }
             }
         }

@@ -166,6 +166,51 @@ public partial class alglib
         }
     }
 
+
+    /*************************************************************************
+    This function serializes data structure to string.
+
+    Important properties of s_out:
+    * it contains alphanumeric characters, dots, underscores, minus signs
+    * these symbols are grouped into words, which are separated by spaces
+      and Windows-style (CR+LF) newlines
+    * although  serializer  uses  spaces and CR+LF as separators, you can 
+      replace any separator character by arbitrary combination of spaces,
+      tabs, Windows or Unix newlines. It allows flexible reformatting  of
+      the  string  in  case you want to include it into text or XML file. 
+      But you should not insert separators into the middle of the "words"
+      nor you should change case of letters.
+    * s_out can be freely moved between 32-bit and 64-bit systems, little
+      and big endian machines, and so on. You can serialize structure  on
+      32-bit machine and unserialize it on 64-bit one (or vice versa), or
+      serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also 
+      serialize  it  in  C# version of ALGLIB and unserialize in C++ one, 
+      and vice versa.
+    *************************************************************************/
+    public static void dfserialize(decisionforest obj, out string s_out)
+    {
+        alglib.serializer s = new alglib.serializer();
+        s.alloc_start();
+        dforest.dfalloc(s, obj.innerobj);
+        s.sstart_str();
+        dforest.dfserialize(s, obj.innerobj);
+        s.stop();
+        s_out = s.get_string();
+    }
+
+
+    /*************************************************************************
+    This function unserializes data structure from string.
+    *************************************************************************/
+    public static void dfunserialize(string s_in, out decisionforest obj)
+    {
+        alglib.serializer s = new alglib.serializer();
+        obj = new decisionforest();
+        s.ustart_str(s_in);
+        dforest.dfunserialize(s, obj.innerobj);
+        s.stop();
+    }
+
     /*************************************************************************
     This subroutine builds random decision forest.
 
@@ -205,6 +250,51 @@ public partial class alglib
         df = new decisionforest();
         rep = new dfreport();
         dforest.dfbuildrandomdecisionforest(xy, npoints, nvars, nclasses, ntrees, r, ref info, df.innerobj, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine builds random decision forest.
+    This function gives ability to tune number of variables used when choosing
+    best split.
+
+    INPUT PARAMETERS:
+        XY          -   training set
+        NPoints     -   training set size, NPoints>=1
+        NVars       -   number of independent variables, NVars>=1
+        NClasses    -   task type:
+                        * NClasses=1 - regression task with one
+                                       dependent variable
+                        * NClasses>1 - classification task with
+                                       NClasses classes.
+        NTrees      -   number of trees in a forest, NTrees>=1.
+                        recommended values: 50-100.
+        NRndVars    -   number of variables used when choosing best split
+        R           -   percent of a training set used to build
+                        individual trees. 0<R<=1.
+                        recommended values: 0.1 <= R <= 0.66.
+
+    OUTPUT PARAMETERS:
+        Info        -   return code:
+                        * -2, if there is a point with class number
+                              outside of [0..NClasses-1].
+                        * -1, if incorrect parameters was passed
+                              (NPoints<1, NVars<1, NClasses<1, NTrees<1, R<=0
+                              or R>1).
+                        *  1, if task has been solved
+        DF          -   model built
+        Rep         -   training report, contains error on a training set
+                        and out-of-bag estimates of generalization error.
+
+      -- ALGLIB --
+         Copyright 19.02.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void dfbuildrandomdecisionforestx1(double[,] xy, int npoints, int nvars, int nclasses, int ntrees, int nrndvars, double r, out int info, out decisionforest df, out dfreport rep)
+    {
+        info = 0;
+        df = new decisionforest();
+        rep = new dfreport();
+        dforest.dfbuildrandomdecisionforestx1(xy, npoints, nvars, nclasses, ntrees, nrndvars, r, ref info, df.innerobj, rep.innerobj);
         return;
     }
 
@@ -386,8 +476,7 @@ public partial class alglib
                         *  1, if subroutine finished successfully
         C           -   array[0..NVars-1,0..K-1].matrix whose columns store
                         cluster's centers
-        XYC         -   array which contains number of clusters dataset points
-                        belong to.
+        XYC         -   array[NPoints], which contains cluster indexes
 
       -- ALGLIB --
          Copyright 21.03.2009 by Bochkanov Sergey
@@ -850,6 +939,51 @@ public partial class alglib
         }
     }
 
+
+    /*************************************************************************
+    This function serializes data structure to string.
+
+    Important properties of s_out:
+    * it contains alphanumeric characters, dots, underscores, minus signs
+    * these symbols are grouped into words, which are separated by spaces
+      and Windows-style (CR+LF) newlines
+    * although  serializer  uses  spaces and CR+LF as separators, you can 
+      replace any separator character by arbitrary combination of spaces,
+      tabs, Windows or Unix newlines. It allows flexible reformatting  of
+      the  string  in  case you want to include it into text or XML file. 
+      But you should not insert separators into the middle of the "words"
+      nor you should change case of letters.
+    * s_out can be freely moved between 32-bit and 64-bit systems, little
+      and big endian machines, and so on. You can serialize structure  on
+      32-bit machine and unserialize it on 64-bit one (or vice versa), or
+      serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also 
+      serialize  it  in  C# version of ALGLIB and unserialize in C++ one, 
+      and vice versa.
+    *************************************************************************/
+    public static void mlpserialize(multilayerperceptron obj, out string s_out)
+    {
+        alglib.serializer s = new alglib.serializer();
+        s.alloc_start();
+        mlpbase.mlpalloc(s, obj.innerobj);
+        s.sstart_str();
+        mlpbase.mlpserialize(s, obj.innerobj);
+        s.stop();
+        s_out = s.get_string();
+    }
+
+
+    /*************************************************************************
+    This function unserializes data structure from string.
+    *************************************************************************/
+    public static void mlpunserialize(string s_in, out multilayerperceptron obj)
+    {
+        alglib.serializer s = new alglib.serializer();
+        obj = new multilayerperceptron();
+        s.ustart_str(s_in);
+        mlpbase.mlpunserialize(s, obj.innerobj);
+        s.stop();
+    }
+
     /*************************************************************************
     Creates  neural  network  with  NIn  inputs,  NOut outputs, without hidden
     layers, with linear output layer. Network weights are  filled  with  small
@@ -1080,6 +1214,287 @@ public partial class alglib
 
         bool result = mlpbase.mlpissoftmax(network.innerobj);
         return result;
+    }
+
+    /*************************************************************************
+    This function returns total number of layers (including input, hidden and
+    output layers).
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static int mlpgetlayerscount(multilayerperceptron network)
+    {
+
+        int result = mlpbase.mlpgetlayerscount(network.innerobj);
+        return result;
+    }
+
+    /*************************************************************************
+    This function returns size of K-th layer.
+
+    K=0 corresponds to input layer, K=CNT-1 corresponds to output layer.
+
+    Size of the output layer is always equal to the number of outputs, although
+    when we have softmax-normalized network, last neuron doesn't have any
+    connections - it is just zero.
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static int mlpgetlayersize(multilayerperceptron network, int k)
+    {
+
+        int result = mlpbase.mlpgetlayersize(network.innerobj, k);
+        return result;
+    }
+
+    /*************************************************************************
+    This function returns offset/scaling coefficients for I-th input of the
+    network.
+
+    INPUT PARAMETERS:
+        Network     -   network
+        I           -   input index
+
+    OUTPUT PARAMETERS:
+        Mean        -   mean term
+        Sigma       -   sigma term, guaranteed to be nonzero.
+
+    I-th input is passed through linear transformation
+        IN[i] = (IN[i]-Mean)/Sigma
+    before feeding to the network
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpgetinputscaling(multilayerperceptron network, int i, out double mean, out double sigma)
+    {
+        mean = 0;
+        sigma = 0;
+        mlpbase.mlpgetinputscaling(network.innerobj, i, ref mean, ref sigma);
+        return;
+    }
+
+    /*************************************************************************
+    This function returns offset/scaling coefficients for I-th output of the
+    network.
+
+    INPUT PARAMETERS:
+        Network     -   network
+        I           -   input index
+
+    OUTPUT PARAMETERS:
+        Mean        -   mean term
+        Sigma       -   sigma term, guaranteed to be nonzero.
+
+    I-th output is passed through linear transformation
+        OUT[i] = OUT[i]*Sigma+Mean
+    before returning it to user. In case we have SOFTMAX-normalized network,
+    we return (Mean,Sigma)=(0.0,1.0).
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpgetoutputscaling(multilayerperceptron network, int i, out double mean, out double sigma)
+    {
+        mean = 0;
+        sigma = 0;
+        mlpbase.mlpgetoutputscaling(network.innerobj, i, ref mean, ref sigma);
+        return;
+    }
+
+    /*************************************************************************
+    This function returns information about Ith neuron of Kth layer
+
+    INPUT PARAMETERS:
+        Network     -   network
+        K           -   layer index
+        I           -   neuron index (within layer)
+
+    OUTPUT PARAMETERS:
+        FKind       -   activation function type (used by MLPActivationFunction())
+                        this value is zero for input or linear neurons
+        Threshold   -   also called offset, bias
+                        zero for input neurons
+
+    NOTE: this function throws exception if layer or neuron with  given  index
+    do not exists.
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpgetneuroninfo(multilayerperceptron network, int k, int i, out int fkind, out double threshold)
+    {
+        fkind = 0;
+        threshold = 0;
+        mlpbase.mlpgetneuroninfo(network.innerobj, k, i, ref fkind, ref threshold);
+        return;
+    }
+
+    /*************************************************************************
+    This function returns information about connection from I0-th neuron of
+    K0-th layer to I1-th neuron of K1-th layer.
+
+    INPUT PARAMETERS:
+        Network     -   network
+        K0          -   layer index
+        I0          -   neuron index (within layer)
+        K1          -   layer index
+        I1          -   neuron index (within layer)
+
+    RESULT:
+        connection weight (zero for non-existent connections)
+
+    This function:
+    1. throws exception if layer or neuron with given index do not exists.
+    2. returns zero if neurons exist, but there is no connection between them
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static double mlpgetweight(multilayerperceptron network, int k0, int i0, int k1, int i1)
+    {
+
+        double result = mlpbase.mlpgetweight(network.innerobj, k0, i0, k1, i1);
+        return result;
+    }
+
+    /*************************************************************************
+    This function sets offset/scaling coefficients for I-th input of the
+    network.
+
+    INPUT PARAMETERS:
+        Network     -   network
+        I           -   input index
+        Mean        -   mean term
+        Sigma       -   sigma term (if zero, will be replaced by 1.0)
+
+    NTE: I-th input is passed through linear transformation
+        IN[i] = (IN[i]-Mean)/Sigma
+    before feeding to the network. This function sets Mean and Sigma.
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpsetinputscaling(multilayerperceptron network, int i, double mean, double sigma)
+    {
+
+        mlpbase.mlpsetinputscaling(network.innerobj, i, mean, sigma);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets offset/scaling coefficients for I-th output of the
+    network.
+
+    INPUT PARAMETERS:
+        Network     -   network
+        I           -   input index
+        Mean        -   mean term
+        Sigma       -   sigma term (if zero, will be replaced by 1.0)
+
+    OUTPUT PARAMETERS:
+
+    NOTE: I-th output is passed through linear transformation
+        OUT[i] = OUT[i]*Sigma+Mean
+    before returning it to user. This function sets Sigma/Mean. In case we
+    have SOFTMAX-normalized network, you can not set (Sigma,Mean) to anything
+    other than(0.0,1.0) - this function will throw exception.
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpsetoutputscaling(multilayerperceptron network, int i, double mean, double sigma)
+    {
+
+        mlpbase.mlpsetoutputscaling(network.innerobj, i, mean, sigma);
+        return;
+    }
+
+    /*************************************************************************
+    This function modifies information about Ith neuron of Kth layer
+
+    INPUT PARAMETERS:
+        Network     -   network
+        K           -   layer index
+        I           -   neuron index (within layer)
+        FKind       -   activation function type (used by MLPActivationFunction())
+                        this value must be zero for input neurons
+                        (you can not set activation function for input neurons)
+        Threshold   -   also called offset, bias
+                        this value must be zero for input neurons
+                        (you can not set threshold for input neurons)
+
+    NOTES:
+    1. this function throws exception if layer or neuron with given index do
+       not exists.
+    2. this function also throws exception when you try to set non-linear
+       activation function for input neurons (any kind of network) or for output
+       neurons of classifier network.
+    3. this function throws exception when you try to set non-zero threshold for
+       input neurons (any kind of network).
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpsetneuroninfo(multilayerperceptron network, int k, int i, int fkind, double threshold)
+    {
+
+        mlpbase.mlpsetneuroninfo(network.innerobj, k, i, fkind, threshold);
+        return;
+    }
+
+    /*************************************************************************
+    This function modifies information about connection from I0-th neuron of
+    K0-th layer to I1-th neuron of K1-th layer.
+
+    INPUT PARAMETERS:
+        Network     -   network
+        K0          -   layer index
+        I0          -   neuron index (within layer)
+        K1          -   layer index
+        I1          -   neuron index (within layer)
+        W           -   connection weight (must be zero for non-existent
+                        connections)
+
+    This function:
+    1. throws exception if layer or neuron with given index do not exists.
+    2. throws exception if you try to set non-zero weight for non-existent
+       connection
+
+      -- ALGLIB --
+         Copyright 25.03.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpsetweight(multilayerperceptron network, int k0, int i0, int k1, int i1, double w)
+    {
+
+        mlpbase.mlpsetweight(network.innerobj, k0, i0, k1, i1, w);
+        return;
+    }
+
+    /*************************************************************************
+    Neural network activation function
+
+    INPUT PARAMETERS:
+        NET         -   neuron input
+        K           -   function index (zero for linear function)
+
+    OUTPUT PARAMETERS:
+        F           -   function
+        DF          -   its derivative
+        D2F         -   its second derivative
+
+      -- ALGLIB --
+         Copyright 04.11.2007 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mlpactivationfunction(double net, int k, out double f, out double df, out double d2f)
+    {
+        f = 0;
+        df = 0;
+        d2f = 0;
+        mlpbase.mlpactivationfunction(net, k, ref f, ref df, ref d2f);
+        return;
     }
 
     /*************************************************************************
@@ -1734,6 +2149,789 @@ public partial class alglib
 
         int result = logit.mnlclserror(lm.innerobj, xy, npoints);
         return result;
+    }
+
+}
+public partial class alglib
+{
+
+
+    /*************************************************************************
+    This structure is a MCPD (Markov Chains for Population Data) solver.
+
+    You should use ALGLIB functions in order to work with this object.
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public class mcpdstate
+    {
+        //
+        // Public declarations
+        //
+
+        public mcpdstate()
+        {
+            _innerobj = new mcpd.mcpdstate();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mcpd.mcpdstate _innerobj;
+        public mcpd.mcpdstate innerobj { get { return _innerobj; } }
+        public mcpdstate(mcpd.mcpdstate obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    This structure is a MCPD training report:
+        InnerIterationsCount    -   number of inner iterations of the
+                                    underlying optimization algorithm
+        OuterIterationsCount    -   number of outer iterations of the
+                                    underlying optimization algorithm
+        NFEV                    -   number of merit function evaluations
+        TerminationType         -   termination type
+                                    (same as for MinBLEIC optimizer, positive
+                                    values denote success, negative ones -
+                                    failure)
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public class mcpdreport
+    {
+        //
+        // Public declarations
+        //
+        public int inneriterationscount { get { return _innerobj.inneriterationscount; } set { _innerobj.inneriterationscount = value; } }
+        public int outeriterationscount { get { return _innerobj.outeriterationscount; } set { _innerobj.outeriterationscount = value; } }
+        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
+        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
+
+        public mcpdreport()
+        {
+            _innerobj = new mcpd.mcpdreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mcpd.mcpdreport _innerobj;
+        public mcpd.mcpdreport innerobj { get { return _innerobj; } }
+        public mcpdreport(mcpd.mcpdreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
+    DESCRIPTION:
+
+    This function creates MCPD (Markov Chains for Population Data) solver.
+
+    This  solver  can  be  used  to find transition matrix P for N-dimensional
+    prediction  problem  where transition from X[i] to X[i+1] is  modelled  as
+        X[i+1] = P*X[i]
+    where X[i] and X[i+1] are N-dimensional population vectors (components  of
+    each X are non-negative), and P is a N*N transition matrix (elements of  P
+    are non-negative, each column sums to 1.0).
+
+    Such models arise when when:
+    * there is some population of individuals
+    * individuals can have different states
+    * individuals can transit from one state to another
+    * population size is constant, i.e. there is no new individuals and no one
+      leaves population
+    * you want to model transitions of individuals from one state into another
+
+    USAGE:
+
+    Here we give very brief outline of the MCPD. We strongly recommend you  to
+    read examples in the ALGLIB Reference Manual and to read ALGLIB User Guide
+    on data analysis which is available at http://www.alglib.net/dataanalysis/
+
+    1. User initializes algorithm state with MCPDCreate() call
+
+    2. User  adds  one  or  more  tracks -  sequences of states which describe
+       evolution of a system being modelled from different starting conditions
+
+    3. User may add optional boundary, equality  and/or  linear constraints on
+       the coefficients of P by calling one of the following functions:
+       * MCPDSetEC() to set equality constraints
+       * MCPDSetBC() to set bound constraints
+       * MCPDSetLC() to set linear constraints
+
+    4. Optionally,  user  may  set  custom  weights  for prediction errors (by
+       default, algorithm assigns non-equal, automatically chosen weights  for
+       errors in the prediction of different components of X). It can be  done
+       with a call of MCPDSetPredictionWeights() function.
+
+    5. User calls MCPDSolve() function which takes algorithm  state and
+       pointer (delegate, etc.) to callback function which calculates F/G.
+
+    6. User calls MCPDResults() to get solution
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>=1
+
+    OUTPUT PARAMETERS:
+        State   -   structure stores algorithm state
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdcreate(int n, out mcpdstate s)
+    {
+        s = new mcpdstate();
+        mcpd.mcpdcreate(n, s.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    DESCRIPTION:
+
+    This function is a specialized version of MCPDCreate()  function,  and  we
+    recommend  you  to read comments for this function for general information
+    about MCPD solver.
+
+    This  function  creates  MCPD (Markov Chains for Population  Data)  solver
+    for "Entry-state" model,  i.e. model  where transition from X[i] to X[i+1]
+    is modelled as
+        X[i+1] = P*X[i]
+    where
+        X[i] and X[i+1] are N-dimensional state vectors
+        P is a N*N transition matrix
+    and  one  selected component of X[] is called "entry" state and is treated
+    in a special way:
+        system state always transits from "entry" state to some another state
+        system state can not transit from any state into "entry" state
+    Such conditions basically mean that row of P which corresponds to  "entry"
+    state is zero.
+
+    Such models arise when:
+    * there is some population of individuals
+    * individuals can have different states
+    * individuals can transit from one state to another
+    * population size is NOT constant -  at every moment of time there is some
+      (unpredictable) amount of "new" individuals, which can transit into  one
+      of the states at the next turn, but still no one leaves population
+    * you want to model transitions of individuals from one state into another
+    * but you do NOT want to predict amount of "new"  individuals  because  it
+      does not depends on individuals already present (hence  system  can  not
+      transit INTO entry state - it can only transit FROM it).
+
+    This model is discussed  in  more  details  in  the ALGLIB User Guide (see
+    http://www.alglib.net/dataanalysis/ for more data).
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>=2
+        EntryState- index of entry state, in 0..N-1
+
+    OUTPUT PARAMETERS:
+        State   -   structure stores algorithm state
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdcreateentry(int n, int entrystate, out mcpdstate s)
+    {
+        s = new mcpdstate();
+        mcpd.mcpdcreateentry(n, entrystate, s.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    DESCRIPTION:
+
+    This function is a specialized version of MCPDCreate()  function,  and  we
+    recommend  you  to read comments for this function for general information
+    about MCPD solver.
+
+    This  function  creates  MCPD (Markov Chains for Population  Data)  solver
+    for "Exit-state" model,  i.e. model  where  transition from X[i] to X[i+1]
+    is modelled as
+        X[i+1] = P*X[i]
+    where
+        X[i] and X[i+1] are N-dimensional state vectors
+        P is a N*N transition matrix
+    and  one  selected component of X[] is called "exit"  state and is treated
+    in a special way:
+        system state can transit from any state into "exit" state
+        system state can not transit from "exit" state into any other state
+        transition operator discards "exit" state (makes it zero at each turn)
+    Such  conditions  basically  mean  that  column  of P which corresponds to
+    "exit" state is zero. Multiplication by such P may decrease sum of  vector
+    components.
+
+    Such models arise when:
+    * there is some population of individuals
+    * individuals can have different states
+    * individuals can transit from one state to another
+    * population size is NOT constant - individuals can move into "exit" state
+      and leave population at the next turn, but there are no new individuals
+    * amount of individuals which leave population can be predicted
+    * you want to model transitions of individuals from one state into another
+      (including transitions into the "exit" state)
+
+    This model is discussed  in  more  details  in  the ALGLIB User Guide (see
+    http://www.alglib.net/dataanalysis/ for more data).
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>=2
+        ExitState-  index of exit state, in 0..N-1
+
+    OUTPUT PARAMETERS:
+        State   -   structure stores algorithm state
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdcreateexit(int n, int exitstate, out mcpdstate s)
+    {
+        s = new mcpdstate();
+        mcpd.mcpdcreateexit(n, exitstate, s.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    DESCRIPTION:
+
+    This function is a specialized version of MCPDCreate()  function,  and  we
+    recommend  you  to read comments for this function for general information
+    about MCPD solver.
+
+    This  function  creates  MCPD (Markov Chains for Population  Data)  solver
+    for "Entry-Exit-states" model, i.e. model where  transition  from  X[i] to
+    X[i+1] is modelled as
+        X[i+1] = P*X[i]
+    where
+        X[i] and X[i+1] are N-dimensional state vectors
+        P is a N*N transition matrix
+    one selected component of X[] is called "entry" state and is treated in  a
+    special way:
+        system state always transits from "entry" state to some another state
+        system state can not transit from any state into "entry" state
+    and another one component of X[] is called "exit" state and is treated  in
+    a special way too:
+        system state can transit from any state into "exit" state
+        system state can not transit from "exit" state into any other state
+        transition operator discards "exit" state (makes it zero at each turn)
+    Such conditions basically mean that:
+        row of P which corresponds to "entry" state is zero
+        column of P which corresponds to "exit" state is zero
+    Multiplication by such P may decrease sum of vector components.
+
+    Such models arise when:
+    * there is some population of individuals
+    * individuals can have different states
+    * individuals can transit from one state to another
+    * population size is NOT constant
+    * at every moment of time there is some (unpredictable)  amount  of  "new"
+      individuals, which can transit into one of the states at the next turn
+    * some  individuals  can  move  (predictably)  into "exit" state and leave
+      population at the next turn
+    * you want to model transitions of individuals from one state into another,
+      including transitions from the "entry" state and into the "exit" state.
+    * but you do NOT want to predict amount of "new"  individuals  because  it
+      does not depends on individuals already present (hence  system  can  not
+      transit INTO entry state - it can only transit FROM it).
+
+    This model is discussed  in  more  details  in  the ALGLIB User Guide (see
+    http://www.alglib.net/dataanalysis/ for more data).
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>=2
+        EntryState- index of entry state, in 0..N-1
+        ExitState-  index of exit state, in 0..N-1
+
+    OUTPUT PARAMETERS:
+        State   -   structure stores algorithm state
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdcreateentryexit(int n, int entrystate, int exitstate, out mcpdstate s)
+    {
+        s = new mcpdstate();
+        mcpd.mcpdcreateentryexit(n, entrystate, exitstate, s.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This  function  is  used to add a track - sequence of system states at the
+    different moments of its evolution.
+
+    You  may  add  one  or several tracks to the MCPD solver. In case you have
+    several tracks, they won't overwrite each other. For example,  if you pass
+    two tracks, A1-A2-A3 (system at t=A+1, t=A+2 and t=A+3) and B1-B2-B3, then
+    solver will try to model transitions from t=A+1 to t=A+2, t=A+2 to  t=A+3,
+    t=B+1 to t=B+2, t=B+2 to t=B+3. But it WONT mix these two tracks - i.e. it
+    wont try to model transition from t=A+3 to t=B+1.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        XY      -   track, array[K,N]:
+                    * I-th row is a state at t=I
+                    * elements of XY must be non-negative (exception will be
+                      thrown on negative elements)
+        K       -   number of points in a track
+                    * if given, only leading K rows of XY are used
+                    * if not given, automatically determined from size of XY
+
+    NOTES:
+
+    1. Track may contain either proportional or population data:
+       * with proportional data all rows of XY must sum to 1.0, i.e. we have
+         proportions instead of absolute population values
+       * with population data rows of XY contain population counts and generally
+         do not sum to 1.0 (although they still must be non-negative)
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdaddtrack(mcpdstate s, double[,] xy, int k)
+    {
+
+        mcpd.mcpdaddtrack(s.innerobj, xy, k);
+        return;
+    }
+    public static void mcpdaddtrack(mcpdstate s, double[,] xy)
+    {
+        int k;
+
+
+        k = ap.rows(xy);
+        mcpd.mcpdaddtrack(s.innerobj, xy, k);
+
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to add equality constraints on the elements  of  the
+    transition matrix P.
+
+    MCPD solver has four types of constraints which can be placed on P:
+    * user-specified equality constraints (optional)
+    * user-specified bound constraints (optional)
+    * user-specified general linear constraints (optional)
+    * basic constraints (always present):
+      * non-negativity: P[i,j]>=0
+      * consistency: every column of P sums to 1.0
+
+    Final  constraints  which  are  passed  to  the  underlying  optimizer are
+    calculated  as  intersection  of all present constraints. For example, you
+    may specify boundary constraint on P[0,0] and equality one:
+        0.1<=P[0,0]<=0.9
+        P[0,0]=0.5
+    Such  combination  of  constraints  will  be  silently  reduced  to  their
+    intersection, which is P[0,0]=0.5.
+
+    This  function  can  be  used  to  place equality constraints on arbitrary
+    subset of elements of P. Set of constraints is specified by EC, which  may
+    contain either NAN's or finite numbers from [0,1]. NAN denotes absence  of
+    constraint, finite number denotes equality constraint on specific  element
+    of P.
+
+    You can also  use  MCPDAddEC()  function  which  allows  to  ADD  equality
+    constraint  for  one  element  of P without changing constraints for other
+    elements.
+
+    These functions (MCPDSetEC and MCPDAddEC) interact as follows:
+    * there is internal matrix of equality constraints which is stored in  the
+      MCPD solver
+    * MCPDSetEC() replaces this matrix by another one (SET)
+    * MCPDAddEC() modifies one element of this matrix and  leaves  other  ones
+      unchanged (ADD)
+    * thus  MCPDAddEC()  call  preserves  all  modifications  done by previous
+      calls,  while  MCPDSetEC()  completely discards all changes  done to the
+      equality constraints.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        EC      -   equality constraints, array[N,N]. Elements of  EC  can  be
+                    either NAN's or finite  numbers from  [0,1].  NAN  denotes
+                    absence  of  constraints,  while  finite  value    denotes
+                    equality constraint on the corresponding element of P.
+
+    NOTES:
+
+    1. infinite values of EC will lead to exception being thrown. Values  less
+    than 0.0 or greater than 1.0 will lead to error code being returned  after
+    call to MCPDSolve().
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsetec(mcpdstate s, double[,] ec)
+    {
+
+        mcpd.mcpdsetec(s.innerobj, ec);
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to add equality constraints on the elements  of  the
+    transition matrix P.
+
+    MCPD solver has four types of constraints which can be placed on P:
+    * user-specified equality constraints (optional)
+    * user-specified bound constraints (optional)
+    * user-specified general linear constraints (optional)
+    * basic constraints (always present):
+      * non-negativity: P[i,j]>=0
+      * consistency: every column of P sums to 1.0
+
+    Final  constraints  which  are  passed  to  the  underlying  optimizer are
+    calculated  as  intersection  of all present constraints. For example, you
+    may specify boundary constraint on P[0,0] and equality one:
+        0.1<=P[0,0]<=0.9
+        P[0,0]=0.5
+    Such  combination  of  constraints  will  be  silently  reduced  to  their
+    intersection, which is P[0,0]=0.5.
+
+    This function can be used to ADD equality constraint for one element of  P
+    without changing constraints for other elements.
+
+    You  can  also  use  MCPDSetEC()  function  which  allows  you  to specify
+    arbitrary set of equality constraints in one call.
+
+    These functions (MCPDSetEC and MCPDAddEC) interact as follows:
+    * there is internal matrix of equality constraints which is stored in the
+      MCPD solver
+    * MCPDSetEC() replaces this matrix by another one (SET)
+    * MCPDAddEC() modifies one element of this matrix and leaves  other  ones
+      unchanged (ADD)
+    * thus  MCPDAddEC()  call  preserves  all  modifications done by previous
+      calls,  while  MCPDSetEC()  completely discards all changes done to the
+      equality constraints.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        I       -   row index of element being constrained
+        J       -   column index of element being constrained
+        C       -   value (constraint for P[I,J]).  Can  be  either  NAN  (no
+                    constraint) or finite value from [0,1].
+
+    NOTES:
+
+    1. infinite values of C  will lead to exception being thrown. Values  less
+    than 0.0 or greater than 1.0 will lead to error code being returned  after
+    call to MCPDSolve().
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdaddec(mcpdstate s, int i, int j, double c)
+    {
+
+        mcpd.mcpdaddec(s.innerobj, i, j, c);
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to add bound constraints  on  the  elements  of  the
+    transition matrix P.
+
+    MCPD solver has four types of constraints which can be placed on P:
+    * user-specified equality constraints (optional)
+    * user-specified bound constraints (optional)
+    * user-specified general linear constraints (optional)
+    * basic constraints (always present):
+      * non-negativity: P[i,j]>=0
+      * consistency: every column of P sums to 1.0
+
+    Final  constraints  which  are  passed  to  the  underlying  optimizer are
+    calculated  as  intersection  of all present constraints. For example, you
+    may specify boundary constraint on P[0,0] and equality one:
+        0.1<=P[0,0]<=0.9
+        P[0,0]=0.5
+    Such  combination  of  constraints  will  be  silently  reduced  to  their
+    intersection, which is P[0,0]=0.5.
+
+    This  function  can  be  used  to  place bound   constraints  on arbitrary
+    subset  of  elements  of  P.  Set of constraints is specified by BndL/BndU
+    matrices, which may contain arbitrary combination  of  finite  numbers  or
+    infinities (like -INF<x<=0.5 or 0.1<=x<+INF).
+
+    You can also use MCPDAddBC() function which allows to ADD bound constraint
+    for one element of P without changing constraints for other elements.
+
+    These functions (MCPDSetBC and MCPDAddBC) interact as follows:
+    * there is internal matrix of bound constraints which is stored in the
+      MCPD solver
+    * MCPDSetBC() replaces this matrix by another one (SET)
+    * MCPDAddBC() modifies one element of this matrix and  leaves  other  ones
+      unchanged (ADD)
+    * thus  MCPDAddBC()  call  preserves  all  modifications  done by previous
+      calls,  while  MCPDSetBC()  completely discards all changes  done to the
+      equality constraints.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        BndL    -   lower bounds constraints, array[N,N]. Elements of BndL can
+                    be finite numbers or -INF.
+        BndU    -   upper bounds constraints, array[N,N]. Elements of BndU can
+                    be finite numbers or +INF.
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsetbc(mcpdstate s, double[,] bndl, double[,] bndu)
+    {
+
+        mcpd.mcpdsetbc(s.innerobj, bndl, bndu);
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to add bound constraints  on  the  elements  of  the
+    transition matrix P.
+
+    MCPD solver has four types of constraints which can be placed on P:
+    * user-specified equality constraints (optional)
+    * user-specified bound constraints (optional)
+    * user-specified general linear constraints (optional)
+    * basic constraints (always present):
+      * non-negativity: P[i,j]>=0
+      * consistency: every column of P sums to 1.0
+
+    Final  constraints  which  are  passed  to  the  underlying  optimizer are
+    calculated  as  intersection  of all present constraints. For example, you
+    may specify boundary constraint on P[0,0] and equality one:
+        0.1<=P[0,0]<=0.9
+        P[0,0]=0.5
+    Such  combination  of  constraints  will  be  silently  reduced  to  their
+    intersection, which is P[0,0]=0.5.
+
+    This  function  can  be  used to ADD bound constraint for one element of P
+    without changing constraints for other elements.
+
+    You  can  also  use  MCPDSetBC()  function  which  allows to  place  bound
+    constraints  on arbitrary subset of elements of P.   Set of constraints is
+    specified  by  BndL/BndU matrices, which may contain arbitrary combination
+    of finite numbers or infinities (like -INF<x<=0.5 or 0.1<=x<+INF).
+
+    These functions (MCPDSetBC and MCPDAddBC) interact as follows:
+    * there is internal matrix of bound constraints which is stored in the
+      MCPD solver
+    * MCPDSetBC() replaces this matrix by another one (SET)
+    * MCPDAddBC() modifies one element of this matrix and  leaves  other  ones
+      unchanged (ADD)
+    * thus  MCPDAddBC()  call  preserves  all  modifications  done by previous
+      calls,  while  MCPDSetBC()  completely discards all changes  done to the
+      equality constraints.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        I       -   row index of element being constrained
+        J       -   column index of element being constrained
+        BndL    -   lower bound
+        BndU    -   upper bound
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdaddbc(mcpdstate s, int i, int j, double bndl, double bndu)
+    {
+
+        mcpd.mcpdaddbc(s.innerobj, i, j, bndl, bndu);
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to set linear equality/inequality constraints on the
+    elements of the transition matrix P.
+
+    This function can be used to set one or several general linear constraints
+    on the elements of P. Two types of constraints are supported:
+    * equality constraints
+    * inequality constraints (both less-or-equal and greater-or-equal)
+
+    Coefficients  of  constraints  are  specified  by  matrix  C (one  of  the
+    parameters).  One  row  of  C  corresponds  to  one  constraint.   Because
+    transition  matrix P has N*N elements,  we  need  N*N columns to store all
+    coefficients  (they  are  stored row by row), and one more column to store
+    right part - hence C has N*N+1 columns.  Constraint  kind is stored in the
+    CT array.
+
+    Thus, I-th linear constraint is
+        P[0,0]*C[I,0] + P[0,1]*C[I,1] + .. + P[0,N-1]*C[I,N-1] +
+            + P[1,0]*C[I,N] + P[1,1]*C[I,N+1] + ... +
+            + P[N-1,N-1]*C[I,N*N-1]  ?=?  C[I,N*N]
+    where ?=? can be either "=" (CT[i]=0), "<=" (CT[i]<0) or ">=" (CT[i]>0).
+
+    Your constraint may involve only some subset of P (less than N*N elements).
+    For example it can be something like
+        P[0,0] + P[0,1] = 0.5
+    In this case you still should pass matrix  with N*N+1 columns, but all its
+    elements (except for C[0,0], C[0,1] and C[0,N*N-1]) will be zero.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        C       -   array[K,N*N+1] - coefficients of constraints
+                    (see above for complete description)
+        CT      -   array[K] - constraint types
+                    (see above for complete description)
+        K       -   number of equality/inequality constraints, K>=0:
+                    * if given, only leading K elements of C/CT are used
+                    * if not given, automatically determined from sizes of C/CT
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsetlc(mcpdstate s, double[,] c, int[] ct, int k)
+    {
+
+        mcpd.mcpdsetlc(s.innerobj, c, ct, k);
+        return;
+    }
+    public static void mcpdsetlc(mcpdstate s, double[,] c, int[] ct)
+    {
+        int k;
+        if( (ap.rows(c)!=ap.len(ct)))
+            throw new alglibexception("Error while calling 'mcpdsetlc': looks like one of arguments has wrong size");
+
+        k = ap.rows(c);
+        mcpd.mcpdsetlc(s.innerobj, c, ct, k);
+
+        return;
+    }
+
+    /*************************************************************************
+    This function allows to  tune  amount  of  Tikhonov  regularization  being
+    applied to your problem.
+
+    By default, regularizing term is equal to r*||P-prior_P||^2, where r is  a
+    small non-zero value,  P is transition matrix, prior_P is identity matrix,
+    ||X||^2 is a sum of squared elements of X.
+
+    This  function  allows  you to change coefficient r. You can  also  change
+    prior values with MCPDSetPrior() function.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        V       -   regularization  coefficient, finite non-negative value. It
+                    is  not  recommended  to specify zero value unless you are
+                    pretty sure that you want it.
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsettikhonovregularizer(mcpdstate s, double v)
+    {
+
+        mcpd.mcpdsettikhonovregularizer(s.innerobj, v);
+        return;
+    }
+
+    /*************************************************************************
+    This  function  allows to set prior values used for regularization of your
+    problem.
+
+    By default, regularizing term is equal to r*||P-prior_P||^2, where r is  a
+    small non-zero value,  P is transition matrix, prior_P is identity matrix,
+    ||X||^2 is a sum of squared elements of X.
+
+    This  function  allows  you to change prior values prior_P. You  can  also
+    change r with MCPDSetTikhonovRegularizer() function.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        PP      -   array[N,N], matrix of prior values:
+                    1. elements must be real numbers from [0,1]
+                    2. columns must sum to 1.0.
+                    First property is checked (exception is thrown otherwise),
+                    while second one is not checked/enforced.
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsetprior(mcpdstate s, double[,] pp)
+    {
+
+        mcpd.mcpdsetprior(s.innerobj, pp);
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to change prediction weights
+
+    MCPD solver scales prediction errors as follows
+        Error(P) = ||W*(y-P*x)||^2
+    where
+        x is a system state at time t
+        y is a system state at time t+1
+        P is a transition matrix
+        W is a diagonal scaling matrix
+
+    By default, weights are chosen in order  to  minimize  relative prediction
+    error instead of absolute one. For example, if one component of  state  is
+    about 0.5 in magnitude and another one is about 0.05, then algorithm  will
+    make corresponding weights equal to 2.0 and 20.0.
+
+    INPUT PARAMETERS:
+        S       -   solver
+        PW      -   array[N], weights:
+                    * must be non-negative values (exception will be thrown otherwise)
+                    * zero values will be replaced by automatically chosen values
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsetpredictionweights(mcpdstate s, double[] pw)
+    {
+
+        mcpd.mcpdsetpredictionweights(s.innerobj, pw);
+        return;
+    }
+
+    /*************************************************************************
+    This function is used to start solution of the MCPD problem.
+
+    After return from this function, you can use MCPDResults() to get solution
+    and completion code.
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdsolve(mcpdstate s)
+    {
+
+        mcpd.mcpdsolve(s.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    MCPD results
+
+    INPUT PARAMETERS:
+        State   -   algorithm state
+
+    OUTPUT PARAMETERS:
+        P       -   array[N,N], transition matrix
+        Rep     -   optimization report. You should check Rep.TerminationType
+                    in  order  to  distinguish  successful  termination  from
+                    unsuccessful one. Speaking short, positive values  denote
+                    success, negative ones are failures.
+                    More information about fields of this  structure  can  be
+                    found in the comments on MCPDReport datatype.
+
+
+      -- ALGLIB --
+         Copyright 23.05.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mcpdresults(mcpdstate s, out double[,] p, out mcpdreport rep)
+    {
+        p = new double[0,0];
+        rep = new mcpdreport();
+        mcpd.mcpdresults(s.innerobj, ref p, rep.innerobj);
+        return;
     }
 
 }
@@ -4095,6 +5293,7 @@ public partial class alglib
         public const int leafnodewidth = 2;
         public const int dfusestrongsplits = 1;
         public const int dfuseevs = 2;
+        public const int dffirstversion = 0;
 
 
         /*************************************************************************
@@ -4151,6 +5350,72 @@ public partial class alglib
             }
             samplesize = Math.Max((int)Math.Round(r*npoints), 1);
             dfbuildinternal(xy, npoints, nvars, nclasses, ntrees, samplesize, Math.Max(nvars/2, 1), dfusestrongsplits+dfuseevs, ref info, df, rep);
+        }
+
+
+        /*************************************************************************
+        This subroutine builds random decision forest.
+        This function gives ability to tune number of variables used when choosing
+        best split.
+
+        INPUT PARAMETERS:
+            XY          -   training set
+            NPoints     -   training set size, NPoints>=1
+            NVars       -   number of independent variables, NVars>=1
+            NClasses    -   task type:
+                            * NClasses=1 - regression task with one
+                                           dependent variable
+                            * NClasses>1 - classification task with
+                                           NClasses classes.
+            NTrees      -   number of trees in a forest, NTrees>=1.
+                            recommended values: 50-100.
+            NRndVars    -   number of variables used when choosing best split
+            R           -   percent of a training set used to build
+                            individual trees. 0<R<=1.
+                            recommended values: 0.1 <= R <= 0.66.
+
+        OUTPUT PARAMETERS:
+            Info        -   return code:
+                            * -2, if there is a point with class number
+                                  outside of [0..NClasses-1].
+                            * -1, if incorrect parameters was passed
+                                  (NPoints<1, NVars<1, NClasses<1, NTrees<1, R<=0
+                                  or R>1).
+                            *  1, if task has been solved
+            DF          -   model built
+            Rep         -   training report, contains error on a training set
+                            and out-of-bag estimates of generalization error.
+
+          -- ALGLIB --
+             Copyright 19.02.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dfbuildrandomdecisionforestx1(double[,] xy,
+            int npoints,
+            int nvars,
+            int nclasses,
+            int ntrees,
+            int nrndvars,
+            double r,
+            ref int info,
+            decisionforest df,
+            dfreport rep)
+        {
+            int samplesize = 0;
+
+            info = 0;
+
+            if( (double)(r)<=(double)(0) | (double)(r)>(double)(1) )
+            {
+                info = -1;
+                return;
+            }
+            if( nrndvars<=0 | nrndvars>nvars )
+            {
+                info = -1;
+                return;
+            }
+            samplesize = Math.Max((int)Math.Round(r*npoints), 1);
+            dfbuildinternal(xy, npoints, nvars, nclasses, ntrees, samplesize, nrndvars, dfusestrongsplits+dfuseevs, ref info, df, rep);
         }
 
 
@@ -4954,6 +6219,76 @@ public partial class alglib
             {
                 df2.trees[i_] = df1.trees[i_];
             }
+        }
+
+
+        /*************************************************************************
+        Serializer: allocation
+
+          -- ALGLIB --
+             Copyright 14.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dfalloc(alglib.serializer s,
+            decisionforest forest)
+        {
+            s.alloc_entry();
+            s.alloc_entry();
+            s.alloc_entry();
+            s.alloc_entry();
+            s.alloc_entry();
+            s.alloc_entry();
+            apserv.allocrealarray(s, forest.trees, forest.bufsize);
+        }
+
+
+        /*************************************************************************
+        Serializer: serialization
+
+          -- ALGLIB --
+             Copyright 14.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dfserialize(alglib.serializer s,
+            decisionforest forest)
+        {
+            s.serialize_int(scodes.getrdfserializationcode());
+            s.serialize_int(dffirstversion);
+            s.serialize_int(forest.nvars);
+            s.serialize_int(forest.nclasses);
+            s.serialize_int(forest.ntrees);
+            s.serialize_int(forest.bufsize);
+            apserv.serializerealarray(s, forest.trees, forest.bufsize);
+        }
+
+
+        /*************************************************************************
+        Serializer: unserialization
+
+          -- ALGLIB --
+             Copyright 14.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void dfunserialize(alglib.serializer s,
+            decisionforest forest)
+        {
+            int i0 = 0;
+            int i1 = 0;
+
+            
+            //
+            // check correctness of header
+            //
+            i0 = s.unserialize_int();
+            ap.assert(i0==scodes.getrdfserializationcode(), "DFUnserialize: stream header corrupted");
+            i1 = s.unserialize_int();
+            ap.assert(i1==dffirstversion, "DFUnserialize: stream header corrupted");
+            
+            //
+            // Unserialize data
+            //
+            forest.nvars = s.unserialize_int();
+            forest.nclasses = s.unserialize_int();
+            forest.ntrees = s.unserialize_int();
+            forest.bufsize = s.unserialize_int();
+            apserv.unserializerealarray(s, ref forest.trees);
         }
 
 
@@ -5794,8 +7129,7 @@ public partial class alglib
                             *  1, if subroutine finished successfully
             C           -   array[0..NVars-1,0..K-1].matrix whose columns store
                             cluster's centers
-            XYC         -   array which contains number of clusters dataset points
-                            belong to.
+            XYC         -   array[NPoints], which contains cluster indexes
 
           -- ALGLIB --
              Copyright 21.03.2009 by Bochkanov Sergey
@@ -7902,6 +9236,11 @@ public partial class alglib
     {
         public class multilayerperceptron
         {
+            public int hlnetworktype;
+            public int hlnormtype;
+            public int[] hllayersizes;
+            public int[] hlconnections;
+            public int[] hlneurons;
             public int[] structinfo;
             public double[] weights;
             public double[] columnmeans;
@@ -7913,8 +9252,12 @@ public partial class alglib
             public double[] y;
             public double[,] chunks;
             public double[] nwbuf;
+            public int[] integerbuf;
             public multilayerperceptron()
             {
+                hllayersizes = new int[0];
+                hlconnections = new int[0];
+                hlneurons = new int[0];
                 structinfo = new int[0];
                 weights = new double[0];
                 columnmeans = new double[0];
@@ -7926,6 +9269,7 @@ public partial class alglib
                 y = new double[0];
                 chunks = new double[0,0];
                 nwbuf = new double[0];
+                integerbuf = new int[0];
             }
         };
 
@@ -7933,7 +9277,10 @@ public partial class alglib
 
 
         public const int mlpvnum = 7;
+        public const int mlpfirstversion = 0;
         public const int nfieldwidth = 4;
+        public const int hlconnfieldwidth = 5;
+        public const int hlnfieldwidth = 4;
         public const int chunksize = 32;
 
 
@@ -7956,7 +9303,7 @@ public partial class alglib
             int layerscount = 0;
             int lastproc = 0;
 
-            layerscount = 1+2;
+            layerscount = 1+3;
             
             //
             // Allocate arrays
@@ -7971,11 +9318,13 @@ public partial class alglib
             //
             addinputlayer(nin, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             addbiasedsummatorlayer(nout, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
+            addactivationlayer(-5, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             
             //
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, 0, 0, nout, false, true);
         }
 
 
@@ -7998,7 +9347,7 @@ public partial class alglib
             int layerscount = 0;
             int lastproc = 0;
 
-            layerscount = 1+3+2;
+            layerscount = 1+3+3;
             
             //
             // Allocate arrays
@@ -8015,11 +9364,13 @@ public partial class alglib
             addbiasedsummatorlayer(nhid, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             addactivationlayer(1, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             addbiasedsummatorlayer(nout, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
+            addactivationlayer(-5, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             
             //
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, nhid, 0, nout, false, true);
         }
 
 
@@ -8044,7 +9395,7 @@ public partial class alglib
             int layerscount = 0;
             int lastproc = 0;
 
-            layerscount = 1+3+3+2;
+            layerscount = 1+3+3+3;
             
             //
             // Allocate arrays
@@ -8063,11 +9414,13 @@ public partial class alglib
             addbiasedsummatorlayer(nhid2, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             addactivationlayer(1, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             addbiasedsummatorlayer(nout, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
+            addactivationlayer(-5, ref lsizes, ref ltypes, ref lconnfirst, ref lconnlast, ref lastproc);
             
             //
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, nhid1, nhid2, nout, false, true);
         }
 
 
@@ -8131,6 +9484,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, 0, 0, nout, false, false);
             
             //
             // Turn on ouputs shift/scaling.
@@ -8195,6 +9549,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, nhid, 0, nout, false, false);
             
             //
             // Turn on ouputs shift/scaling.
@@ -8262,6 +9617,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, nhid1, nhid2, nout, false, false);
             
             //
             // Turn on ouputs shift/scaling.
@@ -8317,6 +9673,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, 0, 0, nout, false, false);
             
             //
             // Turn on outputs shift/scaling.
@@ -8373,6 +9730,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, nhid, 0, nout, false, false);
             
             //
             // Turn on outputs shift/scaling.
@@ -8432,6 +9790,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, false, network);
+            fillhighlevelinformation(network, nin, nhid1, nhid2, nout, false, false);
             
             //
             // Turn on outputs shift/scaling.
@@ -8486,6 +9845,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, true, network);
+            fillhighlevelinformation(network, nin, 0, 0, nout, true, true);
         }
 
 
@@ -8531,6 +9891,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, true, network);
+            fillhighlevelinformation(network, nin, nhid, 0, nout, true, true);
         }
 
 
@@ -8579,6 +9940,7 @@ public partial class alglib
             // Create
             //
             mlpcreate(nin, nout, lsizes, ltypes, lconnfirst, lconnlast, layerscount, true, network);
+            fillhighlevelinformation(network, nin, nhid1, nhid2, nout, true, true);
         }
 
 
@@ -8597,100 +9959,23 @@ public partial class alglib
         public static void mlpcopy(multilayerperceptron network1,
             multilayerperceptron network2)
         {
-            int i = 0;
-            int ssize = 0;
-            int ntotal = 0;
-            int nin = 0;
-            int nout = 0;
-            int wcount = 0;
-            int i_ = 0;
-
-            
-            //
-            // Unload info
-            //
-            ssize = network1.structinfo[0];
-            nin = network1.structinfo[1];
-            nout = network1.structinfo[2];
-            ntotal = network1.structinfo[3];
-            wcount = network1.structinfo[4];
-            
-            //
-            // Allocate space
-            //
-            network2.structinfo = new int[ssize-1+1];
-            network2.weights = new double[wcount-1+1];
-            if( mlpissoftmax(network1) )
-            {
-                network2.columnmeans = new double[nin-1+1];
-                network2.columnsigmas = new double[nin-1+1];
-            }
-            else
-            {
-                network2.columnmeans = new double[nin+nout-1+1];
-                network2.columnsigmas = new double[nin+nout-1+1];
-            }
-            network2.neurons = new double[ntotal-1+1];
-            network2.chunks = new double[3*ntotal+1, chunksize-1+1];
-            network2.nwbuf = new double[Math.Max(wcount, 2*nout)-1+1];
-            network2.dfdnet = new double[ntotal-1+1];
-            network2.x = new double[nin-1+1];
-            network2.y = new double[nout-1+1];
-            network2.derror = new double[ntotal-1+1];
-            
-            //
-            // Copy
-            //
-            for(i=0; i<=ssize-1; i++)
-            {
-                network2.structinfo[i] = network1.structinfo[i];
-            }
-            for(i_=0; i_<=wcount-1;i_++)
-            {
-                network2.weights[i_] = network1.weights[i_];
-            }
-            if( mlpissoftmax(network1) )
-            {
-                for(i_=0; i_<=nin-1;i_++)
-                {
-                    network2.columnmeans[i_] = network1.columnmeans[i_];
-                }
-                for(i_=0; i_<=nin-1;i_++)
-                {
-                    network2.columnsigmas[i_] = network1.columnsigmas[i_];
-                }
-            }
-            else
-            {
-                for(i_=0; i_<=nin+nout-1;i_++)
-                {
-                    network2.columnmeans[i_] = network1.columnmeans[i_];
-                }
-                for(i_=0; i_<=nin+nout-1;i_++)
-                {
-                    network2.columnsigmas[i_] = network1.columnsigmas[i_];
-                }
-            }
-            for(i_=0; i_<=ntotal-1;i_++)
-            {
-                network2.neurons[i_] = network1.neurons[i_];
-            }
-            for(i_=0; i_<=ntotal-1;i_++)
-            {
-                network2.dfdnet[i_] = network1.dfdnet[i_];
-            }
-            for(i_=0; i_<=nin-1;i_++)
-            {
-                network2.x[i_] = network1.x[i_];
-            }
-            for(i_=0; i_<=nout-1;i_++)
-            {
-                network2.y[i_] = network1.y[i_];
-            }
-            for(i_=0; i_<=ntotal-1;i_++)
-            {
-                network2.derror[i_] = network1.derror[i_];
-            }
+            network2.hlnetworktype = network1.hlnetworktype;
+            network2.hlnormtype = network1.hlnormtype;
+            apserv.copyintegerarray(network1.hllayersizes, ref network2.hllayersizes);
+            apserv.copyintegerarray(network1.hlconnections, ref network2.hlconnections);
+            apserv.copyintegerarray(network1.hlneurons, ref network2.hlneurons);
+            apserv.copyintegerarray(network1.structinfo, ref network2.structinfo);
+            apserv.copyrealarray(network1.weights, ref network2.weights);
+            apserv.copyrealarray(network1.columnmeans, ref network2.columnmeans);
+            apserv.copyrealarray(network1.columnsigmas, ref network2.columnsigmas);
+            apserv.copyrealarray(network1.neurons, ref network2.neurons);
+            apserv.copyrealarray(network1.dfdnet, ref network2.dfdnet);
+            apserv.copyrealarray(network1.derror, ref network2.derror);
+            apserv.copyrealarray(network1.x, ref network2.x);
+            apserv.copyrealarray(network1.y, ref network2.y);
+            apserv.copyrealmatrix(network1.chunks, ref network2.chunks);
+            apserv.copyrealarray(network1.nwbuf, ref network2.nwbuf);
+            apserv.copyintegerarray(network1.integerbuf, ref network2.integerbuf);
         }
 
 
@@ -8708,7 +9993,7 @@ public partial class alglib
           -- ALGLIB --
              Copyright 29.03.2008 by Bochkanov Sergey
         *************************************************************************/
-        public static void mlpserialize(multilayerperceptron network,
+        public static void mlpserializeold(multilayerperceptron network,
             ref double[] ra,
             ref int rlen)
         {
@@ -8799,7 +10084,7 @@ public partial class alglib
           -- ALGLIB --
              Copyright 29.03.2008 by Bochkanov Sergey
         *************************************************************************/
-        public static void mlpunserialize(double[] ra,
+        public static void mlpunserializeold(double[] ra,
             multilayerperceptron network)
         {
             int i = 0;
@@ -9116,6 +10401,566 @@ public partial class alglib
 
             result = network.structinfo[6]==1;
             return result;
+        }
+
+
+        /*************************************************************************
+        This function returns total number of layers (including input, hidden and
+        output layers).
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static int mlpgetlayerscount(multilayerperceptron network)
+        {
+            int result = 0;
+
+            result = ap.len(network.hllayersizes);
+            return result;
+        }
+
+
+        /*************************************************************************
+        This function returns size of K-th layer.
+
+        K=0 corresponds to input layer, K=CNT-1 corresponds to output layer.
+
+        Size of the output layer is always equal to the number of outputs, although
+        when we have softmax-normalized network, last neuron doesn't have any
+        connections - it is just zero.
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static int mlpgetlayersize(multilayerperceptron network,
+            int k)
+        {
+            int result = 0;
+
+            ap.assert(k>=0 & k<ap.len(network.hllayersizes), "MLPGetLayerSize: incorrect layer index");
+            result = network.hllayersizes[k];
+            return result;
+        }
+
+
+        /*************************************************************************
+        This function returns offset/scaling coefficients for I-th input of the
+        network.
+
+        INPUT PARAMETERS:
+            Network     -   network
+            I           -   input index
+
+        OUTPUT PARAMETERS:
+            Mean        -   mean term
+            Sigma       -   sigma term, guaranteed to be nonzero.
+
+        I-th input is passed through linear transformation
+            IN[i] = (IN[i]-Mean)/Sigma
+        before feeding to the network
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpgetinputscaling(multilayerperceptron network,
+            int i,
+            ref double mean,
+            ref double sigma)
+        {
+            mean = 0;
+            sigma = 0;
+
+            ap.assert(i>=0 & i<network.hllayersizes[0], "MLPGetInputScaling: incorrect (nonexistent) I");
+            mean = network.columnmeans[i];
+            sigma = network.columnsigmas[i];
+            if( (double)(sigma)==(double)(0) )
+            {
+                sigma = 1;
+            }
+        }
+
+
+        /*************************************************************************
+        This function returns offset/scaling coefficients for I-th output of the
+        network.
+
+        INPUT PARAMETERS:
+            Network     -   network
+            I           -   input index
+
+        OUTPUT PARAMETERS:
+            Mean        -   mean term
+            Sigma       -   sigma term, guaranteed to be nonzero.
+
+        I-th output is passed through linear transformation
+            OUT[i] = OUT[i]*Sigma+Mean
+        before returning it to user. In case we have SOFTMAX-normalized network,
+        we return (Mean,Sigma)=(0.0,1.0).
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpgetoutputscaling(multilayerperceptron network,
+            int i,
+            ref double mean,
+            ref double sigma)
+        {
+            mean = 0;
+            sigma = 0;
+
+            ap.assert(i>=0 & i<network.hllayersizes[ap.len(network.hllayersizes)-1], "MLPGetOutputScaling: incorrect (nonexistent) I");
+            if( network.structinfo[6]==1 )
+            {
+                mean = 0;
+                sigma = 1;
+            }
+            else
+            {
+                mean = network.columnmeans[network.hllayersizes[0]+i];
+                sigma = network.columnsigmas[network.hllayersizes[0]+i];
+            }
+        }
+
+
+        /*************************************************************************
+        This function returns information about Ith neuron of Kth layer
+
+        INPUT PARAMETERS:
+            Network     -   network
+            K           -   layer index
+            I           -   neuron index (within layer)
+
+        OUTPUT PARAMETERS:
+            FKind       -   activation function type (used by MLPActivationFunction())
+                            this value is zero for input or linear neurons
+            Threshold   -   also called offset, bias
+                            zero for input neurons
+                            
+        NOTE: this function throws exception if layer or neuron with  given  index
+        do not exists.
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpgetneuroninfo(multilayerperceptron network,
+            int k,
+            int i,
+            ref int fkind,
+            ref double threshold)
+        {
+            int ncnt = 0;
+            int istart = 0;
+            int highlevelidx = 0;
+            int activationoffset = 0;
+
+            fkind = 0;
+            threshold = 0;
+
+            ncnt = ap.len(network.hlneurons)/hlnfieldwidth;
+            istart = network.structinfo[5];
+            
+            //
+            // search
+            //
+            network.integerbuf[0] = k;
+            network.integerbuf[1] = i;
+            highlevelidx = apserv.recsearch(ref network.hlneurons, hlnfieldwidth, 2, 0, ncnt, network.integerbuf);
+            ap.assert(highlevelidx>=0, "MLPGetNeuronInfo: incorrect (nonexistent) layer or neuron index");
+            
+            //
+            // 1. find offset of the activation function record in the
+            //
+            if( network.hlneurons[highlevelidx*hlnfieldwidth+2]>=0 )
+            {
+                activationoffset = istart+network.hlneurons[highlevelidx*hlnfieldwidth+2]*nfieldwidth;
+                fkind = network.structinfo[activationoffset+0];
+            }
+            else
+            {
+                fkind = 0;
+            }
+            if( network.hlneurons[highlevelidx*hlnfieldwidth+3]>=0 )
+            {
+                threshold = network.weights[network.hlneurons[highlevelidx*hlnfieldwidth+3]];
+            }
+            else
+            {
+                threshold = 0;
+            }
+        }
+
+
+        /*************************************************************************
+        This function returns information about connection from I0-th neuron of
+        K0-th layer to I1-th neuron of K1-th layer.
+
+        INPUT PARAMETERS:
+            Network     -   network
+            K0          -   layer index
+            I0          -   neuron index (within layer)
+            K1          -   layer index
+            I1          -   neuron index (within layer)
+
+        RESULT:
+            connection weight (zero for non-existent connections)
+
+        This function:
+        1. throws exception if layer or neuron with given index do not exists.
+        2. returns zero if neurons exist, but there is no connection between them
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static double mlpgetweight(multilayerperceptron network,
+            int k0,
+            int i0,
+            int k1,
+            int i1)
+        {
+            double result = 0;
+            int ccnt = 0;
+            int highlevelidx = 0;
+
+            ccnt = ap.len(network.hlconnections)/hlconnfieldwidth;
+            
+            //
+            // check params
+            //
+            ap.assert(k0>=0 & k0<ap.len(network.hllayersizes), "MLPGetWeight: incorrect (nonexistent) K0");
+            ap.assert(i0>=0 & i0<network.hllayersizes[k0], "MLPGetWeight: incorrect (nonexistent) I0");
+            ap.assert(k1>=0 & k1<ap.len(network.hllayersizes), "MLPGetWeight: incorrect (nonexistent) K1");
+            ap.assert(i1>=0 & i1<network.hllayersizes[k1], "MLPGetWeight: incorrect (nonexistent) I1");
+            
+            //
+            // search
+            //
+            network.integerbuf[0] = k0;
+            network.integerbuf[1] = i0;
+            network.integerbuf[2] = k1;
+            network.integerbuf[3] = i1;
+            highlevelidx = apserv.recsearch(ref network.hlconnections, hlconnfieldwidth, 4, 0, ccnt, network.integerbuf);
+            if( highlevelidx>=0 )
+            {
+                result = network.weights[network.hlconnections[highlevelidx*hlconnfieldwidth+4]];
+            }
+            else
+            {
+                result = 0;
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        This function sets offset/scaling coefficients for I-th input of the
+        network.
+
+        INPUT PARAMETERS:
+            Network     -   network
+            I           -   input index
+            Mean        -   mean term
+            Sigma       -   sigma term (if zero, will be replaced by 1.0)
+
+        NTE: I-th input is passed through linear transformation
+            IN[i] = (IN[i]-Mean)/Sigma
+        before feeding to the network. This function sets Mean and Sigma.
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpsetinputscaling(multilayerperceptron network,
+            int i,
+            double mean,
+            double sigma)
+        {
+            ap.assert(i>=0 & i<network.hllayersizes[0], "MLPSetInputScaling: incorrect (nonexistent) I");
+            ap.assert(math.isfinite(mean), "MLPSetInputScaling: infinite or NAN Mean");
+            ap.assert(math.isfinite(sigma), "MLPSetInputScaling: infinite or NAN Sigma");
+            if( (double)(sigma)==(double)(0) )
+            {
+                sigma = 1;
+            }
+            network.columnmeans[i] = mean;
+            network.columnsigmas[i] = sigma;
+        }
+
+
+        /*************************************************************************
+        This function sets offset/scaling coefficients for I-th output of the
+        network.
+
+        INPUT PARAMETERS:
+            Network     -   network
+            I           -   input index
+            Mean        -   mean term
+            Sigma       -   sigma term (if zero, will be replaced by 1.0)
+
+        OUTPUT PARAMETERS:
+
+        NOTE: I-th output is passed through linear transformation
+            OUT[i] = OUT[i]*Sigma+Mean
+        before returning it to user. This function sets Sigma/Mean. In case we
+        have SOFTMAX-normalized network, you can not set (Sigma,Mean) to anything
+        other than(0.0,1.0) - this function will throw exception.
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpsetoutputscaling(multilayerperceptron network,
+            int i,
+            double mean,
+            double sigma)
+        {
+            ap.assert(i>=0 & i<network.hllayersizes[ap.len(network.hllayersizes)-1], "MLPSetOutputScaling: incorrect (nonexistent) I");
+            ap.assert(math.isfinite(mean), "MLPSetOutputScaling: infinite or NAN Mean");
+            ap.assert(math.isfinite(sigma), "MLPSetOutputScaling: infinite or NAN Sigma");
+            if( network.structinfo[6]==1 )
+            {
+                ap.assert((double)(mean)==(double)(0), "MLPSetOutputScaling: you can not set non-zero Mean term for classifier network");
+                ap.assert((double)(sigma)==(double)(1), "MLPSetOutputScaling: you can not set non-unit Sigma term for classifier network");
+            }
+            else
+            {
+                if( (double)(sigma)==(double)(0) )
+                {
+                    sigma = 1;
+                }
+                network.columnmeans[network.hllayersizes[0]+i] = mean;
+                network.columnsigmas[network.hllayersizes[0]+i] = sigma;
+            }
+        }
+
+
+        /*************************************************************************
+        This function modifies information about Ith neuron of Kth layer
+
+        INPUT PARAMETERS:
+            Network     -   network
+            K           -   layer index
+            I           -   neuron index (within layer)
+            FKind       -   activation function type (used by MLPActivationFunction())
+                            this value must be zero for input neurons
+                            (you can not set activation function for input neurons)
+            Threshold   -   also called offset, bias
+                            this value must be zero for input neurons
+                            (you can not set threshold for input neurons)
+
+        NOTES:
+        1. this function throws exception if layer or neuron with given index do
+           not exists.
+        2. this function also throws exception when you try to set non-linear
+           activation function for input neurons (any kind of network) or for output
+           neurons of classifier network.
+        3. this function throws exception when you try to set non-zero threshold for
+           input neurons (any kind of network).
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpsetneuroninfo(multilayerperceptron network,
+            int k,
+            int i,
+            int fkind,
+            double threshold)
+        {
+            int ncnt = 0;
+            int istart = 0;
+            int highlevelidx = 0;
+            int activationoffset = 0;
+
+            ap.assert(math.isfinite(threshold), "MLPSetNeuronInfo: infinite or NAN Threshold");
+            
+            //
+            // convenience vars
+            //
+            ncnt = ap.len(network.hlneurons)/hlnfieldwidth;
+            istart = network.structinfo[5];
+            
+            //
+            // search
+            //
+            network.integerbuf[0] = k;
+            network.integerbuf[1] = i;
+            highlevelidx = apserv.recsearch(ref network.hlneurons, hlnfieldwidth, 2, 0, ncnt, network.integerbuf);
+            ap.assert(highlevelidx>=0, "MLPSetNeuronInfo: incorrect (nonexistent) layer or neuron index");
+            
+            //
+            // activation function
+            //
+            if( network.hlneurons[highlevelidx*hlnfieldwidth+2]>=0 )
+            {
+                activationoffset = istart+network.hlneurons[highlevelidx*hlnfieldwidth+2]*nfieldwidth;
+                network.structinfo[activationoffset+0] = fkind;
+            }
+            else
+            {
+                ap.assert(fkind==0, "MLPSetNeuronInfo: you try to set activation function for neuron which can not have one");
+            }
+            
+            //
+            // Threshold
+            //
+            if( network.hlneurons[highlevelidx*hlnfieldwidth+3]>=0 )
+            {
+                network.weights[network.hlneurons[highlevelidx*hlnfieldwidth+3]] = threshold;
+            }
+            else
+            {
+                ap.assert((double)(threshold)==(double)(0), "MLPSetNeuronInfo: you try to set non-zero threshold for neuron which can not have one");
+            }
+        }
+
+
+        /*************************************************************************
+        This function modifies information about connection from I0-th neuron of
+        K0-th layer to I1-th neuron of K1-th layer.
+
+        INPUT PARAMETERS:
+            Network     -   network
+            K0          -   layer index
+            I0          -   neuron index (within layer)
+            K1          -   layer index
+            I1          -   neuron index (within layer)
+            W           -   connection weight (must be zero for non-existent
+                            connections)
+
+        This function:
+        1. throws exception if layer or neuron with given index do not exists.
+        2. throws exception if you try to set non-zero weight for non-existent
+           connection
+
+          -- ALGLIB --
+             Copyright 25.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpsetweight(multilayerperceptron network,
+            int k0,
+            int i0,
+            int k1,
+            int i1,
+            double w)
+        {
+            int ccnt = 0;
+            int highlevelidx = 0;
+
+            ccnt = ap.len(network.hlconnections)/hlconnfieldwidth;
+            
+            //
+            // check params
+            //
+            ap.assert(k0>=0 & k0<ap.len(network.hllayersizes), "MLPSetWeight: incorrect (nonexistent) K0");
+            ap.assert(i0>=0 & i0<network.hllayersizes[k0], "MLPSetWeight: incorrect (nonexistent) I0");
+            ap.assert(k1>=0 & k1<ap.len(network.hllayersizes), "MLPSetWeight: incorrect (nonexistent) K1");
+            ap.assert(i1>=0 & i1<network.hllayersizes[k1], "MLPSetWeight: incorrect (nonexistent) I1");
+            ap.assert(math.isfinite(w), "MLPSetWeight: infinite or NAN weight");
+            
+            //
+            // search
+            //
+            network.integerbuf[0] = k0;
+            network.integerbuf[1] = i0;
+            network.integerbuf[2] = k1;
+            network.integerbuf[3] = i1;
+            highlevelidx = apserv.recsearch(ref network.hlconnections, hlconnfieldwidth, 4, 0, ccnt, network.integerbuf);
+            if( highlevelidx>=0 )
+            {
+                network.weights[network.hlconnections[highlevelidx*hlconnfieldwidth+4]] = w;
+            }
+            else
+            {
+                ap.assert((double)(w)==(double)(0), "MLPSetWeight: you try to set non-zero weight for non-existent connection");
+            }
+        }
+
+
+        /*************************************************************************
+        Neural network activation function
+
+        INPUT PARAMETERS:
+            NET         -   neuron input
+            K           -   function index (zero for linear function)
+
+        OUTPUT PARAMETERS:
+            F           -   function
+            DF          -   its derivative
+            D2F         -   its second derivative
+
+          -- ALGLIB --
+             Copyright 04.11.2007 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpactivationfunction(double net,
+            int k,
+            ref double f,
+            ref double df,
+            ref double d2f)
+        {
+            double net2 = 0;
+            double arg = 0;
+            double root = 0;
+            double r = 0;
+
+            f = 0;
+            df = 0;
+            d2f = 0;
+
+            if( k==0 | k==-5 )
+            {
+                f = net;
+                df = 1;
+                d2f = 0;
+                return;
+            }
+            if( k==1 )
+            {
+                
+                //
+                // TanH activation function
+                //
+                if( (double)(Math.Abs(net))<(double)(100) )
+                {
+                    f = Math.Tanh(net);
+                }
+                else
+                {
+                    f = Math.Sign(net);
+                }
+                df = 1-math.sqr(f);
+                d2f = -(2*f*df);
+                return;
+            }
+            if( k==3 )
+            {
+                
+                //
+                // EX activation function
+                //
+                if( (double)(net)>=(double)(0) )
+                {
+                    net2 = net*net;
+                    arg = net2+1;
+                    root = Math.Sqrt(arg);
+                    f = net+root;
+                    r = net/root;
+                    df = 1+r;
+                    d2f = (root-net*r)/arg;
+                }
+                else
+                {
+                    f = Math.Exp(net);
+                    df = f;
+                    d2f = f;
+                }
+                return;
+            }
+            if( k==2 )
+            {
+                f = Math.Exp(-math.sqr(net));
+                df = -(2*net*f);
+                d2f = -(2*(f+df*net));
+                return;
+            }
+            f = 0;
+            df = 0;
+            d2f = 0;
         }
 
 
@@ -10004,7 +11849,7 @@ public partial class alglib
             for(i=0; i<=ntotal-1; i++)
             {
                 offs = istart+i*nfieldwidth;
-                if( structinfo[offs+0]>0 )
+                if( structinfo[offs+0]>0 | structinfo[offs+0]==-5 )
                 {
                     
                     //
@@ -10013,6 +11858,7 @@ public partial class alglib
                     mlpactivationfunction(neurons[structinfo[offs+2]], structinfo[offs+0], ref f, ref df, ref d2f);
                     neurons[i] = f;
                     dfdnet[i] = df;
+                    continue;
                 }
                 if( structinfo[offs+0]==0 )
                 {
@@ -10032,6 +11878,7 @@ public partial class alglib
                     }
                     neurons[i] = net;
                     dfdnet[i] = 1.0;
+                    continue;
                 }
                 if( structinfo[offs+0]<0 )
                 {
@@ -10063,6 +11910,7 @@ public partial class alglib
                         perr = false;
                     }
                     ap.assert(!perr, "MLPInternalProcessVector: internal error - unknown neuron type!");
+                    continue;
                 }
             }
             
@@ -10111,6 +11959,222 @@ public partial class alglib
                 {
                     y[i] = y[i]*columnsigmas[nin+i]+columnmeans[nin+i];
                 }
+            }
+        }
+
+
+        /*************************************************************************
+        Serializer: allocation
+
+          -- ALGLIB --
+             Copyright 14.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpalloc(alglib.serializer s,
+            multilayerperceptron network)
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int fkind = 0;
+            double threshold = 0;
+            double v0 = 0;
+            double v1 = 0;
+            int nin = 0;
+            int nout = 0;
+
+            nin = network.hllayersizes[0];
+            nout = network.hllayersizes[ap.len(network.hllayersizes)-1];
+            s.alloc_entry();
+            s.alloc_entry();
+            s.alloc_entry();
+            apserv.allocintegerarray(s, network.hllayersizes, -1);
+            for(i=1; i<=ap.len(network.hllayersizes)-1; i++)
+            {
+                for(j=0; j<=network.hllayersizes[i]-1; j++)
+                {
+                    mlpgetneuroninfo(network, i, j, ref fkind, ref threshold);
+                    s.alloc_entry();
+                    s.alloc_entry();
+                    for(k=0; k<=network.hllayersizes[i-1]-1; k++)
+                    {
+                        s.alloc_entry();
+                    }
+                }
+            }
+            for(j=0; j<=nin-1; j++)
+            {
+                mlpgetinputscaling(network, j, ref v0, ref v1);
+                s.alloc_entry();
+                s.alloc_entry();
+            }
+            for(j=0; j<=nout-1; j++)
+            {
+                mlpgetoutputscaling(network, j, ref v0, ref v1);
+                s.alloc_entry();
+                s.alloc_entry();
+            }
+        }
+
+
+        /*************************************************************************
+        Serializer: serialization
+
+          -- ALGLIB --
+             Copyright 14.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpserialize(alglib.serializer s,
+            multilayerperceptron network)
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int fkind = 0;
+            double threshold = 0;
+            double v0 = 0;
+            double v1 = 0;
+            int nin = 0;
+            int nout = 0;
+
+            nin = network.hllayersizes[0];
+            nout = network.hllayersizes[ap.len(network.hllayersizes)-1];
+            s.serialize_int(scodes.getmlpserializationcode());
+            s.serialize_int(mlpfirstversion);
+            s.serialize_bool(mlpissoftmax(network));
+            apserv.serializeintegerarray(s, network.hllayersizes, -1);
+            for(i=1; i<=ap.len(network.hllayersizes)-1; i++)
+            {
+                for(j=0; j<=network.hllayersizes[i]-1; j++)
+                {
+                    mlpgetneuroninfo(network, i, j, ref fkind, ref threshold);
+                    s.serialize_int(fkind);
+                    s.serialize_double(threshold);
+                    for(k=0; k<=network.hllayersizes[i-1]-1; k++)
+                    {
+                        s.serialize_double(mlpgetweight(network, i-1, k, i, j));
+                    }
+                }
+            }
+            for(j=0; j<=nin-1; j++)
+            {
+                mlpgetinputscaling(network, j, ref v0, ref v1);
+                s.serialize_double(v0);
+                s.serialize_double(v1);
+            }
+            for(j=0; j<=nout-1; j++)
+            {
+                mlpgetoutputscaling(network, j, ref v0, ref v1);
+                s.serialize_double(v0);
+                s.serialize_double(v1);
+            }
+        }
+
+
+        /*************************************************************************
+        Serializer: unserialization
+
+          -- ALGLIB --
+             Copyright 14.03.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mlpunserialize(alglib.serializer s,
+            multilayerperceptron network)
+        {
+            int i0 = 0;
+            int i1 = 0;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int fkind = 0;
+            double threshold = 0;
+            double v0 = 0;
+            double v1 = 0;
+            int nin = 0;
+            int nout = 0;
+            bool issoftmax = new bool();
+            int[] layersizes = new int[0];
+
+            
+            //
+            // check correctness of header
+            //
+            i0 = s.unserialize_int();
+            ap.assert(i0==scodes.getmlpserializationcode(), "MLPUnserialize: stream header corrupted");
+            i1 = s.unserialize_int();
+            ap.assert(i1==mlpfirstversion, "MLPUnserialize: stream header corrupted");
+            
+            //
+            // Create network
+            //
+            issoftmax = s.unserialize_bool();
+            apserv.unserializeintegerarray(s, ref layersizes);
+            ap.assert((ap.len(layersizes)==2 | ap.len(layersizes)==3) | ap.len(layersizes)==4, "MLPUnserialize: too many hidden layers!");
+            nin = layersizes[0];
+            nout = layersizes[ap.len(layersizes)-1];
+            if( ap.len(layersizes)==2 )
+            {
+                if( issoftmax )
+                {
+                    mlpcreatec0(layersizes[0], layersizes[1], network);
+                }
+                else
+                {
+                    mlpcreate0(layersizes[0], layersizes[1], network);
+                }
+            }
+            if( ap.len(layersizes)==3 )
+            {
+                if( issoftmax )
+                {
+                    mlpcreatec1(layersizes[0], layersizes[1], layersizes[2], network);
+                }
+                else
+                {
+                    mlpcreate1(layersizes[0], layersizes[1], layersizes[2], network);
+                }
+            }
+            if( ap.len(layersizes)==4 )
+            {
+                if( issoftmax )
+                {
+                    mlpcreatec2(layersizes[0], layersizes[1], layersizes[2], layersizes[3], network);
+                }
+                else
+                {
+                    mlpcreate2(layersizes[0], layersizes[1], layersizes[2], layersizes[3], network);
+                }
+            }
+            
+            //
+            // Load neurons and weights
+            //
+            for(i=1; i<=ap.len(layersizes)-1; i++)
+            {
+                for(j=0; j<=layersizes[i]-1; j++)
+                {
+                    fkind = s.unserialize_int();
+                    threshold = s.unserialize_double();
+                    mlpsetneuroninfo(network, i, j, fkind, threshold);
+                    for(k=0; k<=layersizes[i-1]-1; k++)
+                    {
+                        v0 = s.unserialize_double();
+                        mlpsetweight(network, i-1, k, i, j, v0);
+                    }
+                }
+            }
+            
+            //
+            // Load standartizator
+            //
+            for(j=0; j<=nin-1; j++)
+            {
+                v0 = s.unserialize_double();
+                v1 = s.unserialize_double();
+                mlpsetinputscaling(network, j, v0, v1);
+            }
+            for(j=0; j<=nout-1; j++)
+            {
+                v0 = s.unserialize_double();
+                v1 = s.unserialize_double();
+                mlpsetoutputscaling(network, j, v0, v1);
             }
         }
 
@@ -10165,7 +12229,7 @@ public partial class alglib
             ref int[] lconnlast,
             ref int lastproc)
         {
-            ap.assert(functype>0, "AddActivationLayer: incorrect function type");
+            ap.assert(functype>0 | functype==-5, "AddActivationLayer: incorrect function type");
             lsizes[lastproc+1] = lsizes[lastproc];
             ltypes[lastproc+1] = functype;
             lconnfirst[lastproc+1] = lastproc;
@@ -10188,6 +12252,352 @@ public partial class alglib
             lconnfirst[lastproc+1] = 0;
             lconnlast[lastproc+1] = 0;
             lastproc = lastproc+1;
+        }
+
+
+        /*************************************************************************
+        This routine adds input layer to the high-level description of the network.
+
+        It modifies Network.HLConnections and Network.HLNeurons  and  assumes that
+        these  arrays  have  enough  place  to  store  data.  It accepts following
+        parameters:
+            Network     -   network
+            ConnIdx     -   index of the first free entry in the HLConnections
+            NeuroIdx    -   index of the first free entry in the HLNeurons
+            StructInfoIdx-  index of the first entry in the low level description
+                            of the current layer (in the StructInfo array)
+            NIn         -   number of inputs
+                            
+        It modified Network and indices.
+        *************************************************************************/
+        private static void hladdinputlayer(multilayerperceptron network,
+            ref int connidx,
+            ref int neuroidx,
+            ref int structinfoidx,
+            int nin)
+        {
+            int i = 0;
+            int offs = 0;
+
+            offs = hlnfieldwidth*neuroidx;
+            for(i=0; i<=nin-1; i++)
+            {
+                network.hlneurons[offs+0] = 0;
+                network.hlneurons[offs+1] = i;
+                network.hlneurons[offs+2] = -1;
+                network.hlneurons[offs+3] = -1;
+                offs = offs+hlnfieldwidth;
+            }
+            neuroidx = neuroidx+nin;
+            structinfoidx = structinfoidx+nin;
+        }
+
+
+        /*************************************************************************
+        This routine adds output layer to the high-level description of
+        the network.
+
+        It modifies Network.HLConnections and Network.HLNeurons  and  assumes that
+        these  arrays  have  enough  place  to  store  data.  It accepts following
+        parameters:
+            Network     -   network
+            ConnIdx     -   index of the first free entry in the HLConnections
+            NeuroIdx    -   index of the first free entry in the HLNeurons
+            StructInfoIdx-  index of the first entry in the low level description
+                            of the current layer (in the StructInfo array)
+            WeightsIdx  -   index of the first entry in the Weights array which
+                            corresponds to the current layer
+            K           -   current layer index
+            NPrev       -   number of neurons in the previous layer
+            NOut        -   number of outputs
+            IsCls       -   is it classifier network?
+            IsLinear    -   is it network with linear output?
+
+        It modified Network and ConnIdx/NeuroIdx/StructInfoIdx/WeightsIdx.
+        *************************************************************************/
+        private static void hladdoutputlayer(multilayerperceptron network,
+            ref int connidx,
+            ref int neuroidx,
+            ref int structinfoidx,
+            ref int weightsidx,
+            int k,
+            int nprev,
+            int nout,
+            bool iscls,
+            bool islinearout)
+        {
+            int i = 0;
+            int j = 0;
+            int neurooffs = 0;
+            int connoffs = 0;
+
+            ap.assert((iscls & islinearout) | !iscls, "HLAddOutputLayer: internal error");
+            neurooffs = hlnfieldwidth*neuroidx;
+            connoffs = hlconnfieldwidth*connidx;
+            if( !iscls )
+            {
+                
+                //
+                // Regression network
+                //
+                for(i=0; i<=nout-1; i++)
+                {
+                    network.hlneurons[neurooffs+0] = k;
+                    network.hlneurons[neurooffs+1] = i;
+                    network.hlneurons[neurooffs+2] = structinfoidx+1+nout+i;
+                    network.hlneurons[neurooffs+3] = weightsidx+nprev+(nprev+1)*i;
+                    neurooffs = neurooffs+hlnfieldwidth;
+                }
+                for(i=0; i<=nprev-1; i++)
+                {
+                    for(j=0; j<=nout-1; j++)
+                    {
+                        network.hlconnections[connoffs+0] = k-1;
+                        network.hlconnections[connoffs+1] = i;
+                        network.hlconnections[connoffs+2] = k;
+                        network.hlconnections[connoffs+3] = j;
+                        network.hlconnections[connoffs+4] = weightsidx+i+j*(nprev+1);
+                        connoffs = connoffs+hlconnfieldwidth;
+                    }
+                }
+                connidx = connidx+nprev*nout;
+                neuroidx = neuroidx+nout;
+                structinfoidx = structinfoidx+2*nout+1;
+                weightsidx = weightsidx+nout*(nprev+1);
+            }
+            else
+            {
+                
+                //
+                // Classification network
+                //
+                for(i=0; i<=nout-2; i++)
+                {
+                    network.hlneurons[neurooffs+0] = k;
+                    network.hlneurons[neurooffs+1] = i;
+                    network.hlneurons[neurooffs+2] = -1;
+                    network.hlneurons[neurooffs+3] = weightsidx+nprev+(nprev+1)*i;
+                    neurooffs = neurooffs+hlnfieldwidth;
+                }
+                network.hlneurons[neurooffs+0] = k;
+                network.hlneurons[neurooffs+1] = i;
+                network.hlneurons[neurooffs+2] = -1;
+                network.hlneurons[neurooffs+3] = -1;
+                for(i=0; i<=nprev-1; i++)
+                {
+                    for(j=0; j<=nout-2; j++)
+                    {
+                        network.hlconnections[connoffs+0] = k-1;
+                        network.hlconnections[connoffs+1] = i;
+                        network.hlconnections[connoffs+2] = k;
+                        network.hlconnections[connoffs+3] = j;
+                        network.hlconnections[connoffs+4] = weightsidx+i+j*(nprev+1);
+                        connoffs = connoffs+hlconnfieldwidth;
+                    }
+                }
+                connidx = connidx+nprev*(nout-1);
+                neuroidx = neuroidx+nout;
+                structinfoidx = structinfoidx+nout+2;
+                weightsidx = weightsidx+(nout-1)*(nprev+1);
+            }
+        }
+
+
+        /*************************************************************************
+        This routine adds hidden layer to the high-level description of
+        the network.
+
+        It modifies Network.HLConnections and Network.HLNeurons  and  assumes that
+        these  arrays  have  enough  place  to  store  data.  It accepts following
+        parameters:
+            Network     -   network
+            ConnIdx     -   index of the first free entry in the HLConnections
+            NeuroIdx    -   index of the first free entry in the HLNeurons
+            StructInfoIdx-  index of the first entry in the low level description
+                            of the current layer (in the StructInfo array)
+            WeightsIdx  -   index of the first entry in the Weights array which
+                            corresponds to the current layer
+            K           -   current layer index
+            NPrev       -   number of neurons in the previous layer
+            NCur        -   number of neurons in the current layer
+
+        It modified Network and ConnIdx/NeuroIdx/StructInfoIdx/WeightsIdx.
+        *************************************************************************/
+        private static void hladdhiddenlayer(multilayerperceptron network,
+            ref int connidx,
+            ref int neuroidx,
+            ref int structinfoidx,
+            ref int weightsidx,
+            int k,
+            int nprev,
+            int ncur)
+        {
+            int i = 0;
+            int j = 0;
+            int neurooffs = 0;
+            int connoffs = 0;
+
+            neurooffs = hlnfieldwidth*neuroidx;
+            connoffs = hlconnfieldwidth*connidx;
+            for(i=0; i<=ncur-1; i++)
+            {
+                network.hlneurons[neurooffs+0] = k;
+                network.hlneurons[neurooffs+1] = i;
+                network.hlneurons[neurooffs+2] = structinfoidx+1+ncur+i;
+                network.hlneurons[neurooffs+3] = weightsidx+nprev+(nprev+1)*i;
+                neurooffs = neurooffs+hlnfieldwidth;
+            }
+            for(i=0; i<=nprev-1; i++)
+            {
+                for(j=0; j<=ncur-1; j++)
+                {
+                    network.hlconnections[connoffs+0] = k-1;
+                    network.hlconnections[connoffs+1] = i;
+                    network.hlconnections[connoffs+2] = k;
+                    network.hlconnections[connoffs+3] = j;
+                    network.hlconnections[connoffs+4] = weightsidx+i+j*(nprev+1);
+                    connoffs = connoffs+hlconnfieldwidth;
+                }
+            }
+            connidx = connidx+nprev*ncur;
+            neuroidx = neuroidx+ncur;
+            structinfoidx = structinfoidx+2*ncur+1;
+            weightsidx = weightsidx+ncur*(nprev+1);
+        }
+
+
+        /*************************************************************************
+        This function fills high level information about network created using
+        internal MLPCreate() function.
+
+        This function does NOT examine StructInfo for low level information, it
+        just expects that network has following structure:
+
+            input neuron            \
+            ...                      | input layer
+            input neuron            /
+            
+            "-1" neuron             \
+            biased summator          |
+            ...                      |
+            biased summator          | hidden layer(s), if there are exists any
+            activation function      |
+            ...                      |
+            activation function     /
+            
+            "-1" neuron            \
+            biased summator         | output layer:
+            ...                     |
+            biased summator         | * we have NOut summators/activators for regression networks
+            activation function     | * we have only NOut-1 summators and no activators for classifiers
+            ...                     | * we have "0" neuron only when we have classifier
+            activation function     |
+            "0" neuron              /
+
+
+          -- ALGLIB --
+             Copyright 30.03.2008 by Bochkanov Sergey
+        *************************************************************************/
+        private static void fillhighlevelinformation(multilayerperceptron network,
+            int nin,
+            int nhid1,
+            int nhid2,
+            int nout,
+            bool iscls,
+            bool islinearout)
+        {
+            int idxweights = 0;
+            int idxstruct = 0;
+            int idxneuro = 0;
+            int idxconn = 0;
+
+            ap.assert((iscls & islinearout) | !iscls, "FillHighLevelInformation: internal error");
+            
+            //
+            // Preparations common to all types of networks
+            //
+            idxweights = 0;
+            idxneuro = 0;
+            idxstruct = 0;
+            idxconn = 0;
+            network.hlnetworktype = 0;
+            
+            //
+            // network without hidden layers
+            //
+            if( nhid1==0 )
+            {
+                network.hllayersizes = new int[2];
+                network.hllayersizes[0] = nin;
+                network.hllayersizes[1] = nout;
+                if( !iscls )
+                {
+                    network.hlconnections = new int[hlconnfieldwidth*nin*nout];
+                    network.hlneurons = new int[hlnfieldwidth*(nin+nout)];
+                    network.hlnormtype = 0;
+                }
+                else
+                {
+                    network.hlconnections = new int[hlconnfieldwidth*nin*(nout-1)];
+                    network.hlneurons = new int[hlnfieldwidth*(nin+nout)];
+                    network.hlnormtype = 1;
+                }
+                hladdinputlayer(network, ref idxconn, ref idxneuro, ref idxstruct, nin);
+                hladdoutputlayer(network, ref idxconn, ref idxneuro, ref idxstruct, ref idxweights, 1, nin, nout, iscls, islinearout);
+                return;
+            }
+            
+            //
+            // network with one hidden layers
+            //
+            if( nhid2==0 )
+            {
+                network.hllayersizes = new int[3];
+                network.hllayersizes[0] = nin;
+                network.hllayersizes[1] = nhid1;
+                network.hllayersizes[2] = nout;
+                if( !iscls )
+                {
+                    network.hlconnections = new int[hlconnfieldwidth*(nin*nhid1+nhid1*nout)];
+                    network.hlneurons = new int[hlnfieldwidth*(nin+nhid1+nout)];
+                    network.hlnormtype = 0;
+                }
+                else
+                {
+                    network.hlconnections = new int[hlconnfieldwidth*(nin*nhid1+nhid1*(nout-1))];
+                    network.hlneurons = new int[hlnfieldwidth*(nin+nhid1+nout)];
+                    network.hlnormtype = 1;
+                }
+                hladdinputlayer(network, ref idxconn, ref idxneuro, ref idxstruct, nin);
+                hladdhiddenlayer(network, ref idxconn, ref idxneuro, ref idxstruct, ref idxweights, 1, nin, nhid1);
+                hladdoutputlayer(network, ref idxconn, ref idxneuro, ref idxstruct, ref idxweights, 2, nhid1, nout, iscls, islinearout);
+                return;
+            }
+            
+            //
+            // Two hidden layers
+            //
+            network.hllayersizes = new int[4];
+            network.hllayersizes[0] = nin;
+            network.hllayersizes[1] = nhid1;
+            network.hllayersizes[2] = nhid2;
+            network.hllayersizes[3] = nout;
+            if( !iscls )
+            {
+                network.hlconnections = new int[hlconnfieldwidth*(nin*nhid1+nhid1*nhid2+nhid2*nout)];
+                network.hlneurons = new int[hlnfieldwidth*(nin+nhid1+nhid2+nout)];
+                network.hlnormtype = 0;
+            }
+            else
+            {
+                network.hlconnections = new int[hlconnfieldwidth*(nin*nhid1+nhid1*nhid2+nhid2*(nout-1))];
+                network.hlneurons = new int[hlnfieldwidth*(nin+nhid1+nhid2+nout)];
+                network.hlnormtype = 1;
+            }
+            hladdinputlayer(network, ref idxconn, ref idxneuro, ref idxstruct, nin);
+            hladdhiddenlayer(network, ref idxconn, ref idxneuro, ref idxstruct, ref idxweights, 1, nin, nhid1);
+            hladdhiddenlayer(network, ref idxconn, ref idxneuro, ref idxstruct, ref idxweights, 2, nhid1, nhid2);
+            hladdoutputlayer(network, ref idxconn, ref idxneuro, ref idxstruct, ref idxweights, 3, nhid2, nout, iscls, islinearout);
         }
 
 
@@ -10247,7 +12657,7 @@ public partial class alglib
                 // This code must throw an assertion in case of unknown LTypes[I]
                 //
                 lnsyn[i] = -1;
-                if( ltypes[i]>=0 )
+                if( ltypes[i]>=0 | ltypes[i]==-5 )
                 {
                     lnsyn[i] = 0;
                     for(j=lconnfirst[i]; j<=lconnlast[i]; j++)
@@ -10294,6 +12704,7 @@ public partial class alglib
             network.neurons = new double[ntotal-1+1];
             network.chunks = new double[3*ntotal+1, chunksize-1+1];
             network.nwbuf = new double[Math.Max(wcount, 2*nout)-1+1];
+            network.integerbuf = new int[3+1];
             network.dfdnet = new double[ntotal-1+1];
             network.x = new double[nin-1+1];
             network.y = new double[nout-1+1];
@@ -10341,7 +12752,7 @@ public partial class alglib
                         wallocated = wallocated+lnsyn[i];
                         nprocessed = nprocessed+1;
                     }
-                    if( ltypes[i]>0 )
+                    if( ltypes[i]>0 | ltypes[i]==-5 )
                     {
                         
                         //
@@ -10383,81 +12794,6 @@ public partial class alglib
                     network.columnmeans[nin+i] = 0;
                     network.columnsigmas[nin+i] = 1;
                 }
-            }
-        }
-
-
-        /*************************************************************************
-        Internal subroutine
-
-          -- ALGLIB --
-             Copyright 04.11.2007 by Bochkanov Sergey
-        *************************************************************************/
-        private static void mlpactivationfunction(double net,
-            int k,
-            ref double f,
-            ref double df,
-            ref double d2f)
-        {
-            double net2 = 0;
-            double arg = 0;
-            double root = 0;
-            double r = 0;
-
-            f = 0;
-            df = 0;
-            d2f = 0;
-
-            f = 0;
-            df = 0;
-            if( k==1 )
-            {
-                
-                //
-                // TanH activation function
-                //
-                if( (double)(Math.Abs(net))<(double)(100) )
-                {
-                    f = Math.Tanh(net);
-                }
-                else
-                {
-                    f = Math.Sign(net);
-                }
-                df = 1-math.sqr(f);
-                d2f = -(2*f*df);
-                return;
-            }
-            if( k==3 )
-            {
-                
-                //
-                // EX activation function
-                //
-                if( (double)(net)>=(double)(0) )
-                {
-                    net2 = net*net;
-                    arg = net2+1;
-                    root = Math.Sqrt(arg);
-                    f = net+root;
-                    r = net/root;
-                    df = 1+r;
-                    d2f = (root-net*r)/arg;
-                }
-                else
-                {
-                    f = Math.Exp(net);
-                    df = f;
-                    d2f = f;
-                }
-                return;
-            }
-            if( k==2 )
-            {
-                f = Math.Exp(-math.sqr(net));
-                df = -(2*net*f);
-                d2f = -(2*(f+df*net));
-                return;
             }
         }
 
@@ -10627,7 +12963,7 @@ public partial class alglib
                     {
                         ry[i,i_] = zeros[i_];
                     }
-                    if( network.structinfo[offs+0]>0 )
+                    if( network.structinfo[offs+0]>0 | network.structinfo[offs+0]==-5 )
                     {
                         
                         //
@@ -10643,6 +12979,7 @@ public partial class alglib
                         {
                             ry[i,i_] = v*rx[i,i_];
                         }
+                        continue;
                     }
                     if( network.structinfo[offs+0]==0 )
                     {
@@ -10667,6 +13004,7 @@ public partial class alglib
                         {
                             ry[i,i_] = rx[i,i_];
                         }
+                        continue;
                     }
                     if( network.structinfo[offs+0]<0 )
                     {
@@ -10696,6 +13034,7 @@ public partial class alglib
                             bflag = false;
                         }
                         ap.assert(!bflag, "MLPHessianNBatch: internal error - unknown neuron type!");
+                        continue;
                     }
                 }
                 
@@ -10903,7 +13242,7 @@ public partial class alglib
                     // 3. Special neuron
                     //
                     offs = istart+i*nfieldwidth;
-                    if( network.structinfo[offs+0]>0 )
+                    if( network.structinfo[offs+0]>0 | network.structinfo[offs+0]==-5 )
                     {
                         n1 = network.structinfo[offs+2];
                         
@@ -10932,6 +13271,7 @@ public partial class alglib
                         {
                             rdy[n1,i_] = rdy[n1,i_] + rdx[i,i_];
                         }
+                        continue;
                     }
                     if( network.structinfo[offs+0]==0 )
                     {
@@ -10981,6 +13321,7 @@ public partial class alglib
                             }
                             rdy[n1+j-w1,j] = rdy[n1+j-w1,j]+network.derror[i];
                         }
+                        continue;
                     }
                     if( network.structinfo[offs+0]<0 )
                     {
@@ -10994,6 +13335,7 @@ public partial class alglib
                             bflag = true;
                         }
                         ap.assert(bflag, "MLPHessianNBatch: unknown neuron type!");
+                        continue;
                     }
                 }
             }
@@ -11106,7 +13448,7 @@ public partial class alglib
                 // Extract info
                 //
                 offs = istart+i*nfieldwidth;
-                if( network.structinfo[offs+0]>0 )
+                if( network.structinfo[offs+0]>0 | network.structinfo[offs+0]==-5 )
                 {
                     
                     //
@@ -11115,6 +13457,7 @@ public partial class alglib
                     dedf = network.derror[i];
                     dfdnet = network.dfdnet[i];
                     derror[network.structinfo[offs+2]] = derror[network.structinfo[offs+2]]+dedf*dfdnet;
+                    continue;
                 }
                 if( network.structinfo[offs+0]==0 )
                 {
@@ -11139,6 +13482,7 @@ public partial class alglib
                     {
                         derror[i_] = derror[i_] + v*weights[i_+i1_];
                     }
+                    continue;
                 }
                 if( network.structinfo[offs+0]<0 )
                 {
@@ -11152,6 +13496,7 @@ public partial class alglib
                         bflag = true;
                     }
                     ap.assert(bflag, "MLPInternalCalculateGradient: unknown neuron type!");
+                    continue;
                 }
             }
         }
@@ -11242,7 +13587,7 @@ public partial class alglib
             for(i=0; i<=ntotal-1; i++)
             {
                 offs = istart+i*nfieldwidth;
-                if( network.structinfo[offs+0]>0 )
+                if( network.structinfo[offs+0]>0 | network.structinfo[offs+0]==-5 )
                 {
                     
                     //
@@ -11260,6 +13605,7 @@ public partial class alglib
                         network.chunks[i,j] = f;
                         network.chunks[idfdnet+i,j] = df;
                     }
+                    continue;
                 }
                 if( network.structinfo[offs+0]==0 )
                 {
@@ -11284,6 +13630,7 @@ public partial class alglib
                             network.chunks[i,i_] = network.chunks[i,i_] + v*network.chunks[j,i_];
                         }
                     }
+                    continue;
                 }
                 if( network.structinfo[offs+0]<0 )
                 {
@@ -11321,6 +13668,7 @@ public partial class alglib
                         bflag = true;
                     }
                     ap.assert(bflag, "MLPChunkedGradient: internal error - unknown neuron type!");
+                    continue;
                 }
             }
             
@@ -11461,7 +13809,7 @@ public partial class alglib
                 // Extract info
                 //
                 offs = istart+i*nfieldwidth;
-                if( network.structinfo[offs+0]>0 )
+                if( network.structinfo[offs+0]>0 | network.structinfo[offs+0]==-5 )
                 {
                     
                     //
@@ -11476,6 +13824,7 @@ public partial class alglib
                     {
                         network.chunks[iderror+n1,i_] = network.chunks[iderror+n1,i_] + network.chunks[iderror+i,i_];
                     }
+                    continue;
                 }
                 if( network.structinfo[offs+0]==0 )
                 {
@@ -11504,6 +13853,7 @@ public partial class alglib
                             network.chunks[iderror+j,i_] = network.chunks[iderror+j,i_] + v*network.chunks[iderror+i,i_];
                         }
                     }
+                    continue;
                 }
                 if( network.structinfo[offs+0]<0 )
                 {
@@ -11517,6 +13867,7 @@ public partial class alglib
                         bflag = true;
                     }
                     ap.assert(bflag, "MLPInternalCalculateGradient: unknown neuron type!");
+                    continue;
                 }
             }
         }
@@ -13195,6 +15546,1309 @@ public partial class alglib
 
 
     }
+    public class mcpd
+    {
+        /*************************************************************************
+        This structure is a MCPD (Markov Chains for Population Data) solver.
+
+        You should use ALGLIB functions in order to work with this object.
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public class mcpdstate
+        {
+            public int n;
+            public int[] states;
+            public int npairs;
+            public double[,] data;
+            public double[,] ec;
+            public double[,] bndl;
+            public double[,] bndu;
+            public double[,] c;
+            public int[] ct;
+            public int ccnt;
+            public double[] pw;
+            public double[,] priorp;
+            public double regterm;
+            public minbleic.minbleicstate bs;
+            public int repinneriterationscount;
+            public int repouteriterationscount;
+            public int repnfev;
+            public int repterminationtype;
+            public minbleic.minbleicreport br;
+            public double[] tmpp;
+            public double[] effectivew;
+            public double[] effectivebndl;
+            public double[] effectivebndu;
+            public double[,] effectivec;
+            public int[] effectivect;
+            public double[] h;
+            public double[,] p;
+            public mcpdstate()
+            {
+                states = new int[0];
+                data = new double[0,0];
+                ec = new double[0,0];
+                bndl = new double[0,0];
+                bndu = new double[0,0];
+                c = new double[0,0];
+                ct = new int[0];
+                pw = new double[0];
+                priorp = new double[0,0];
+                bs = new minbleic.minbleicstate();
+                br = new minbleic.minbleicreport();
+                tmpp = new double[0];
+                effectivew = new double[0];
+                effectivebndl = new double[0];
+                effectivebndu = new double[0];
+                effectivec = new double[0,0];
+                effectivect = new int[0];
+                h = new double[0];
+                p = new double[0,0];
+            }
+        };
+
+
+        /*************************************************************************
+        This structure is a MCPD training report:
+            InnerIterationsCount    -   number of inner iterations of the
+                                        underlying optimization algorithm
+            OuterIterationsCount    -   number of outer iterations of the
+                                        underlying optimization algorithm
+            NFEV                    -   number of merit function evaluations
+            TerminationType         -   termination type
+                                        (same as for MinBLEIC optimizer, positive
+                                        values denote success, negative ones -
+                                        failure)
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public class mcpdreport
+        {
+            public int inneriterationscount;
+            public int outeriterationscount;
+            public int nfev;
+            public int terminationtype;
+        };
+
+
+
+
+        public const double xtol = 1.0E-8;
+
+
+        /*************************************************************************
+        DESCRIPTION:
+
+        This function creates MCPD (Markov Chains for Population Data) solver.
+
+        This  solver  can  be  used  to find transition matrix P for N-dimensional
+        prediction  problem  where transition from X[i] to X[i+1] is  modelled  as
+            X[i+1] = P*X[i]
+        where X[i] and X[i+1] are N-dimensional population vectors (components  of
+        each X are non-negative), and P is a N*N transition matrix (elements of  P
+        are non-negative, each column sums to 1.0).
+
+        Such models arise when when:
+        * there is some population of individuals
+        * individuals can have different states
+        * individuals can transit from one state to another
+        * population size is constant, i.e. there is no new individuals and no one
+          leaves population
+        * you want to model transitions of individuals from one state into another
+
+        USAGE:
+
+        Here we give very brief outline of the MCPD. We strongly recommend you  to
+        read examples in the ALGLIB Reference Manual and to read ALGLIB User Guide
+        on data analysis which is available at http://www.alglib.net/dataanalysis/
+
+        1. User initializes algorithm state with MCPDCreate() call
+
+        2. User  adds  one  or  more  tracks -  sequences of states which describe
+           evolution of a system being modelled from different starting conditions
+
+        3. User may add optional boundary, equality  and/or  linear constraints on
+           the coefficients of P by calling one of the following functions:
+           * MCPDSetEC() to set equality constraints
+           * MCPDSetBC() to set bound constraints
+           * MCPDSetLC() to set linear constraints
+
+        4. Optionally,  user  may  set  custom  weights  for prediction errors (by
+           default, algorithm assigns non-equal, automatically chosen weights  for
+           errors in the prediction of different components of X). It can be  done
+           with a call of MCPDSetPredictionWeights() function.
+
+        5. User calls MCPDSolve() function which takes algorithm  state and
+           pointer (delegate, etc.) to callback function which calculates F/G.
+
+        6. User calls MCPDResults() to get solution
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>=1
+
+        OUTPUT PARAMETERS:
+            State   -   structure stores algorithm state
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdcreate(int n,
+            mcpdstate s)
+        {
+            ap.assert(n>=1, "MCPDCreate: N<1");
+            mcpdinit(n, -1, -1, s);
+        }
+
+
+        /*************************************************************************
+        DESCRIPTION:
+
+        This function is a specialized version of MCPDCreate()  function,  and  we
+        recommend  you  to read comments for this function for general information
+        about MCPD solver.
+
+        This  function  creates  MCPD (Markov Chains for Population  Data)  solver
+        for "Entry-state" model,  i.e. model  where transition from X[i] to X[i+1]
+        is modelled as
+            X[i+1] = P*X[i]
+        where
+            X[i] and X[i+1] are N-dimensional state vectors
+            P is a N*N transition matrix
+        and  one  selected component of X[] is called "entry" state and is treated
+        in a special way:
+            system state always transits from "entry" state to some another state
+            system state can not transit from any state into "entry" state
+        Such conditions basically mean that row of P which corresponds to  "entry"
+        state is zero.
+
+        Such models arise when:
+        * there is some population of individuals
+        * individuals can have different states
+        * individuals can transit from one state to another
+        * population size is NOT constant -  at every moment of time there is some
+          (unpredictable) amount of "new" individuals, which can transit into  one
+          of the states at the next turn, but still no one leaves population
+        * you want to model transitions of individuals from one state into another
+        * but you do NOT want to predict amount of "new"  individuals  because  it
+          does not depends on individuals already present (hence  system  can  not
+          transit INTO entry state - it can only transit FROM it).
+
+        This model is discussed  in  more  details  in  the ALGLIB User Guide (see
+        http://www.alglib.net/dataanalysis/ for more data).
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>=2
+            EntryState- index of entry state, in 0..N-1
+
+        OUTPUT PARAMETERS:
+            State   -   structure stores algorithm state
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdcreateentry(int n,
+            int entrystate,
+            mcpdstate s)
+        {
+            ap.assert(n>=2, "MCPDCreateEntry: N<2");
+            ap.assert(entrystate>=0, "MCPDCreateEntry: EntryState<0");
+            ap.assert(entrystate<n, "MCPDCreateEntry: EntryState>=N");
+            mcpdinit(n, entrystate, -1, s);
+        }
+
+
+        /*************************************************************************
+        DESCRIPTION:
+
+        This function is a specialized version of MCPDCreate()  function,  and  we
+        recommend  you  to read comments for this function for general information
+        about MCPD solver.
+
+        This  function  creates  MCPD (Markov Chains for Population  Data)  solver
+        for "Exit-state" model,  i.e. model  where  transition from X[i] to X[i+1]
+        is modelled as
+            X[i+1] = P*X[i]
+        where
+            X[i] and X[i+1] are N-dimensional state vectors
+            P is a N*N transition matrix
+        and  one  selected component of X[] is called "exit"  state and is treated
+        in a special way:
+            system state can transit from any state into "exit" state
+            system state can not transit from "exit" state into any other state
+            transition operator discards "exit" state (makes it zero at each turn)
+        Such  conditions  basically  mean  that  column  of P which corresponds to
+        "exit" state is zero. Multiplication by such P may decrease sum of  vector
+        components.
+
+        Such models arise when:
+        * there is some population of individuals
+        * individuals can have different states
+        * individuals can transit from one state to another
+        * population size is NOT constant - individuals can move into "exit" state
+          and leave population at the next turn, but there are no new individuals
+        * amount of individuals which leave population can be predicted
+        * you want to model transitions of individuals from one state into another
+          (including transitions into the "exit" state)
+
+        This model is discussed  in  more  details  in  the ALGLIB User Guide (see
+        http://www.alglib.net/dataanalysis/ for more data).
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>=2
+            ExitState-  index of exit state, in 0..N-1
+
+        OUTPUT PARAMETERS:
+            State   -   structure stores algorithm state
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdcreateexit(int n,
+            int exitstate,
+            mcpdstate s)
+        {
+            ap.assert(n>=2, "MCPDCreateExit: N<2");
+            ap.assert(exitstate>=0, "MCPDCreateExit: ExitState<0");
+            ap.assert(exitstate<n, "MCPDCreateExit: ExitState>=N");
+            mcpdinit(n, -1, exitstate, s);
+        }
+
+
+        /*************************************************************************
+        DESCRIPTION:
+
+        This function is a specialized version of MCPDCreate()  function,  and  we
+        recommend  you  to read comments for this function for general information
+        about MCPD solver.
+
+        This  function  creates  MCPD (Markov Chains for Population  Data)  solver
+        for "Entry-Exit-states" model, i.e. model where  transition  from  X[i] to
+        X[i+1] is modelled as
+            X[i+1] = P*X[i]
+        where
+            X[i] and X[i+1] are N-dimensional state vectors
+            P is a N*N transition matrix
+        one selected component of X[] is called "entry" state and is treated in  a
+        special way:
+            system state always transits from "entry" state to some another state
+            system state can not transit from any state into "entry" state
+        and another one component of X[] is called "exit" state and is treated  in
+        a special way too:
+            system state can transit from any state into "exit" state
+            system state can not transit from "exit" state into any other state
+            transition operator discards "exit" state (makes it zero at each turn)
+        Such conditions basically mean that:
+            row of P which corresponds to "entry" state is zero
+            column of P which corresponds to "exit" state is zero
+        Multiplication by such P may decrease sum of vector components.
+
+        Such models arise when:
+        * there is some population of individuals
+        * individuals can have different states
+        * individuals can transit from one state to another
+        * population size is NOT constant
+        * at every moment of time there is some (unpredictable)  amount  of  "new"
+          individuals, which can transit into one of the states at the next turn
+        * some  individuals  can  move  (predictably)  into "exit" state and leave
+          population at the next turn
+        * you want to model transitions of individuals from one state into another,
+          including transitions from the "entry" state and into the "exit" state.
+        * but you do NOT want to predict amount of "new"  individuals  because  it
+          does not depends on individuals already present (hence  system  can  not
+          transit INTO entry state - it can only transit FROM it).
+
+        This model is discussed  in  more  details  in  the ALGLIB User Guide (see
+        http://www.alglib.net/dataanalysis/ for more data).
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>=2
+            EntryState- index of entry state, in 0..N-1
+            ExitState-  index of exit state, in 0..N-1
+
+        OUTPUT PARAMETERS:
+            State   -   structure stores algorithm state
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdcreateentryexit(int n,
+            int entrystate,
+            int exitstate,
+            mcpdstate s)
+        {
+            ap.assert(n>=2, "MCPDCreateEntryExit: N<2");
+            ap.assert(entrystate>=0, "MCPDCreateEntryExit: EntryState<0");
+            ap.assert(entrystate<n, "MCPDCreateEntryExit: EntryState>=N");
+            ap.assert(exitstate>=0, "MCPDCreateEntryExit: ExitState<0");
+            ap.assert(exitstate<n, "MCPDCreateEntryExit: ExitState>=N");
+            ap.assert(entrystate!=exitstate, "MCPDCreateEntryExit: EntryState=ExitState");
+            mcpdinit(n, entrystate, exitstate, s);
+        }
+
+
+        /*************************************************************************
+        This  function  is  used to add a track - sequence of system states at the
+        different moments of its evolution.
+
+        You  may  add  one  or several tracks to the MCPD solver. In case you have
+        several tracks, they won't overwrite each other. For example,  if you pass
+        two tracks, A1-A2-A3 (system at t=A+1, t=A+2 and t=A+3) and B1-B2-B3, then
+        solver will try to model transitions from t=A+1 to t=A+2, t=A+2 to  t=A+3,
+        t=B+1 to t=B+2, t=B+2 to t=B+3. But it WONT mix these two tracks - i.e. it
+        wont try to model transition from t=A+3 to t=B+1.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            XY      -   track, array[K,N]:
+                        * I-th row is a state at t=I
+                        * elements of XY must be non-negative (exception will be
+                          thrown on negative elements)
+            K       -   number of points in a track
+                        * if given, only leading K rows of XY are used
+                        * if not given, automatically determined from size of XY
+
+        NOTES:
+
+        1. Track may contain either proportional or population data:
+           * with proportional data all rows of XY must sum to 1.0, i.e. we have
+             proportions instead of absolute population values
+           * with population data rows of XY contain population counts and generally
+             do not sum to 1.0 (although they still must be non-negative)
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdaddtrack(mcpdstate s,
+            double[,] xy,
+            int k)
+        {
+            int i = 0;
+            int j = 0;
+            int n = 0;
+            double s0 = 0;
+            double s1 = 0;
+
+            n = s.n;
+            ap.assert(k>=0, "MCPDAddTrack: K<0");
+            ap.assert(ap.cols(xy)>=n, "MCPDAddTrack: Cols(XY)<N");
+            ap.assert(ap.rows(xy)>=k, "MCPDAddTrack: Rows(XY)<K");
+            ap.assert(apserv.apservisfinitematrix(xy, k, n), "MCPDAddTrack: XY contains infinite or NaN elements");
+            for(i=0; i<=k-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    ap.assert((double)(xy[i,j])>=(double)(0), "MCPDAddTrack: XY contains negative elements");
+                }
+            }
+            if( k<2 )
+            {
+                return;
+            }
+            if( ap.rows(s.data)<s.npairs+k-1 )
+            {
+                apserv.rmatrixresize(ref s.data, Math.Max(2*ap.rows(s.data), s.npairs+k-1), 2*n);
+            }
+            for(i=0; i<=k-2; i++)
+            {
+                s0 = 0;
+                s1 = 0;
+                for(j=0; j<=n-1; j++)
+                {
+                    if( s.states[j]>=0 )
+                    {
+                        s0 = s0+xy[i,j];
+                    }
+                    if( s.states[j]<=0 )
+                    {
+                        s1 = s1+xy[i+1,j];
+                    }
+                }
+                if( (double)(s0)>(double)(0) & (double)(s1)>(double)(0) )
+                {
+                    for(j=0; j<=n-1; j++)
+                    {
+                        if( s.states[j]>=0 )
+                        {
+                            s.data[s.npairs,j] = xy[i,j]/s0;
+                        }
+                        else
+                        {
+                            s.data[s.npairs,j] = 0.0;
+                        }
+                        if( s.states[j]<=0 )
+                        {
+                            s.data[s.npairs,n+j] = xy[i+1,j]/s1;
+                        }
+                        else
+                        {
+                            s.data[s.npairs,n+j] = 0.0;
+                        }
+                    }
+                    s.npairs = s.npairs+1;
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function is used to add equality constraints on the elements  of  the
+        transition matrix P.
+
+        MCPD solver has four types of constraints which can be placed on P:
+        * user-specified equality constraints (optional)
+        * user-specified bound constraints (optional)
+        * user-specified general linear constraints (optional)
+        * basic constraints (always present):
+          * non-negativity: P[i,j]>=0
+          * consistency: every column of P sums to 1.0
+
+        Final  constraints  which  are  passed  to  the  underlying  optimizer are
+        calculated  as  intersection  of all present constraints. For example, you
+        may specify boundary constraint on P[0,0] and equality one:
+            0.1<=P[0,0]<=0.9
+            P[0,0]=0.5
+        Such  combination  of  constraints  will  be  silently  reduced  to  their
+        intersection, which is P[0,0]=0.5.
+
+        This  function  can  be  used  to  place equality constraints on arbitrary
+        subset of elements of P. Set of constraints is specified by EC, which  may
+        contain either NAN's or finite numbers from [0,1]. NAN denotes absence  of
+        constraint, finite number denotes equality constraint on specific  element
+        of P.
+
+        You can also  use  MCPDAddEC()  function  which  allows  to  ADD  equality
+        constraint  for  one  element  of P without changing constraints for other
+        elements.
+
+        These functions (MCPDSetEC and MCPDAddEC) interact as follows:
+        * there is internal matrix of equality constraints which is stored in  the
+          MCPD solver
+        * MCPDSetEC() replaces this matrix by another one (SET)
+        * MCPDAddEC() modifies one element of this matrix and  leaves  other  ones
+          unchanged (ADD)
+        * thus  MCPDAddEC()  call  preserves  all  modifications  done by previous
+          calls,  while  MCPDSetEC()  completely discards all changes  done to the
+          equality constraints.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            EC      -   equality constraints, array[N,N]. Elements of  EC  can  be
+                        either NAN's or finite  numbers from  [0,1].  NAN  denotes
+                        absence  of  constraints,  while  finite  value    denotes
+                        equality constraint on the corresponding element of P.
+
+        NOTES:
+
+        1. infinite values of EC will lead to exception being thrown. Values  less
+        than 0.0 or greater than 1.0 will lead to error code being returned  after
+        call to MCPDSolve().
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsetec(mcpdstate s,
+            double[,] ec)
+        {
+            int i = 0;
+            int j = 0;
+            int n = 0;
+
+            n = s.n;
+            ap.assert(ap.cols(ec)>=n, "MCPDSetEC: Cols(EC)<N");
+            ap.assert(ap.rows(ec)>=n, "MCPDSetEC: Rows(EC)<N");
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    ap.assert(math.isfinite(ec[i,j]) | Double.IsNaN(ec[i,j]), "MCPDSetEC: EC containts infinite elements");
+                    s.ec[i,j] = ec[i,j];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function is used to add equality constraints on the elements  of  the
+        transition matrix P.
+
+        MCPD solver has four types of constraints which can be placed on P:
+        * user-specified equality constraints (optional)
+        * user-specified bound constraints (optional)
+        * user-specified general linear constraints (optional)
+        * basic constraints (always present):
+          * non-negativity: P[i,j]>=0
+          * consistency: every column of P sums to 1.0
+
+        Final  constraints  which  are  passed  to  the  underlying  optimizer are
+        calculated  as  intersection  of all present constraints. For example, you
+        may specify boundary constraint on P[0,0] and equality one:
+            0.1<=P[0,0]<=0.9
+            P[0,0]=0.5
+        Such  combination  of  constraints  will  be  silently  reduced  to  their
+        intersection, which is P[0,0]=0.5.
+
+        This function can be used to ADD equality constraint for one element of  P
+        without changing constraints for other elements.
+
+        You  can  also  use  MCPDSetEC()  function  which  allows  you  to specify
+        arbitrary set of equality constraints in one call.
+
+        These functions (MCPDSetEC and MCPDAddEC) interact as follows:
+        * there is internal matrix of equality constraints which is stored in the
+          MCPD solver
+        * MCPDSetEC() replaces this matrix by another one (SET)
+        * MCPDAddEC() modifies one element of this matrix and leaves  other  ones
+          unchanged (ADD)
+        * thus  MCPDAddEC()  call  preserves  all  modifications done by previous
+          calls,  while  MCPDSetEC()  completely discards all changes done to the
+          equality constraints.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            I       -   row index of element being constrained
+            J       -   column index of element being constrained
+            C       -   value (constraint for P[I,J]).  Can  be  either  NAN  (no
+                        constraint) or finite value from [0,1].
+                        
+        NOTES:
+
+        1. infinite values of C  will lead to exception being thrown. Values  less
+        than 0.0 or greater than 1.0 will lead to error code being returned  after
+        call to MCPDSolve().
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdaddec(mcpdstate s,
+            int i,
+            int j,
+            double c)
+        {
+            ap.assert(i>=0, "MCPDAddEC: I<0");
+            ap.assert(i<s.n, "MCPDAddEC: I>=N");
+            ap.assert(j>=0, "MCPDAddEC: J<0");
+            ap.assert(j<s.n, "MCPDAddEC: J>=N");
+            ap.assert(Double.IsNaN(c) | math.isfinite(c), "MCPDAddEC: C is not finite number or NAN");
+            s.ec[i,j] = c;
+        }
+
+
+        /*************************************************************************
+        This function is used to add bound constraints  on  the  elements  of  the
+        transition matrix P.
+
+        MCPD solver has four types of constraints which can be placed on P:
+        * user-specified equality constraints (optional)
+        * user-specified bound constraints (optional)
+        * user-specified general linear constraints (optional)
+        * basic constraints (always present):
+          * non-negativity: P[i,j]>=0
+          * consistency: every column of P sums to 1.0
+
+        Final  constraints  which  are  passed  to  the  underlying  optimizer are
+        calculated  as  intersection  of all present constraints. For example, you
+        may specify boundary constraint on P[0,0] and equality one:
+            0.1<=P[0,0]<=0.9
+            P[0,0]=0.5
+        Such  combination  of  constraints  will  be  silently  reduced  to  their
+        intersection, which is P[0,0]=0.5.
+
+        This  function  can  be  used  to  place bound   constraints  on arbitrary
+        subset  of  elements  of  P.  Set of constraints is specified by BndL/BndU
+        matrices, which may contain arbitrary combination  of  finite  numbers  or
+        infinities (like -INF<x<=0.5 or 0.1<=x<+INF).
+
+        You can also use MCPDAddBC() function which allows to ADD bound constraint
+        for one element of P without changing constraints for other elements.
+
+        These functions (MCPDSetBC and MCPDAddBC) interact as follows:
+        * there is internal matrix of bound constraints which is stored in the
+          MCPD solver
+        * MCPDSetBC() replaces this matrix by another one (SET)
+        * MCPDAddBC() modifies one element of this matrix and  leaves  other  ones
+          unchanged (ADD)
+        * thus  MCPDAddBC()  call  preserves  all  modifications  done by previous
+          calls,  while  MCPDSetBC()  completely discards all changes  done to the
+          equality constraints.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            BndL    -   lower bounds constraints, array[N,N]. Elements of BndL can
+                        be finite numbers or -INF.
+            BndU    -   upper bounds constraints, array[N,N]. Elements of BndU can
+                        be finite numbers or +INF.
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsetbc(mcpdstate s,
+            double[,] bndl,
+            double[,] bndu)
+        {
+            int i = 0;
+            int j = 0;
+            int n = 0;
+
+            n = s.n;
+            ap.assert(ap.cols(bndl)>=n, "MCPDSetBC: Cols(BndL)<N");
+            ap.assert(ap.rows(bndl)>=n, "MCPDSetBC: Rows(BndL)<N");
+            ap.assert(ap.cols(bndu)>=n, "MCPDSetBC: Cols(BndU)<N");
+            ap.assert(ap.rows(bndu)>=n, "MCPDSetBC: Rows(BndU)<N");
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    ap.assert(math.isfinite(bndl[i,j]) | Double.IsNegativeInfinity(bndl[i,j]), "MCPDSetBC: BndL containts NAN or +INF");
+                    ap.assert(math.isfinite(bndu[i,j]) | Double.IsPositiveInfinity(bndu[i,j]), "MCPDSetBC: BndU containts NAN or -INF");
+                    s.bndl[i,j] = bndl[i,j];
+                    s.bndu[i,j] = bndu[i,j];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function is used to add bound constraints  on  the  elements  of  the
+        transition matrix P.
+
+        MCPD solver has four types of constraints which can be placed on P:
+        * user-specified equality constraints (optional)
+        * user-specified bound constraints (optional)
+        * user-specified general linear constraints (optional)
+        * basic constraints (always present):
+          * non-negativity: P[i,j]>=0
+          * consistency: every column of P sums to 1.0
+
+        Final  constraints  which  are  passed  to  the  underlying  optimizer are
+        calculated  as  intersection  of all present constraints. For example, you
+        may specify boundary constraint on P[0,0] and equality one:
+            0.1<=P[0,0]<=0.9
+            P[0,0]=0.5
+        Such  combination  of  constraints  will  be  silently  reduced  to  their
+        intersection, which is P[0,0]=0.5.
+
+        This  function  can  be  used to ADD bound constraint for one element of P
+        without changing constraints for other elements.
+
+        You  can  also  use  MCPDSetBC()  function  which  allows to  place  bound
+        constraints  on arbitrary subset of elements of P.   Set of constraints is
+        specified  by  BndL/BndU matrices, which may contain arbitrary combination
+        of finite numbers or infinities (like -INF<x<=0.5 or 0.1<=x<+INF).
+
+        These functions (MCPDSetBC and MCPDAddBC) interact as follows:
+        * there is internal matrix of bound constraints which is stored in the
+          MCPD solver
+        * MCPDSetBC() replaces this matrix by another one (SET)
+        * MCPDAddBC() modifies one element of this matrix and  leaves  other  ones
+          unchanged (ADD)
+        * thus  MCPDAddBC()  call  preserves  all  modifications  done by previous
+          calls,  while  MCPDSetBC()  completely discards all changes  done to the
+          equality constraints.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            I       -   row index of element being constrained
+            J       -   column index of element being constrained
+            BndL    -   lower bound
+            BndU    -   upper bound
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdaddbc(mcpdstate s,
+            int i,
+            int j,
+            double bndl,
+            double bndu)
+        {
+            ap.assert(i>=0, "MCPDAddBC: I<0");
+            ap.assert(i<s.n, "MCPDAddBC: I>=N");
+            ap.assert(j>=0, "MCPDAddBC: J<0");
+            ap.assert(j<s.n, "MCPDAddBC: J>=N");
+            ap.assert(math.isfinite(bndl) | Double.IsNegativeInfinity(bndl), "MCPDAddBC: BndL is NAN or +INF");
+            ap.assert(math.isfinite(bndu) | Double.IsPositiveInfinity(bndu), "MCPDAddBC: BndU is NAN or -INF");
+            s.bndl[i,j] = bndl;
+            s.bndu[i,j] = bndu;
+        }
+
+
+        /*************************************************************************
+        This function is used to set linear equality/inequality constraints on the
+        elements of the transition matrix P.
+
+        This function can be used to set one or several general linear constraints
+        on the elements of P. Two types of constraints are supported:
+        * equality constraints
+        * inequality constraints (both less-or-equal and greater-or-equal)
+
+        Coefficients  of  constraints  are  specified  by  matrix  C (one  of  the
+        parameters).  One  row  of  C  corresponds  to  one  constraint.   Because
+        transition  matrix P has N*N elements,  we  need  N*N columns to store all
+        coefficients  (they  are  stored row by row), and one more column to store
+        right part - hence C has N*N+1 columns.  Constraint  kind is stored in the
+        CT array.
+
+        Thus, I-th linear constraint is
+            P[0,0]*C[I,0] + P[0,1]*C[I,1] + .. + P[0,N-1]*C[I,N-1] +
+                + P[1,0]*C[I,N] + P[1,1]*C[I,N+1] + ... +
+                + P[N-1,N-1]*C[I,N*N-1]  ?=?  C[I,N*N]
+        where ?=? can be either "=" (CT[i]=0), "<=" (CT[i]<0) or ">=" (CT[i]>0).
+
+        Your constraint may involve only some subset of P (less than N*N elements).
+        For example it can be something like
+            P[0,0] + P[0,1] = 0.5
+        In this case you still should pass matrix  with N*N+1 columns, but all its
+        elements (except for C[0,0], C[0,1] and C[0,N*N-1]) will be zero.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            C       -   array[K,N*N+1] - coefficients of constraints
+                        (see above for complete description)
+            CT      -   array[K] - constraint types
+                        (see above for complete description)
+            K       -   number of equality/inequality constraints, K>=0:
+                        * if given, only leading K elements of C/CT are used
+                        * if not given, automatically determined from sizes of C/CT
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsetlc(mcpdstate s,
+            double[,] c,
+            int[] ct,
+            int k)
+        {
+            int i = 0;
+            int j = 0;
+            int n = 0;
+
+            n = s.n;
+            ap.assert(ap.cols(c)>=n*n+1, "MCPDSetLC: Cols(C)<N*N+1");
+            ap.assert(ap.rows(c)>=k, "MCPDSetLC: Rows(C)<K");
+            ap.assert(ap.len(ct)>=k, "MCPDSetLC: Len(CT)<K");
+            ap.assert(apserv.apservisfinitematrix(c, k, n*n+1), "MCPDSetLC: C contains infinite or NaN values!");
+            apserv.rmatrixsetlengthatleast(ref s.c, k, n*n+1);
+            apserv.ivectorsetlengthatleast(ref s.ct, k);
+            for(i=0; i<=k-1; i++)
+            {
+                for(j=0; j<=n*n; j++)
+                {
+                    s.c[i,j] = c[i,j];
+                }
+                s.ct[i] = ct[i];
+            }
+            s.ccnt = k;
+        }
+
+
+        /*************************************************************************
+        This function allows to  tune  amount  of  Tikhonov  regularization  being
+        applied to your problem.
+
+        By default, regularizing term is equal to r*||P-prior_P||^2, where r is  a
+        small non-zero value,  P is transition matrix, prior_P is identity matrix,
+        ||X||^2 is a sum of squared elements of X.
+
+        This  function  allows  you to change coefficient r. You can  also  change
+        prior values with MCPDSetPrior() function.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            V       -   regularization  coefficient, finite non-negative value. It
+                        is  not  recommended  to specify zero value unless you are
+                        pretty sure that you want it.
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsettikhonovregularizer(mcpdstate s,
+            double v)
+        {
+            ap.assert(math.isfinite(v), "MCPDSetTikhonovRegularizer: V is infinite or NAN");
+            ap.assert((double)(v)>=(double)(0.0), "MCPDSetTikhonovRegularizer: V is less than zero");
+            s.regterm = v;
+        }
+
+
+        /*************************************************************************
+        This  function  allows to set prior values used for regularization of your
+        problem.
+
+        By default, regularizing term is equal to r*||P-prior_P||^2, where r is  a
+        small non-zero value,  P is transition matrix, prior_P is identity matrix,
+        ||X||^2 is a sum of squared elements of X.
+
+        This  function  allows  you to change prior values prior_P. You  can  also
+        change r with MCPDSetTikhonovRegularizer() function.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            PP      -   array[N,N], matrix of prior values:
+                        1. elements must be real numbers from [0,1]
+                        2. columns must sum to 1.0.
+                        First property is checked (exception is thrown otherwise),
+                        while second one is not checked/enforced.
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsetprior(mcpdstate s,
+            double[,] pp)
+        {
+            int i = 0;
+            int j = 0;
+            int n = 0;
+
+            pp = (double[,])pp.Clone();
+
+            n = s.n;
+            ap.assert(ap.cols(pp)>=n, "MCPDSetPrior: Cols(PP)<N");
+            ap.assert(ap.rows(pp)>=n, "MCPDSetPrior: Rows(PP)<K");
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    ap.assert(math.isfinite(pp[i,j]), "MCPDSetPrior: PP containts infinite elements");
+                    ap.assert((double)(pp[i,j])>=(double)(0.0) & (double)(pp[i,j])<=(double)(1.0), "MCPDSetPrior: PP[i,j] is less than 0.0 or greater than 1.0");
+                    s.priorp[i,j] = pp[i,j];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function is used to change prediction weights
+
+        MCPD solver scales prediction errors as follows
+            Error(P) = ||W*(y-P*x)||^2
+        where
+            x is a system state at time t
+            y is a system state at time t+1
+            P is a transition matrix
+            W is a diagonal scaling matrix
+
+        By default, weights are chosen in order  to  minimize  relative prediction
+        error instead of absolute one. For example, if one component of  state  is
+        about 0.5 in magnitude and another one is about 0.05, then algorithm  will
+        make corresponding weights equal to 2.0 and 20.0.
+
+        INPUT PARAMETERS:
+            S       -   solver
+            PW      -   array[N], weights:
+                        * must be non-negative values (exception will be thrown otherwise)
+                        * zero values will be replaced by automatically chosen values
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsetpredictionweights(mcpdstate s,
+            double[] pw)
+        {
+            int i = 0;
+            int n = 0;
+
+            n = s.n;
+            ap.assert(ap.len(pw)>=n, "MCPDSetPredictionWeights: Length(PW)<N");
+            for(i=0; i<=n-1; i++)
+            {
+                ap.assert(math.isfinite(pw[i]), "MCPDSetPredictionWeights: PW containts infinite or NAN elements");
+                ap.assert((double)(pw[i])>=(double)(0), "MCPDSetPredictionWeights: PW containts negative elements");
+                s.pw[i] = pw[i];
+            }
+        }
+
+
+        /*************************************************************************
+        This function is used to start solution of the MCPD problem.
+
+        After return from this function, you can use MCPDResults() to get solution
+        and completion code.
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdsolve(mcpdstate s)
+        {
+            int n = 0;
+            int npairs = 0;
+            int ccnt = 0;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int k2 = 0;
+            double v = 0;
+            double vv = 0;
+            int i_ = 0;
+            int i1_ = 0;
+
+            n = s.n;
+            npairs = s.npairs;
+            
+            //
+            // init fields of S
+            //
+            s.repterminationtype = 0;
+            s.repinneriterationscount = 0;
+            s.repouteriterationscount = 0;
+            s.repnfev = 0;
+            for(k=0; k<=n-1; k++)
+            {
+                for(k2=0; k2<=n-1; k2++)
+                {
+                    s.p[k,k2] = Double.NaN;
+                }
+            }
+            
+            //
+            // Generate "effective" weights for prediction and calculate preconditioner
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                if( (double)(s.pw[i])==(double)(0) )
+                {
+                    v = 0;
+                    k = 0;
+                    for(j=0; j<=npairs-1; j++)
+                    {
+                        if( (double)(s.data[j,n+i])!=(double)(0) )
+                        {
+                            v = v+s.data[j,n+i];
+                            k = k+1;
+                        }
+                    }
+                    if( k!=0 )
+                    {
+                        s.effectivew[i] = k/v;
+                    }
+                    else
+                    {
+                        s.effectivew[i] = 1.0;
+                    }
+                }
+                else
+                {
+                    s.effectivew[i] = s.pw[i];
+                }
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    s.h[i*n+j] = 2*s.regterm;
+                }
+            }
+            for(k=0; k<=npairs-1; k++)
+            {
+                for(i=0; i<=n-1; i++)
+                {
+                    for(j=0; j<=n-1; j++)
+                    {
+                        s.h[i*n+j] = s.h[i*n+j]+2*math.sqr(s.effectivew[i])*math.sqr(s.data[k,j]);
+                    }
+                }
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    if( (double)(s.h[i*n+j])==(double)(0) )
+                    {
+                        s.h[i*n+j] = 1;
+                    }
+                }
+            }
+            
+            //
+            // Generate "effective" BndL/BndU
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    
+                    //
+                    // Set default boundary constraints.
+                    // Lower bound is always zero, upper bound is calculated
+                    // with respect to entry/exit states.
+                    //
+                    s.effectivebndl[i*n+j] = 0.0;
+                    if( s.states[i]>0 | s.states[j]<0 )
+                    {
+                        s.effectivebndu[i*n+j] = 0.0;
+                    }
+                    else
+                    {
+                        s.effectivebndu[i*n+j] = 1.0;
+                    }
+                    
+                    //
+                    // Calculate intersection of the default and user-specified bound constraints.
+                    // This code checks consistency of such combination.
+                    //
+                    if( math.isfinite(s.bndl[i,j]) & (double)(s.bndl[i,j])>(double)(s.effectivebndl[i*n+j]) )
+                    {
+                        s.effectivebndl[i*n+j] = s.bndl[i,j];
+                    }
+                    if( math.isfinite(s.bndu[i,j]) & (double)(s.bndu[i,j])<(double)(s.effectivebndu[i*n+j]) )
+                    {
+                        s.effectivebndu[i*n+j] = s.bndu[i,j];
+                    }
+                    if( (double)(s.effectivebndl[i*n+j])>(double)(s.effectivebndu[i*n+j]) )
+                    {
+                        s.repterminationtype = -3;
+                        return;
+                    }
+                    
+                    //
+                    // Calculate intersection of the effective bound constraints
+                    // and user-specified equality constraints.
+                    // This code checks consistency of such combination.
+                    //
+                    if( math.isfinite(s.ec[i,j]) )
+                    {
+                        if( (double)(s.ec[i,j])<(double)(s.effectivebndl[i*n+j]) | (double)(s.ec[i,j])>(double)(s.effectivebndu[i*n+j]) )
+                        {
+                            s.repterminationtype = -3;
+                            return;
+                        }
+                        s.effectivebndl[i*n+j] = s.ec[i,j];
+                        s.effectivebndu[i*n+j] = s.ec[i,j];
+                    }
+                }
+            }
+            
+            //
+            // Generate linear constraints:
+            // * "default" sums-to-one constraints (not generated for "exit" states)
+            //
+            apserv.rmatrixsetlengthatleast(ref s.effectivec, s.ccnt+n, n*n+1);
+            apserv.ivectorsetlengthatleast(ref s.effectivect, s.ccnt+n);
+            ccnt = s.ccnt;
+            for(i=0; i<=s.ccnt-1; i++)
+            {
+                for(j=0; j<=n*n; j++)
+                {
+                    s.effectivec[i,j] = s.c[i,j];
+                }
+                s.effectivect[i] = s.ct[i];
+            }
+            for(i=0; i<=n-1; i++)
+            {
+                if( s.states[i]>=0 )
+                {
+                    for(k=0; k<=n*n-1; k++)
+                    {
+                        s.effectivec[ccnt,k] = 0;
+                    }
+                    for(k=0; k<=n-1; k++)
+                    {
+                        s.effectivec[ccnt,k*n+i] = 1;
+                    }
+                    s.effectivec[ccnt,n*n] = 1.0;
+                    s.effectivect[ccnt] = 0;
+                    ccnt = ccnt+1;
+                }
+            }
+            
+            //
+            // create optimizer
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    s.tmpp[i*n+j] = (double)1/(double)n;
+                }
+            }
+            minbleic.minbleicrestartfrom(s.bs, s.tmpp);
+            minbleic.minbleicsetbc(s.bs, s.effectivebndl, s.effectivebndu);
+            minbleic.minbleicsetlc(s.bs, s.effectivec, s.effectivect, ccnt);
+            minbleic.minbleicsetinnercond(s.bs, 0, 0, xtol);
+            minbleic.minbleicsetoutercond(s.bs, xtol, 1.0E-5);
+            minbleic.minbleicsetprecdiag(s.bs, s.h);
+            
+            //
+            // solve problem
+            //
+            while( minbleic.minbleiciteration(s.bs) )
+            {
+                ap.assert(s.bs.needfg, "MCPDSolve: internal error");
+                if( s.bs.needfg )
+                {
+                    
+                    //
+                    // Calculate regularization term
+                    //
+                    s.bs.f = 0.0;
+                    vv = s.regterm;
+                    for(i=0; i<=n-1; i++)
+                    {
+                        for(j=0; j<=n-1; j++)
+                        {
+                            s.bs.f = s.bs.f+vv*math.sqr(s.bs.x[i*n+j]-s.priorp[i,j]);
+                            s.bs.g[i*n+j] = 2*vv*(s.bs.x[i*n+j]-s.priorp[i,j]);
+                        }
+                    }
+                    
+                    //
+                    // calculate prediction error/gradient for K-th pair
+                    //
+                    for(k=0; k<=npairs-1; k++)
+                    {
+                        for(i=0; i<=n-1; i++)
+                        {
+                            i1_ = (0)-(i*n);
+                            v = 0.0;
+                            for(i_=i*n; i_<=i*n+n-1;i_++)
+                            {
+                                v += s.bs.x[i_]*s.data[k,i_+i1_];
+                            }
+                            vv = s.effectivew[i];
+                            s.bs.f = s.bs.f+math.sqr(vv*(v-s.data[k,n+i]));
+                            for(j=0; j<=n-1; j++)
+                            {
+                                s.bs.g[i*n+j] = s.bs.g[i*n+j]+2*vv*vv*(v-s.data[k,n+i])*s.data[k,j];
+                            }
+                        }
+                    }
+                    
+                    //
+                    // continue
+                    //
+                    continue;
+                }
+            }
+            minbleic.minbleicresultsbuf(s.bs, ref s.tmpp, s.br);
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    s.p[i,j] = s.tmpp[i*n+j];
+                }
+            }
+            s.repterminationtype = s.br.terminationtype;
+            s.repinneriterationscount = s.br.inneriterationscount;
+            s.repouteriterationscount = s.br.outeriterationscount;
+            s.repnfev = s.br.nfev;
+        }
+
+
+        /*************************************************************************
+        MCPD results
+
+        INPUT PARAMETERS:
+            State   -   algorithm state
+
+        OUTPUT PARAMETERS:
+            P       -   array[N,N], transition matrix
+            Rep     -   optimization report. You should check Rep.TerminationType
+                        in  order  to  distinguish  successful  termination  from
+                        unsuccessful one. Speaking short, positive values  denote
+                        success, negative ones are failures.
+                        More information about fields of this  structure  can  be
+                        found in the comments on MCPDReport datatype.
+
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mcpdresults(mcpdstate s,
+            ref double[,] p,
+            mcpdreport rep)
+        {
+            int i = 0;
+            int j = 0;
+
+            p = new double[0,0];
+
+            p = new double[s.n, s.n];
+            for(i=0; i<=s.n-1; i++)
+            {
+                for(j=0; j<=s.n-1; j++)
+                {
+                    p[i,j] = s.p[i,j];
+                }
+            }
+            rep.terminationtype = s.repterminationtype;
+            rep.inneriterationscount = s.repinneriterationscount;
+            rep.outeriterationscount = s.repouteriterationscount;
+            rep.nfev = s.repnfev;
+        }
+
+
+        /*************************************************************************
+        Internal initialization function
+
+          -- ALGLIB --
+             Copyright 23.05.2010 by Bochkanov Sergey
+        *************************************************************************/
+        private static void mcpdinit(int n,
+            int entrystate,
+            int exitstate,
+            mcpdstate s)
+        {
+            int i = 0;
+            int j = 0;
+
+            ap.assert(n>=1, "MCPDCreate: N<1");
+            s.n = n;
+            s.states = new int[n];
+            for(i=0; i<=n-1; i++)
+            {
+                s.states[i] = 0;
+            }
+            if( entrystate>=0 )
+            {
+                s.states[entrystate] = 1;
+            }
+            if( exitstate>=0 )
+            {
+                s.states[exitstate] = -1;
+            }
+            s.npairs = 0;
+            s.regterm = 1.0E-8;
+            s.ccnt = 0;
+            s.p = new double[n, n];
+            s.ec = new double[n, n];
+            s.bndl = new double[n, n];
+            s.bndu = new double[n, n];
+            s.pw = new double[n];
+            s.priorp = new double[n, n];
+            s.tmpp = new double[n*n];
+            s.effectivew = new double[n];
+            s.effectivebndl = new double[n*n];
+            s.effectivebndu = new double[n*n];
+            s.h = new double[n*n];
+            for(i=0; i<=n-1; i++)
+            {
+                for(j=0; j<=n-1; j++)
+                {
+                    s.p[i,j] = 0.0;
+                    s.priorp[i,j] = 0.0;
+                    s.bndl[i,j] = Double.NegativeInfinity;
+                    s.bndu[i,j] = Double.PositiveInfinity;
+                    s.ec[i,j] = Double.NaN;
+                }
+                s.pw[i] = 0.0;
+                s.priorp[i,i] = 1.0;
+            }
+            s.data = new double[1, 2*n];
+            for(i=0; i<=2*n-1; i++)
+            {
+                s.data[0,i] = 0.0;
+            }
+            for(i=0; i<=n*n-1; i++)
+            {
+                s.tmpp[i] = 0.0;
+            }
+            minbleic.minbleiccreate(n*n, s.tmpp, s.bs);
+        }
+
+
+    }
     public class mlptrain
     {
         /*************************************************************************
@@ -13532,7 +17186,7 @@ public partial class alglib
                     {
                         wt[i] = 0;
                     }
-                    minlbfgs.minlbfgscreatex(wcount, wcount, wt, 1, state);
+                    minlbfgs.minlbfgscreatex(wcount, wcount, wt, 1, 0.0, state);
                     minlbfgs.minlbfgssetcond(state, 0, 0, 0, 5);
                     while( minlbfgs.minlbfgsiteration(state) )
                     {
@@ -14747,7 +18401,7 @@ public partial class alglib
             //
             // serialized part
             //
-            mlpbase.mlpserialize(network, ref ensemble.serializedmlp, ref ensemble.serializedlen);
+            mlpbase.mlpserializeold(network, ref ensemble.serializedmlp, ref ensemble.serializedlen);
             
             //
             // temporaries, internal buffers
@@ -15537,7 +19191,7 @@ public partial class alglib
             }
             trnxy = new double[npoints-1+1, ccount-1+1];
             valxy = new double[npoints-1+1, ccount-1+1];
-            mlpbase.mlpunserialize(ensemble.serializedmlp, network);
+            mlpbase.mlpunserializeold(ensemble.serializedmlp, network);
             rep.ngrad = 0;
             rep.nhess = 0;
             rep.ncholesky = 0;
@@ -15807,7 +19461,7 @@ public partial class alglib
             {
                 oobcntbuf[i] = 0;
             }
-            mlpbase.mlpunserialize(ensemble.serializedmlp, network);
+            mlpbase.mlpunserializeold(ensemble.serializedmlp, network);
             
             //
             // main bagging cycle

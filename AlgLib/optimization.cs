@@ -25,6 +25,1388 @@ public partial class alglib
 
 
     /*************************************************************************
+    This object stores state of the nonlinear CG optimizer.
+
+    You should use ALGLIB functions to work with this object.
+    *************************************************************************/
+    public class mincgstate
+    {
+        //
+        // Public declarations
+        //
+        public bool needf { get { return _innerobj.needf; } set { _innerobj.needf = value; } }
+        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
+        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
+        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
+        public double[] g { get { return _innerobj.g; } }
+        public double[] x { get { return _innerobj.x; } }
+
+        public mincgstate()
+        {
+            _innerobj = new mincg.mincgstate();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mincg.mincgstate _innerobj;
+        public mincg.mincgstate innerobj { get { return _innerobj; } }
+        public mincgstate(mincg.mincgstate obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+
+    *************************************************************************/
+    public class mincgreport
+    {
+        //
+        // Public declarations
+        //
+        public int iterationscount { get { return _innerobj.iterationscount; } set { _innerobj.iterationscount = value; } }
+        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
+        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
+
+        public mincgreport()
+        {
+            _innerobj = new mincg.mincgreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mincg.mincgreport _innerobj;
+        public mincg.mincgreport innerobj { get { return _innerobj; } }
+        public mincgreport(mincg.mincgreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
+            NONLINEAR CONJUGATE GRADIENT METHOD
+
+    DESCRIPTION:
+    The subroutine minimizes function F(x) of N arguments by using one of  the
+    nonlinear conjugate gradient methods.
+
+    These CG methods are globally convergent (even on non-convex functions) as
+    long as grad(f) is Lipschitz continuous in  a  some  neighborhood  of  the
+    L = { x : f(x)<=f(x0) }.
+
+
+    REQUIREMENTS:
+    Algorithm will request following information during its operation:
+    * function value F and its gradient G (simultaneously) at given point X
+
+
+    USAGE:
+    1. User initializes algorithm state with MinCGCreate() call
+    2. User tunes solver parameters with MinCGSetCond(), MinCGSetStpMax() and
+       other functions
+    3. User calls MinCGOptimize() function which takes algorithm  state   and
+       pointer (delegate, etc.) to callback function which calculates F/G.
+    4. User calls MinCGResults() to get solution
+    5. Optionally, user may call MinCGRestartFrom() to solve another  problem
+       with same N but another starting point and/or another function.
+       MinCGRestartFrom() allows to reuse already initialized structure.
+
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>0:
+                    * if given, only leading N elements of X are used
+                    * if not given, automatically determined from size of X
+        X       -   starting point, array[0..N-1].
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 25.03.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgcreate(int n, double[] x, out mincgstate state)
+    {
+        state = new mincgstate();
+        mincg.mincgcreate(n, x, state.innerobj);
+        return;
+    }
+    public static void mincgcreate(double[] x, out mincgstate state)
+    {
+        int n;
+
+        state = new mincgstate();
+        n = ap.len(x);
+        mincg.mincgcreate(n, x, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    The subroutine is finite difference variant of MinCGCreate(). It uses
+    finite differences in order to differentiate target function.
+
+    Description below contains information which is specific to this function
+    only. We recommend to read comments on MinCGCreate() in order to get more
+    information about creation of CG optimizer.
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>0:
+                    * if given, only leading N elements of X are used
+                    * if not given, automatically determined from size of X
+        X       -   starting point, array[0..N-1].
+        DiffStep-   differentiation step, >0
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+    NOTES:
+    1. algorithm uses 4-point central formula for differentiation.
+    2. differentiation step along I-th axis is equal to DiffStep*S[I] where
+       S[] is scaling vector which can be set by MinCGSetScale() call.
+    3. we recommend you to use moderate values of  differentiation  step.  Too
+       large step will result in too large truncation  errors, while too small
+       step will result in too large numerical  errors.  1.0E-6  can  be  good
+       value to start with.
+    4. Numerical  differentiation  is   very   inefficient  -   one   gradient
+       calculation needs 4*N function evaluations. This function will work for
+       any N - either small (1...10), moderate (10...100) or  large  (100...).
+       However, performance penalty will be too severe for any N's except  for
+       small ones.
+       We should also say that code which relies on numerical  differentiation
+       is  less  robust  and  precise.  L-BFGS  needs  exact  gradient values.
+       Imprecise  gradient may slow down  convergence,  especially  on  highly
+       nonlinear problems.
+       Thus  we  recommend to use this function for fast prototyping on small-
+       dimensional problems only, and to implement analytical gradient as soon
+       as possible.
+
+      -- ALGLIB --
+         Copyright 16.05.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgcreatef(int n, double[] x, double diffstep, out mincgstate state)
+    {
+        state = new mincgstate();
+        mincg.mincgcreatef(n, x, diffstep, state.innerobj);
+        return;
+    }
+    public static void mincgcreatef(double[] x, double diffstep, out mincgstate state)
+    {
+        int n;
+
+        state = new mincgstate();
+        n = ap.len(x);
+        mincg.mincgcreatef(n, x, diffstep, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    This function sets stopping conditions for CG optimization algorithm.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        EpsG    -   >=0
+                    The  subroutine  finishes  its  work   if   the  condition
+                    |v|<EpsG is satisfied, where:
+                    * |.| means Euclidian norm
+                    * v - scaled gradient vector, v[i]=g[i]*s[i]
+                    * g - gradient
+                    * s - scaling coefficients set by MinCGSetScale()
+        EpsF    -   >=0
+                    The  subroutine  finishes  its work if on k+1-th iteration
+                    the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
+                    is satisfied.
+        EpsX    -   >=0
+                    The subroutine finishes its work if  on  k+1-th  iteration
+                    the condition |v|<=EpsX is fulfilled, where:
+                    * |.| means Euclidian norm
+                    * v - scaled step vector, v[i]=dx[i]/s[i]
+                    * dx - ste pvector, dx=X(k+1)-X(k)
+                    * s - scaling coefficients set by MinCGSetScale()
+        MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
+                    iterations is unlimited.
+
+    Passing EpsG=0, EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to
+    automatic stopping criterion selection (small EpsX).
+
+      -- ALGLIB --
+         Copyright 02.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetcond(mincgstate state, double epsg, double epsf, double epsx, int maxits)
+    {
+
+        mincg.mincgsetcond(state.innerobj, epsg, epsf, epsx, maxits);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets scaling coefficients for CG optimizer.
+
+    ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
+    size and gradient are scaled before comparison with tolerances).  Scale of
+    the I-th variable is a translation invariant measure of:
+    a) "how large" the variable is
+    b) how large the step should be to make significant changes in the function
+
+    Scaling is also used by finite difference variant of CG optimizer  -  step
+    along I-th axis is equal to DiffStep*S[I].
+
+    In   most   optimizers  (and  in  the  CG  too)  scaling is NOT a form  of
+    preconditioning. It just  affects  stopping  conditions.  You  should  set
+    preconditioner by separate call to one of the MinCGSetPrec...() functions.
+
+    There  is  special  preconditioning  mode, however,  which  uses   scaling
+    coefficients to form diagonal preconditioning matrix. You  can  turn  this
+    mode on, if you want.   But  you should understand that scaling is not the
+    same thing as preconditioning - these are two different, although  related
+    forms of tuning solver.
+
+    INPUT PARAMETERS:
+        State   -   structure stores algorithm state
+        S       -   array[N], non-zero scaling coefficients
+                    S[i] may be negative, sign doesn't matter.
+
+      -- ALGLIB --
+         Copyright 14.01.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetscale(mincgstate state, double[] s)
+    {
+
+        mincg.mincgsetscale(state.innerobj, s);
+        return;
+    }
+
+    /*************************************************************************
+    This function turns on/off reporting.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        NeedXRep-   whether iteration reports are needed or not
+
+    If NeedXRep is True, algorithm will call rep() callback function if  it is
+    provided to MinCGOptimize().
+
+      -- ALGLIB --
+         Copyright 02.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetxrep(mincgstate state, bool needxrep)
+    {
+
+        mincg.mincgsetxrep(state.innerobj, needxrep);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets CG algorithm.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        CGType  -   algorithm type:
+                    * -1    automatic selection of the best algorithm
+                    * 0     DY (Dai and Yuan) algorithm
+                    * 1     Hybrid DY-HS algorithm
+
+      -- ALGLIB --
+         Copyright 02.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetcgtype(mincgstate state, int cgtype)
+    {
+
+        mincg.mincgsetcgtype(state.innerobj, cgtype);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets maximum step length
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
+                    want to limit step length.
+
+    Use this subroutine when you optimize target function which contains exp()
+    or  other  fast  growing  functions,  and optimization algorithm makes too
+    large  steps  which  leads  to overflow. This function allows us to reject
+    steps  that  are  too  large  (and  therefore  expose  us  to the possible
+    overflow) without actually calculating function value at the x+stp*d.
+
+      -- ALGLIB --
+         Copyright 02.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetstpmax(mincgstate state, double stpmax)
+    {
+
+        mincg.mincgsetstpmax(state.innerobj, stpmax);
+        return;
+    }
+
+    /*************************************************************************
+    This function allows to suggest initial step length to the CG algorithm.
+
+    Suggested  step  length  is used as starting point for the line search. It
+    can be useful when you have  badly  scaled  problem,  i.e.  when  ||grad||
+    (which is used as initial estimate for the first step) is many  orders  of
+    magnitude different from the desired step.
+
+    Line search  may  fail  on  such problems without good estimate of initial
+    step length. Imagine, for example, problem with ||grad||=10^50 and desired
+    step equal to 0.1 Line  search function will use 10^50  as  initial  step,
+    then  it  will  decrease step length by 2 (up to 20 attempts) and will get
+    10^44, which is still too large.
+
+    This function allows us to tell than line search should  be  started  from
+    some moderate step length, like 1.0, so algorithm will be able  to  detect
+    desired step length in a several searches.
+
+    Default behavior (when no step is suggested) is to use preconditioner,  if
+    it is available, to generate initial estimate of step length.
+
+    This function influences only first iteration of algorithm. It  should  be
+    called between MinCGCreate/MinCGRestartFrom() call and MinCGOptimize call.
+    Suggested step is ignored if you have preconditioner.
+
+    INPUT PARAMETERS:
+        State   -   structure used to store algorithm state.
+        Stp     -   initial estimate of the step length.
+                    Can be zero (no estimate).
+
+      -- ALGLIB --
+         Copyright 30.07.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsuggeststep(mincgstate state, double stp)
+    {
+
+        mincg.mincgsuggeststep(state.innerobj, stp);
+        return;
+    }
+
+    /*************************************************************************
+    Modification of the preconditioner: preconditioning is turned off.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+    NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
+    iterations.
+
+      -- ALGLIB --
+         Copyright 13.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetprecdefault(mincgstate state)
+    {
+
+        mincg.mincgsetprecdefault(state.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Modification  of  the  preconditioner:  diagonal of approximate Hessian is
+    used.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        D       -   diagonal of the approximate Hessian, array[0..N-1],
+                    (if larger, only leading N elements are used).
+
+    NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
+    iterations.
+
+    NOTE 2: D[i] should be positive. Exception will be thrown otherwise.
+
+    NOTE 3: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
+
+      -- ALGLIB --
+         Copyright 13.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetprecdiag(mincgstate state, double[] d)
+    {
+
+        mincg.mincgsetprecdiag(state.innerobj, d);
+        return;
+    }
+
+    /*************************************************************************
+    Modification of the preconditioner: scale-based diagonal preconditioning.
+
+    This preconditioning mode can be useful when you  don't  have  approximate
+    diagonal of Hessian, but you know that your  variables  are  badly  scaled
+    (for  example,  one  variable is in [1,10], and another in [1000,100000]),
+    and most part of the ill-conditioning comes from different scales of vars.
+
+    In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
+    can greatly improve convergence.
+
+    IMPRTANT: you should set scale of your variables with MinCGSetScale() call
+    (before or after MinCGSetPrecScale() call). Without knowledge of the scale
+    of your variables scale-based preconditioner will be just unit matrix.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+    NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
+    iterations.
+
+      -- ALGLIB --
+         Copyright 13.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgsetprecscale(mincgstate state)
+    {
+
+        mincg.mincgsetprecscale(state.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This function provides reverse communication interface
+    Reverse communication interface is not documented or recommended to use.
+    See below for functions which provide better documented API
+    *************************************************************************/
+    public static bool mincgiteration(mincgstate state)
+    {
+
+        bool result = mincg.mincgiteration(state.innerobj);
+        return result;
+    }
+    /*************************************************************************
+    This family of functions is used to launcn iterations of nonlinear optimizer
+
+    These functions accept following parameters:
+        func    -   callback which calculates function (or merit function)
+                    value func at given point x
+        grad    -   callback which calculates function (or merit function)
+                    value func and gradient grad at given point x
+        rep     -   optional callback which is called after each iteration
+                    can be null
+        obj     -   optional object which is passed to func/grad/hess/jac/rep
+                    can be null
+
+    NOTES:
+
+    1. This function has two different implementations: one which  uses  exact
+       (analytical) user-supplied  gradient, and one which uses function value
+       only  and  numerically  differentiates  function  in  order  to  obtain
+       gradient.
+
+       Depending  on  the  specific  function  used to create optimizer object
+       (either MinCGCreate()  for analytical gradient  or  MinCGCreateF()  for
+       numerical differentiation) you should  choose  appropriate  variant  of
+       MinCGOptimize() - one which accepts function AND gradient or one  which
+       accepts function ONLY.
+
+       Be careful to choose variant of MinCGOptimize()  which  corresponds  to
+       your optimization scheme! Table below lists different  combinations  of
+       callback (function/gradient) passed  to  MinCGOptimize()  and  specific
+       function used to create optimizer.
+
+
+                      |         USER PASSED TO MinCGOptimize()
+       CREATED WITH   |  function only   |  function and gradient
+       ------------------------------------------------------------
+       MinCGCreateF() |     work                FAIL
+       MinCGCreate()  |     FAIL                work
+
+       Here "FAIL" denotes inappropriate combinations  of  optimizer  creation
+       function and MinCGOptimize() version. Attemps to use  such  combination
+       (for  example,  to create optimizer with  MinCGCreateF()  and  to  pass
+       gradient information to MinCGOptimize()) will lead to  exception  being
+       thrown. Either  you  did  not  pass  gradient when it WAS needed or you
+       passed gradient when it was NOT needed.
+
+      -- ALGLIB --
+         Copyright 20.04.2009 by Bochkanov Sergey
+
+    *************************************************************************/
+    public static void mincgoptimize(mincgstate state, ndimensional_func func, ndimensional_rep rep, object obj)
+    {
+        if( func==null )
+            throw new alglibexception("ALGLIB: error in 'mincgoptimize()' (func is null)");
+        while( alglib.mincgiteration(state) )
+        {
+            if( state.needf )
+            {
+                func(state.x, ref state.innerobj.f, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.x, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'mincgoptimize' (some derivatives were not provided?)");
+        }
+    }
+
+
+    public static void mincgoptimize(mincgstate state, ndimensional_grad grad, ndimensional_rep rep, object obj)
+    {
+        if( grad==null )
+            throw new alglibexception("ALGLIB: error in 'mincgoptimize()' (grad is null)");
+        while( alglib.mincgiteration(state) )
+        {
+            if( state.needfg )
+            {
+                grad(state.x, ref state.innerobj.f, state.innerobj.g, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.x, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'mincgoptimize' (some derivatives were not provided?)");
+        }
+    }
+
+
+
+    /*************************************************************************
+    Conjugate gradient results
+
+    INPUT PARAMETERS:
+        State   -   algorithm state
+
+    OUTPUT PARAMETERS:
+        X       -   array[0..N-1], solution
+        Rep     -   optimization report:
+                    * Rep.TerminationType completetion code:
+                        *  1    relative function improvement is no more than
+                                EpsF.
+                        *  2    relative step is no more than EpsX.
+                        *  4    gradient norm is no more than EpsG
+                        *  5    MaxIts steps was taken
+                        *  7    stopping conditions are too stringent,
+                                further improvement is impossible,
+                                we return best X found so far
+                        *  8    terminated by user
+                    * Rep.IterationsCount contains iterations count
+                    * NFEV countains number of function calculations
+
+      -- ALGLIB --
+         Copyright 20.04.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgresults(mincgstate state, out double[] x, out mincgreport rep)
+    {
+        x = new double[0];
+        rep = new mincgreport();
+        mincg.mincgresults(state.innerobj, ref x, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Conjugate gradient results
+
+    Buffered implementation of MinCGResults(), which uses pre-allocated buffer
+    to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
+    intended to be used in the inner cycles of performance critical algorithms
+    where array reallocation penalty is too large to be ignored.
+
+      -- ALGLIB --
+         Copyright 20.04.2009 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgresultsbuf(mincgstate state, ref double[] x, mincgreport rep)
+    {
+
+        mincg.mincgresultsbuf(state.innerobj, ref x, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This  subroutine  restarts  CG  algorithm from new point. All optimization
+    parameters are left unchanged.
+
+    This  function  allows  to  solve multiple  optimization  problems  (which
+    must have same number of dimensions) without object reallocation penalty.
+
+    INPUT PARAMETERS:
+        State   -   structure used to store algorithm state.
+        X       -   new starting point.
+
+      -- ALGLIB --
+         Copyright 30.07.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void mincgrestartfrom(mincgstate state, double[] x)
+    {
+
+        mincg.mincgrestartfrom(state.innerobj, x);
+        return;
+    }
+
+}
+public partial class alglib
+{
+
+
+    /*************************************************************************
+    This object stores nonlinear optimizer state.
+    You should use functions provided by MinBLEIC subpackage to work with this
+    object
+    *************************************************************************/
+    public class minbleicstate
+    {
+        //
+        // Public declarations
+        //
+        public bool needf { get { return _innerobj.needf; } set { _innerobj.needf = value; } }
+        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
+        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
+        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
+        public double[] g { get { return _innerobj.g; } }
+        public double[] x { get { return _innerobj.x; } }
+
+        public minbleicstate()
+        {
+            _innerobj = new minbleic.minbleicstate();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private minbleic.minbleicstate _innerobj;
+        public minbleic.minbleicstate innerobj { get { return _innerobj; } }
+        public minbleicstate(minbleic.minbleicstate obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+    This structure stores optimization report:
+    * InnerIterationsCount      number of inner iterations
+    * OuterIterationsCount      number of outer iterations
+    * NFEV                      number of gradient evaluations
+    * TerminationType           termination type (see below)
+
+    TERMINATION CODES
+
+    TerminationType field contains completion code, which can be:
+      -10   unsupported combination of algorithm settings:
+            1) StpMax is set to non-zero value,
+            AND 2) non-default preconditioner is used.
+            You can't use both features at the same moment,
+            so you have to choose one of them (and to turn
+            off another one).
+      -3    inconsistent constraints. Feasible point is
+            either nonexistent or too hard to find. Try to
+            restart optimizer with better initial
+            approximation
+       4    conditions on constraints are fulfilled
+            with error less than or equal to EpsC
+       5    MaxIts steps was taken
+       7    stopping conditions are too stringent,
+            further improvement is impossible,
+            X contains best point found so far.
+
+    ADDITIONAL FIELDS
+
+    There are additional fields which can be used for debugging:
+    * DebugEqErr                error in the equality constraints (2-norm)
+    * DebugFS                   f, calculated at projection of initial point
+                                to the feasible set
+    * DebugFF                   f, calculated at the final point
+    * DebugDX                   |X_start-X_final|
+    *************************************************************************/
+    public class minbleicreport
+    {
+        //
+        // Public declarations
+        //
+        public int inneriterationscount { get { return _innerobj.inneriterationscount; } set { _innerobj.inneriterationscount = value; } }
+        public int outeriterationscount { get { return _innerobj.outeriterationscount; } set { _innerobj.outeriterationscount = value; } }
+        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
+        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
+        public double debugeqerr { get { return _innerobj.debugeqerr; } set { _innerobj.debugeqerr = value; } }
+        public double debugfs { get { return _innerobj.debugfs; } set { _innerobj.debugfs = value; } }
+        public double debugff { get { return _innerobj.debugff; } set { _innerobj.debugff = value; } }
+        public double debugdx { get { return _innerobj.debugdx; } set { _innerobj.debugdx = value; } }
+
+        public minbleicreport()
+        {
+            _innerobj = new minbleic.minbleicreport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private minbleic.minbleicreport _innerobj;
+        public minbleic.minbleicreport innerobj { get { return _innerobj; } }
+        public minbleicreport(minbleic.minbleicreport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
+                         BOUND CONSTRAINED OPTIMIZATION
+           WITH ADDITIONAL LINEAR EQUALITY AND INEQUALITY CONSTRAINTS
+
+    DESCRIPTION:
+    The  subroutine  minimizes  function   F(x)  of N arguments subject to any
+    combination of:
+    * bound constraints
+    * linear inequality constraints
+    * linear equality constraints
+
+    REQUIREMENTS:
+    * user must provide function value and gradient
+    * starting point X0 must be feasible or
+      not too far away from the feasible set
+    * grad(f) must be Lipschitz continuous on a level set:
+      L = { x : f(x)<=f(x0) }
+    * function must be defined everywhere on the feasible set F
+
+    USAGE:
+
+    Constrained optimization if far more complex than the unconstrained one.
+    Here we give very brief outline of the BLEIC optimizer. We strongly recommend
+    you to read examples in the ALGLIB Reference Manual and to read ALGLIB User Guide
+    on optimization, which is available at http://www.alglib.net/optimization/
+
+    1. User initializes algorithm state with MinBLEICCreate() call
+
+    2. USer adds boundary and/or linear constraints by calling
+       MinBLEICSetBC() and MinBLEICSetLC() functions.
+
+    3. User sets stopping conditions for underlying unconstrained solver
+       with MinBLEICSetInnerCond() call.
+       This function controls accuracy of underlying optimization algorithm.
+
+    4. User sets stopping conditions for outer iteration by calling
+       MinBLEICSetOuterCond() function.
+       This function controls handling of boundary and inequality constraints.
+
+    5. Additionally, user may set limit on number of internal iterations
+       by MinBLEICSetMaxIts() call.
+       This function allows to prevent algorithm from looping forever.
+
+    6. User calls MinBLEICOptimize() function which takes algorithm  state and
+       pointer (delegate, etc.) to callback function which calculates F/G.
+
+    7. User calls MinBLEICResults() to get solution
+
+    8. Optionally user may call MinBLEICRestartFrom() to solve another problem
+       with same N but another starting point.
+       MinBLEICRestartFrom() allows to reuse already initialized structure.
+
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>0:
+                    * if given, only leading N elements of X are used
+                    * if not given, automatically determined from size ofX
+        X       -   starting point, array[N]:
+                    * it is better to set X to a feasible point
+                    * but X can be infeasible, in which case algorithm will try
+                      to find feasible point first, using X as initial
+                      approximation.
+
+    OUTPUT PARAMETERS:
+        State   -   structure stores algorithm state
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleiccreate(int n, double[] x, out minbleicstate state)
+    {
+        state = new minbleicstate();
+        minbleic.minbleiccreate(n, x, state.innerobj);
+        return;
+    }
+    public static void minbleiccreate(double[] x, out minbleicstate state)
+    {
+        int n;
+
+        state = new minbleicstate();
+        n = ap.len(x);
+        minbleic.minbleiccreate(n, x, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    The subroutine is finite difference variant of MinBLEICCreate().  It  uses
+    finite differences in order to differentiate target function.
+
+    Description below contains information which is specific to  this function
+    only. We recommend to read comments on MinBLEICCreate() in  order  to  get
+    more information about creation of BLEIC optimizer.
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>0:
+                    * if given, only leading N elements of X are used
+                    * if not given, automatically determined from size of X
+        X       -   starting point, array[0..N-1].
+        DiffStep-   differentiation step, >0
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+    NOTES:
+    1. algorithm uses 4-point central formula for differentiation.
+    2. differentiation step along I-th axis is equal to DiffStep*S[I] where
+       S[] is scaling vector which can be set by MinBLEICSetScale() call.
+    3. we recommend you to use moderate values of  differentiation  step.  Too
+       large step will result in too large truncation  errors, while too small
+       step will result in too large numerical  errors.  1.0E-6  can  be  good
+       value to start with.
+    4. Numerical  differentiation  is   very   inefficient  -   one   gradient
+       calculation needs 4*N function evaluations. This function will work for
+       any N - either small (1...10), moderate (10...100) or  large  (100...).
+       However, performance penalty will be too severe for any N's except  for
+       small ones.
+       We should also say that code which relies on numerical  differentiation
+       is  less  robust and precise. CG needs exact gradient values. Imprecise
+       gradient may slow  down  convergence, especially  on  highly  nonlinear
+       problems.
+       Thus  we  recommend to use this function for fast prototyping on small-
+       dimensional problems only, and to implement analytical gradient as soon
+       as possible.
+
+      -- ALGLIB --
+         Copyright 16.05.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleiccreatef(int n, double[] x, double diffstep, out minbleicstate state)
+    {
+        state = new minbleicstate();
+        minbleic.minbleiccreatef(n, x, diffstep, state.innerobj);
+        return;
+    }
+    public static void minbleiccreatef(double[] x, double diffstep, out minbleicstate state)
+    {
+        int n;
+
+        state = new minbleicstate();
+        n = ap.len(x);
+        minbleic.minbleiccreatef(n, x, diffstep, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
+    This function sets boundary constraints for BLEIC optimizer.
+
+    Boundary constraints are inactive by default (after initial creation).
+    They are preserved after algorithm restart with MinBLEICRestartFrom().
+
+    INPUT PARAMETERS:
+        State   -   structure stores algorithm state
+        BndL    -   lower bounds, array[N].
+                    If some (all) variables are unbounded, you may specify
+                    very small number or -INF.
+        BndU    -   upper bounds, array[N].
+                    If some (all) variables are unbounded, you may specify
+                    very large number or +INF.
+
+    NOTE 1: it is possible to specify BndL[i]=BndU[i]. In this case I-th
+    variable will be "frozen" at X[i]=BndL[i]=BndU[i].
+
+    NOTE 2: this solver has following useful properties:
+    * bound constraints are always satisfied exactly
+    * function is evaluated only INSIDE area specified by  bound  constraints,
+      even  when  numerical  differentiation is used (algorithm adjusts  nodes
+      according to boundary constraints)
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetbc(minbleicstate state, double[] bndl, double[] bndu)
+    {
+
+        minbleic.minbleicsetbc(state.innerobj, bndl, bndu);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets linear constraints for BLEIC optimizer.
+
+    Linear constraints are inactive by default (after initial creation).
+    They are preserved after algorithm restart with MinBLEICRestartFrom().
+
+    INPUT PARAMETERS:
+        State   -   structure previously allocated with MinBLEICCreate call.
+        C       -   linear constraints, array[K,N+1].
+                    Each row of C represents one constraint, either equality
+                    or inequality (see below):
+                    * first N elements correspond to coefficients,
+                    * last element corresponds to the right part.
+                    All elements of C (including right part) must be finite.
+        CT      -   type of constraints, array[K]:
+                    * if CT[i]>0, then I-th constraint is C[i,*]*x >= C[i,n+1]
+                    * if CT[i]=0, then I-th constraint is C[i,*]*x  = C[i,n+1]
+                    * if CT[i]<0, then I-th constraint is C[i,*]*x <= C[i,n+1]
+        K       -   number of equality/inequality constraints, K>=0:
+                    * if given, only leading K elements of C/CT are used
+                    * if not given, automatically determined from sizes of C/CT
+
+    NOTE 1: linear (non-bound) constraints are satisfied only approximately:
+    * there always exists some minor violation (about Epsilon in magnitude)
+      due to rounding errors
+    * numerical differentiation, if used, may  lead  to  function  evaluations
+      outside  of the feasible  area,   because   algorithm  does  NOT  change
+      numerical differentiation formula according to linear constraints.
+    If you want constraints to be  satisfied  exactly, try to reformulate your
+    problem  in  such  manner  that  all constraints will become boundary ones
+    (this kind of constraints is always satisfied exactly, both in  the  final
+    solution and in all intermediate points).
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetlc(minbleicstate state, double[,] c, int[] ct, int k)
+    {
+
+        minbleic.minbleicsetlc(state.innerobj, c, ct, k);
+        return;
+    }
+    public static void minbleicsetlc(minbleicstate state, double[,] c, int[] ct)
+    {
+        int k;
+        if( (ap.rows(c)!=ap.len(ct)))
+            throw new alglibexception("Error while calling 'minbleicsetlc': looks like one of arguments has wrong size");
+
+        k = ap.rows(c);
+        minbleic.minbleicsetlc(state.innerobj, c, ct, k);
+
+        return;
+    }
+
+    /*************************************************************************
+    This function sets stopping conditions for the underlying nonlinear CG
+    optimizer. It controls overall accuracy of solution. These conditions
+    should be strict enough in order for algorithm to converge.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        EpsG    -   >=0
+                    The  subroutine  finishes  its  work   if   the  condition
+                    |v|<EpsG is satisfied, where:
+                    * |.| means Euclidian norm
+                    * v - scaled gradient vector, v[i]=g[i]*s[i]
+                    * g - gradient
+                    * s - scaling coefficients set by MinBLEICSetScale()
+        EpsF    -   >=0
+                    The  subroutine  finishes  its work if on k+1-th iteration
+                    the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
+                    is satisfied.
+        EpsX    -   >=0
+                    The subroutine finishes its work if  on  k+1-th  iteration
+                    the condition |v|<=EpsX is fulfilled, where:
+                    * |.| means Euclidian norm
+                    * v - scaled step vector, v[i]=dx[i]/s[i]
+                    * dx - ste pvector, dx=X(k+1)-X(k)
+                    * s - scaling coefficients set by MinBLEICSetScale()
+
+    Passing EpsG=0, EpsF=0 and EpsX=0 (simultaneously) will lead to
+    automatic stopping criterion selection.
+
+    These conditions are used to terminate inner iterations. However, you
+    need to tune termination conditions for outer iterations too.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetinnercond(minbleicstate state, double epsg, double epsf, double epsx)
+    {
+
+        minbleic.minbleicsetinnercond(state.innerobj, epsg, epsf, epsx);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets stopping conditions for outer iteration of BLEIC algo.
+
+    These conditions control accuracy of constraint handling and amount of
+    infeasibility allowed in the solution.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        EpsX    -   >0, stopping condition on outer iteration step length
+        EpsI    -   >0, stopping condition on infeasibility
+
+    Both EpsX and EpsI must be non-zero.
+
+    MEANING OF EpsX
+
+    EpsX  is  a  stopping  condition for outer iterations. Algorithm will stop
+    when  solution  of  the  current  modified  subproblem will be within EpsX
+    (using 2-norm) of the previous solution.
+
+    MEANING OF EpsI
+
+    EpsI controls feasibility properties -  algorithm  won't  stop  until  all
+    inequality constraints will be satisfied with error (distance from current
+    point to the feasible area) at most EpsI.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetoutercond(minbleicstate state, double epsx, double epsi)
+    {
+
+        minbleic.minbleicsetoutercond(state.innerobj, epsx, epsi);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets scaling coefficients for BLEIC optimizer.
+
+    ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
+    size and gradient are scaled before comparison with tolerances).  Scale of
+    the I-th variable is a translation invariant measure of:
+    a) "how large" the variable is
+    b) how large the step should be to make significant changes in the function
+
+    Scaling is also used by finite difference variant of the optimizer  - step
+    along I-th axis is equal to DiffStep*S[I].
+
+    In  most  optimizers  (and  in  the  BLEIC  too)  scaling is NOT a form of
+    preconditioning. It just  affects  stopping  conditions.  You  should  set
+    preconditioner  by  separate  call  to  one  of  the  MinBLEICSetPrec...()
+    functions.
+
+    There is a special  preconditioning  mode, however,  which  uses   scaling
+    coefficients to form diagonal preconditioning matrix. You  can  turn  this
+    mode on, if you want.   But  you should understand that scaling is not the
+    same thing as preconditioning - these are two different, although  related
+    forms of tuning solver.
+
+    INPUT PARAMETERS:
+        State   -   structure stores algorithm state
+        S       -   array[N], non-zero scaling coefficients
+                    S[i] may be negative, sign doesn't matter.
+
+      -- ALGLIB --
+         Copyright 14.01.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetscale(minbleicstate state, double[] s)
+    {
+
+        minbleic.minbleicsetscale(state.innerobj, s);
+        return;
+    }
+
+    /*************************************************************************
+    Modification of the preconditioner: preconditioning is turned off.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 13.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetprecdefault(minbleicstate state)
+    {
+
+        minbleic.minbleicsetprecdefault(state.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    Modification  of  the  preconditioner:  diagonal of approximate Hessian is
+    used.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        D       -   diagonal of the approximate Hessian, array[0..N-1],
+                    (if larger, only leading N elements are used).
+
+    NOTE 1: D[i] should be positive. Exception will be thrown otherwise.
+
+    NOTE 2: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
+
+      -- ALGLIB --
+         Copyright 13.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetprecdiag(minbleicstate state, double[] d)
+    {
+
+        minbleic.minbleicsetprecdiag(state.innerobj, d);
+        return;
+    }
+
+    /*************************************************************************
+    Modification of the preconditioner: scale-based diagonal preconditioning.
+
+    This preconditioning mode can be useful when you  don't  have  approximate
+    diagonal of Hessian, but you know that your  variables  are  badly  scaled
+    (for  example,  one  variable is in [1,10], and another in [1000,100000]),
+    and most part of the ill-conditioning comes from different scales of vars.
+
+    In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
+    can greatly improve convergence.
+
+    IMPRTANT: you should set scale of your variables  with  MinBLEICSetScale()
+    call  (before  or after MinBLEICSetPrecScale() call). Without knowledge of
+    the scale of your variables scale-based preconditioner will be  just  unit
+    matrix.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+      -- ALGLIB --
+         Copyright 13.10.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetprecscale(minbleicstate state)
+    {
+
+        minbleic.minbleicsetprecscale(state.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This function allows to stop algorithm after specified number of inner
+    iterations.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        MaxIts  -   maximum number of inner iterations.
+                    If MaxIts=0, the number of iterations is unlimited.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetmaxits(minbleicstate state, int maxits)
+    {
+
+        minbleic.minbleicsetmaxits(state.innerobj, maxits);
+        return;
+    }
+
+    /*************************************************************************
+    This function turns on/off reporting.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        NeedXRep-   whether iteration reports are needed or not
+
+    If NeedXRep is True, algorithm will call rep() callback function if  it is
+    provided to MinBLEICOptimize().
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetxrep(minbleicstate state, bool needxrep)
+    {
+
+        minbleic.minbleicsetxrep(state.innerobj, needxrep);
+        return;
+    }
+
+    /*************************************************************************
+    This function sets maximum step length
+
+    IMPORTANT: this feature is hard to combine with preconditioning. You can't
+    set upper limit on step length, when you solve optimization  problem  with
+    linear (non-boundary) constraints AND preconditioner turned on.
+
+    When  non-boundary  constraints  are  present,  you  have to either a) use
+    preconditioner, or b) use upper limit on step length.  YOU CAN'T USE BOTH!
+    In this case algorithm will terminate with appropriate error code.
+
+    INPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
+                    want to limit step length.
+
+    Use this subroutine when you optimize target function which contains exp()
+    or  other  fast  growing  functions,  and optimization algorithm makes too
+    large  steps  which  lead   to overflow. This function allows us to reject
+    steps  that  are  too  large  (and  therefore  expose  us  to the possible
+    overflow) without actually calculating function value at the x+stp*d.
+
+      -- ALGLIB --
+         Copyright 02.04.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetstpmax(minbleicstate state, double stpmax)
+    {
+
+        minbleic.minbleicsetstpmax(state.innerobj, stpmax);
+        return;
+    }
+
+    /*************************************************************************
+    This function provides reverse communication interface
+    Reverse communication interface is not documented or recommended to use.
+    See below for functions which provide better documented API
+    *************************************************************************/
+    public static bool minbleiciteration(minbleicstate state)
+    {
+
+        bool result = minbleic.minbleiciteration(state.innerobj);
+        return result;
+    }
+    /*************************************************************************
+    This family of functions is used to launcn iterations of nonlinear optimizer
+
+    These functions accept following parameters:
+        func    -   callback which calculates function (or merit function)
+                    value func at given point x
+        grad    -   callback which calculates function (or merit function)
+                    value func and gradient grad at given point x
+        rep     -   optional callback which is called after each iteration
+                    can be null
+        obj     -   optional object which is passed to func/grad/hess/jac/rep
+                    can be null
+
+    NOTES:
+
+    1. This function has two different implementations: one which  uses  exact
+       (analytical) user-supplied gradient,  and one which uses function value
+       only  and  numerically  differentiates  function  in  order  to  obtain
+       gradient.
+
+       Depending  on  the  specific  function  used to create optimizer object
+       (either  MinBLEICCreate() for analytical gradient or  MinBLEICCreateF()
+       for numerical differentiation) you should choose appropriate variant of
+       MinBLEICOptimize() - one  which  accepts  function  AND gradient or one
+       which accepts function ONLY.
+
+       Be careful to choose variant of MinBLEICOptimize() which corresponds to
+       your optimization scheme! Table below lists different  combinations  of
+       callback (function/gradient) passed to MinBLEICOptimize()  and specific
+       function used to create optimizer.
+
+
+                         |         USER PASSED TO MinBLEICOptimize()
+       CREATED WITH      |  function only   |  function and gradient
+       ------------------------------------------------------------
+       MinBLEICCreateF() |     work                FAIL
+       MinBLEICCreate()  |     FAIL                work
+
+       Here "FAIL" denotes inappropriate combinations  of  optimizer  creation
+       function  and  MinBLEICOptimize()  version.   Attemps   to   use   such
+       combination (for  example,  to  create optimizer with MinBLEICCreateF()
+       and  to  pass  gradient  information  to  MinCGOptimize()) will lead to
+       exception being thrown. Either  you  did  not pass gradient when it WAS
+       needed or you passed gradient when it was NOT needed.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+
+    *************************************************************************/
+    public static void minbleicoptimize(minbleicstate state, ndimensional_func func, ndimensional_rep rep, object obj)
+    {
+        if( func==null )
+            throw new alglibexception("ALGLIB: error in 'minbleicoptimize()' (func is null)");
+        while( alglib.minbleiciteration(state) )
+        {
+            if( state.needf )
+            {
+                func(state.x, ref state.innerobj.f, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.x, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'minbleicoptimize' (some derivatives were not provided?)");
+        }
+    }
+
+
+    public static void minbleicoptimize(minbleicstate state, ndimensional_grad grad, ndimensional_rep rep, object obj)
+    {
+        if( grad==null )
+            throw new alglibexception("ALGLIB: error in 'minbleicoptimize()' (grad is null)");
+        while( alglib.minbleiciteration(state) )
+        {
+            if( state.needfg )
+            {
+                grad(state.x, ref state.innerobj.f, state.innerobj.g, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.x, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'minbleicoptimize' (some derivatives were not provided?)");
+        }
+    }
+
+
+
+    /*************************************************************************
+    BLEIC results
+
+    INPUT PARAMETERS:
+        State   -   algorithm state
+
+    OUTPUT PARAMETERS:
+        X       -   array[0..N-1], solution
+        Rep     -   optimization report. You should check Rep.TerminationType
+                    in  order  to  distinguish  successful  termination  from
+                    unsuccessful one.
+                    More information about fields of this  structure  can  be
+                    found in the comments on MinBLEICReport datatype.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicresults(minbleicstate state, out double[] x, out minbleicreport rep)
+    {
+        x = new double[0];
+        rep = new minbleicreport();
+        minbleic.minbleicresults(state.innerobj, ref x, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    BLEIC results
+
+    Buffered implementation of MinBLEICResults() which uses pre-allocated buffer
+    to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
+    intended to be used in the inner cycles of performance critical algorithms
+    where array reallocation penalty is too large to be ignored.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicresultsbuf(minbleicstate state, ref double[] x, minbleicreport rep)
+    {
+
+        minbleic.minbleicresultsbuf(state.innerobj, ref x, rep.innerobj);
+        return;
+    }
+
+    /*************************************************************************
+    This subroutine restarts algorithm from new point.
+    All optimization parameters (including constraints) are left unchanged.
+
+    This  function  allows  to  solve multiple  optimization  problems  (which
+    must have  same number of dimensions) without object reallocation penalty.
+
+    INPUT PARAMETERS:
+        State   -   structure previously allocated with MinBLEICCreate call.
+        X       -   new starting point.
+
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicrestartfrom(minbleicstate state, double[] x)
+    {
+
+        minbleic.minbleicrestartfrom(state.innerobj, x);
+        return;
+    }
+
+}
+public partial class alglib
+{
+
+
+    /*************************************************************************
 
     *************************************************************************/
     public class minlbfgsstate
@@ -32,6 +1414,7 @@ public partial class alglib
         //
         // Public declarations
         //
+        public bool needf { get { return _innerobj.needf; } set { _innerobj.needf = value; } }
         public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
         public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
         public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
@@ -158,21 +1541,92 @@ public partial class alglib
     }
 
     /*************************************************************************
+    The subroutine is finite difference variant of MinLBFGSCreate().  It  uses
+    finite differences in order to differentiate target function.
+
+    Description below contains information which is specific to  this function
+    only. We recommend to read comments on MinLBFGSCreate() in  order  to  get
+    more information about creation of LBFGS optimizer.
+
+    INPUT PARAMETERS:
+        N       -   problem dimension, N>0:
+                    * if given, only leading N elements of X are used
+                    * if not given, automatically determined from size of X
+        M       -   number of corrections in the BFGS scheme of Hessian
+                    approximation update. Recommended value:  3<=M<=7. The smaller
+                    value causes worse convergence, the bigger will  not  cause  a
+                    considerably better convergence, but will cause a fall in  the
+                    performance. M<=N.
+        X       -   starting point, array[0..N-1].
+        DiffStep-   differentiation step, >0
+
+    OUTPUT PARAMETERS:
+        State   -   structure which stores algorithm state
+
+    NOTES:
+    1. algorithm uses 4-point central formula for differentiation.
+    2. differentiation step along I-th axis is equal to DiffStep*S[I] where
+       S[] is scaling vector which can be set by MinLBFGSSetScale() call.
+    3. we recommend you to use moderate values of  differentiation  step.  Too
+       large step will result in too large truncation  errors, while too small
+       step will result in too large numerical  errors.  1.0E-6  can  be  good
+       value to start with.
+    4. Numerical  differentiation  is   very   inefficient  -   one   gradient
+       calculation needs 4*N function evaluations. This function will work for
+       any N - either small (1...10), moderate (10...100) or  large  (100...).
+       However, performance penalty will be too severe for any N's except  for
+       small ones.
+       We should also say that code which relies on numerical  differentiation
+       is   less  robust  and  precise.  LBFGS  needs  exact  gradient values.
+       Imprecise gradient may slow  down  convergence,  especially  on  highly
+       nonlinear problems.
+       Thus  we  recommend to use this function for fast prototyping on small-
+       dimensional problems only, and to implement analytical gradient as soon
+       as possible.
+
+      -- ALGLIB --
+         Copyright 16.05.2011 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minlbfgscreatef(int n, int m, double[] x, double diffstep, out minlbfgsstate state)
+    {
+        state = new minlbfgsstate();
+        minlbfgs.minlbfgscreatef(n, m, x, diffstep, state.innerobj);
+        return;
+    }
+    public static void minlbfgscreatef(int m, double[] x, double diffstep, out minlbfgsstate state)
+    {
+        int n;
+
+        state = new minlbfgsstate();
+        n = ap.len(x);
+        minlbfgs.minlbfgscreatef(n, m, x, diffstep, state.innerobj);
+
+        return;
+    }
+
+    /*************************************************************************
     This function sets stopping conditions for L-BFGS optimization algorithm.
 
     INPUT PARAMETERS:
         State   -   structure which stores algorithm state
         EpsG    -   >=0
                     The  subroutine  finishes  its  work   if   the  condition
-                    ||G||<EpsG is satisfied, where ||.|| means Euclidian norm,
-                    G - gradient.
+                    |v|<EpsG is satisfied, where:
+                    * |.| means Euclidian norm
+                    * v - scaled gradient vector, v[i]=g[i]*s[i]
+                    * g - gradient
+                    * s - scaling coefficients set by MinLBFGSSetScale()
         EpsF    -   >=0
                     The  subroutine  finishes  its work if on k+1-th iteration
                     the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
                     is satisfied.
         EpsX    -   >=0
                     The subroutine finishes its work if  on  k+1-th  iteration
-                    the condition |X(k+1)-X(k)| <= EpsX is fulfilled.
+                    the condition |v|<=EpsX is fulfilled, where:
+                    * |.| means Euclidian norm
+                    * v - scaled step vector, v[i]=dx[i]/s[i]
+                    * dx - ste pvector, dx=X(k+1)-X(k)
+                    * s - scaling coefficients set by MinLBFGSSetScale()
         MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
                     iterations is unlimited.
 
@@ -242,6 +1696,9 @@ public partial class alglib
     the I-th variable is a translation invariant measure of:
     a) "how large" the variable is
     b) how large the step should be to make significant changes in the function
+
+    Scaling is also used by finite difference variant of the optimizer  - step
+    along I-th axis is equal to DiffStep*S[I].
 
     In  most  optimizers  (and  in  the  LBFGS  too)  scaling is NOT a form of
     preconditioning. It just  affects  stopping  conditions.  You  should  set
@@ -389,6 +1846,8 @@ public partial class alglib
     This family of functions is used to launcn iterations of nonlinear optimizer
 
     These functions accept following parameters:
+        func    -   callback which calculates function (or merit function)
+                    value func at given point x
         grad    -   callback which calculates function (or merit function)
                     value func and gradient grad at given point x
         rep     -   optional callback which is called after each iteration
@@ -396,11 +1855,64 @@ public partial class alglib
         obj     -   optional object which is passed to func/grad/hess/jac/rep
                     can be null
 
+    NOTES:
+
+    1. This function has two different implementations: one which  uses  exact
+       (analytical) user-supplied gradient,  and one which uses function value
+       only  and  numerically  differentiates  function  in  order  to  obtain
+       gradient.
+
+       Depending  on  the  specific  function  used to create optimizer object
+       (either MinLBFGSCreate() for analytical gradient  or  MinLBFGSCreateF()
+       for numerical differentiation) you should choose appropriate variant of
+       MinLBFGSOptimize() - one  which  accepts  function  AND gradient or one
+       which accepts function ONLY.
+
+       Be careful to choose variant of MinLBFGSOptimize() which corresponds to
+       your optimization scheme! Table below lists different  combinations  of
+       callback (function/gradient) passed to MinLBFGSOptimize()  and specific
+       function used to create optimizer.
+
+
+                         |         USER PASSED TO MinLBFGSOptimize()
+       CREATED WITH      |  function only   |  function and gradient
+       ------------------------------------------------------------
+       MinLBFGSCreateF() |     work                FAIL
+       MinLBFGSCreate()  |     FAIL                work
+
+       Here "FAIL" denotes inappropriate combinations  of  optimizer  creation
+       function  and  MinLBFGSOptimize()  version.   Attemps   to   use   such
+       combination (for example, to create optimizer with MinLBFGSCreateF() and
+       to pass gradient information to MinCGOptimize()) will lead to exception
+       being thrown. Either  you  did  not pass gradient when it WAS needed or
+       you passed gradient when it was NOT needed.
 
       -- ALGLIB --
          Copyright 20.03.2009 by Bochkanov Sergey
 
     *************************************************************************/
+    public static void minlbfgsoptimize(minlbfgsstate state, ndimensional_func func, ndimensional_rep rep, object obj)
+    {
+        if( func==null )
+            throw new alglibexception("ALGLIB: error in 'minlbfgsoptimize()' (func is null)");
+        while( alglib.minlbfgsiteration(state) )
+        {
+            if( state.needf )
+            {
+                func(state.x, ref state.innerobj.f, obj);
+                continue;
+            }
+            if( state.innerobj.xupdated )
+            {
+                if( rep!=null )
+                    rep(state.innerobj.x, state.innerobj.f, obj);
+                continue;
+            }
+            throw new alglibexception("ALGLIB: error in 'minlbfgsoptimize' (some derivatives were not provided?)");
+        }
+    }
+
+
     public static void minlbfgsoptimize(minlbfgsstate state, ndimensional_grad grad, ndimensional_rep rep, object obj)
     {
         if( grad==null )
@@ -1315,6 +2827,7 @@ public partial class alglib
     NOTE 2: this solver has following useful properties:
     * bound constraints are always satisfied exactly
     * function is evaluated only INSIDE area specified by bound constraints
+      or at its boundary
 
       -- ALGLIB --
          Copyright 14.01.2011 by Bochkanov Sergey
@@ -1722,6 +3235,68 @@ public partial class alglib
 
 
     /*************************************************************************
+
+    *************************************************************************/
+    public class minasastate
+    {
+        //
+        // Public declarations
+        //
+        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
+        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
+        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
+        public double[] g { get { return _innerobj.g; } }
+        public double[] x { get { return _innerobj.x; } }
+
+        public minasastate()
+        {
+            _innerobj = new mincomp.minasastate();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mincomp.minasastate _innerobj;
+        public mincomp.minasastate innerobj { get { return _innerobj; } }
+        public minasastate(mincomp.minasastate obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+
+    /*************************************************************************
+
+    *************************************************************************/
+    public class minasareport
+    {
+        //
+        // Public declarations
+        //
+        public int iterationscount { get { return _innerobj.iterationscount; } set { _innerobj.iterationscount = value; } }
+        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
+        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
+        public int activeconstraints { get { return _innerobj.activeconstraints; } set { _innerobj.activeconstraints = value; } }
+
+        public minasareport()
+        {
+            _innerobj = new mincomp.minasareport();
+        }
+
+        //
+        // Although some of declarations below are public, you should not use them
+        // They are intended for internal use only
+        //
+        private mincomp.minasareport _innerobj;
+        public mincomp.minasareport innerobj { get { return _innerobj; } }
+        public minasareport(mincomp.minasareport obj)
+        {
+            _innerobj = obj;
+        }
+    }
+
+    /*************************************************************************
     Obsolete function, use MinLBFGSSetPrecDefault() instead.
 
       -- ALGLIB --
@@ -1747,130 +3322,37 @@ public partial class alglib
         return;
     }
 
-}
-public partial class alglib
-{
-
-
     /*************************************************************************
+    This is obsolete function which was used by previous version of the  BLEIC
+    optimizer. It does nothing in the current version of BLEIC.
 
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
     *************************************************************************/
-    public class minasastate
+    public static void minbleicsetbarrierwidth(minbleicstate state, double mu)
     {
-        //
-        // Public declarations
-        //
-        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
-        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
-        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
-        public double[] g { get { return _innerobj.g; } }
-        public double[] x { get { return _innerobj.x; } }
 
-        public minasastate()
-        {
-            _innerobj = new minasa.minasastate();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private minasa.minasastate _innerobj;
-        public minasa.minasastate innerobj { get { return _innerobj; } }
-        public minasastate(minasa.minasastate obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-
-    *************************************************************************/
-    public class minasareport
-    {
-        //
-        // Public declarations
-        //
-        public int iterationscount { get { return _innerobj.iterationscount; } set { _innerobj.iterationscount = value; } }
-        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
-        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
-        public int activeconstraints { get { return _innerobj.activeconstraints; } set { _innerobj.activeconstraints = value; } }
-
-        public minasareport()
-        {
-            _innerobj = new minasa.minasareport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private minasa.minasareport _innerobj;
-        public minasa.minasareport innerobj { get { return _innerobj; } }
-        public minasareport(minasa.minasareport obj)
-        {
-            _innerobj = obj;
-        }
+        mincomp.minbleicsetbarrierwidth(state.innerobj, mu);
+        return;
     }
 
     /*************************************************************************
-                  NONLINEAR BOUND CONSTRAINED OPTIMIZATION USING
-                          MODIFIED ACTIVE SET ALGORITHM
-                       WILLIAM W. HAGER AND HONGCHAO ZHANG
+    This is obsolete function which was used by previous version of the  BLEIC
+    optimizer. It does nothing in the current version of BLEIC.
 
-    DESCRIPTION:
-    The  subroutine  minimizes  function  F(x)  of  N  arguments  with   bound
-    constraints: BndL[i] <= x[i] <= BndU[i]
+      -- ALGLIB --
+         Copyright 28.11.2010 by Bochkanov Sergey
+    *************************************************************************/
+    public static void minbleicsetbarrierdecay(minbleicstate state, double mudecay)
+    {
 
-    This method is  globally  convergent  as  long  as  grad(f)  is  Lipschitz
-    continuous on a level set: L = { x : f(x)<=f(x0) }.
+        mincomp.minbleicsetbarrierdecay(state.innerobj, mudecay);
+        return;
+    }
 
-
-    REQUIREMENTS:
-    Algorithm will request following information during its operation:
-    * function value F and its gradient G (simultaneously) at given point X
-
-
-    USAGE:
-    1. User initializes algorithm state with MinASACreate() call
-    2. User tunes solver parameters with MinASASetCond() MinASASetStpMax() and
-       other functions
-    3. User calls MinASAOptimize() function which takes algorithm  state   and
-       pointer (delegate, etc.) to callback function which calculates F/G.
-    4. User calls MinASAResults() to get solution
-    5. Optionally, user may call MinASARestartFrom() to solve another  problem
-       with same N but another starting point and/or another function.
-       MinASARestartFrom() allows to reuse already initialized structure.
-
-
-    INPUT PARAMETERS:
-        N       -   problem dimension, N>0:
-                    * if given, only leading N elements of X are used
-                    * if not given, automatically determined from sizes of
-                      X/BndL/BndU.
-        X       -   starting point, array[0..N-1].
-        BndL    -   lower bounds, array[0..N-1].
-                    all elements MUST be specified,  i.e.  all  variables  are
-                    bounded. However, if some (all) variables  are  unbounded,
-                    you may specify very small number as bound: -1000,  -1.0E6
-                    or -1.0E300, or something like that.
-        BndU    -   upper bounds, array[0..N-1].
-                    all elements MUST be specified,  i.e.  all  variables  are
-                    bounded. However, if some (all) variables  are  unbounded,
-                    you may specify very large number as bound: +1000,  +1.0E6
-                    or +1.0E300, or something like that.
-
-    OUTPUT PARAMETERS:
-        State   -   structure stores algorithm state
-
-    NOTES:
-
-    1. you may tune stopping conditions with MinASASetCond() function
-    2. if target function contains exp() or other fast growing functions,  and
-       optimization algorithm makes too large steps which leads  to  overflow,
-       use MinASASetStpMax() function to bound algorithm's steps.
-    3. this function does NOT support infinite/NaN values in X, BndL, BndU.
+    /*************************************************************************
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 25.03.2010 by Bochkanov Sergey
@@ -1878,7 +3360,7 @@ public partial class alglib
     public static void minasacreate(int n, double[] x, double[] bndl, double[] bndu, out minasastate state)
     {
         state = new minasastate();
-        minasa.minasacreate(n, x, bndl, bndu, state.innerobj);
+        mincomp.minasacreate(n, x, bndl, bndu, state.innerobj);
         return;
     }
     public static void minasacreate(double[] x, double[] bndl, double[] bndu, out minasastate state)
@@ -1888,32 +3370,14 @@ public partial class alglib
             throw new alglibexception("Error while calling 'minasacreate': looks like one of arguments has wrong size");
         state = new minasastate();
         n = ap.len(x);
-        minasa.minasacreate(n, x, bndl, bndu, state.innerobj);
+        mincomp.minasacreate(n, x, bndl, bndu, state.innerobj);
 
         return;
     }
 
     /*************************************************************************
-    This function sets stopping conditions for the ASA optimization algorithm.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        EpsG    -   >=0
-                    The  subroutine  finishes  its  work   if   the  condition
-                    ||G||<EpsG is satisfied, where ||.|| means Euclidian norm,
-                    G - gradient.
-        EpsF    -   >=0
-                    The  subroutine  finishes  its work if on k+1-th iteration
-                    the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
-                    is satisfied.
-        EpsX    -   >=0
-                    The subroutine finishes its work if  on  k+1-th  iteration
-                    the condition |X(k+1)-X(k)| <= EpsX is fulfilled.
-        MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
-                    iterations is unlimited.
-
-    Passing EpsG=0, EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to
-    automatic stopping criterion selection (small EpsX).
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 02.04.2010 by Bochkanov Sergey
@@ -1921,19 +3385,13 @@ public partial class alglib
     public static void minasasetcond(minasastate state, double epsg, double epsf, double epsx, int maxits)
     {
 
-        minasa.minasasetcond(state.innerobj, epsg, epsf, epsx, maxits);
+        mincomp.minasasetcond(state.innerobj, epsg, epsf, epsx, maxits);
         return;
     }
 
     /*************************************************************************
-    This function turns on/off reporting.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        NeedXRep-   whether iteration reports are needed or not
-
-    If NeedXRep is True, algorithm will call rep() callback function if  it is
-    provided to MinASAOptimize().
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 02.04.2010 by Bochkanov Sergey
@@ -1941,19 +3399,13 @@ public partial class alglib
     public static void minasasetxrep(minasastate state, bool needxrep)
     {
 
-        minasa.minasasetxrep(state.innerobj, needxrep);
+        mincomp.minasasetxrep(state.innerobj, needxrep);
         return;
     }
 
     /*************************************************************************
-    This function sets optimization algorithm.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm stat
-        UAType  -   algorithm type:
-                    * -1    automatic selection of the best algorithm
-                    * 0     DY (Dai and Yuan) algorithm
-                    * 1     Hybrid DY-HS algorithm
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 02.04.2010 by Bochkanov Sergey
@@ -1961,23 +3413,13 @@ public partial class alglib
     public static void minasasetalgorithm(minasastate state, int algotype)
     {
 
-        minasa.minasasetalgorithm(state.innerobj, algotype);
+        mincomp.minasasetalgorithm(state.innerobj, algotype);
         return;
     }
 
     /*************************************************************************
-    This function sets maximum step length
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                    want to limit step length (zero by default).
-
-    Use this subroutine when you optimize target function which contains exp()
-    or  other  fast  growing  functions,  and optimization algorithm makes too
-    large  steps  which  leads  to overflow. This function allows us to reject
-    steps  that  are  too  large  (and  therefore  expose  us  to the possible
-    overflow) without actually calculating function value at the x+stp*d.
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 02.04.2010 by Bochkanov Sergey
@@ -1985,7 +3427,7 @@ public partial class alglib
     public static void minasasetstpmax(minasastate state, double stpmax)
     {
 
-        minasa.minasasetstpmax(state.innerobj, stpmax);
+        mincomp.minasasetstpmax(state.innerobj, stpmax);
         return;
     }
 
@@ -1997,7 +3439,7 @@ public partial class alglib
     public static bool minasaiteration(minasastate state)
     {
 
-        bool result = minasa.minasaiteration(state.innerobj);
+        bool result = mincomp.minasaiteration(state.innerobj);
         return result;
     }
     /*************************************************************************
@@ -2040,28 +3482,8 @@ public partial class alglib
 
 
     /*************************************************************************
-    ASA results
-
-    INPUT PARAMETERS:
-        State   -   algorithm state
-
-    OUTPUT PARAMETERS:
-        X       -   array[0..N-1], solution
-        Rep     -   optimization report:
-                    * Rep.TerminationType completetion code:
-                        * -2    rounding errors prevent further improvement.
-                                X contains best point found.
-                        * -1    incorrect parameters were specified
-                        *  1    relative function improvement is no more than
-                                EpsF.
-                        *  2    relative step is no more than EpsX.
-                        *  4    gradient norm is no more than EpsG
-                        *  5    MaxIts steps was taken
-                        *  7    stopping conditions are too stringent,
-                                further improvement is impossible
-                    * Rep.IterationsCount contains iterations count
-                    * NFEV countains number of function calculations
-                    * ActiveConstraints contains number of active constraints
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 20.03.2009 by Bochkanov Sergey
@@ -2070,17 +3492,13 @@ public partial class alglib
     {
         x = new double[0];
         rep = new minasareport();
-        minasa.minasaresults(state.innerobj, ref x, rep.innerobj);
+        mincomp.minasaresults(state.innerobj, ref x, rep.innerobj);
         return;
     }
 
     /*************************************************************************
-    ASA results
-
-    Buffered implementation of MinASAResults() which uses pre-allocated buffer
-    to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
-    intended to be used in the inner cycles of performance critical algorithms
-    where array reallocation penalty is too large to be ignored.
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 20.03.2009 by Bochkanov Sergey
@@ -2088,22 +3506,13 @@ public partial class alglib
     public static void minasaresultsbuf(minasastate state, ref double[] x, minasareport rep)
     {
 
-        minasa.minasaresultsbuf(state.innerobj, ref x, rep.innerobj);
+        mincomp.minasaresultsbuf(state.innerobj, ref x, rep.innerobj);
         return;
     }
 
     /*************************************************************************
-    This  subroutine  restarts  CG  algorithm from new point. All optimization
-    parameters are left unchanged.
-
-    This  function  allows  to  solve multiple  optimization  problems  (which
-    must have same number of dimensions) without object reallocation penalty.
-
-    INPUT PARAMETERS:
-        State   -   structure previously allocated with MinCGCreate call.
-        X       -   new starting point.
-        BndL    -   new lower bounds
-        BndU    -   new upper bounds
+    Obsolete optimization algorithm.
+    Was replaced by MinBLEIC subpackage.
 
       -- ALGLIB --
          Copyright 30.07.2010 by Bochkanov Sergey
@@ -2111,1174 +3520,4120 @@ public partial class alglib
     public static void minasarestartfrom(minasastate state, double[] x, double[] bndl, double[] bndu)
     {
 
-        minasa.minasarestartfrom(state.innerobj, x, bndl, bndu);
+        mincomp.minasarestartfrom(state.innerobj, x, bndl, bndu);
         return;
     }
 
 }
 public partial class alglib
 {
-
-
-    /*************************************************************************
-    This object stores state of the nonlinear CG optimizer.
-
-    You should use ALGLIB functions to work with this object.
-    *************************************************************************/
-    public class mincgstate
+    public class mincg
     {
-        //
-        // Public declarations
-        //
-        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
-        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
-        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
-        public double[] g { get { return _innerobj.g; } }
-        public double[] x { get { return _innerobj.x; } }
+        /*************************************************************************
+        This object stores state of the nonlinear CG optimizer.
 
-        public mincgstate()
+        You should use ALGLIB functions to work with this object.
+        *************************************************************************/
+        public class mincgstate
         {
-            _innerobj = new mincg.mincgstate();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private mincg.mincgstate _innerobj;
-        public mincg.mincgstate innerobj { get { return _innerobj; } }
-        public mincgstate(mincg.mincgstate obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-
-    /*************************************************************************
-
-    *************************************************************************/
-    public class mincgreport
-    {
-        //
-        // Public declarations
-        //
-        public int iterationscount { get { return _innerobj.iterationscount; } set { _innerobj.iterationscount = value; } }
-        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
-        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
-
-        public mincgreport()
-        {
-            _innerobj = new mincg.mincgreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private mincg.mincgreport _innerobj;
-        public mincg.mincgreport innerobj { get { return _innerobj; } }
-        public mincgreport(mincg.mincgreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-    /*************************************************************************
-            NONLINEAR CONJUGATE GRADIENT METHOD
-
-    DESCRIPTION:
-    The subroutine minimizes function F(x) of N arguments by using one of  the
-    nonlinear conjugate gradient methods.
-
-    These CG methods are globally convergent (even on non-convex functions) as
-    long as grad(f) is Lipschitz continuous in  a  some  neighborhood  of  the
-    L = { x : f(x)<=f(x0) }.
-
-
-    REQUIREMENTS:
-    Algorithm will request following information during its operation:
-    * function value F and its gradient G (simultaneously) at given point X
-
-
-    USAGE:
-    1. User initializes algorithm state with MinCGCreate() call
-    2. User tunes solver parameters with MinCGSetCond(), MinCGSetStpMax() and
-       other functions
-    3. User calls MinCGOptimize() function which takes algorithm  state   and
-       pointer (delegate, etc.) to callback function which calculates F/G.
-    4. User calls MinCGResults() to get solution
-    5. Optionally, user may call MinCGRestartFrom() to solve another  problem
-       with same N but another starting point and/or another function.
-       MinCGRestartFrom() allows to reuse already initialized structure.
-
-
-    INPUT PARAMETERS:
-        N       -   problem dimension, N>0:
-                    * if given, only leading N elements of X are used
-                    * if not given, automatically determined from size of X
-        X       -   starting point, array[0..N-1].
-
-    OUTPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 25.03.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgcreate(int n, double[] x, out mincgstate state)
-    {
-        state = new mincgstate();
-        mincg.mincgcreate(n, x, state.innerobj);
-        return;
-    }
-    public static void mincgcreate(double[] x, out mincgstate state)
-    {
-        int n;
-
-        state = new mincgstate();
-        n = ap.len(x);
-        mincg.mincgcreate(n, x, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    This function sets stopping conditions for CG optimization algorithm.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        EpsG    -   >=0
-                    The  subroutine  finishes  its  work   if   the  condition
-                    |v|<EpsG is satisfied, where:
-                    * |.| means Euclidian norm
-                    * v - scaled gradient vector, v[i]=g[i]*s[i]
-                    * g - gradient
-                    * s - scaling coefficients set by MinCGSetScale()
-        EpsF    -   >=0
-                    The  subroutine  finishes  its work if on k+1-th iteration
-                    the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
-                    is satisfied.
-        EpsX    -   >=0
-                    The subroutine finishes its work if  on  k+1-th  iteration
-                    the condition |v|<=EpsX is fulfilled, where:
-                    * |.| means Euclidian norm
-                    * v - scaled step vector, v[i]=dx[i]/s[i]
-                    * dx - ste pvector, dx=X(k+1)-X(k)
-                    * s - scaling coefficients set by MinCGSetScale()
-        MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
-                    iterations is unlimited.
-
-    Passing EpsG=0, EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to
-    automatic stopping criterion selection (small EpsX).
-
-      -- ALGLIB --
-         Copyright 02.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetcond(mincgstate state, double epsg, double epsf, double epsx, int maxits)
-    {
-
-        mincg.mincgsetcond(state.innerobj, epsg, epsf, epsx, maxits);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets scaling coefficients for CG optimizer.
-
-    ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
-    size and gradient are scaled before comparison with tolerances).  Scale of
-    the I-th variable is a translation invariant measure of:
-    a) "how large" the variable is
-    b) how large the step should be to make significant changes in the function
-
-    In   most   optimizers  (and  in  the  CG  too)  scaling is NOT a form  of
-    preconditioning. It just  affects  stopping  conditions.  You  should  set
-    preconditioner by separate call to one of the MinCGSetPrec...() functions.
-
-    There  is  special  preconditioning  mode, however,  which  uses   scaling
-    coefficients to form diagonal preconditioning matrix. You  can  turn  this
-    mode on, if you want.   But  you should understand that scaling is not the
-    same thing as preconditioning - these are two different, although  related
-    forms of tuning solver.
-
-    INPUT PARAMETERS:
-        State   -   structure stores algorithm state
-        S       -   array[N], non-zero scaling coefficients
-                    S[i] may be negative, sign doesn't matter.
-
-      -- ALGLIB --
-         Copyright 14.01.2011 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetscale(mincgstate state, double[] s)
-    {
-
-        mincg.mincgsetscale(state.innerobj, s);
-        return;
-    }
-
-    /*************************************************************************
-    This function turns on/off reporting.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        NeedXRep-   whether iteration reports are needed or not
-
-    If NeedXRep is True, algorithm will call rep() callback function if  it is
-    provided to MinCGOptimize().
-
-      -- ALGLIB --
-         Copyright 02.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetxrep(mincgstate state, bool needxrep)
-    {
-
-        mincg.mincgsetxrep(state.innerobj, needxrep);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets CG algorithm.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        CGType  -   algorithm type:
-                    * -1    automatic selection of the best algorithm
-                    * 0     DY (Dai and Yuan) algorithm
-                    * 1     Hybrid DY-HS algorithm
-
-      -- ALGLIB --
-         Copyright 02.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetcgtype(mincgstate state, int cgtype)
-    {
-
-        mincg.mincgsetcgtype(state.innerobj, cgtype);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets maximum step length
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                    want to limit step length.
-
-    Use this subroutine when you optimize target function which contains exp()
-    or  other  fast  growing  functions,  and optimization algorithm makes too
-    large  steps  which  leads  to overflow. This function allows us to reject
-    steps  that  are  too  large  (and  therefore  expose  us  to the possible
-    overflow) without actually calculating function value at the x+stp*d.
-
-      -- ALGLIB --
-         Copyright 02.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetstpmax(mincgstate state, double stpmax)
-    {
-
-        mincg.mincgsetstpmax(state.innerobj, stpmax);
-        return;
-    }
-
-    /*************************************************************************
-    This function allows to suggest initial step length to the CG algorithm.
-
-    Suggested  step  length  is used as starting point for the line search. It
-    can be useful when you have  badly  scaled  problem,  i.e.  when  ||grad||
-    (which is used as initial estimate for the first step) is many  orders  of
-    magnitude different from the desired step.
-
-    Line search  may  fail  on  such problems without good estimate of initial
-    step length. Imagine, for example, problem with ||grad||=10^50 and desired
-    step equal to 0.1 Line  search function will use 10^50  as  initial  step,
-    then  it  will  decrease step length by 2 (up to 20 attempts) and will get
-    10^44, which is still too large.
-
-    This function allows us to tell than line search should  be  started  from
-    some moderate step length, like 1.0, so algorithm will be able  to  detect
-    desired step length in a several searches.
-
-    Default behavior (when no step is suggested) is to use preconditioner,  if
-    it is available, to generate initial estimate of step length.
-
-    This function influences only first iteration of algorithm. It  should  be
-    called between MinCGCreate/MinCGRestartFrom() call and MinCGOptimize call.
-    Suggested step is ignored if you have preconditioner.
-
-    INPUT PARAMETERS:
-        State   -   structure used to store algorithm state.
-        Stp     -   initial estimate of the step length.
-                    Can be zero (no estimate).
-
-      -- ALGLIB --
-         Copyright 30.07.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsuggeststep(mincgstate state, double stp)
-    {
-
-        mincg.mincgsuggeststep(state.innerobj, stp);
-        return;
-    }
-
-    /*************************************************************************
-    Modification of the preconditioner: preconditioning is turned off.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-    NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
-    iterations.
-
-      -- ALGLIB --
-         Copyright 13.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetprecdefault(mincgstate state)
-    {
-
-        mincg.mincgsetprecdefault(state.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Modification  of  the  preconditioner:  diagonal of approximate Hessian is
-    used.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        D       -   diagonal of the approximate Hessian, array[0..N-1],
-                    (if larger, only leading N elements are used).
-
-    NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
-    iterations.
-
-    NOTE 2: D[i] should be positive. Exception will be thrown otherwise.
-
-    NOTE 3: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
-
-      -- ALGLIB --
-         Copyright 13.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetprecdiag(mincgstate state, double[] d)
-    {
-
-        mincg.mincgsetprecdiag(state.innerobj, d);
-        return;
-    }
-
-    /*************************************************************************
-    Modification of the preconditioner: scale-based diagonal preconditioning.
-
-    This preconditioning mode can be useful when you  don't  have  approximate
-    diagonal of Hessian, but you know that your  variables  are  badly  scaled
-    (for  example,  one  variable is in [1,10], and another in [1000,100000]),
-    and most part of the ill-conditioning comes from different scales of vars.
-
-    In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
-    can greatly improve convergence.
-
-    IMPRTANT: you should set scale of your variables with MinCGSetScale() call
-    (before or after MinCGSetPrecScale() call). Without knowledge of the scale
-    of your variables scale-based preconditioner will be just unit matrix.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-    NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
-    iterations.
-
-      -- ALGLIB --
-         Copyright 13.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgsetprecscale(mincgstate state)
-    {
-
-        mincg.mincgsetprecscale(state.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    This function provides reverse communication interface
-    Reverse communication interface is not documented or recommended to use.
-    See below for functions which provide better documented API
-    *************************************************************************/
-    public static bool mincgiteration(mincgstate state)
-    {
-
-        bool result = mincg.mincgiteration(state.innerobj);
-        return result;
-    }
-    /*************************************************************************
-    This family of functions is used to launcn iterations of nonlinear optimizer
-
-    These functions accept following parameters:
-        grad    -   callback which calculates function (or merit function)
-                    value func and gradient grad at given point x
-        rep     -   optional callback which is called after each iteration
-                    can be null
-        obj     -   optional object which is passed to func/grad/hess/jac/rep
-                    can be null
-
-
-      -- ALGLIB --
-         Copyright 20.04.2009 by Bochkanov Sergey
-
-    *************************************************************************/
-    public static void mincgoptimize(mincgstate state, ndimensional_grad grad, ndimensional_rep rep, object obj)
-    {
-        if( grad==null )
-            throw new alglibexception("ALGLIB: error in 'mincgoptimize()' (grad is null)");
-        while( alglib.mincgiteration(state) )
-        {
-            if( state.needfg )
+            public int n;
+            public double epsg;
+            public double epsf;
+            public double epsx;
+            public int maxits;
+            public double stpmax;
+            public double suggestedstep;
+            public bool xrep;
+            public bool drep;
+            public int cgtype;
+            public int prectype;
+            public double[] diagh;
+            public double[] diaghl2;
+            public double[,] vcorr;
+            public int vcnt;
+            public double[] s;
+            public double diffstep;
+            public int nfev;
+            public int mcstage;
+            public int k;
+            public double[] xk;
+            public double[] dk;
+            public double[] xn;
+            public double[] dn;
+            public double[] d;
+            public double fold;
+            public double stp;
+            public double curstpmax;
+            public double[] yk;
+            public double laststep;
+            public double lastscaledstep;
+            public int mcinfo;
+            public bool innerresetneeded;
+            public bool terminationneeded;
+            public double trimthreshold;
+            public int rstimer;
+            public double[] x;
+            public double f;
+            public double[] g;
+            public bool needf;
+            public bool needfg;
+            public bool xupdated;
+            public bool algpowerup;
+            public bool lsstart;
+            public bool lsend;
+            public rcommstate rstate;
+            public int repiterationscount;
+            public int repnfev;
+            public int repterminationtype;
+            public int debugrestartscount;
+            public linmin.linminstate lstate;
+            public double fbase;
+            public double fm2;
+            public double fm1;
+            public double fp1;
+            public double fp2;
+            public double betahs;
+            public double betady;
+            public double[] work0;
+            public double[] work1;
+            public mincgstate()
             {
-                grad(state.x, ref state.innerobj.f, state.innerobj.g, obj);
-                continue;
+                diagh = new double[0];
+                diaghl2 = new double[0];
+                vcorr = new double[0,0];
+                s = new double[0];
+                xk = new double[0];
+                dk = new double[0];
+                xn = new double[0];
+                dn = new double[0];
+                d = new double[0];
+                yk = new double[0];
+                x = new double[0];
+                g = new double[0];
+                rstate = new rcommstate();
+                lstate = new linmin.linminstate();
+                work0 = new double[0];
+                work1 = new double[0];
             }
-            if( state.innerobj.xupdated )
+        };
+
+
+        public class mincgreport
+        {
+            public int iterationscount;
+            public int nfev;
+            public int terminationtype;
+        };
+
+
+
+
+        public const int rscountdownlen = 10;
+        public const double gtol = 0.3;
+
+
+        /*************************************************************************
+                NONLINEAR CONJUGATE GRADIENT METHOD
+
+        DESCRIPTION:
+        The subroutine minimizes function F(x) of N arguments by using one of  the
+        nonlinear conjugate gradient methods.
+
+        These CG methods are globally convergent (even on non-convex functions) as
+        long as grad(f) is Lipschitz continuous in  a  some  neighborhood  of  the
+        L = { x : f(x)<=f(x0) }.
+
+
+        REQUIREMENTS:
+        Algorithm will request following information during its operation:
+        * function value F and its gradient G (simultaneously) at given point X
+
+
+        USAGE:
+        1. User initializes algorithm state with MinCGCreate() call
+        2. User tunes solver parameters with MinCGSetCond(), MinCGSetStpMax() and
+           other functions
+        3. User calls MinCGOptimize() function which takes algorithm  state   and
+           pointer (delegate, etc.) to callback function which calculates F/G.
+        4. User calls MinCGResults() to get solution
+        5. Optionally, user may call MinCGRestartFrom() to solve another  problem
+           with same N but another starting point and/or another function.
+           MinCGRestartFrom() allows to reuse already initialized structure.
+
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>0:
+                        * if given, only leading N elements of X are used
+                        * if not given, automatically determined from size of X
+            X       -   starting point, array[0..N-1].
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 25.03.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgcreate(int n,
+            double[] x,
+            mincgstate state)
+        {
+            ap.assert(n>=1, "MinCGCreate: N too small!");
+            ap.assert(ap.len(x)>=n, "MinCGCreate: Length(X)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "MinCGCreate: X contains infinite or NaN values!");
+            mincginitinternal(n, 0.0, state);
+            mincgrestartfrom(state, x);
+        }
+
+
+        /*************************************************************************
+        The subroutine is finite difference variant of MinCGCreate(). It uses
+        finite differences in order to differentiate target function.
+
+        Description below contains information which is specific to this function
+        only. We recommend to read comments on MinCGCreate() in order to get more
+        information about creation of CG optimizer.
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>0:
+                        * if given, only leading N elements of X are used
+                        * if not given, automatically determined from size of X
+            X       -   starting point, array[0..N-1].
+            DiffStep-   differentiation step, >0
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+        NOTES:
+        1. algorithm uses 4-point central formula for differentiation.
+        2. differentiation step along I-th axis is equal to DiffStep*S[I] where
+           S[] is scaling vector which can be set by MinCGSetScale() call.
+        3. we recommend you to use moderate values of  differentiation  step.  Too
+           large step will result in too large truncation  errors, while too small
+           step will result in too large numerical  errors.  1.0E-6  can  be  good
+           value to start with.
+        4. Numerical  differentiation  is   very   inefficient  -   one   gradient
+           calculation needs 4*N function evaluations. This function will work for
+           any N - either small (1...10), moderate (10...100) or  large  (100...).
+           However, performance penalty will be too severe for any N's except  for
+           small ones.
+           We should also say that code which relies on numerical  differentiation
+           is  less  robust  and  precise.  L-BFGS  needs  exact  gradient values.
+           Imprecise  gradient may slow down  convergence,  especially  on  highly
+           nonlinear problems.
+           Thus  we  recommend to use this function for fast prototyping on small-
+           dimensional problems only, and to implement analytical gradient as soon
+           as possible.
+
+          -- ALGLIB --
+             Copyright 16.05.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgcreatef(int n,
+            double[] x,
+            double diffstep,
+            mincgstate state)
+        {
+            ap.assert(n>=1, "MinCGCreateF: N too small!");
+            ap.assert(ap.len(x)>=n, "MinCGCreateF: Length(X)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "MinCGCreateF: X contains infinite or NaN values!");
+            ap.assert(math.isfinite(diffstep), "MinCGCreateF: DiffStep is infinite or NaN!");
+            ap.assert((double)(diffstep)>(double)(0), "MinCGCreateF: DiffStep is non-positive!");
+            mincginitinternal(n, diffstep, state);
+            mincgrestartfrom(state, x);
+        }
+
+
+        /*************************************************************************
+        This function sets stopping conditions for CG optimization algorithm.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            EpsG    -   >=0
+                        The  subroutine  finishes  its  work   if   the  condition
+                        |v|<EpsG is satisfied, where:
+                        * |.| means Euclidian norm
+                        * v - scaled gradient vector, v[i]=g[i]*s[i]
+                        * g - gradient
+                        * s - scaling coefficients set by MinCGSetScale()
+            EpsF    -   >=0
+                        The  subroutine  finishes  its work if on k+1-th iteration
+                        the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
+                        is satisfied.
+            EpsX    -   >=0
+                        The subroutine finishes its work if  on  k+1-th  iteration
+                        the condition |v|<=EpsX is fulfilled, where:
+                        * |.| means Euclidian norm
+                        * v - scaled step vector, v[i]=dx[i]/s[i]
+                        * dx - ste pvector, dx=X(k+1)-X(k)
+                        * s - scaling coefficients set by MinCGSetScale()
+            MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
+                        iterations is unlimited.
+
+        Passing EpsG=0, EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to
+        automatic stopping criterion selection (small EpsX).
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetcond(mincgstate state,
+            double epsg,
+            double epsf,
+            double epsx,
+            int maxits)
+        {
+            ap.assert(math.isfinite(epsg), "MinCGSetCond: EpsG is not finite number!");
+            ap.assert((double)(epsg)>=(double)(0), "MinCGSetCond: negative EpsG!");
+            ap.assert(math.isfinite(epsf), "MinCGSetCond: EpsF is not finite number!");
+            ap.assert((double)(epsf)>=(double)(0), "MinCGSetCond: negative EpsF!");
+            ap.assert(math.isfinite(epsx), "MinCGSetCond: EpsX is not finite number!");
+            ap.assert((double)(epsx)>=(double)(0), "MinCGSetCond: negative EpsX!");
+            ap.assert(maxits>=0, "MinCGSetCond: negative MaxIts!");
+            if( (((double)(epsg)==(double)(0) & (double)(epsf)==(double)(0)) & (double)(epsx)==(double)(0)) & maxits==0 )
             {
-                if( rep!=null )
-                    rep(state.innerobj.x, state.innerobj.f, obj);
-                continue;
+                epsx = 1.0E-6;
             }
-            throw new alglibexception("ALGLIB: error in 'mincgoptimize' (some derivatives were not provided?)");
-        }
-    }
-
-
-
-    /*************************************************************************
-    Conjugate gradient results
-
-    INPUT PARAMETERS:
-        State   -   algorithm state
-
-    OUTPUT PARAMETERS:
-        X       -   array[0..N-1], solution
-        Rep     -   optimization report:
-                    * Rep.TerminationType completetion code:
-                        *  1    relative function improvement is no more than
-                                EpsF.
-                        *  2    relative step is no more than EpsX.
-                        *  4    gradient norm is no more than EpsG
-                        *  5    MaxIts steps was taken
-                        *  7    stopping conditions are too stringent,
-                                further improvement is impossible,
-                                we return best X found so far
-                        *  8    terminated by user
-                    * Rep.IterationsCount contains iterations count
-                    * NFEV countains number of function calculations
-
-      -- ALGLIB --
-         Copyright 20.04.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgresults(mincgstate state, out double[] x, out mincgreport rep)
-    {
-        x = new double[0];
-        rep = new mincgreport();
-        mincg.mincgresults(state.innerobj, ref x, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Conjugate gradient results
-
-    Buffered implementation of MinCGResults(), which uses pre-allocated buffer
-    to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
-    intended to be used in the inner cycles of performance critical algorithms
-    where array reallocation penalty is too large to be ignored.
-
-      -- ALGLIB --
-         Copyright 20.04.2009 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgresultsbuf(mincgstate state, ref double[] x, mincgreport rep)
-    {
-
-        mincg.mincgresultsbuf(state.innerobj, ref x, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    This  subroutine  restarts  CG  algorithm from new point. All optimization
-    parameters are left unchanged.
-
-    This  function  allows  to  solve multiple  optimization  problems  (which
-    must have same number of dimensions) without object reallocation penalty.
-
-    INPUT PARAMETERS:
-        State   -   structure used to store algorithm state.
-        X       -   new starting point.
-
-      -- ALGLIB --
-         Copyright 30.07.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void mincgrestartfrom(mincgstate state, double[] x)
-    {
-
-        mincg.mincgrestartfrom(state.innerobj, x);
-        return;
-    }
-
-}
-public partial class alglib
-{
-
-
-    /*************************************************************************
-    This object stores nonlinear optimizer state.
-    You should use functions provided by MinBLEIC subpackage to work with this
-    object
-    *************************************************************************/
-    public class minbleicstate
-    {
-        //
-        // Public declarations
-        //
-        public bool needfg { get { return _innerobj.needfg; } set { _innerobj.needfg = value; } }
-        public bool xupdated { get { return _innerobj.xupdated; } set { _innerobj.xupdated = value; } }
-        public double f { get { return _innerobj.f; } set { _innerobj.f = value; } }
-        public double[] g { get { return _innerobj.g; } }
-        public double[] x { get { return _innerobj.x; } }
-
-        public minbleicstate()
-        {
-            _innerobj = new minbleic.minbleicstate();
+            state.epsg = epsg;
+            state.epsf = epsf;
+            state.epsx = epsx;
+            state.maxits = maxits;
         }
 
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private minbleic.minbleicstate _innerobj;
-        public minbleic.minbleicstate innerobj { get { return _innerobj; } }
-        public minbleicstate(minbleic.minbleicstate obj)
+
+        /*************************************************************************
+        This function sets scaling coefficients for CG optimizer.
+
+        ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
+        size and gradient are scaled before comparison with tolerances).  Scale of
+        the I-th variable is a translation invariant measure of:
+        a) "how large" the variable is
+        b) how large the step should be to make significant changes in the function
+
+        Scaling is also used by finite difference variant of CG optimizer  -  step
+        along I-th axis is equal to DiffStep*S[I].
+
+        In   most   optimizers  (and  in  the  CG  too)  scaling is NOT a form  of
+        preconditioning. It just  affects  stopping  conditions.  You  should  set
+        preconditioner by separate call to one of the MinCGSetPrec...() functions.
+
+        There  is  special  preconditioning  mode, however,  which  uses   scaling
+        coefficients to form diagonal preconditioning matrix. You  can  turn  this
+        mode on, if you want.   But  you should understand that scaling is not the
+        same thing as preconditioning - these are two different, although  related
+        forms of tuning solver.
+
+        INPUT PARAMETERS:
+            State   -   structure stores algorithm state
+            S       -   array[N], non-zero scaling coefficients
+                        S[i] may be negative, sign doesn't matter.
+
+          -- ALGLIB --
+             Copyright 14.01.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetscale(mincgstate state,
+            double[] s)
         {
-            _innerobj = obj;
-        }
-    }
+            int i = 0;
 
-
-    /*************************************************************************
-    This structure stores optimization report:
-    * InnerIterationsCount      number of inner iterations
-    * OuterIterationsCount      number of outer iterations
-    * NFEV                      number of gradient evaluations
-    * TerminationType           termination type (see below)
-
-    TERMINATION CODES
-
-    TerminationType field contains completion code, which can be:
-      -10   unsupported combination of algorithm settings:
-            1) StpMax is set to non-zero value,
-            AND 2) non-default preconditioner is used.
-            You can't use both features at the same moment,
-            so you have to choose one of them (and to turn
-            off another one).
-      -3    inconsistent constraints. Feasible point is
-            either nonexistent or too hard to find. Try to
-            restart optimizer with better initial
-            approximation
-       4    conditions on constraints are fulfilled
-            with error less than or equal to EpsC
-       5    MaxIts steps was taken
-       7    stopping conditions are too stringent,
-            further improvement is impossible,
-            X contains best point found so far.
-
-    ADDITIONAL FIELDS
-
-    There are additional fields which can be used for debugging:
-    * DebugEqErr                error in the equality constraints (2-norm)
-    * DebugFS                   f, calculated at projection of initial point
-                                to the feasible set
-    * DebugFF                   f, calculated at the final point
-    * DebugDX                   |X_start-X_final|
-    *************************************************************************/
-    public class minbleicreport
-    {
-        //
-        // Public declarations
-        //
-        public int inneriterationscount { get { return _innerobj.inneriterationscount; } set { _innerobj.inneriterationscount = value; } }
-        public int outeriterationscount { get { return _innerobj.outeriterationscount; } set { _innerobj.outeriterationscount = value; } }
-        public int nfev { get { return _innerobj.nfev; } set { _innerobj.nfev = value; } }
-        public int terminationtype { get { return _innerobj.terminationtype; } set { _innerobj.terminationtype = value; } }
-        public double debugeqerr { get { return _innerobj.debugeqerr; } set { _innerobj.debugeqerr = value; } }
-        public double debugfs { get { return _innerobj.debugfs; } set { _innerobj.debugfs = value; } }
-        public double debugff { get { return _innerobj.debugff; } set { _innerobj.debugff = value; } }
-        public double debugdx { get { return _innerobj.debugdx; } set { _innerobj.debugdx = value; } }
-
-        public minbleicreport()
-        {
-            _innerobj = new minbleic.minbleicreport();
-        }
-
-        //
-        // Although some of declarations below are public, you should not use them
-        // They are intended for internal use only
-        //
-        private minbleic.minbleicreport _innerobj;
-        public minbleic.minbleicreport innerobj { get { return _innerobj; } }
-        public minbleicreport(minbleic.minbleicreport obj)
-        {
-            _innerobj = obj;
-        }
-    }
-
-    /*************************************************************************
-                         BOUND CONSTRAINED OPTIMIZATION
-           WITH ADDITIONAL LINEAR EQUALITY AND INEQUALITY CONSTRAINTS
-
-    DESCRIPTION:
-    The  subroutine  minimizes  function   F(x)  of N arguments subject to any
-    combination of:
-    * bound constraints
-    * linear inequality constraints
-    * linear equality constraints
-
-    REQUIREMENTS:
-    * user must provide function value and gradient
-    * starting point X0 must be feasible or
-      not too far away from the feasible set
-    * grad(f) must be Lipschitz continuous on a level set:
-      L = { x : f(x)<=f(x0) }
-    * function must be defined everywhere on the feasible set F
-
-    USAGE:
-
-    Constrained optimization if far more complex than the unconstrained one.
-    Here we give very brief outline of the BLEIC optimizer. We strongly recommend
-    you to read examples in the ALGLIB Reference Manual and to read ALGLIB User Guide
-    on optimization, which is available at http://www.alglib.net/optimization/
-
-    1. User initializes algorithm state with MinBLEICCreate() call
-
-    2. USer adds boundary and/or linear constraints by calling
-       MinBLEICSetBC() and MinBLEICSetLC() functions.
-
-    3. User sets stopping conditions for underlying unconstrained solver
-       with MinBLEICSetInnerCond() call.
-       This function controls accuracy of underlying optimization algorithm.
-
-    4. User sets stopping conditions for outer iteration by calling
-       MinBLEICSetOuterCond() function.
-       This function controls handling of boundary and inequality constraints.
-
-    5. Additionally, user may set limit on number of internal iterations
-       by MinBLEICSetMaxIts() call.
-       This function allows to prevent algorithm from looping forever.
-
-    6. User calls MinBLEICOptimize() function which takes algorithm  state and
-       pointer (delegate, etc.) to callback function which calculates F/G.
-
-    7. User calls MinBLEICResults() to get solution
-
-    8. Optionally user may call MinBLEICRestartFrom() to solve another problem
-       with same N but another starting point.
-       MinBLEICRestartFrom() allows to reuse already initialized structure.
-
-
-    INPUT PARAMETERS:
-        N       -   problem dimension, N>0:
-                    * if given, only leading N elements of X are used
-                    * if not given, automatically determined from size ofX
-        X       -   starting point, array[N]:
-                    * it is better to set X to a feasible point
-                    * but X can be infeasible, in which case algorithm will try
-                      to find feasible point first, using X as initial
-                      approximation.
-
-    OUTPUT PARAMETERS:
-        State   -   structure stores algorithm state
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleiccreate(int n, double[] x, out minbleicstate state)
-    {
-        state = new minbleicstate();
-        minbleic.minbleiccreate(n, x, state.innerobj);
-        return;
-    }
-    public static void minbleiccreate(double[] x, out minbleicstate state)
-    {
-        int n;
-
-        state = new minbleicstate();
-        n = ap.len(x);
-        minbleic.minbleiccreate(n, x, state.innerobj);
-
-        return;
-    }
-
-    /*************************************************************************
-    This function sets boundary constraints for BLEIC optimizer.
-
-    Boundary constraints are inactive by default (after initial creation).
-    They are preserved after algorithm restart with MinBLEICRestartFrom().
-
-    INPUT PARAMETERS:
-        State   -   structure stores algorithm state
-        BndL    -   lower bounds, array[N].
-                    If some (all) variables are unbounded, you may specify
-                    very small number or -INF.
-        BndU    -   upper bounds, array[N].
-                    If some (all) variables are unbounded, you may specify
-                    very large number or +INF.
-
-    NOTE 1: it is possible to specify BndL[i]=BndU[i]. In this case I-th
-    variable will be "frozen" at X[i]=BndL[i]=BndU[i].
-
-    NOTE 2: this solver has following useful properties:
-    * bound constraints are always satisfied exactly
-    * function is evaluated only INSIDE area specified by bound constraints
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetbc(minbleicstate state, double[] bndl, double[] bndu)
-    {
-
-        minbleic.minbleicsetbc(state.innerobj, bndl, bndu);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets linear constraints for BLEIC optimizer.
-
-    Linear constraints are inactive by default (after initial creation).
-    They are preserved after algorithm restart with MinBLEICRestartFrom().
-
-    INPUT PARAMETERS:
-        State   -   structure previously allocated with MinBLEICCreate call.
-        C       -   linear constraints, array[K,N+1].
-                    Each row of C represents one constraint, either equality
-                    or inequality (see below):
-                    * first N elements correspond to coefficients,
-                    * last element corresponds to the right part.
-                    All elements of C (including right part) must be finite.
-        CT      -   type of constraints, array[K]:
-                    * if CT[i]>0, then I-th constraint is C[i,*]*x >= C[i,n+1]
-                    * if CT[i]=0, then I-th constraint is C[i,*]*x  = C[i,n+1]
-                    * if CT[i]<0, then I-th constraint is C[i,*]*x <= C[i,n+1]
-        K       -   number of equality/inequality constraints, K>=0:
-                    * if given, only leading K elements of C/CT are used
-                    * if not given, automatically determined from sizes of C/CT
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetlc(minbleicstate state, double[,] c, int[] ct, int k)
-    {
-
-        minbleic.minbleicsetlc(state.innerobj, c, ct, k);
-        return;
-    }
-    public static void minbleicsetlc(minbleicstate state, double[,] c, int[] ct)
-    {
-        int k;
-        if( (ap.rows(c)!=ap.len(ct)))
-            throw new alglibexception("Error while calling 'minbleicsetlc': looks like one of arguments has wrong size");
-
-        k = ap.rows(c);
-        minbleic.minbleicsetlc(state.innerobj, c, ct, k);
-
-        return;
-    }
-
-    /*************************************************************************
-    This function sets stopping conditions for the underlying nonlinear CG
-    optimizer. It controls overall accuracy of solution. These conditions
-    should be strict enough in order for algorithm to converge.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        EpsG    -   >=0
-                    The  subroutine  finishes  its  work   if   the  condition
-                    |v|<EpsG is satisfied, where:
-                    * |.| means Euclidian norm
-                    * v - scaled gradient vector, v[i]=g[i]*s[i]
-                    * g - gradient
-                    * s - scaling coefficients set by MinBLEICSetScale()
-        EpsF    -   >=0
-                    The  subroutine  finishes  its work if on k+1-th iteration
-                    the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
-                    is satisfied.
-        EpsX    -   >=0
-                    The subroutine finishes its work if  on  k+1-th  iteration
-                    the condition |v|<=EpsX is fulfilled, where:
-                    * |.| means Euclidian norm
-                    * v - scaled step vector, v[i]=dx[i]/s[i]
-                    * dx - ste pvector, dx=X(k+1)-X(k)
-                    * s - scaling coefficients set by MinBLEICSetScale()
-
-    Passing EpsG=0, EpsF=0 and EpsX=0 (simultaneously) will lead to
-    automatic stopping criterion selection.
-
-    These conditions are used to terminate inner iterations. However, you
-    need to tune termination conditions for outer iterations too.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetinnercond(minbleicstate state, double epsg, double epsf, double epsx)
-    {
-
-        minbleic.minbleicsetinnercond(state.innerobj, epsg, epsf, epsx);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets stopping conditions for outer iteration of BLEIC algo.
-
-    These conditions control accuracy of constraint handling and amount of
-    infeasibility allowed in the solution.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        EpsX    -   >0, stopping condition on outer iteration step length
-        EpsI    -   >0, stopping condition on infeasibility
-
-    Both EpsX and EpsI must be non-zero.
-
-    MEANING OF EpsX
-
-    EpsX  is  a  stopping  condition for outer iterations. Algorithm will stop
-    when  solution  of  the  current  modified  subproblem will be within EpsX
-    (using 2-norm) of the previous solution.
-
-    MEANING OF EpsI
-
-    EpsI controls feasibility properties -  algorithm  won't  stop  until  all
-    inequality constraints will be satisfied with error (distance from current
-    point to the feasible area) at most EpsI.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetoutercond(minbleicstate state, double epsx, double epsi)
-    {
-
-        minbleic.minbleicsetoutercond(state.innerobj, epsx, epsi);
-        return;
-    }
-
-    /*************************************************************************
-    This is obsolete function which was used by previous version of the  BLEIC
-    optimizer. It does nothing in the current version of BLEIC.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetbarrierwidth(minbleicstate state, double mu)
-    {
-
-        minbleic.minbleicsetbarrierwidth(state.innerobj, mu);
-        return;
-    }
-
-    /*************************************************************************
-    This is obsolete function which was used by previous version of the  BLEIC
-    optimizer. It does nothing in the current version of BLEIC.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetbarrierdecay(minbleicstate state, double mudecay)
-    {
-
-        minbleic.minbleicsetbarrierdecay(state.innerobj, mudecay);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets scaling coefficients for BLEIC optimizer.
-
-    ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
-    size and gradient are scaled before comparison with tolerances).  Scale of
-    the I-th variable is a translation invariant measure of:
-    a) "how large" the variable is
-    b) how large the step should be to make significant changes in the function
-
-    In  most  optimizers  (and  in  the  BLEIC  too)  scaling is NOT a form of
-    preconditioning. It just  affects  stopping  conditions.  You  should  set
-    preconditioner  by  separate  call  to  one  of  the  MinBLEICSetPrec...()
-    functions.
-
-    There is a special  preconditioning  mode, however,  which  uses   scaling
-    coefficients to form diagonal preconditioning matrix. You  can  turn  this
-    mode on, if you want.   But  you should understand that scaling is not the
-    same thing as preconditioning - these are two different, although  related
-    forms of tuning solver.
-
-    INPUT PARAMETERS:
-        State   -   structure stores algorithm state
-        S       -   array[N], non-zero scaling coefficients
-                    S[i] may be negative, sign doesn't matter.
-
-      -- ALGLIB --
-         Copyright 14.01.2011 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetscale(minbleicstate state, double[] s)
-    {
-
-        minbleic.minbleicsetscale(state.innerobj, s);
-        return;
-    }
-
-    /*************************************************************************
-    Modification of the preconditioner: preconditioning is turned off.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 13.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetprecdefault(minbleicstate state)
-    {
-
-        minbleic.minbleicsetprecdefault(state.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    Modification  of  the  preconditioner:  diagonal of approximate Hessian is
-    used.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        D       -   diagonal of the approximate Hessian, array[0..N-1],
-                    (if larger, only leading N elements are used).
-
-    NOTE 1: D[i] should be positive. Exception will be thrown otherwise.
-
-    NOTE 2: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
-
-      -- ALGLIB --
-         Copyright 13.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetprecdiag(minbleicstate state, double[] d)
-    {
-
-        minbleic.minbleicsetprecdiag(state.innerobj, d);
-        return;
-    }
-
-    /*************************************************************************
-    Modification of the preconditioner: scale-based diagonal preconditioning.
-
-    This preconditioning mode can be useful when you  don't  have  approximate
-    diagonal of Hessian, but you know that your  variables  are  badly  scaled
-    (for  example,  one  variable is in [1,10], and another in [1000,100000]),
-    and most part of the ill-conditioning comes from different scales of vars.
-
-    In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
-    can greatly improve convergence.
-
-    IMPRTANT: you should set scale of your variables  with  MinBLEICSetScale()
-    call  (before  or after MinBLEICSetPrecScale() call). Without knowledge of
-    the scale of your variables scale-based preconditioner will be  just  unit
-    matrix.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-
-      -- ALGLIB --
-         Copyright 13.10.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetprecscale(minbleicstate state)
-    {
-
-        minbleic.minbleicsetprecscale(state.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    This function allows to stop algorithm after specified number of inner
-    iterations.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        MaxIts  -   maximum number of inner iterations.
-                    If MaxIts=0, the number of iterations is unlimited.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetmaxits(minbleicstate state, int maxits)
-    {
-
-        minbleic.minbleicsetmaxits(state.innerobj, maxits);
-        return;
-    }
-
-    /*************************************************************************
-    This function turns on/off reporting.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        NeedXRep-   whether iteration reports are needed or not
-
-    If NeedXRep is True, algorithm will call rep() callback function if  it is
-    provided to MinBLEICOptimize().
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetxrep(minbleicstate state, bool needxrep)
-    {
-
-        minbleic.minbleicsetxrep(state.innerobj, needxrep);
-        return;
-    }
-
-    /*************************************************************************
-    This function sets maximum step length
-
-    IMPORTANT: this feature is hard to combine with preconditioning. You can't
-    set upper limit on step length, when you solve optimization  problem  with
-    linear (non-boundary) constraints AND preconditioner turned on.
-
-    When  non-boundary  constraints  are  present,  you  have to either a) use
-    preconditioner, or b) use upper limit on step length.  YOU CAN'T USE BOTH!
-    In this case algorithm will terminate with appropriate error code.
-
-    INPUT PARAMETERS:
-        State   -   structure which stores algorithm state
-        StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                    want to limit step length.
-
-    Use this subroutine when you optimize target function which contains exp()
-    or  other  fast  growing  functions,  and optimization algorithm makes too
-    large  steps  which  lead   to overflow. This function allows us to reject
-    steps  that  are  too  large  (and  therefore  expose  us  to the possible
-    overflow) without actually calculating function value at the x+stp*d.
-
-      -- ALGLIB --
-         Copyright 02.04.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicsetstpmax(minbleicstate state, double stpmax)
-    {
-
-        minbleic.minbleicsetstpmax(state.innerobj, stpmax);
-        return;
-    }
-
-    /*************************************************************************
-    This function provides reverse communication interface
-    Reverse communication interface is not documented or recommended to use.
-    See below for functions which provide better documented API
-    *************************************************************************/
-    public static bool minbleiciteration(minbleicstate state)
-    {
-
-        bool result = minbleic.minbleiciteration(state.innerobj);
-        return result;
-    }
-    /*************************************************************************
-    This family of functions is used to launcn iterations of nonlinear optimizer
-
-    These functions accept following parameters:
-        grad    -   callback which calculates function (or merit function)
-                    value func and gradient grad at given point x
-        rep     -   optional callback which is called after each iteration
-                    can be null
-        obj     -   optional object which is passed to func/grad/hess/jac/rep
-                    can be null
-
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-
-    *************************************************************************/
-    public static void minbleicoptimize(minbleicstate state, ndimensional_grad grad, ndimensional_rep rep, object obj)
-    {
-        if( grad==null )
-            throw new alglibexception("ALGLIB: error in 'minbleicoptimize()' (grad is null)");
-        while( alglib.minbleiciteration(state) )
-        {
-            if( state.needfg )
+            ap.assert(ap.len(s)>=state.n, "MinCGSetScale: Length(S)<N");
+            for(i=0; i<=state.n-1; i++)
             {
-                grad(state.x, ref state.innerobj.f, state.innerobj.g, obj);
-                continue;
+                ap.assert(math.isfinite(s[i]), "MinCGSetScale: S contains infinite or NAN elements");
+                ap.assert((double)(s[i])!=(double)(0), "MinCGSetScale: S contains zero elements");
+                state.s[i] = Math.Abs(s[i]);
             }
-            if( state.innerobj.xupdated )
-            {
-                if( rep!=null )
-                    rep(state.innerobj.x, state.innerobj.f, obj);
-                continue;
-            }
-            throw new alglibexception("ALGLIB: error in 'minbleicoptimize' (some derivatives were not provided?)");
         }
+
+
+        /*************************************************************************
+        This function turns on/off reporting.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            NeedXRep-   whether iteration reports are needed or not
+
+        If NeedXRep is True, algorithm will call rep() callback function if  it is
+        provided to MinCGOptimize().
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetxrep(mincgstate state,
+            bool needxrep)
+        {
+            state.xrep = needxrep;
+        }
+
+
+        /*************************************************************************
+        This function turns on/off line search reports.
+        These reports are described in more details in developer-only  comments on
+        MinCGState object.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            NeedDRep-   whether line search reports are needed or not
+
+        This function is intended for private use only. Turning it on artificially
+        may cause program failure.
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetdrep(mincgstate state,
+            bool needdrep)
+        {
+            state.drep = needdrep;
+        }
+
+
+        /*************************************************************************
+        This function sets CG algorithm.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            CGType  -   algorithm type:
+                        * -1    automatic selection of the best algorithm
+                        * 0     DY (Dai and Yuan) algorithm
+                        * 1     Hybrid DY-HS algorithm
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetcgtype(mincgstate state,
+            int cgtype)
+        {
+            ap.assert(cgtype>=-1 & cgtype<=1, "MinCGSetCGType: incorrect CGType!");
+            if( cgtype==-1 )
+            {
+                cgtype = 1;
+            }
+            state.cgtype = cgtype;
+        }
+
+
+        /*************************************************************************
+        This function sets maximum step length
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
+                        want to limit step length.
+
+        Use this subroutine when you optimize target function which contains exp()
+        or  other  fast  growing  functions,  and optimization algorithm makes too
+        large  steps  which  leads  to overflow. This function allows us to reject
+        steps  that  are  too  large  (and  therefore  expose  us  to the possible
+        overflow) without actually calculating function value at the x+stp*d.
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetstpmax(mincgstate state,
+            double stpmax)
+        {
+            ap.assert(math.isfinite(stpmax), "MinCGSetStpMax: StpMax is not finite!");
+            ap.assert((double)(stpmax)>=(double)(0), "MinCGSetStpMax: StpMax<0!");
+            state.stpmax = stpmax;
+        }
+
+
+        /*************************************************************************
+        This function allows to suggest initial step length to the CG algorithm.
+
+        Suggested  step  length  is used as starting point for the line search. It
+        can be useful when you have  badly  scaled  problem,  i.e.  when  ||grad||
+        (which is used as initial estimate for the first step) is many  orders  of
+        magnitude different from the desired step.
+
+        Line search  may  fail  on  such problems without good estimate of initial
+        step length. Imagine, for example, problem with ||grad||=10^50 and desired
+        step equal to 0.1 Line  search function will use 10^50  as  initial  step,
+        then  it  will  decrease step length by 2 (up to 20 attempts) and will get
+        10^44, which is still too large.
+
+        This function allows us to tell than line search should  be  started  from
+        some moderate step length, like 1.0, so algorithm will be able  to  detect
+        desired step length in a several searches.
+
+        Default behavior (when no step is suggested) is to use preconditioner,  if
+        it is available, to generate initial estimate of step length.
+
+        This function influences only first iteration of algorithm. It  should  be
+        called between MinCGCreate/MinCGRestartFrom() call and MinCGOptimize call.
+        Suggested step is ignored if you have preconditioner.
+
+        INPUT PARAMETERS:
+            State   -   structure used to store algorithm state.
+            Stp     -   initial estimate of the step length.
+                        Can be zero (no estimate).
+
+          -- ALGLIB --
+             Copyright 30.07.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsuggeststep(mincgstate state,
+            double stp)
+        {
+            ap.assert(math.isfinite(stp), "MinCGSuggestStep: Stp is infinite or NAN");
+            ap.assert((double)(stp)>=(double)(0), "MinCGSuggestStep: Stp<0");
+            state.suggestedstep = stp;
+        }
+
+
+        /*************************************************************************
+        Modification of the preconditioner: preconditioning is turned off.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+        NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
+        iterations.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetprecdefault(mincgstate state)
+        {
+            state.prectype = 0;
+            state.innerresetneeded = true;
+        }
+
+
+        /*************************************************************************
+        Modification  of  the  preconditioner:  diagonal of approximate Hessian is
+        used.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            D       -   diagonal of the approximate Hessian, array[0..N-1],
+                        (if larger, only leading N elements are used).
+
+        NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
+        iterations.
+
+        NOTE 2: D[i] should be positive. Exception will be thrown otherwise.
+
+        NOTE 3: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetprecdiag(mincgstate state,
+            double[] d)
+        {
+            int i = 0;
+
+            ap.assert(ap.len(d)>=state.n, "MinCGSetPrecDiag: D is too short");
+            for(i=0; i<=state.n-1; i++)
+            {
+                ap.assert(math.isfinite(d[i]), "MinCGSetPrecDiag: D contains infinite or NAN elements");
+                ap.assert((double)(d[i])>(double)(0), "MinCGSetPrecDiag: D contains non-positive elements");
+            }
+            mincgsetprecdiagfast(state, d);
+        }
+
+
+        /*************************************************************************
+        Modification of the preconditioner: scale-based diagonal preconditioning.
+
+        This preconditioning mode can be useful when you  don't  have  approximate
+        diagonal of Hessian, but you know that your  variables  are  badly  scaled
+        (for  example,  one  variable is in [1,10], and another in [1000,100000]),
+        and most part of the ill-conditioning comes from different scales of vars.
+
+        In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
+        can greatly improve convergence.
+
+        IMPRTANT: you should set scale of your variables with MinCGSetScale() call
+        (before or after MinCGSetPrecScale() call). Without knowledge of the scale
+        of your variables scale-based preconditioner will be just unit matrix.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+        NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
+        iterations.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetprecscale(mincgstate state)
+        {
+            state.prectype = 3;
+            state.innerresetneeded = true;
+        }
+
+
+        /*************************************************************************
+        NOTES:
+
+        1. This function has two different implementations: one which  uses  exact
+           (analytical) user-supplied  gradient, and one which uses function value
+           only  and  numerically  differentiates  function  in  order  to  obtain
+           gradient.
+           
+           Depending  on  the  specific  function  used to create optimizer object
+           (either MinCGCreate()  for analytical gradient  or  MinCGCreateF()  for
+           numerical differentiation) you should  choose  appropriate  variant  of
+           MinCGOptimize() - one which accepts function AND gradient or one  which
+           accepts function ONLY.
+
+           Be careful to choose variant of MinCGOptimize()  which  corresponds  to
+           your optimization scheme! Table below lists different  combinations  of
+           callback (function/gradient) passed  to  MinCGOptimize()  and  specific
+           function used to create optimizer.
+           
+
+                          |         USER PASSED TO MinCGOptimize()
+           CREATED WITH   |  function only   |  function and gradient
+           ------------------------------------------------------------
+           MinCGCreateF() |     work                FAIL
+           MinCGCreate()  |     FAIL                work
+
+           Here "FAIL" denotes inappropriate combinations  of  optimizer  creation
+           function and MinCGOptimize() version. Attemps to use  such  combination
+           (for  example,  to create optimizer with  MinCGCreateF()  and  to  pass
+           gradient information to MinCGOptimize()) will lead to  exception  being
+           thrown. Either  you  did  not  pass  gradient when it WAS needed or you
+           passed gradient when it was NOT needed.
+
+          -- ALGLIB --
+             Copyright 20.04.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static bool mincgiteration(mincgstate state)
+        {
+            bool result = new bool();
+            int n = 0;
+            int i = 0;
+            double betak = 0;
+            double v = 0;
+            double vv = 0;
+            int i_ = 0;
+
+            
+            //
+            // Reverse communication preparations
+            // I know it looks ugly, but it works the same way
+            // anywhere from C++ to Python.
+            //
+            // This code initializes locals by:
+            // * random values determined during code
+            //   generation - on first subroutine call
+            // * values from previous call - on subsequent calls
+            //
+            if( state.rstate.stage>=0 )
+            {
+                n = state.rstate.ia[0];
+                i = state.rstate.ia[1];
+                betak = state.rstate.ra[0];
+                v = state.rstate.ra[1];
+                vv = state.rstate.ra[2];
+            }
+            else
+            {
+                n = -983;
+                i = -989;
+                betak = -834;
+                v = 900;
+                vv = -287;
+            }
+            if( state.rstate.stage==0 )
+            {
+                goto lbl_0;
+            }
+            if( state.rstate.stage==1 )
+            {
+                goto lbl_1;
+            }
+            if( state.rstate.stage==2 )
+            {
+                goto lbl_2;
+            }
+            if( state.rstate.stage==3 )
+            {
+                goto lbl_3;
+            }
+            if( state.rstate.stage==4 )
+            {
+                goto lbl_4;
+            }
+            if( state.rstate.stage==5 )
+            {
+                goto lbl_5;
+            }
+            if( state.rstate.stage==6 )
+            {
+                goto lbl_6;
+            }
+            if( state.rstate.stage==7 )
+            {
+                goto lbl_7;
+            }
+            if( state.rstate.stage==8 )
+            {
+                goto lbl_8;
+            }
+            if( state.rstate.stage==9 )
+            {
+                goto lbl_9;
+            }
+            if( state.rstate.stage==10 )
+            {
+                goto lbl_10;
+            }
+            if( state.rstate.stage==11 )
+            {
+                goto lbl_11;
+            }
+            if( state.rstate.stage==12 )
+            {
+                goto lbl_12;
+            }
+            if( state.rstate.stage==13 )
+            {
+                goto lbl_13;
+            }
+            if( state.rstate.stage==14 )
+            {
+                goto lbl_14;
+            }
+            if( state.rstate.stage==15 )
+            {
+                goto lbl_15;
+            }
+            if( state.rstate.stage==16 )
+            {
+                goto lbl_16;
+            }
+            
+            //
+            // Routine body
+            //
+            
+            //
+            // Prepare
+            //
+            n = state.n;
+            state.repterminationtype = 0;
+            state.repiterationscount = 0;
+            state.repnfev = 0;
+            state.debugrestartscount = 0;
+            
+            //
+            // Preparations continue:
+            // * set XK
+            // * calculate F/G
+            // * set DK to -G
+            // * powerup algo (it may change preconditioner)
+            // * apply preconditioner to DK
+            // * report update of X
+            // * check stopping conditions for G
+            //
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.xk[i_] = state.x[i_];
+            }
+            state.terminationneeded = false;
+            clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_17;
+            }
+            state.needfg = true;
+            state.rstate.stage = 0;
+            goto lbl_rcomm;
+        lbl_0:
+            state.needfg = false;
+            goto lbl_18;
+        lbl_17:
+            state.needf = true;
+            state.rstate.stage = 1;
+            goto lbl_rcomm;
+        lbl_1:
+            state.fbase = state.f;
+            i = 0;
+        lbl_19:
+            if( i>n-1 )
+            {
+                goto lbl_21;
+            }
+            v = state.x[i];
+            state.x[i] = v-state.diffstep*state.s[i];
+            state.rstate.stage = 2;
+            goto lbl_rcomm;
+        lbl_2:
+            state.fm2 = state.f;
+            state.x[i] = v-0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 3;
+            goto lbl_rcomm;
+        lbl_3:
+            state.fm1 = state.f;
+            state.x[i] = v+0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 4;
+            goto lbl_rcomm;
+        lbl_4:
+            state.fp1 = state.f;
+            state.x[i] = v+state.diffstep*state.s[i];
+            state.rstate.stage = 5;
+            goto lbl_rcomm;
+        lbl_5:
+            state.fp2 = state.f;
+            state.x[i] = v;
+            state.g[i] = (8*(state.fp1-state.fm1)-(state.fp2-state.fm2))/(6*state.diffstep*state.s[i]);
+            i = i+1;
+            goto lbl_19;
+        lbl_21:
+            state.f = state.fbase;
+            state.needf = false;
+        lbl_18:
+            if( !state.drep )
+            {
+                goto lbl_22;
+            }
+            
+            //
+            // Report algorithm powerup (if needed)
+            //
+            clearrequestfields(state);
+            state.algpowerup = true;
+            state.rstate.stage = 6;
+            goto lbl_rcomm;
+        lbl_6:
+            state.algpowerup = false;
+        lbl_22:
+            optserv.trimprepare(state.f, ref state.trimthreshold);
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.dk[i_] = -state.g[i_];
+            }
+            preconditionedmultiply(state, ref state.dk, ref state.work0, ref state.work1);
+            if( !state.xrep )
+            {
+                goto lbl_24;
+            }
+            clearrequestfields(state);
+            state.xupdated = true;
+            state.rstate.stage = 7;
+            goto lbl_rcomm;
+        lbl_7:
+            state.xupdated = false;
+        lbl_24:
+            if( state.terminationneeded )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.xn[i_] = state.xk[i_];
+                }
+                state.repterminationtype = 8;
+                result = false;
+                return result;
+            }
+            v = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                v = v+math.sqr(state.g[i]*state.s[i]);
+            }
+            if( (double)(Math.Sqrt(v))<=(double)(state.epsg) )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.xn[i_] = state.xk[i_];
+                }
+                state.repterminationtype = 4;
+                result = false;
+                return result;
+            }
+            state.repnfev = 1;
+            state.k = 0;
+            state.fold = state.f;
+            
+            //
+            // Choose initial step.
+            // Apply preconditioner, if we have something other than default.
+            //
+            if( state.prectype==2 | state.prectype==3 )
+            {
+                
+                //
+                // because we use preconditioner, step length must be equal
+                // to the norm of DK
+                //
+                v = 0.0;
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    v += state.dk[i_]*state.dk[i_];
+                }
+                state.laststep = Math.Sqrt(v);
+            }
+            else
+            {
+                
+                //
+                // No preconditioner is used, we try to use suggested step
+                //
+                if( (double)(state.suggestedstep)>(double)(0) )
+                {
+                    state.laststep = state.suggestedstep;
+                }
+                else
+                {
+                    v = 0.0;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        v += state.g[i_]*state.g[i_];
+                    }
+                    v = Math.Sqrt(v);
+                    if( (double)(state.stpmax)==(double)(0) )
+                    {
+                        state.laststep = Math.Min(1.0/v, 1);
+                    }
+                    else
+                    {
+                        state.laststep = Math.Min(1.0/v, state.stpmax);
+                    }
+                }
+            }
+            
+            //
+            // Main cycle
+            //
+            state.rstimer = rscountdownlen;
+        lbl_26:
+            if( false )
+            {
+                goto lbl_27;
+            }
+            
+            //
+            // * clear reset flag
+            // * clear termination flag
+            // * store G[k] for later calculation of Y[k]
+            // * prepare starting point and direction and step length for line search
+            //
+            state.innerresetneeded = false;
+            state.terminationneeded = false;
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.yk[i_] = -state.g[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.d[i_] = state.dk[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.x[i_] = state.xk[i_];
+            }
+            state.mcstage = 0;
+            state.stp = 1.0;
+            linmin.linminnormalized(ref state.d, ref state.stp, n);
+            if( (double)(state.laststep)!=(double)(0) )
+            {
+                state.stp = state.laststep;
+            }
+            state.curstpmax = state.stpmax;
+            
+            //
+            // Report beginning of line search (if needed)
+            // Terminate algorithm, if user request was detected
+            //
+            if( !state.drep )
+            {
+                goto lbl_28;
+            }
+            clearrequestfields(state);
+            state.lsstart = true;
+            state.rstate.stage = 8;
+            goto lbl_rcomm;
+        lbl_8:
+            state.lsstart = false;
+        lbl_28:
+            if( state.terminationneeded )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.xn[i_] = state.x[i_];
+                }
+                state.repterminationtype = 8;
+                result = false;
+                return result;
+            }
+            
+            //
+            // Minimization along D
+            //
+            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.curstpmax, gtol, ref state.mcinfo, ref state.nfev, ref state.work0, state.lstate, ref state.mcstage);
+        lbl_30:
+            if( state.mcstage==0 )
+            {
+                goto lbl_31;
+            }
+            
+            //
+            // Calculate function/gradient using either
+            // analytical gradient supplied by user
+            // or finite difference approximation.
+            //
+            // "Trim" function in order to handle near-singularity points.
+            //
+            clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_32;
+            }
+            state.needfg = true;
+            state.rstate.stage = 9;
+            goto lbl_rcomm;
+        lbl_9:
+            state.needfg = false;
+            goto lbl_33;
+        lbl_32:
+            state.needf = true;
+            state.rstate.stage = 10;
+            goto lbl_rcomm;
+        lbl_10:
+            state.fbase = state.f;
+            i = 0;
+        lbl_34:
+            if( i>n-1 )
+            {
+                goto lbl_36;
+            }
+            v = state.x[i];
+            state.x[i] = v-state.diffstep*state.s[i];
+            state.rstate.stage = 11;
+            goto lbl_rcomm;
+        lbl_11:
+            state.fm2 = state.f;
+            state.x[i] = v-0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 12;
+            goto lbl_rcomm;
+        lbl_12:
+            state.fm1 = state.f;
+            state.x[i] = v+0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 13;
+            goto lbl_rcomm;
+        lbl_13:
+            state.fp1 = state.f;
+            state.x[i] = v+state.diffstep*state.s[i];
+            state.rstate.stage = 14;
+            goto lbl_rcomm;
+        lbl_14:
+            state.fp2 = state.f;
+            state.x[i] = v;
+            state.g[i] = (8*(state.fp1-state.fm1)-(state.fp2-state.fm2))/(6*state.diffstep*state.s[i]);
+            i = i+1;
+            goto lbl_34;
+        lbl_36:
+            state.f = state.fbase;
+            state.needf = false;
+        lbl_33:
+            optserv.trimfunction(ref state.f, ref state.g, n, state.trimthreshold);
+            
+            //
+            // Call MCSRCH again
+            //
+            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.curstpmax, gtol, ref state.mcinfo, ref state.nfev, ref state.work0, state.lstate, ref state.mcstage);
+            goto lbl_30;
+        lbl_31:
+            
+            //
+            // * report end of line search
+            // * store current point to XN
+            // * report iteration
+            // * terminate algorithm if user request was detected
+            //
+            if( !state.drep )
+            {
+                goto lbl_37;
+            }
+            
+            //
+            // Report end of line search (if needed)
+            //
+            clearrequestfields(state);
+            state.lsend = true;
+            state.rstate.stage = 15;
+            goto lbl_rcomm;
+        lbl_15:
+            state.lsend = false;
+        lbl_37:
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.xn[i_] = state.x[i_];
+            }
+            if( !state.xrep )
+            {
+                goto lbl_39;
+            }
+            clearrequestfields(state);
+            state.xupdated = true;
+            state.rstate.stage = 16;
+            goto lbl_rcomm;
+        lbl_16:
+            state.xupdated = false;
+        lbl_39:
+            if( state.terminationneeded )
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.xn[i_] = state.x[i_];
+                }
+                state.repterminationtype = 8;
+                result = false;
+                return result;
+            }
+            
+            //
+            // Line search is finished.
+            // * calculate BetaK
+            // * calculate DN
+            // * update timers
+            // * calculate step length
+            //
+            if( state.mcinfo==1 & !state.innerresetneeded )
+            {
+                
+                //
+                // Standard Wolfe conditions hold
+                // Calculate Y[K] and D[K]'*Y[K]
+                //
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.yk[i_] = state.yk[i_] + state.g[i_];
+                }
+                vv = 0.0;
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    vv += state.yk[i_]*state.dk[i_];
+                }
+                
+                //
+                // Calculate BetaK according to DY formula
+                //
+                v = preconditionedmultiply2(state, ref state.g, ref state.g, ref state.work0, ref state.work1);
+                state.betady = v/vv;
+                
+                //
+                // Calculate BetaK according to HS formula
+                //
+                v = preconditionedmultiply2(state, ref state.g, ref state.yk, ref state.work0, ref state.work1);
+                state.betahs = v/vv;
+                
+                //
+                // Choose BetaK
+                //
+                if( state.cgtype==0 )
+                {
+                    betak = state.betady;
+                }
+                if( state.cgtype==1 )
+                {
+                    betak = Math.Max(0, Math.Min(state.betady, state.betahs));
+                }
+            }
+            else
+            {
+                
+                //
+                // Something is wrong (may be function is too wild or too flat)
+                // or we just have to restart algo.
+                //
+                // We'll set BetaK=0, which will restart CG algorithm.
+                // We can stop later (during normal checks) if stopping conditions are met.
+                //
+                betak = 0;
+                state.debugrestartscount = state.debugrestartscount+1;
+            }
+            if( state.repiterationscount>0 & state.repiterationscount%(3+n)==0 )
+            {
+                
+                //
+                // clear Beta every N iterations
+                //
+                betak = 0;
+            }
+            if( state.mcinfo==1 | state.mcinfo==5 )
+            {
+                state.rstimer = rscountdownlen;
+            }
+            else
+            {
+                state.rstimer = state.rstimer-1;
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.dn[i_] = -state.g[i_];
+            }
+            preconditionedmultiply(state, ref state.dn, ref state.work0, ref state.work1);
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.dn[i_] = state.dn[i_] + betak*state.dk[i_];
+            }
+            state.laststep = 0;
+            state.lastscaledstep = 0.0;
+            for(i=0; i<=n-1; i++)
+            {
+                state.laststep = state.laststep+math.sqr(state.d[i]);
+                state.lastscaledstep = state.lastscaledstep+math.sqr(state.d[i]/state.s[i]);
+            }
+            state.laststep = state.stp*Math.Sqrt(state.laststep);
+            state.lastscaledstep = state.stp*Math.Sqrt(state.lastscaledstep);
+            
+            //
+            // Update information.
+            // Check stopping conditions.
+            //
+            state.repnfev = state.repnfev+state.nfev;
+            state.repiterationscount = state.repiterationscount+1;
+            if( state.repiterationscount>=state.maxits & state.maxits>0 )
+            {
+                
+                //
+                // Too many iterations
+                //
+                state.repterminationtype = 5;
+                result = false;
+                return result;
+            }
+            v = 0;
+            for(i=0; i<=n-1; i++)
+            {
+                v = v+math.sqr(state.g[i]*state.s[i]);
+            }
+            if( (double)(Math.Sqrt(v))<=(double)(state.epsg) )
+            {
+                
+                //
+                // Gradient is small enough
+                //
+                state.repterminationtype = 4;
+                result = false;
+                return result;
+            }
+            if( !state.innerresetneeded )
+            {
+                
+                //
+                // These conditions are checked only when no inner reset was requested by user
+                //
+                if( (double)(state.fold-state.f)<=(double)(state.epsf*Math.Max(Math.Abs(state.fold), Math.Max(Math.Abs(state.f), 1.0))) )
+                {
+                    
+                    //
+                    // F(k+1)-F(k) is small enough
+                    //
+                    state.repterminationtype = 1;
+                    result = false;
+                    return result;
+                }
+                if( (double)(state.lastscaledstep)<=(double)(state.epsx) )
+                {
+                    
+                    //
+                    // X(k+1)-X(k) is small enough
+                    //
+                    state.repterminationtype = 2;
+                    result = false;
+                    return result;
+                }
+            }
+            if( state.rstimer<=0 )
+            {
+                
+                //
+                // Too many subsequent restarts
+                //
+                state.repterminationtype = 7;
+                result = false;
+                return result;
+            }
+            
+            //
+            // Shift Xk/Dk, update other information
+            //
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.xk[i_] = state.xn[i_];
+            }
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.dk[i_] = state.dn[i_];
+            }
+            state.fold = state.f;
+            state.k = state.k+1;
+            goto lbl_26;
+        lbl_27:
+            result = false;
+            return result;
+            
+            //
+            // Saving state
+            //
+        lbl_rcomm:
+            result = true;
+            state.rstate.ia[0] = n;
+            state.rstate.ia[1] = i;
+            state.rstate.ra[0] = betak;
+            state.rstate.ra[1] = v;
+            state.rstate.ra[2] = vv;
+            return result;
+        }
+
+
+        /*************************************************************************
+        Conjugate gradient results
+
+        INPUT PARAMETERS:
+            State   -   algorithm state
+
+        OUTPUT PARAMETERS:
+            X       -   array[0..N-1], solution
+            Rep     -   optimization report:
+                        * Rep.TerminationType completetion code:
+                            *  1    relative function improvement is no more than
+                                    EpsF.
+                            *  2    relative step is no more than EpsX.
+                            *  4    gradient norm is no more than EpsG
+                            *  5    MaxIts steps was taken
+                            *  7    stopping conditions are too stringent,
+                                    further improvement is impossible,
+                                    we return best X found so far
+                            *  8    terminated by user
+                        * Rep.IterationsCount contains iterations count
+                        * NFEV countains number of function calculations
+
+          -- ALGLIB --
+             Copyright 20.04.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgresults(mincgstate state,
+            ref double[] x,
+            mincgreport rep)
+        {
+            x = new double[0];
+
+            mincgresultsbuf(state, ref x, rep);
+        }
+
+
+        /*************************************************************************
+        Conjugate gradient results
+
+        Buffered implementation of MinCGResults(), which uses pre-allocated buffer
+        to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
+        intended to be used in the inner cycles of performance critical algorithms
+        where array reallocation penalty is too large to be ignored.
+
+          -- ALGLIB --
+             Copyright 20.04.2009 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgresultsbuf(mincgstate state,
+            ref double[] x,
+            mincgreport rep)
+        {
+            int i_ = 0;
+
+            if( ap.len(x)<state.n )
+            {
+                x = new double[state.n];
+            }
+            for(i_=0; i_<=state.n-1;i_++)
+            {
+                x[i_] = state.xn[i_];
+            }
+            rep.iterationscount = state.repiterationscount;
+            rep.nfev = state.repnfev;
+            rep.terminationtype = state.repterminationtype;
+        }
+
+
+        /*************************************************************************
+        This  subroutine  restarts  CG  algorithm from new point. All optimization
+        parameters are left unchanged.
+
+        This  function  allows  to  solve multiple  optimization  problems  (which
+        must have same number of dimensions) without object reallocation penalty.
+
+        INPUT PARAMETERS:
+            State   -   structure used to store algorithm state.
+            X       -   new starting point.
+
+          -- ALGLIB --
+             Copyright 30.07.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgrestartfrom(mincgstate state,
+            double[] x)
+        {
+            int i_ = 0;
+
+            ap.assert(ap.len(x)>=state.n, "MinCGRestartFrom: Length(X)<N!");
+            ap.assert(apserv.isfinitevector(x, state.n), "MinCGCreate: X contains infinite or NaN values!");
+            for(i_=0; i_<=state.n-1;i_++)
+            {
+                state.x[i_] = x[i_];
+            }
+            mincgsuggeststep(state, 0.0);
+            state.rstate.ia = new int[1+1];
+            state.rstate.ra = new double[2+1];
+            state.rstate.stage = -1;
+            clearrequestfields(state);
+        }
+
+
+        /*************************************************************************
+        Faster version of MinCGSetPrecDiag(), for time-critical parts of code,
+        without safety checks.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetprecdiagfast(mincgstate state,
+            double[] d)
+        {
+            int i = 0;
+
+            apserv.rvectorsetlengthatleast(ref state.diagh, state.n);
+            apserv.rvectorsetlengthatleast(ref state.diaghl2, state.n);
+            state.prectype = 2;
+            state.vcnt = 0;
+            state.innerresetneeded = true;
+            for(i=0; i<=state.n-1; i++)
+            {
+                state.diagh[i] = d[i];
+                state.diaghl2[i] = 0.0;
+            }
+        }
+
+
+        /*************************************************************************
+        This function sets low-rank preconditioner for Hessian matrix  H=D+V'*C*V,
+        where:
+        * H is a Hessian matrix, which is approximated by D/V/C
+        * D=D1+D2 is a diagonal matrix, which includes two positive definite terms:
+          * constant term D1 (is not updated or infrequently updated)
+          * variable term D2 (can be cheaply updated from iteration to iteration)
+        * V is a low-rank correction
+        * C is a diagonal factor of low-rank correction
+
+        Preconditioner P is calculated using approximate Woodburry formula:
+            P  = D^(-1) - D^(-1)*V'*(C^(-1)+V*D1^(-1)*V')^(-1)*V*D^(-1)
+               = D^(-1) - D^(-1)*VC'*VC*D^(-1),
+        where
+            VC = sqrt(B)*V
+            B  = (C^(-1)+V*D1^(-1)*V')^(-1)
+            
+        Note that B is calculated using constant term (D1) only,  which  allows us
+        to update D2 without recalculation of B or   VC.  Such  preconditioner  is
+        exact when D2 is zero. When D2 is non-zero, it is only approximation,  but
+        very good and cheap one.
+
+        This function accepts D1, V, C.
+        D2 is set to zero by default.
+
+        Cost of this update is O(N*VCnt*VCnt), but D2 can be updated in just O(N)
+        by MinCGSetPrecVarPart.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetpreclowrankfast(mincgstate state,
+            double[] d1,
+            double[] c,
+            double[,] v,
+            int vcnt)
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int n = 0;
+            double t = 0;
+            double[,] b = new double[0,0];
+            int i_ = 0;
+
+            if( vcnt==0 )
+            {
+                mincgsetprecdiagfast(state, d1);
+                return;
+            }
+            n = state.n;
+            b = new double[vcnt, vcnt];
+            apserv.rvectorsetlengthatleast(ref state.diagh, n);
+            apserv.rvectorsetlengthatleast(ref state.diaghl2, n);
+            apserv.rmatrixsetlengthatleast(ref state.vcorr, vcnt, n);
+            state.prectype = 2;
+            state.vcnt = vcnt;
+            state.innerresetneeded = true;
+            for(i=0; i<=n-1; i++)
+            {
+                state.diagh[i] = d1[i];
+                state.diaghl2[i] = 0.0;
+            }
+            for(i=0; i<=vcnt-1; i++)
+            {
+                for(j=i; j<=vcnt-1; j++)
+                {
+                    t = 0;
+                    for(k=0; k<=n-1; k++)
+                    {
+                        t = t+v[i,k]*v[j,k]/d1[k];
+                    }
+                    b[i,j] = t;
+                }
+                b[i,i] = b[i,i]+1.0/c[i];
+            }
+            if( !trfac.spdmatrixcholeskyrec(ref b, 0, vcnt, true, ref state.work0) )
+            {
+                state.vcnt = 0;
+                return;
+            }
+            for(i=0; i<=vcnt-1; i++)
+            {
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.vcorr[i,i_] = v[i,i_];
+                }
+                for(j=0; j<=i-1; j++)
+                {
+                    t = b[j,i];
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        state.vcorr[i,i_] = state.vcorr[i,i_] - t*state.vcorr[j,i_];
+                    }
+                }
+                t = 1/b[i,i];
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    state.vcorr[i,i_] = t*state.vcorr[i,i_];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function updates variable part (diagonal matrix D2)
+        of low-rank preconditioner.
+
+        This update is very cheap and takes just O(N) time.
+
+        It has no effect with default preconditioner.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void mincgsetprecvarpart(mincgstate state,
+            double[] d2)
+        {
+            int i = 0;
+            int n = 0;
+
+            n = state.n;
+            for(i=0; i<=n-1; i++)
+            {
+                state.diaghl2[i] = d2[i];
+            }
+        }
+
+
+        /*************************************************************************
+        Clears request fileds (to be sure that we don't forgot to clear something)
+        *************************************************************************/
+        private static void clearrequestfields(mincgstate state)
+        {
+            state.needf = false;
+            state.needfg = false;
+            state.xupdated = false;
+            state.lsstart = false;
+            state.lsend = false;
+            state.algpowerup = false;
+        }
+
+
+        /*************************************************************************
+        This function calculates preconditioned product H^(-1)*x and stores result
+        back into X. Work0[] and Work1[] are used as temporaries (size must be at
+        least N; this function doesn't allocate arrays).
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        private static void preconditionedmultiply(mincgstate state,
+            ref double[] x,
+            ref double[] work0,
+            ref double[] work1)
+        {
+            int i = 0;
+            int n = 0;
+            int vcnt = 0;
+            double v = 0;
+            int i_ = 0;
+
+            n = state.n;
+            vcnt = state.vcnt;
+            if( state.prectype==0 )
+            {
+                return;
+            }
+            if( state.prectype==3 )
+            {
+                for(i=0; i<=n-1; i++)
+                {
+                    x[i] = x[i]*state.s[i]*state.s[i];
+                }
+                return;
+            }
+            ap.assert(state.prectype==2, "MinCG: internal error (unexpected PrecType)");
+            
+            //
+            // handle part common for VCnt=0 and VCnt<>0
+            //
+            for(i=0; i<=n-1; i++)
+            {
+                x[i] = x[i]/(state.diagh[i]+state.diaghl2[i]);
+            }
+            
+            //
+            // if VCnt>0
+            //
+            if( vcnt>0 )
+            {
+                for(i=0; i<=vcnt-1; i++)
+                {
+                    v = 0.0;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        v += state.vcorr[i,i_]*x[i_];
+                    }
+                    work0[i] = v;
+                }
+                for(i=0; i<=n-1; i++)
+                {
+                    work1[i] = 0;
+                }
+                for(i=0; i<=vcnt-1; i++)
+                {
+                    v = work0[i];
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        state.work1[i_] = state.work1[i_] + v*state.vcorr[i,i_];
+                    }
+                }
+                for(i=0; i<=n-1; i++)
+                {
+                    x[i] = x[i]-state.work1[i]/(state.diagh[i]+state.diaghl2[i]);
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function calculates preconditioned product x'*H^(-1)*y. Work0[] and
+        Work1[] are used as temporaries (size must be at least N; this function
+        doesn't allocate arrays).
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        private static double preconditionedmultiply2(mincgstate state,
+            ref double[] x,
+            ref double[] y,
+            ref double[] work0,
+            ref double[] work1)
+        {
+            double result = 0;
+            int i = 0;
+            int n = 0;
+            int vcnt = 0;
+            double v0 = 0;
+            double v1 = 0;
+            int i_ = 0;
+
+            n = state.n;
+            vcnt = state.vcnt;
+            
+            //
+            // no preconditioning
+            //
+            if( state.prectype==0 )
+            {
+                v0 = 0.0;
+                for(i_=0; i_<=n-1;i_++)
+                {
+                    v0 += x[i_]*y[i_];
+                }
+                result = v0;
+                return result;
+            }
+            if( state.prectype==3 )
+            {
+                result = 0;
+                for(i=0; i<=n-1; i++)
+                {
+                    result = result+x[i]*state.s[i]*state.s[i]*y[i];
+                }
+                return result;
+            }
+            ap.assert(state.prectype==2, "MinCG: internal error (unexpected PrecType)");
+            
+            //
+            // low rank preconditioning
+            //
+            result = 0.0;
+            for(i=0; i<=n-1; i++)
+            {
+                result = result+x[i]*y[i]/(state.diagh[i]+state.diaghl2[i]);
+            }
+            if( vcnt>0 )
+            {
+                for(i=0; i<=n-1; i++)
+                {
+                    work0[i] = x[i]/(state.diagh[i]+state.diaghl2[i]);
+                    work1[i] = y[i]/(state.diagh[i]+state.diaghl2[i]);
+                }
+                for(i=0; i<=vcnt-1; i++)
+                {
+                    v0 = 0.0;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        v0 += work0[i_]*state.vcorr[i,i_];
+                    }
+                    v1 = 0.0;
+                    for(i_=0; i_<=n-1;i_++)
+                    {
+                        v1 += work1[i_]*state.vcorr[i,i_];
+                    }
+                    result = result-v0*v1;
+                }
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        Internal initialization subroutine
+
+          -- ALGLIB --
+             Copyright 16.05.2011 by Bochkanov Sergey
+        *************************************************************************/
+        private static void mincginitinternal(int n,
+            double diffstep,
+            mincgstate state)
+        {
+            int i = 0;
+
+            state.n = n;
+            state.diffstep = diffstep;
+            mincgsetcond(state, 0, 0, 0, 0);
+            mincgsetxrep(state, false);
+            mincgsetdrep(state, false);
+            mincgsetstpmax(state, 0);
+            mincgsetcgtype(state, -1);
+            mincgsetprecdefault(state);
+            state.xk = new double[n];
+            state.dk = new double[n];
+            state.xn = new double[n];
+            state.dn = new double[n];
+            state.x = new double[n];
+            state.d = new double[n];
+            state.g = new double[n];
+            state.work0 = new double[n];
+            state.work1 = new double[n];
+            state.yk = new double[n];
+            state.s = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                state.s[i] = 1.0;
+            }
+        }
+
+
     }
-
-
-
-    /*************************************************************************
-    BLEIC results
-
-    INPUT PARAMETERS:
-        State   -   algorithm state
-
-    OUTPUT PARAMETERS:
-        X       -   array[0..N-1], solution
-        Rep     -   optimization report. You should check Rep.TerminationType
-                    in  order  to  distinguish  successful  termination  from
-                    unsuccessful one.
-                    More information about fields of this  structure  can  be
-                    found in the comments on MinBLEICReport datatype.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicresults(minbleicstate state, out double[] x, out minbleicreport rep)
+    public class minbleic
     {
-        x = new double[0];
-        rep = new minbleicreport();
-        minbleic.minbleicresults(state.innerobj, ref x, rep.innerobj);
-        return;
+        /*************************************************************************
+        This object stores nonlinear optimizer state.
+        You should use functions provided by MinBLEIC subpackage to work with this
+        object
+        *************************************************************************/
+        public class minbleicstate
+        {
+            public int nmain;
+            public int nslack;
+            public double innerepsg;
+            public double innerepsf;
+            public double innerepsx;
+            public double outerepsx;
+            public double outerepsi;
+            public int maxits;
+            public bool xrep;
+            public double stpmax;
+            public double diffstep;
+            public int prectype;
+            public double[] diaghoriginal;
+            public double[] diagh;
+            public double[] x;
+            public double f;
+            public double[] g;
+            public bool needf;
+            public bool needfg;
+            public bool xupdated;
+            public rcommstate rstate;
+            public int repinneriterationscount;
+            public int repouteriterationscount;
+            public int repnfev;
+            public int repterminationtype;
+            public double repdebugeqerr;
+            public double repdebugfs;
+            public double repdebugff;
+            public double repdebugdx;
+            public double[] xcur;
+            public double[] xprev;
+            public double[] xstart;
+            public int itsleft;
+            public double[] xend;
+            public double[] lastg;
+            public double trimthreshold;
+            public double[,] ceoriginal;
+            public double[,] ceeffective;
+            public double[,] cecurrent;
+            public int[] ct;
+            public int cecnt;
+            public int cedim;
+            public double[] xe;
+            public bool[] hasbndl;
+            public bool[] hasbndu;
+            public double[] bndloriginal;
+            public double[] bnduoriginal;
+            public double[] bndleffective;
+            public double[] bndueffective;
+            public bool[] activeconstraints;
+            public double[] constrainedvalues;
+            public double[] transforms;
+            public double[] seffective;
+            public double[] soriginal;
+            public double[] w;
+            public double[] tmp0;
+            public double[] tmp1;
+            public double[] tmp2;
+            public double[] r;
+            public double[,] lmmatrix;
+            public double v0;
+            public double v1;
+            public double v2;
+            public double t;
+            public double errfeas;
+            public double gnorm;
+            public double mpgnorm;
+            public double mba;
+            public int variabletofreeze;
+            public double valuetofreeze;
+            public double fbase;
+            public double fm2;
+            public double fm1;
+            public double fp1;
+            public double fp2;
+            public double xm1;
+            public double xp1;
+            public mincg.mincgstate cgstate;
+            public mincg.mincgreport cgrep;
+            public int optdim;
+            public minbleicstate()
+            {
+                diaghoriginal = new double[0];
+                diagh = new double[0];
+                x = new double[0];
+                g = new double[0];
+                rstate = new rcommstate();
+                xcur = new double[0];
+                xprev = new double[0];
+                xstart = new double[0];
+                xend = new double[0];
+                lastg = new double[0];
+                ceoriginal = new double[0,0];
+                ceeffective = new double[0,0];
+                cecurrent = new double[0,0];
+                ct = new int[0];
+                xe = new double[0];
+                hasbndl = new bool[0];
+                hasbndu = new bool[0];
+                bndloriginal = new double[0];
+                bnduoriginal = new double[0];
+                bndleffective = new double[0];
+                bndueffective = new double[0];
+                activeconstraints = new bool[0];
+                constrainedvalues = new double[0];
+                transforms = new double[0];
+                seffective = new double[0];
+                soriginal = new double[0];
+                w = new double[0];
+                tmp0 = new double[0];
+                tmp1 = new double[0];
+                tmp2 = new double[0];
+                r = new double[0];
+                lmmatrix = new double[0,0];
+                cgstate = new mincg.mincgstate();
+                cgrep = new mincg.mincgreport();
+            }
+        };
+
+
+        /*************************************************************************
+        This structure stores optimization report:
+        * InnerIterationsCount      number of inner iterations
+        * OuterIterationsCount      number of outer iterations
+        * NFEV                      number of gradient evaluations
+        * TerminationType           termination type (see below)
+
+        TERMINATION CODES
+
+        TerminationType field contains completion code, which can be:
+          -10   unsupported combination of algorithm settings:
+                1) StpMax is set to non-zero value,
+                AND 2) non-default preconditioner is used.
+                You can't use both features at the same moment,
+                so you have to choose one of them (and to turn
+                off another one).
+          -3    inconsistent constraints. Feasible point is
+                either nonexistent or too hard to find. Try to
+                restart optimizer with better initial
+                approximation
+           4    conditions on constraints are fulfilled
+                with error less than or equal to EpsC
+           5    MaxIts steps was taken
+           7    stopping conditions are too stringent,
+                further improvement is impossible,
+                X contains best point found so far.
+
+        ADDITIONAL FIELDS
+
+        There are additional fields which can be used for debugging:
+        * DebugEqErr                error in the equality constraints (2-norm)
+        * DebugFS                   f, calculated at projection of initial point
+                                    to the feasible set
+        * DebugFF                   f, calculated at the final point
+        * DebugDX                   |X_start-X_final|
+        *************************************************************************/
+        public class minbleicreport
+        {
+            public int inneriterationscount;
+            public int outeriterationscount;
+            public int nfev;
+            public int terminationtype;
+            public double debugeqerr;
+            public double debugfs;
+            public double debugff;
+            public double debugdx;
+        };
+
+
+
+
+        public const double svdtol = 100;
+        public const double maxouterits = 20;
+
+
+        /*************************************************************************
+                             BOUND CONSTRAINED OPTIMIZATION
+               WITH ADDITIONAL LINEAR EQUALITY AND INEQUALITY CONSTRAINTS
+
+        DESCRIPTION:
+        The  subroutine  minimizes  function   F(x)  of N arguments subject to any
+        combination of:
+        * bound constraints
+        * linear inequality constraints
+        * linear equality constraints
+
+        REQUIREMENTS:
+        * user must provide function value and gradient
+        * starting point X0 must be feasible or
+          not too far away from the feasible set
+        * grad(f) must be Lipschitz continuous on a level set:
+          L = { x : f(x)<=f(x0) }
+        * function must be defined everywhere on the feasible set F
+
+        USAGE:
+
+        Constrained optimization if far more complex than the unconstrained one.
+        Here we give very brief outline of the BLEIC optimizer. We strongly recommend
+        you to read examples in the ALGLIB Reference Manual and to read ALGLIB User Guide
+        on optimization, which is available at http://www.alglib.net/optimization/
+
+        1. User initializes algorithm state with MinBLEICCreate() call
+
+        2. USer adds boundary and/or linear constraints by calling
+           MinBLEICSetBC() and MinBLEICSetLC() functions.
+
+        3. User sets stopping conditions for underlying unconstrained solver
+           with MinBLEICSetInnerCond() call.
+           This function controls accuracy of underlying optimization algorithm.
+
+        4. User sets stopping conditions for outer iteration by calling
+           MinBLEICSetOuterCond() function.
+           This function controls handling of boundary and inequality constraints.
+
+        5. Additionally, user may set limit on number of internal iterations
+           by MinBLEICSetMaxIts() call.
+           This function allows to prevent algorithm from looping forever.
+
+        6. User calls MinBLEICOptimize() function which takes algorithm  state and
+           pointer (delegate, etc.) to callback function which calculates F/G.
+
+        7. User calls MinBLEICResults() to get solution
+
+        8. Optionally user may call MinBLEICRestartFrom() to solve another problem
+           with same N but another starting point.
+           MinBLEICRestartFrom() allows to reuse already initialized structure.
+
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>0:
+                        * if given, only leading N elements of X are used
+                        * if not given, automatically determined from size ofX
+            X       -   starting point, array[N]:
+                        * it is better to set X to a feasible point
+                        * but X can be infeasible, in which case algorithm will try
+                          to find feasible point first, using X as initial
+                          approximation.
+
+        OUTPUT PARAMETERS:
+            State   -   structure stores algorithm state
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleiccreate(int n,
+            double[] x,
+            minbleicstate state)
+        {
+            double[,] c = new double[0,0];
+            int[] ct = new int[0];
+
+            ap.assert(n>=1, "MinBLEICCreate: N<1");
+            ap.assert(ap.len(x)>=n, "MinBLEICCreate: Length(X)<N");
+            ap.assert(apserv.isfinitevector(x, n), "MinBLEICCreate: X contains infinite or NaN values!");
+            minbleicinitinternal(n, x, 0.0, state);
+        }
+
+
+        /*************************************************************************
+        The subroutine is finite difference variant of MinBLEICCreate().  It  uses
+        finite differences in order to differentiate target function.
+
+        Description below contains information which is specific to  this function
+        only. We recommend to read comments on MinBLEICCreate() in  order  to  get
+        more information about creation of BLEIC optimizer.
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>0:
+                        * if given, only leading N elements of X are used
+                        * if not given, automatically determined from size of X
+            X       -   starting point, array[0..N-1].
+            DiffStep-   differentiation step, >0
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+        NOTES:
+        1. algorithm uses 4-point central formula for differentiation.
+        2. differentiation step along I-th axis is equal to DiffStep*S[I] where
+           S[] is scaling vector which can be set by MinBLEICSetScale() call.
+        3. we recommend you to use moderate values of  differentiation  step.  Too
+           large step will result in too large truncation  errors, while too small
+           step will result in too large numerical  errors.  1.0E-6  can  be  good
+           value to start with.
+        4. Numerical  differentiation  is   very   inefficient  -   one   gradient
+           calculation needs 4*N function evaluations. This function will work for
+           any N - either small (1...10), moderate (10...100) or  large  (100...).
+           However, performance penalty will be too severe for any N's except  for
+           small ones.
+           We should also say that code which relies on numerical  differentiation
+           is  less  robust and precise. CG needs exact gradient values. Imprecise
+           gradient may slow  down  convergence, especially  on  highly  nonlinear
+           problems.
+           Thus  we  recommend to use this function for fast prototyping on small-
+           dimensional problems only, and to implement analytical gradient as soon
+           as possible.
+
+          -- ALGLIB --
+             Copyright 16.05.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleiccreatef(int n,
+            double[] x,
+            double diffstep,
+            minbleicstate state)
+        {
+            double[,] c = new double[0,0];
+            int[] ct = new int[0];
+
+            ap.assert(n>=1, "MinBLEICCreateF: N<1");
+            ap.assert(ap.len(x)>=n, "MinBLEICCreateF: Length(X)<N");
+            ap.assert(apserv.isfinitevector(x, n), "MinBLEICCreateF: X contains infinite or NaN values!");
+            ap.assert(math.isfinite(diffstep), "MinBLEICCreateF: DiffStep is infinite or NaN!");
+            ap.assert((double)(diffstep)>(double)(0), "MinBLEICCreateF: DiffStep is non-positive!");
+            minbleicinitinternal(n, x, diffstep, state);
+        }
+
+
+        /*************************************************************************
+        This function sets boundary constraints for BLEIC optimizer.
+
+        Boundary constraints are inactive by default (after initial creation).
+        They are preserved after algorithm restart with MinBLEICRestartFrom().
+
+        INPUT PARAMETERS:
+            State   -   structure stores algorithm state
+            BndL    -   lower bounds, array[N].
+                        If some (all) variables are unbounded, you may specify
+                        very small number or -INF.
+            BndU    -   upper bounds, array[N].
+                        If some (all) variables are unbounded, you may specify
+                        very large number or +INF.
+
+        NOTE 1: it is possible to specify BndL[i]=BndU[i]. In this case I-th
+        variable will be "frozen" at X[i]=BndL[i]=BndU[i].
+
+        NOTE 2: this solver has following useful properties:
+        * bound constraints are always satisfied exactly
+        * function is evaluated only INSIDE area specified by  bound  constraints,
+          even  when  numerical  differentiation is used (algorithm adjusts  nodes
+          according to boundary constraints)
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetbc(minbleicstate state,
+            double[] bndl,
+            double[] bndu)
+        {
+            int i = 0;
+            int n = 0;
+
+            n = state.nmain;
+            ap.assert(ap.len(bndl)>=n, "MinBLEICSetBC: Length(BndL)<N");
+            ap.assert(ap.len(bndu)>=n, "MinBLEICSetBC: Length(BndU)<N");
+            for(i=0; i<=n-1; i++)
+            {
+                ap.assert(math.isfinite(bndl[i]) | Double.IsNegativeInfinity(bndl[i]), "MinBLEICSetBC: BndL contains NAN or +INF");
+                ap.assert(math.isfinite(bndu[i]) | Double.IsPositiveInfinity(bndu[i]), "MinBLEICSetBC: BndL contains NAN or -INF");
+                state.bndloriginal[i] = bndl[i];
+                state.hasbndl[i] = math.isfinite(bndl[i]);
+                state.bnduoriginal[i] = bndu[i];
+                state.hasbndu[i] = math.isfinite(bndu[i]);
+            }
+        }
+
+
+        /*************************************************************************
+        This function sets linear constraints for BLEIC optimizer.
+
+        Linear constraints are inactive by default (after initial creation).
+        They are preserved after algorithm restart with MinBLEICRestartFrom().
+
+        INPUT PARAMETERS:
+            State   -   structure previously allocated with MinBLEICCreate call.
+            C       -   linear constraints, array[K,N+1].
+                        Each row of C represents one constraint, either equality
+                        or inequality (see below):
+                        * first N elements correspond to coefficients,
+                        * last element corresponds to the right part.
+                        All elements of C (including right part) must be finite.
+            CT      -   type of constraints, array[K]:
+                        * if CT[i]>0, then I-th constraint is C[i,*]*x >= C[i,n+1]
+                        * if CT[i]=0, then I-th constraint is C[i,*]*x  = C[i,n+1]
+                        * if CT[i]<0, then I-th constraint is C[i,*]*x <= C[i,n+1]
+            K       -   number of equality/inequality constraints, K>=0:
+                        * if given, only leading K elements of C/CT are used
+                        * if not given, automatically determined from sizes of C/CT
+
+        NOTE 1: linear (non-bound) constraints are satisfied only approximately:
+        * there always exists some minor violation (about Epsilon in magnitude)
+          due to rounding errors
+        * numerical differentiation, if used, may  lead  to  function  evaluations
+          outside  of the feasible  area,   because   algorithm  does  NOT  change
+          numerical differentiation formula according to linear constraints.
+        If you want constraints to be  satisfied  exactly, try to reformulate your
+        problem  in  such  manner  that  all constraints will become boundary ones
+        (this kind of constraints is always satisfied exactly, both in  the  final
+        solution and in all intermediate points).
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetlc(minbleicstate state,
+            double[,] c,
+            int[] ct,
+            int k)
+        {
+            int nmain = 0;
+            int i = 0;
+            int i_ = 0;
+
+            nmain = state.nmain;
+            
+            //
+            // First, check for errors in the inputs
+            //
+            ap.assert(k>=0, "MinBLEICSetLC: K<0");
+            ap.assert(ap.cols(c)>=nmain+1 | k==0, "MinBLEICSetLC: Cols(C)<N+1");
+            ap.assert(ap.rows(c)>=k, "MinBLEICSetLC: Rows(C)<K");
+            ap.assert(ap.len(ct)>=k, "MinBLEICSetLC: Length(CT)<K");
+            ap.assert(apserv.apservisfinitematrix(c, k, nmain+1), "MinBLEICSetLC: C contains infinite or NaN values!");
+            
+            //
+            // Determine number of constraints,
+            // allocate space and copy
+            //
+            state.cecnt = k;
+            apserv.rmatrixsetlengthatleast(ref state.ceoriginal, state.cecnt, nmain+1);
+            apserv.ivectorsetlengthatleast(ref state.ct, state.cecnt);
+            for(i=0; i<=k-1; i++)
+            {
+                state.ct[i] = ct[i];
+                for(i_=0; i_<=nmain;i_++)
+                {
+                    state.ceoriginal[i,i_] = c[i,i_];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function sets stopping conditions for the underlying nonlinear CG
+        optimizer. It controls overall accuracy of solution. These conditions
+        should be strict enough in order for algorithm to converge.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            EpsG    -   >=0
+                        The  subroutine  finishes  its  work   if   the  condition
+                        |v|<EpsG is satisfied, where:
+                        * |.| means Euclidian norm
+                        * v - scaled gradient vector, v[i]=g[i]*s[i]
+                        * g - gradient
+                        * s - scaling coefficients set by MinBLEICSetScale()
+            EpsF    -   >=0
+                        The  subroutine  finishes  its work if on k+1-th iteration
+                        the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
+                        is satisfied.
+            EpsX    -   >=0
+                        The subroutine finishes its work if  on  k+1-th  iteration
+                        the condition |v|<=EpsX is fulfilled, where:
+                        * |.| means Euclidian norm
+                        * v - scaled step vector, v[i]=dx[i]/s[i]
+                        * dx - ste pvector, dx=X(k+1)-X(k)
+                        * s - scaling coefficients set by MinBLEICSetScale()
+
+        Passing EpsG=0, EpsF=0 and EpsX=0 (simultaneously) will lead to
+        automatic stopping criterion selection.
+
+        These conditions are used to terminate inner iterations. However, you
+        need to tune termination conditions for outer iterations too.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetinnercond(minbleicstate state,
+            double epsg,
+            double epsf,
+            double epsx)
+        {
+            ap.assert(math.isfinite(epsg), "MinBLEICSetInnerCond: EpsG is not finite number");
+            ap.assert((double)(epsg)>=(double)(0), "MinBLEICSetInnerCond: negative EpsG");
+            ap.assert(math.isfinite(epsf), "MinBLEICSetInnerCond: EpsF is not finite number");
+            ap.assert((double)(epsf)>=(double)(0), "MinBLEICSetInnerCond: negative EpsF");
+            ap.assert(math.isfinite(epsx), "MinBLEICSetInnerCond: EpsX is not finite number");
+            ap.assert((double)(epsx)>=(double)(0), "MinBLEICSetInnerCond: negative EpsX");
+            state.innerepsg = epsg;
+            state.innerepsf = epsf;
+            state.innerepsx = epsx;
+        }
+
+
+        /*************************************************************************
+        This function sets stopping conditions for outer iteration of BLEIC algo.
+
+        These conditions control accuracy of constraint handling and amount of
+        infeasibility allowed in the solution.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            EpsX    -   >0, stopping condition on outer iteration step length
+            EpsI    -   >0, stopping condition on infeasibility
+            
+        Both EpsX and EpsI must be non-zero.
+
+        MEANING OF EpsX
+
+        EpsX  is  a  stopping  condition for outer iterations. Algorithm will stop
+        when  solution  of  the  current  modified  subproblem will be within EpsX
+        (using 2-norm) of the previous solution.
+
+        MEANING OF EpsI
+
+        EpsI controls feasibility properties -  algorithm  won't  stop  until  all
+        inequality constraints will be satisfied with error (distance from current
+        point to the feasible area) at most EpsI.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetoutercond(minbleicstate state,
+            double epsx,
+            double epsi)
+        {
+            ap.assert(math.isfinite(epsx), "MinBLEICSetOuterCond: EpsX is not finite number");
+            ap.assert((double)(epsx)>(double)(0), "MinBLEICSetOuterCond: non-positive EpsX");
+            ap.assert(math.isfinite(epsi), "MinBLEICSetOuterCond: EpsI is not finite number");
+            ap.assert((double)(epsi)>(double)(0), "MinBLEICSetOuterCond: non-positive EpsI");
+            state.outerepsx = epsx;
+            state.outerepsi = epsi;
+        }
+
+
+        /*************************************************************************
+        This function sets scaling coefficients for BLEIC optimizer.
+
+        ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
+        size and gradient are scaled before comparison with tolerances).  Scale of
+        the I-th variable is a translation invariant measure of:
+        a) "how large" the variable is
+        b) how large the step should be to make significant changes in the function
+
+        Scaling is also used by finite difference variant of the optimizer  - step
+        along I-th axis is equal to DiffStep*S[I].
+
+        In  most  optimizers  (and  in  the  BLEIC  too)  scaling is NOT a form of
+        preconditioning. It just  affects  stopping  conditions.  You  should  set
+        preconditioner  by  separate  call  to  one  of  the  MinBLEICSetPrec...()
+        functions.
+
+        There is a special  preconditioning  mode, however,  which  uses   scaling
+        coefficients to form diagonal preconditioning matrix. You  can  turn  this
+        mode on, if you want.   But  you should understand that scaling is not the
+        same thing as preconditioning - these are two different, although  related
+        forms of tuning solver.
+
+        INPUT PARAMETERS:
+            State   -   structure stores algorithm state
+            S       -   array[N], non-zero scaling coefficients
+                        S[i] may be negative, sign doesn't matter.
+
+          -- ALGLIB --
+             Copyright 14.01.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetscale(minbleicstate state,
+            double[] s)
+        {
+            int i = 0;
+
+            ap.assert(ap.len(s)>=state.nmain, "MinBLEICSetScale: Length(S)<N");
+            for(i=0; i<=state.nmain-1; i++)
+            {
+                ap.assert(math.isfinite(s[i]), "MinBLEICSetScale: S contains infinite or NAN elements");
+                ap.assert((double)(s[i])!=(double)(0), "MinBLEICSetScale: S contains zero elements");
+                state.soriginal[i] = Math.Abs(s[i]);
+            }
+        }
+
+
+        /*************************************************************************
+        Modification of the preconditioner: preconditioning is turned off.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetprecdefault(minbleicstate state)
+        {
+            state.prectype = 0;
+        }
+
+
+        /*************************************************************************
+        Modification  of  the  preconditioner:  diagonal of approximate Hessian is
+        used.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            D       -   diagonal of the approximate Hessian, array[0..N-1],
+                        (if larger, only leading N elements are used).
+
+        NOTE 1: D[i] should be positive. Exception will be thrown otherwise.
+
+        NOTE 2: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetprecdiag(minbleicstate state,
+            double[] d)
+        {
+            int i = 0;
+
+            ap.assert(ap.len(d)>=state.nmain, "MinBLEICSetPrecDiag: D is too short");
+            for(i=0; i<=state.nmain-1; i++)
+            {
+                ap.assert(math.isfinite(d[i]), "MinBLEICSetPrecDiag: D contains infinite or NAN elements");
+                ap.assert((double)(d[i])>(double)(0), "MinBLEICSetPrecDiag: D contains non-positive elements");
+            }
+            apserv.rvectorsetlengthatleast(ref state.diaghoriginal, state.nmain);
+            state.prectype = 2;
+            for(i=0; i<=state.nmain-1; i++)
+            {
+                state.diaghoriginal[i] = d[i];
+            }
+        }
+
+
+        /*************************************************************************
+        Modification of the preconditioner: scale-based diagonal preconditioning.
+
+        This preconditioning mode can be useful when you  don't  have  approximate
+        diagonal of Hessian, but you know that your  variables  are  badly  scaled
+        (for  example,  one  variable is in [1,10], and another in [1000,100000]),
+        and most part of the ill-conditioning comes from different scales of vars.
+
+        In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
+        can greatly improve convergence.
+
+        IMPRTANT: you should set scale of your variables  with  MinBLEICSetScale()
+        call  (before  or after MinBLEICSetPrecScale() call). Without knowledge of
+        the scale of your variables scale-based preconditioner will be  just  unit
+        matrix.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetprecscale(minbleicstate state)
+        {
+            state.prectype = 3;
+        }
+
+
+        /*************************************************************************
+        This function allows to stop algorithm after specified number of inner
+        iterations.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            MaxIts  -   maximum number of inner iterations.
+                        If MaxIts=0, the number of iterations is unlimited.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetmaxits(minbleicstate state,
+            int maxits)
+        {
+            ap.assert(maxits>=0, "MinBLEICSetMaxIts: negative MaxIts!");
+            state.maxits = maxits;
+        }
+
+
+        /*************************************************************************
+        This function turns on/off reporting.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            NeedXRep-   whether iteration reports are needed or not
+
+        If NeedXRep is True, algorithm will call rep() callback function if  it is
+        provided to MinBLEICOptimize().
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetxrep(minbleicstate state,
+            bool needxrep)
+        {
+            state.xrep = needxrep;
+        }
+
+
+        /*************************************************************************
+        This function sets maximum step length
+
+        IMPORTANT: this feature is hard to combine with preconditioning. You can't
+        set upper limit on step length, when you solve optimization  problem  with
+        linear (non-boundary) constraints AND preconditioner turned on.
+
+        When  non-boundary  constraints  are  present,  you  have to either a) use
+        preconditioner, or b) use upper limit on step length.  YOU CAN'T USE BOTH!
+        In this case algorithm will terminate with appropriate error code.
+
+        INPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
+                        want to limit step length.
+
+        Use this subroutine when you optimize target function which contains exp()
+        or  other  fast  growing  functions,  and optimization algorithm makes too
+        large  steps  which  lead   to overflow. This function allows us to reject
+        steps  that  are  too  large  (and  therefore  expose  us  to the possible
+        overflow) without actually calculating function value at the x+stp*d.
+
+          -- ALGLIB --
+             Copyright 02.04.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetstpmax(minbleicstate state,
+            double stpmax)
+        {
+            ap.assert(math.isfinite(stpmax), "MinBLEICSetStpMax: StpMax is not finite!");
+            ap.assert((double)(stpmax)>=(double)(0), "MinBLEICSetStpMax: StpMax<0!");
+            state.stpmax = stpmax;
+        }
+
+
+        /*************************************************************************
+        NOTES:
+
+        1. This function has two different implementations: one which  uses  exact
+           (analytical) user-supplied gradient,  and one which uses function value
+           only  and  numerically  differentiates  function  in  order  to  obtain
+           gradient.
+
+           Depending  on  the  specific  function  used to create optimizer object
+           (either  MinBLEICCreate() for analytical gradient or  MinBLEICCreateF()
+           for numerical differentiation) you should choose appropriate variant of
+           MinBLEICOptimize() - one  which  accepts  function  AND gradient or one
+           which accepts function ONLY.
+
+           Be careful to choose variant of MinBLEICOptimize() which corresponds to
+           your optimization scheme! Table below lists different  combinations  of
+           callback (function/gradient) passed to MinBLEICOptimize()  and specific
+           function used to create optimizer.
+
+
+                             |         USER PASSED TO MinBLEICOptimize()
+           CREATED WITH      |  function only   |  function and gradient
+           ------------------------------------------------------------
+           MinBLEICCreateF() |     work                FAIL
+           MinBLEICCreate()  |     FAIL                work
+
+           Here "FAIL" denotes inappropriate combinations  of  optimizer  creation
+           function  and  MinBLEICOptimize()  version.   Attemps   to   use   such
+           combination (for  example,  to  create optimizer with MinBLEICCreateF()
+           and  to  pass  gradient  information  to  MinCGOptimize()) will lead to
+           exception being thrown. Either  you  did  not pass gradient when it WAS
+           needed or you passed gradient when it was NOT needed.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static bool minbleiciteration(minbleicstate state)
+        {
+            bool result = new bool();
+            int nmain = 0;
+            int nslack = 0;
+            int m = 0;
+            int i = 0;
+            int j = 0;
+            double v = 0;
+            double vv = 0;
+            bool b = new bool();
+            int i_ = 0;
+
+            
+            //
+            // Reverse communication preparations
+            // I know it looks ugly, but it works the same way
+            // anywhere from C++ to Python.
+            //
+            // This code initializes locals by:
+            // * random values determined during code
+            //   generation - on first subroutine call
+            // * values from previous call - on subsequent calls
+            //
+            if( state.rstate.stage>=0 )
+            {
+                nmain = state.rstate.ia[0];
+                nslack = state.rstate.ia[1];
+                m = state.rstate.ia[2];
+                i = state.rstate.ia[3];
+                j = state.rstate.ia[4];
+                b = state.rstate.ba[0];
+                v = state.rstate.ra[0];
+                vv = state.rstate.ra[1];
+            }
+            else
+            {
+                nmain = -983;
+                nslack = -989;
+                m = -834;
+                i = 900;
+                j = -287;
+                b = false;
+                v = 214;
+                vv = -338;
+            }
+            if( state.rstate.stage==0 )
+            {
+                goto lbl_0;
+            }
+            if( state.rstate.stage==1 )
+            {
+                goto lbl_1;
+            }
+            if( state.rstate.stage==2 )
+            {
+                goto lbl_2;
+            }
+            if( state.rstate.stage==3 )
+            {
+                goto lbl_3;
+            }
+            if( state.rstate.stage==4 )
+            {
+                goto lbl_4;
+            }
+            if( state.rstate.stage==5 )
+            {
+                goto lbl_5;
+            }
+            if( state.rstate.stage==6 )
+            {
+                goto lbl_6;
+            }
+            if( state.rstate.stage==7 )
+            {
+                goto lbl_7;
+            }
+            if( state.rstate.stage==8 )
+            {
+                goto lbl_8;
+            }
+            if( state.rstate.stage==9 )
+            {
+                goto lbl_9;
+            }
+            if( state.rstate.stage==10 )
+            {
+                goto lbl_10;
+            }
+            if( state.rstate.stage==11 )
+            {
+                goto lbl_11;
+            }
+            if( state.rstate.stage==12 )
+            {
+                goto lbl_12;
+            }
+            
+            //
+            // Routine body
+            //
+            
+            //
+            // Prepare:
+            // * calculate number of slack variables
+            // * initialize locals
+            // * initialize debug fields
+            // * make quick check
+            //
+            nmain = state.nmain;
+            nslack = 0;
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                if( state.ct[i]!=0 )
+                {
+                    nslack = nslack+1;
+                }
+            }
+            state.nslack = nslack;
+            state.repterminationtype = 0;
+            state.repinneriterationscount = 0;
+            state.repouteriterationscount = 0;
+            state.repnfev = 0;
+            state.repdebugeqerr = 0.0;
+            state.repdebugfs = Double.NaN;
+            state.repdebugff = Double.NaN;
+            state.repdebugdx = Double.NaN;
+            if( (double)(state.stpmax)!=(double)(0) & state.prectype!=0 )
+            {
+                state.repterminationtype = -10;
+                result = false;
+                return result;
+            }
+            
+            //
+            // allocate
+            //
+            apserv.rvectorsetlengthatleast(ref state.r, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.diagh, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.tmp0, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.tmp1, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.tmp2, nmain+nslack);
+            apserv.rmatrixsetlengthatleast(ref state.cecurrent, state.cecnt, nmain+nslack+1);
+            apserv.bvectorsetlengthatleast(ref state.activeconstraints, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.constrainedvalues, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.lastg, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.xe, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.xcur, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.xprev, nmain+nslack);
+            apserv.rvectorsetlengthatleast(ref state.xend, nmain);
+            
+            //
+            // Create/restart optimizer.
+            //
+            // State.OptDim is used to determine current state of optimizer.
+            //
+            if( state.optdim!=nmain+nslack )
+            {
+                for(i=0; i<=nmain+nslack-1; i++)
+                {
+                    state.tmp1[i] = 0.0;
+                }
+                mincg.mincgcreate(nmain+nslack, state.tmp1, state.cgstate);
+                state.optdim = nmain+nslack;
+            }
+            
+            //
+            // Prepare transformation.
+            //
+            // MinBLEIC's handling of preconditioner matrix is somewhat unusual -
+            // instead of incorporating it into algorithm and making implicit
+            // scaling (as most optimizers do) BLEIC optimizer uses explicit
+            // scaling - it solves problem in the scaled parameters space S,
+            // making transition between scaled (S) and unscaled (X) variables
+            // every time we ask for function value.
+            //
+            // Following fields are calculated here:
+            // * TransformS         X[i] = TransformS[i]*S[i], array[NMain]
+            // * SEffective         "effective" scale of the variables after
+            //                      transformation, array[NMain+NSlack]
+            //
+            apserv.rvectorsetlengthatleast(ref state.transforms, nmain);
+            for(i=0; i<=nmain-1; i++)
+            {
+                if( state.prectype==2 )
+                {
+                    state.transforms[i] = 1/Math.Sqrt(state.diaghoriginal[i]);
+                    continue;
+                }
+                if( state.prectype==3 )
+                {
+                    state.transforms[i] = state.soriginal[i];
+                    continue;
+                }
+                state.transforms[i] = 1;
+            }
+            apserv.rvectorsetlengthatleast(ref state.seffective, nmain+nslack);
+            for(i=0; i<=nmain-1; i++)
+            {
+                state.seffective[i] = state.soriginal[i]/state.transforms[i];
+            }
+            for(i=0; i<=nslack-1; i++)
+            {
+                state.seffective[nmain+i] = 1;
+            }
+            mincg.mincgsetscale(state.cgstate, state.seffective);
+            
+            //
+            // Pre-process constraints
+            // * check consistency of bound constraints
+            // * add slack vars, convert problem to the bound/equality
+            //   constrained one
+            //
+            // We calculate here:
+            // * BndLEffective - lower bounds after transformation of variables (see above)
+            // * BndUEffective - upper bounds after transformation of variables (see above)
+            // * CEEffective - matrix of equality constraints for transformed variables
+            //
+            for(i=0; i<=nmain-1; i++)
+            {
+                if( state.hasbndl[i] )
+                {
+                    state.bndleffective[i] = state.bndloriginal[i]/state.transforms[i];
+                }
+                if( state.hasbndu[i] )
+                {
+                    state.bndueffective[i] = state.bnduoriginal[i]/state.transforms[i];
+                }
+            }
+            for(i=0; i<=nmain-1; i++)
+            {
+                if( state.hasbndl[i] & state.hasbndu[i] )
+                {
+                    if( (double)(state.bndleffective[i])>(double)(state.bndueffective[i]) )
+                    {
+                        state.repterminationtype = -3;
+                        result = false;
+                        return result;
+                    }
+                }
+            }
+            apserv.rmatrixsetlengthatleast(ref state.ceeffective, state.cecnt, nmain+nslack+1);
+            m = 0;
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                
+                //
+                // NOTE: when we add slack variable, we use V = max(abs(CE[i,...])) as
+                // coefficient before it in order to make linear equations better
+                // conditioned.
+                //
+                v = 0;
+                for(j=0; j<=nmain-1; j++)
+                {
+                    state.ceeffective[i,j] = state.ceoriginal[i,j]*state.transforms[j];
+                    v = Math.Max(v, Math.Abs(state.ceeffective[i,j]));
+                }
+                if( (double)(v)==(double)(0) )
+                {
+                    v = 1;
+                }
+                for(j=0; j<=nslack-1; j++)
+                {
+                    state.ceeffective[i,nmain+j] = 0.0;
+                }
+                state.ceeffective[i,nmain+nslack] = state.ceoriginal[i,nmain];
+                if( state.ct[i]<0 )
+                {
+                    state.ceeffective[i,nmain+m] = v;
+                    m = m+1;
+                }
+                if( state.ct[i]>0 )
+                {
+                    state.ceeffective[i,nmain+m] = -v;
+                    m = m+1;
+                }
+            }
+            
+            //
+            // Find feasible point.
+            //
+            // 0. Convert from unscaled values (as stored in XStart) to scaled
+            //    ones
+            // 1. calculate values of slack variables such that starting
+            //    point satisfies inequality constraints (after conversion to
+            //    equality ones) as much as possible.
+            // 2. use PrepareConstraintMatrix() function, which forces X
+            //    to be strictly feasible.
+            //
+            for(i=0; i<=nmain-1; i++)
+            {
+                state.tmp0[i] = state.xstart[i]/state.transforms[i];
+            }
+            m = 0;
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain-1;i_++)
+                {
+                    v += state.ceeffective[i,i_]*state.tmp0[i_];
+                }
+                if( state.ct[i]<0 )
+                {
+                    state.tmp0[nmain+m] = state.ceeffective[i,nmain+nslack]-v;
+                    m = m+1;
+                }
+                if( state.ct[i]>0 )
+                {
+                    state.tmp0[nmain+m] = v-state.ceeffective[i,nmain+nslack];
+                    m = m+1;
+                }
+            }
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                state.tmp1[i] = 0;
+            }
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                state.activeconstraints[i] = false;
+            }
+            b = prepareconstraintmatrix(state, state.tmp0, state.tmp1, ref state.xcur, ref state.tmp2);
+            state.repdebugeqerr = 0.0;
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += state.ceeffective[i,i_]*state.xcur[i_];
+                }
+                state.repdebugeqerr = state.repdebugeqerr+math.sqr(v-state.ceeffective[i,nmain+nslack]);
+            }
+            state.repdebugeqerr = Math.Sqrt(state.repdebugeqerr);
+            if( !b )
+            {
+                state.repterminationtype = -3;
+                result = false;
+                return result;
+            }
+            
+            //
+            // Initialize RepDebugFS with function value at initial point
+            //
+            unscalepoint(state, state.xcur, ref state.x);
+            clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_13;
+            }
+            state.needfg = true;
+            state.rstate.stage = 0;
+            goto lbl_rcomm;
+        lbl_0:
+            state.needfg = false;
+            goto lbl_14;
+        lbl_13:
+            state.needf = true;
+            state.rstate.stage = 1;
+            goto lbl_rcomm;
+        lbl_1:
+            state.needf = false;
+        lbl_14:
+            optserv.trimprepare(state.f, ref state.trimthreshold);
+            state.repnfev = state.repnfev+1;
+            state.repdebugfs = state.f;
+            
+            //
+            // Outer cycle
+            //
+            state.itsleft = state.maxits;
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                state.xprev[i_] = state.xcur[i_];
+            }
+        lbl_15:
+            if( false )
+            {
+                goto lbl_16;
+            }
+            ap.assert(state.prectype==0 | (double)(state.stpmax)==(double)(0), "MinBLEIC: internal error (-10)");
+            
+            //
+            // Inner cycle: CG with projections and penalty functions
+            //
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                state.tmp0[i_] = state.xcur[i_];
+            }
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                state.tmp1[i] = 0;
+                state.activeconstraints[i] = false;
+            }
+            if( !prepareconstraintmatrix(state, state.tmp0, state.tmp1, ref state.xcur, ref state.tmp2) )
+            {
+                state.repterminationtype = -3;
+                result = false;
+                return result;
+            }
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                state.activeconstraints[i] = false;
+            }
+            rebuildcexe(state);
+            mincg.mincgrestartfrom(state.cgstate, state.xcur);
+            mincg.mincgsetcond(state.cgstate, state.innerepsg, state.innerepsf, state.innerepsx, state.itsleft);
+            mincg.mincgsetxrep(state.cgstate, state.xrep);
+            mincg.mincgsetdrep(state.cgstate, true);
+            mincg.mincgsetstpmax(state.cgstate, state.stpmax);
+        lbl_17:
+            if( !mincg.mincgiteration(state.cgstate) )
+            {
+                goto lbl_18;
+            }
+            
+            //
+            // process different requests/reports of inner optimizer
+            //
+            if( state.cgstate.algpowerup )
+            {
+                for(i=0; i<=nmain+nslack-1; i++)
+                {
+                    state.activeconstraints[i] = false;
+                }
+                do
+                {
+                    rebuildcexe(state);
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        state.tmp1[i_] = state.cgstate.g[i_];
+                    }
+                    makegradientprojection(state, ref state.tmp1);
+                    b = false;
+                    for(i=0; i<=nmain-1; i++)
+                    {
+                        if( !state.activeconstraints[i] )
+                        {
+                            if( state.hasbndl[i] )
+                            {
+                                if( (double)(state.cgstate.x[i])==(double)(state.bndleffective[i]) & (double)(state.tmp1[i])>=(double)(0) )
+                                {
+                                    state.activeconstraints[i] = true;
+                                    state.constrainedvalues[i] = state.bndleffective[i];
+                                    b = true;
+                                }
+                            }
+                            if( state.hasbndu[i] )
+                            {
+                                if( (double)(state.cgstate.x[i])==(double)(state.bndueffective[i]) & (double)(state.tmp1[i])<=(double)(0) )
+                                {
+                                    state.activeconstraints[i] = true;
+                                    state.constrainedvalues[i] = state.bndueffective[i];
+                                    b = true;
+                                }
+                            }
+                        }
+                    }
+                    for(i=0; i<=nslack-1; i++)
+                    {
+                        if( !state.activeconstraints[nmain+i] )
+                        {
+                            if( (double)(state.cgstate.x[nmain+i])==(double)(0) & (double)(state.tmp1[nmain+i])>=(double)(0) )
+                            {
+                                state.activeconstraints[nmain+i] = true;
+                                state.constrainedvalues[nmain+i] = 0;
+                                b = true;
+                            }
+                        }
+                    }
+                }
+                while( b );
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    state.cgstate.g[i_] = state.tmp1[i_];
+                }
+                goto lbl_17;
+            }
+            if( state.cgstate.lsstart )
+            {
+                
+                //
+                // Beginning of the line search: set upper limit on step size
+                // to prevent algo from leaving feasible area.
+                //
+                state.variabletofreeze = -1;
+                if( (double)(state.cgstate.curstpmax)==(double)(0) )
+                {
+                    state.cgstate.curstpmax = 1.0E50;
+                }
+                for(i=0; i<=nmain-1; i++)
+                {
+                    if( state.hasbndl[i] & (double)(state.cgstate.d[i])<(double)(0) )
+                    {
+                        v = state.cgstate.curstpmax;
+                        vv = state.cgstate.x[i]-state.bndleffective[i];
+                        if( (double)(vv)<(double)(0) )
+                        {
+                            vv = 0;
+                        }
+                        state.cgstate.curstpmax = apserv.safeminposrv(vv, -state.cgstate.d[i], state.cgstate.curstpmax);
+                        if( (double)(state.cgstate.curstpmax)<(double)(v) )
+                        {
+                            state.variabletofreeze = i;
+                            state.valuetofreeze = state.bndleffective[i];
+                        }
+                    }
+                    if( state.hasbndu[i] & (double)(state.cgstate.d[i])>(double)(0) )
+                    {
+                        v = state.cgstate.curstpmax;
+                        vv = state.bndueffective[i]-state.cgstate.x[i];
+                        if( (double)(vv)<(double)(0) )
+                        {
+                            vv = 0;
+                        }
+                        state.cgstate.curstpmax = apserv.safeminposrv(vv, state.cgstate.d[i], state.cgstate.curstpmax);
+                        if( (double)(state.cgstate.curstpmax)<(double)(v) )
+                        {
+                            state.variabletofreeze = i;
+                            state.valuetofreeze = state.bndueffective[i];
+                        }
+                    }
+                }
+                for(i=0; i<=nslack-1; i++)
+                {
+                    if( (double)(state.cgstate.d[nmain+i])<(double)(0) )
+                    {
+                        v = state.cgstate.curstpmax;
+                        vv = state.cgstate.x[nmain+i];
+                        if( (double)(vv)<(double)(0) )
+                        {
+                            vv = 0;
+                        }
+                        state.cgstate.curstpmax = apserv.safeminposrv(vv, -state.cgstate.d[nmain+i], state.cgstate.curstpmax);
+                        if( (double)(state.cgstate.curstpmax)<(double)(v) )
+                        {
+                            state.variabletofreeze = nmain+i;
+                            state.valuetofreeze = 0;
+                        }
+                    }
+                }
+                if( (double)(state.cgstate.curstpmax)==(double)(0) )
+                {
+                    state.activeconstraints[state.variabletofreeze] = true;
+                    state.constrainedvalues[state.variabletofreeze] = state.valuetofreeze;
+                    state.cgstate.x[state.variabletofreeze] = state.valuetofreeze;
+                    state.cgstate.terminationneeded = true;
+                }
+                goto lbl_17;
+            }
+            if( state.cgstate.lsend )
+            {
+                
+                //
+                // Line search just finished.
+                // Maybe we should activate some constraints?
+                //
+                b = (double)(state.cgstate.stp)>=(double)(state.cgstate.curstpmax) & state.variabletofreeze>=0;
+                if( b )
+                {
+                    state.activeconstraints[state.variabletofreeze] = true;
+                    state.constrainedvalues[state.variabletofreeze] = state.valuetofreeze;
+                }
+                
+                //
+                // Additional activation of constraints
+                //
+                b = b | additionalcheckforconstraints(state, state.cgstate.x);
+                
+                //
+                // If at least one constraint was activated we have to rebuild constraint matrices
+                //
+                if( b )
+                {
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        state.tmp0[i_] = state.cgstate.x[i_];
+                    }
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        state.tmp1[i_] = state.lastg[i_];
+                    }
+                    if( !prepareconstraintmatrix(state, state.tmp0, state.tmp1, ref state.cgstate.x, ref state.cgstate.g) )
+                    {
+                        state.repterminationtype = -3;
+                        result = false;
+                        return result;
+                    }
+                    state.cgstate.innerresetneeded = true;
+                }
+                goto lbl_17;
+            }
+            if( !state.cgstate.needfg )
+            {
+                goto lbl_19;
+            }
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                state.tmp1[i_] = state.cgstate.x[i_];
+            }
+            projectpointandunscale(state, ref state.tmp1, ref state.x, ref state.r, ref vv);
+            clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_21;
+            }
+            state.needfg = true;
+            state.rstate.stage = 2;
+            goto lbl_rcomm;
+        lbl_2:
+            state.needfg = false;
+            goto lbl_22;
+        lbl_21:
+            state.needf = true;
+            state.rstate.stage = 3;
+            goto lbl_rcomm;
+        lbl_3:
+            state.fbase = state.f;
+            i = 0;
+        lbl_23:
+            if( i>nmain-1 )
+            {
+                goto lbl_25;
+            }
+            v = state.x[i];
+            b = false;
+            if( state.hasbndl[i] )
+            {
+                b = b | (double)(v-state.diffstep*state.soriginal[i])<(double)(state.bndloriginal[i]);
+            }
+            if( state.hasbndu[i] )
+            {
+                b = b | (double)(v+state.diffstep*state.soriginal[i])>(double)(state.bnduoriginal[i]);
+            }
+            if( b )
+            {
+                goto lbl_26;
+            }
+            state.x[i] = v-state.diffstep*state.soriginal[i];
+            state.rstate.stage = 4;
+            goto lbl_rcomm;
+        lbl_4:
+            state.fm2 = state.f;
+            state.x[i] = v-0.5*state.diffstep*state.soriginal[i];
+            state.rstate.stage = 5;
+            goto lbl_rcomm;
+        lbl_5:
+            state.fm1 = state.f;
+            state.x[i] = v+0.5*state.diffstep*state.soriginal[i];
+            state.rstate.stage = 6;
+            goto lbl_rcomm;
+        lbl_6:
+            state.fp1 = state.f;
+            state.x[i] = v+state.diffstep*state.soriginal[i];
+            state.rstate.stage = 7;
+            goto lbl_rcomm;
+        lbl_7:
+            state.fp2 = state.f;
+            state.g[i] = (8*(state.fp1-state.fm1)-(state.fp2-state.fm2))/(6*state.diffstep*state.soriginal[i]);
+            goto lbl_27;
+        lbl_26:
+            state.xm1 = Math.Max(v-state.diffstep*state.soriginal[i], state.bndloriginal[i]);
+            state.x[i] = state.xm1;
+            state.rstate.stage = 8;
+            goto lbl_rcomm;
+        lbl_8:
+            state.fm1 = state.f;
+            state.xp1 = Math.Min(v+state.diffstep*state.soriginal[i], state.bnduoriginal[i]);
+            state.x[i] = state.xp1;
+            state.rstate.stage = 9;
+            goto lbl_rcomm;
+        lbl_9:
+            state.fp1 = state.f;
+            state.g[i] = (state.fp1-state.fm1)/(state.xp1-state.xm1);
+        lbl_27:
+            state.x[i] = v;
+            i = i+1;
+            goto lbl_23;
+        lbl_25:
+            state.f = state.fbase;
+            state.needf = false;
+        lbl_22:
+            if( (double)(state.f)<(double)(state.trimthreshold) )
+            {
+                
+                //
+                // normal processing
+                //
+                state.cgstate.f = state.f;
+                scalegradientandexpand(state, state.g, ref state.cgstate.g);
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    state.lastg[i_] = state.cgstate.g[i_];
+                }
+                modifytargetfunction(state, state.tmp1, state.r, vv, ref state.cgstate.f, ref state.cgstate.g, ref state.gnorm, ref state.mpgnorm);
+            }
+            else
+            {
+                
+                //
+                // function value is too high, trim it
+                //
+                state.cgstate.f = state.trimthreshold;
+                for(i=0; i<=nmain+nslack-1; i++)
+                {
+                    state.cgstate.g[i] = 0.0;
+                }
+            }
+            goto lbl_17;
+        lbl_19:
+            if( !state.cgstate.xupdated )
+            {
+                goto lbl_28;
+            }
+            
+            //
+            // Report
+            //
+            unscalepoint(state, state.cgstate.x, ref state.x);
+            state.f = state.cgstate.f;
+            clearrequestfields(state);
+            state.xupdated = true;
+            state.rstate.stage = 10;
+            goto lbl_rcomm;
+        lbl_10:
+            state.xupdated = false;
+            goto lbl_17;
+        lbl_28:
+            goto lbl_17;
+        lbl_18:
+            mincg.mincgresults(state.cgstate, ref state.xcur, state.cgrep);
+            unscalepoint(state, state.xcur, ref state.xend);
+            state.repinneriterationscount = state.repinneriterationscount+state.cgrep.iterationscount;
+            state.repouteriterationscount = state.repouteriterationscount+1;
+            state.repnfev = state.repnfev+state.cgrep.nfev;
+            
+            //
+            // Update RepDebugFF with function value at current point
+            //
+            unscalepoint(state, state.xcur, ref state.x);
+            clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_30;
+            }
+            state.needfg = true;
+            state.rstate.stage = 11;
+            goto lbl_rcomm;
+        lbl_11:
+            state.needfg = false;
+            goto lbl_31;
+        lbl_30:
+            state.needf = true;
+            state.rstate.stage = 12;
+            goto lbl_rcomm;
+        lbl_12:
+            state.needf = false;
+        lbl_31:
+            state.repnfev = state.repnfev+1;
+            state.repdebugff = state.f;
+            
+            //
+            // Check for stopping:
+            // * "normal", outer step size is small enough, infeasibility is within bounds
+            // * "inconsistent",  if Lagrange multipliers increased beyond threshold given by MaxLagrangeMul
+            // * "too stringent", in other cases
+            //
+            v = 0;
+            for(i=0; i<=nmain-1; i++)
+            {
+                v = v+math.sqr((state.xcur[i]-state.xprev[i])/state.seffective[i]);
+            }
+            v = Math.Sqrt(v);
+            if( (double)(v)<=(double)(state.outerepsx) )
+            {
+                state.repterminationtype = 4;
+                goto lbl_16;
+            }
+            if( state.maxits>0 )
+            {
+                state.itsleft = state.itsleft-state.cgrep.iterationscount;
+                if( state.itsleft<=0 )
+                {
+                    state.repterminationtype = 5;
+                    goto lbl_16;
+                }
+            }
+            if( (double)(state.repouteriterationscount)>=(double)(maxouterits) )
+            {
+                state.repterminationtype = 5;
+                goto lbl_16;
+            }
+            
+            //
+            // Next iteration
+            //
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                state.xprev[i_] = state.xcur[i_];
+            }
+            goto lbl_15;
+        lbl_16:
+            
+            //
+            // We've stopped, fill debug information
+            //
+            state.repdebugeqerr = 0.0;
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += state.ceeffective[i,i_]*state.xcur[i_];
+                }
+                state.repdebugeqerr = state.repdebugeqerr+math.sqr(v-state.ceeffective[i,nmain+nslack]);
+            }
+            state.repdebugeqerr = Math.Sqrt(state.repdebugeqerr);
+            state.repdebugdx = 0;
+            for(i=0; i<=nmain-1; i++)
+            {
+                state.repdebugdx = state.repdebugdx+math.sqr(state.xcur[i]-state.xstart[i]);
+            }
+            state.repdebugdx = Math.Sqrt(state.repdebugdx);
+            result = false;
+            return result;
+            
+            //
+            // Saving state
+            //
+        lbl_rcomm:
+            result = true;
+            state.rstate.ia[0] = nmain;
+            state.rstate.ia[1] = nslack;
+            state.rstate.ia[2] = m;
+            state.rstate.ia[3] = i;
+            state.rstate.ia[4] = j;
+            state.rstate.ba[0] = b;
+            state.rstate.ra[0] = v;
+            state.rstate.ra[1] = vv;
+            return result;
+        }
+
+
+        /*************************************************************************
+        BLEIC results
+
+        INPUT PARAMETERS:
+            State   -   algorithm state
+
+        OUTPUT PARAMETERS:
+            X       -   array[0..N-1], solution
+            Rep     -   optimization report. You should check Rep.TerminationType
+                        in  order  to  distinguish  successful  termination  from
+                        unsuccessful one.
+                        More information about fields of this  structure  can  be
+                        found in the comments on MinBLEICReport datatype.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicresults(minbleicstate state,
+            ref double[] x,
+            minbleicreport rep)
+        {
+            x = new double[0];
+
+            minbleicresultsbuf(state, ref x, rep);
+        }
+
+
+        /*************************************************************************
+        BLEIC results
+
+        Buffered implementation of MinBLEICResults() which uses pre-allocated buffer
+        to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
+        intended to be used in the inner cycles of performance critical algorithms
+        where array reallocation penalty is too large to be ignored.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicresultsbuf(minbleicstate state,
+            ref double[] x,
+            minbleicreport rep)
+        {
+            int i = 0;
+            int i_ = 0;
+
+            if( ap.len(x)<state.nmain )
+            {
+                x = new double[state.nmain];
+            }
+            rep.inneriterationscount = state.repinneriterationscount;
+            rep.outeriterationscount = state.repouteriterationscount;
+            rep.nfev = state.repnfev;
+            rep.terminationtype = state.repterminationtype;
+            if( state.repterminationtype>0 )
+            {
+                for(i_=0; i_<=state.nmain-1;i_++)
+                {
+                    x[i_] = state.xend[i_];
+                }
+            }
+            else
+            {
+                for(i=0; i<=state.nmain-1; i++)
+                {
+                    x[i] = Double.NaN;
+                }
+            }
+            rep.debugeqerr = state.repdebugeqerr;
+            rep.debugfs = state.repdebugfs;
+            rep.debugff = state.repdebugff;
+            rep.debugdx = state.repdebugdx;
+        }
+
+
+        /*************************************************************************
+        This subroutine restarts algorithm from new point.
+        All optimization parameters (including constraints) are left unchanged.
+
+        This  function  allows  to  solve multiple  optimization  problems  (which
+        must have  same number of dimensions) without object reallocation penalty.
+
+        INPUT PARAMETERS:
+            State   -   structure previously allocated with MinBLEICCreate call.
+            X       -   new starting point.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicrestartfrom(minbleicstate state,
+            double[] x)
+        {
+            int n = 0;
+            int i_ = 0;
+
+            n = state.nmain;
+            
+            //
+            // First, check for errors in the inputs
+            //
+            ap.assert(ap.len(x)>=n, "MinBLEICRestartFrom: Length(X)<N");
+            ap.assert(apserv.isfinitevector(x, n), "MinBLEICRestartFrom: X contains infinite or NaN values!");
+            
+            //
+            // Set XC
+            //
+            for(i_=0; i_<=n-1;i_++)
+            {
+                state.xstart[i_] = x[i_];
+            }
+            
+            //
+            // prepare RComm facilities
+            //
+            state.rstate.ia = new int[4+1];
+            state.rstate.ba = new bool[0+1];
+            state.rstate.ra = new double[1+1];
+            state.rstate.stage = -1;
+            clearrequestfields(state);
+        }
+
+
+        /*************************************************************************
+        Clears request fileds (to be sure that we don't forget to clear something)
+        *************************************************************************/
+        private static void clearrequestfields(minbleicstate state)
+        {
+            state.needf = false;
+            state.needfg = false;
+            state.xupdated = false;
+        }
+
+
+        /*************************************************************************
+        This functions "unscales" point, i.e. it makes transformation  from scaled
+        variables to unscaled ones. Only leading NMain variables are copied from
+        XUnscaled to XScaled.
+        *************************************************************************/
+        private static void unscalepoint(minbleicstate state,
+            double[] xscaled,
+            ref double[] xunscaled)
+        {
+            int i = 0;
+            double v = 0;
+
+            for(i=0; i<=state.nmain-1; i++)
+            {
+                v = xscaled[i]*state.transforms[i];
+                if( state.hasbndl[i] )
+                {
+                    if( (double)(v)<(double)(state.bndloriginal[i]) )
+                    {
+                        v = state.bndloriginal[i];
+                    }
+                }
+                if( state.hasbndu[i] )
+                {
+                    if( (double)(v)>(double)(state.bnduoriginal[i]) )
+                    {
+                        v = state.bnduoriginal[i];
+                    }
+                }
+                xunscaled[i] = v;
+            }
+        }
+
+
+        /*************************************************************************
+        This function:
+        1. makes projection of XScaled into equality constrained subspace
+           (X is modified in-place)
+        2. stores residual from the projection into R
+        3. unscales projected XScaled and stores result into XUnscaled with
+           additional enforcement
+        It calculates set of additional values which are used later for
+        modification of the target function F.
+
+        INPUT PARAMETERS:
+            State   -   optimizer state (we use its fields to get information
+                        about constraints)
+            X       -   vector being projected
+            R       -   preallocated buffer, used to store residual from projection
+
+        OUTPUT PARAMETERS:
+            X       -   projection of input X
+            R       -   residual
+            RNorm   -   residual norm squared, used later to modify target function
+        *************************************************************************/
+        private static void projectpointandunscale(minbleicstate state,
+            ref double[] xscaled,
+            ref double[] xunscaled,
+            ref double[] rscaled,
+            ref double rnorm2)
+        {
+            double v = 0;
+            int i = 0;
+            int nmain = 0;
+            int nslack = 0;
+            int i_ = 0;
+
+            rnorm2 = 0;
+
+            nmain = state.nmain;
+            nslack = state.nslack;
+            
+            //
+            // * subtract XE from XScaled
+            // * project XScaled
+            // * calculate norm of deviation from null space, store it in RNorm2
+            // * calculate residual from projection, store it in R
+            // * add XE to XScaled
+            // * unscale variables
+            //
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                xscaled[i_] = xscaled[i_] - state.xe[i_];
+            }
+            rnorm2 = 0;
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                rscaled[i] = 0;
+            }
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                if( state.activeconstraints[i] )
+                {
+                    v = xscaled[i];
+                    xscaled[i] = 0;
+                    rscaled[i] = rscaled[i]+v;
+                    rnorm2 = rnorm2+math.sqr(v);
+                }
+            }
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += xscaled[i_]*state.cecurrent[i,i_];
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    xscaled[i_] = xscaled[i_] - v*state.cecurrent[i,i_];
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    rscaled[i_] = rscaled[i_] + v*state.cecurrent[i,i_];
+                }
+                rnorm2 = rnorm2+math.sqr(v);
+            }
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                xscaled[i_] = xscaled[i_] + state.xe[i_];
+            }
+            unscalepoint(state, xscaled, ref xunscaled);
+        }
+
+
+        /*************************************************************************
+        This function scales and copies NMain elements of GUnscaled into GScaled.
+        Other NSlack components of GScaled are set to zero.
+        *************************************************************************/
+        private static void scalegradientandexpand(minbleicstate state,
+            double[] gunscaled,
+            ref double[] gscaled)
+        {
+            int i = 0;
+
+            for(i=0; i<=state.nmain-1; i++)
+            {
+                gscaled[i] = gunscaled[i]*state.transforms[i];
+            }
+            for(i=0; i<=state.nslack-1; i++)
+            {
+                gscaled[state.nmain+i] = 0;
+            }
+        }
+
+
+        /*************************************************************************
+        This subroutine applies modifications to the target function given by
+        its value F and gradient G at the projected point X which lies in the
+        equality constrained subspace.
+
+        Following modifications are applied:
+        * modified barrier functions to handle inequality constraints
+          (both F and G are modified)
+        * projection of gradient into equality constrained subspace
+          (only G is modified)
+        * quadratic penalty for deviations from equality constrained subspace
+          (both F and G are modified)
+
+        It also calculates gradient norm (three different norms for three
+        different types of gradient), feasibility and complementary slackness
+        errors.
+
+        INPUT PARAMETERS:
+            State   -   optimizer state (we use its fields to get information
+                        about constraints)
+            X       -   point (projected into equality constrained subspace)
+            R       -   residual from projection
+            RNorm2  -   residual norm squared
+            F       -   function value at X
+            G       -   function gradient at X
+
+        OUTPUT PARAMETERS:
+            F       -   modified function value at X
+            G       -   modified function gradient at X
+            GNorm   -   2-norm of unmodified G
+            MPGNorm -   2-norm of modified G
+            MBA     -   minimum argument of barrier functions.
+                        If X is strictly feasible, it is greater than zero.
+                        If X lies on a boundary, it is zero.
+                        It is negative for infeasible X.
+            FIErr   -   2-norm of feasibility error with respect to
+                        inequality/bound constraints
+            CSErr   -   2-norm of complementarity slackness error
+        *************************************************************************/
+        private static void modifytargetfunction(minbleicstate state,
+            double[] x,
+            double[] r,
+            double rnorm2,
+            ref double f,
+            ref double[] g,
+            ref double gnorm,
+            ref double mpgnorm)
+        {
+            double v = 0;
+            int i = 0;
+            int nmain = 0;
+            int nslack = 0;
+            bool hasconstraints = new bool();
+            int i_ = 0;
+
+            gnorm = 0;
+            mpgnorm = 0;
+
+            nmain = state.nmain;
+            nslack = state.nslack;
+            hasconstraints = false;
+            
+            //
+            // GNorm
+            //
+            v = 0.0;
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                v += g[i_]*g[i_];
+            }
+            gnorm = Math.Sqrt(v);
+            
+            //
+            // Process equality constraints:
+            // * modify F to handle penalty term for equality constraints
+            // * project gradient on null space of equality constraints
+            // * add penalty term for equality constraints to gradient
+            //
+            f = f+rnorm2;
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                if( state.activeconstraints[i] )
+                {
+                    g[i] = 0;
+                }
+            }
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += g[i_]*state.cecurrent[i,i_];
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    g[i_] = g[i_] - v*state.cecurrent[i,i_];
+                }
+            }
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                g[i_] = g[i_] + 2*r[i_];
+            }
+            
+            //
+            // MPGNorm
+            //
+            v = 0.0;
+            for(i_=0; i_<=nmain+nslack-1;i_++)
+            {
+                v += g[i_]*g[i_];
+            }
+            mpgnorm = Math.Sqrt(v);
+        }
+
+
+        /*************************************************************************
+        This function makes additional check for constraints which can be activated.
+
+        We try activate constraints one by one, but it is possible that several
+        constraints should be activated during one iteration. It this case only
+        one of them (probably last) will be activated. This function will fix it -
+        it will pass through constraints and activate those which are at the boundary
+        or beyond it.
+
+        It will return True, if at least one constraint was activated by this function.
+        *************************************************************************/
+        private static bool additionalcheckforconstraints(minbleicstate state,
+            double[] x)
+        {
+            bool result = new bool();
+            int i = 0;
+            int nmain = 0;
+            int nslack = 0;
+
+            result = false;
+            nmain = state.nmain;
+            nslack = state.nslack;
+            for(i=0; i<=nmain-1; i++)
+            {
+                if( !state.activeconstraints[i] )
+                {
+                    if( state.hasbndl[i] )
+                    {
+                        if( (double)(x[i])<=(double)(state.bndleffective[i]) )
+                        {
+                            state.activeconstraints[i] = true;
+                            state.constrainedvalues[i] = state.bndleffective[i];
+                            result = true;
+                        }
+                    }
+                    if( state.hasbndu[i] )
+                    {
+                        if( (double)(x[i])>=(double)(state.bndueffective[i]) )
+                        {
+                            state.activeconstraints[i] = true;
+                            state.constrainedvalues[i] = state.bndueffective[i];
+                            result = true;
+                        }
+                    }
+                }
+            }
+            for(i=0; i<=nslack-1; i++)
+            {
+                if( !state.activeconstraints[nmain+i] )
+                {
+                    if( (double)(x[nmain+i])<=(double)(0) )
+                    {
+                        state.activeconstraints[nmain+i] = true;
+                        state.constrainedvalues[nmain+i] = 0;
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
+
+
+        /*************************************************************************
+        This function rebuilds CECurrent and XE according to current set of
+        active bound constraints.
+        *************************************************************************/
+        private static void rebuildcexe(minbleicstate state)
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int nmain = 0;
+            int nslack = 0;
+            double v = 0;
+            int i_ = 0;
+
+            nmain = state.nmain;
+            nslack = state.nslack;
+            ablas.rmatrixcopy(state.cecnt, nmain+nslack+1, state.ceeffective, 0, 0, ref state.cecurrent, 0, 0);
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                
+                //
+                // "Subtract" active bound constraints from I-th linear constraint
+                //
+                for(j=0; j<=nmain+nslack-1; j++)
+                {
+                    if( state.activeconstraints[j] )
+                    {
+                        state.cecurrent[i,nmain+nslack] = state.cecurrent[i,nmain+nslack]-state.cecurrent[i,j]*state.constrainedvalues[j];
+                        state.cecurrent[i,j] = 0.0;
+                    }
+                }
+                
+                //
+                // Reorthogonalize I-th constraint with respect to previous ones
+                // NOTE: we also update right part, which is CECurrent[...,NMain+NSlack].
+                //
+                for(k=0; k<=i-1; k++)
+                {
+                    v = 0.0;
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        v += state.cecurrent[k,i_]*state.cecurrent[i,i_];
+                    }
+                    for(i_=0; i_<=nmain+nslack;i_++)
+                    {
+                        state.cecurrent[i,i_] = state.cecurrent[i,i_] - v*state.cecurrent[k,i_];
+                    }
+                }
+                
+                //
+                // Calculate norm of I-th row of CECurrent. Fill by zeros, if it is
+                // too small. Normalize otherwise.
+                //
+                // NOTE: we also scale last column of CECurrent (right part)
+                //
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += state.cecurrent[i,i_]*state.cecurrent[i,i_];
+                }
+                v = Math.Sqrt(v);
+                if( (double)(v)>(double)(10000*math.machineepsilon) )
+                {
+                    v = 1/v;
+                    for(i_=0; i_<=nmain+nslack;i_++)
+                    {
+                        state.cecurrent[i,i_] = v*state.cecurrent[i,i_];
+                    }
+                }
+                else
+                {
+                    for(j=0; j<=nmain+nslack; j++)
+                    {
+                        state.cecurrent[i,j] = 0;
+                    }
+                }
+            }
+            for(j=0; j<=nmain+nslack-1; j++)
+            {
+                state.xe[j] = 0;
+            }
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                if( state.activeconstraints[i] )
+                {
+                    state.xe[i] = state.xe[i]+state.constrainedvalues[i];
+                }
+            }
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = state.cecurrent[i,nmain+nslack];
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    state.xe[i_] = state.xe[i_] + v*state.cecurrent[i,i_];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function projects gradient onto equality constrained subspace
+        *************************************************************************/
+        private static void makegradientprojection(minbleicstate state,
+            ref double[] pg)
+        {
+            int i = 0;
+            int nmain = 0;
+            int nslack = 0;
+            double v = 0;
+            int i_ = 0;
+
+            nmain = state.nmain;
+            nslack = state.nslack;
+            for(i=0; i<=nmain+nslack-1; i++)
+            {
+                if( state.activeconstraints[i] )
+                {
+                    pg[i] = 0;
+                }
+            }
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += pg[i_]*state.cecurrent[i,i_];
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    pg[i_] = pg[i_] - v*state.cecurrent[i,i_];
+                }
+            }
+        }
+
+
+        /*************************************************************************
+        This function prepares equality constrained subproblem:
+
+        1. X is used to activate constraints (if there are ones which are still
+           inactive, but should be activated).
+        2. constraints matrix CEOrt is copied to CECurrent and modified  according
+           to the list of active bound constraints (corresponding elements are
+           filled by zeros and reorthogonalized).
+        3. XE - least squares solution of equality constraints - is recalculated
+        4. X is copied to PX and projected onto equality constrained subspace
+        5. inactive constraints are checked against PX - if there is at least one
+           which should be activated, we activate it and move back to (2)
+        6. as result, PX is feasible with respect to bound constraints - step (5)
+           guarantees it. But PX can be infeasible with respect to equality ones,
+           because step (2) is done without checks for consistency. As the final
+           step, we check that PX is feasible. If not, we return False. True is
+           returned otherwise.
+
+        If this algorithm returned True, then:
+        * X is not changed
+        * PX contains projection of X onto constrained subspace
+        * G is not changed
+        * PG contains projection of G onto constrained subspace
+        * PX is feasible with respect to all constraints
+        * all constraints which are active at PX, are activated
+        *************************************************************************/
+        private static bool prepareconstraintmatrix(minbleicstate state,
+            double[] x,
+            double[] g,
+            ref double[] px,
+            ref double[] pg)
+        {
+            bool result = new bool();
+            int i = 0;
+            int nmain = 0;
+            int nslack = 0;
+            double v = 0;
+            double ferr = 0;
+            int i_ = 0;
+
+            nmain = state.nmain;
+            nslack = state.nslack;
+            result = true;
+            
+            //
+            // Step 1
+            //
+            additionalcheckforconstraints(state, x);
+            
+            //
+            // Steps 2-5
+            //
+            do
+            {
+                
+                //
+                // Steps 2-3
+                //
+                rebuildcexe(state);
+                
+                //
+                // Step 4
+                //
+                // Calculate PX, PG
+                //
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    px[i_] = x[i_];
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    px[i_] = px[i_] - state.xe[i_];
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    pg[i_] = g[i_];
+                }
+                for(i=0; i<=nmain+nslack-1; i++)
+                {
+                    if( state.activeconstraints[i] )
+                    {
+                        px[i] = 0;
+                        pg[i] = 0;
+                    }
+                }
+                for(i=0; i<=state.cecnt-1; i++)
+                {
+                    v = 0.0;
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        v += px[i_]*state.cecurrent[i,i_];
+                    }
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        px[i_] = px[i_] - v*state.cecurrent[i,i_];
+                    }
+                    v = 0.0;
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        v += pg[i_]*state.cecurrent[i,i_];
+                    }
+                    for(i_=0; i_<=nmain+nslack-1;i_++)
+                    {
+                        pg[i_] = pg[i_] - v*state.cecurrent[i,i_];
+                    }
+                }
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    px[i_] = px[i_] + state.xe[i_];
+                }
+                
+                //
+                // Step 5 (loop condition below)
+                //
+            }
+            while( additionalcheckforconstraints(state, px) );
+            
+            //
+            // Step 6
+            //
+            ferr = 0;
+            for(i=0; i<=state.cecnt-1; i++)
+            {
+                v = 0.0;
+                for(i_=0; i_<=nmain+nslack-1;i_++)
+                {
+                    v += px[i_]*state.ceeffective[i,i_];
+                }
+                v = v-state.ceeffective[i,nmain+nslack];
+                ferr = Math.Max(ferr, Math.Abs(v));
+            }
+            result = (double)(ferr)<=(double)(state.outerepsi);
+            return result;
+        }
+
+
+        /*************************************************************************
+        Internal initialization subroutine
+        *************************************************************************/
+        private static void minbleicinitinternal(int n,
+            double[] x,
+            double diffstep,
+            minbleicstate state)
+        {
+            int i = 0;
+            double[,] c = new double[0,0];
+            int[] ct = new int[0];
+
+            state.nmain = n;
+            state.optdim = 0;
+            state.diffstep = diffstep;
+            state.bndloriginal = new double[n];
+            state.bndleffective = new double[n];
+            state.hasbndl = new bool[n];
+            state.bnduoriginal = new double[n];
+            state.bndueffective = new double[n];
+            state.hasbndu = new bool[n];
+            state.xstart = new double[n];
+            state.soriginal = new double[n];
+            state.x = new double[n];
+            state.g = new double[n];
+            for(i=0; i<=n-1; i++)
+            {
+                state.bndloriginal[i] = Double.NegativeInfinity;
+                state.hasbndl[i] = false;
+                state.bnduoriginal[i] = Double.PositiveInfinity;
+                state.hasbndu[i] = false;
+                state.soriginal[i] = 1.0;
+            }
+            minbleicsetlc(state, c, ct, 0);
+            minbleicsetinnercond(state, 0.0, 0.0, 0.0);
+            minbleicsetoutercond(state, 1.0E-6, 1.0E-6);
+            minbleicsetmaxits(state, 0);
+            minbleicsetxrep(state, false);
+            minbleicsetstpmax(state, 0.0);
+            minbleicsetprecdefault(state);
+            minbleicrestartfrom(state, x);
+        }
+
+
     }
-
-    /*************************************************************************
-    BLEIC results
-
-    Buffered implementation of MinBLEICResults() which uses pre-allocated buffer
-    to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
-    intended to be used in the inner cycles of performance critical algorithms
-    where array reallocation penalty is too large to be ignored.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicresultsbuf(minbleicstate state, ref double[] x, minbleicreport rep)
-    {
-
-        minbleic.minbleicresultsbuf(state.innerobj, ref x, rep.innerobj);
-        return;
-    }
-
-    /*************************************************************************
-    This subroutine restarts algorithm from new point.
-    All optimization parameters (including constraints) are left unchanged.
-
-    This  function  allows  to  solve multiple  optimization  problems  (which
-    must have  same number of dimensions) without object reallocation penalty.
-
-    INPUT PARAMETERS:
-        State   -   structure previously allocated with MinBLEICCreate call.
-        X       -   new starting point.
-
-      -- ALGLIB --
-         Copyright 28.11.2010 by Bochkanov Sergey
-    *************************************************************************/
-    public static void minbleicrestartfrom(minbleicstate state, double[] x)
-    {
-
-        minbleic.minbleicrestartfrom(state.innerobj, x);
-        return;
-    }
-
-}
-public partial class alglib
-{
     public class minlbfgs
     {
         public class minlbfgsstate
@@ -3292,6 +7647,7 @@ public partial class alglib
             public bool xrep;
             public double stpmax;
             public double[] s;
+            public double diffstep;
             public int nfev;
             public int mcstage;
             public int k;
@@ -3305,14 +7661,21 @@ public partial class alglib
             public double stp;
             public double[] work;
             public double fold;
+            public double trimthreshold;
             public int prectype;
             public double gammak;
             public double[,] denseh;
             public double[] diagh;
+            public double fbase;
+            public double fm2;
+            public double fm1;
+            public double fp1;
+            public double fp2;
             public double[] autobuf;
             public double[] x;
             public double f;
             public double[] g;
+            public bool needf;
             public bool needfg;
             public bool xupdated;
             public rcommstate rstate;
@@ -3348,6 +7711,9 @@ public partial class alglib
         };
 
 
+
+
+        public const double gtol = 0.4;
 
 
         /*************************************************************************
@@ -3415,7 +7781,71 @@ public partial class alglib
             ap.assert(m<=n, "MinLBFGSCreate: M>N");
             ap.assert(ap.len(x)>=n, "MinLBFGSCreate: Length(X)<N!");
             ap.assert(apserv.isfinitevector(x, n), "MinLBFGSCreate: X contains infinite or NaN values!");
-            minlbfgscreatex(n, m, x, 0, state);
+            minlbfgscreatex(n, m, x, 0, 0.0, state);
+        }
+
+
+        /*************************************************************************
+        The subroutine is finite difference variant of MinLBFGSCreate().  It  uses
+        finite differences in order to differentiate target function.
+
+        Description below contains information which is specific to  this function
+        only. We recommend to read comments on MinLBFGSCreate() in  order  to  get
+        more information about creation of LBFGS optimizer.
+
+        INPUT PARAMETERS:
+            N       -   problem dimension, N>0:
+                        * if given, only leading N elements of X are used
+                        * if not given, automatically determined from size of X
+            M       -   number of corrections in the BFGS scheme of Hessian
+                        approximation update. Recommended value:  3<=M<=7. The smaller
+                        value causes worse convergence, the bigger will  not  cause  a
+                        considerably better convergence, but will cause a fall in  the
+                        performance. M<=N.
+            X       -   starting point, array[0..N-1].
+            DiffStep-   differentiation step, >0
+
+        OUTPUT PARAMETERS:
+            State   -   structure which stores algorithm state
+
+        NOTES:
+        1. algorithm uses 4-point central formula for differentiation.
+        2. differentiation step along I-th axis is equal to DiffStep*S[I] where
+           S[] is scaling vector which can be set by MinLBFGSSetScale() call.
+        3. we recommend you to use moderate values of  differentiation  step.  Too
+           large step will result in too large truncation  errors, while too small
+           step will result in too large numerical  errors.  1.0E-6  can  be  good
+           value to start with.
+        4. Numerical  differentiation  is   very   inefficient  -   one   gradient
+           calculation needs 4*N function evaluations. This function will work for
+           any N - either small (1...10), moderate (10...100) or  large  (100...).
+           However, performance penalty will be too severe for any N's except  for
+           small ones.
+           We should also say that code which relies on numerical  differentiation
+           is   less  robust  and  precise.  LBFGS  needs  exact  gradient values.
+           Imprecise gradient may slow  down  convergence,  especially  on  highly
+           nonlinear problems.
+           Thus  we  recommend to use this function for fast prototyping on small-
+           dimensional problems only, and to implement analytical gradient as soon
+           as possible.
+
+          -- ALGLIB --
+             Copyright 16.05.2011 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minlbfgscreatef(int n,
+            int m,
+            double[] x,
+            double diffstep,
+            minlbfgsstate state)
+        {
+            ap.assert(n>=1, "MinLBFGSCreateF: N too small!");
+            ap.assert(m>=1, "MinLBFGSCreateF: M<1");
+            ap.assert(m<=n, "MinLBFGSCreateF: M>N");
+            ap.assert(ap.len(x)>=n, "MinLBFGSCreateF: Length(X)<N!");
+            ap.assert(apserv.isfinitevector(x, n), "MinLBFGSCreateF: X contains infinite or NaN values!");
+            ap.assert(math.isfinite(diffstep), "MinLBFGSCreateF: DiffStep is infinite or NaN!");
+            ap.assert((double)(diffstep)>(double)(0), "MinLBFGSCreateF: DiffStep is non-positive!");
+            minlbfgscreatex(n, m, x, 0, diffstep, state);
         }
 
 
@@ -3426,15 +7856,22 @@ public partial class alglib
             State   -   structure which stores algorithm state
             EpsG    -   >=0
                         The  subroutine  finishes  its  work   if   the  condition
-                        ||G||<EpsG is satisfied, where ||.|| means Euclidian norm,
-                        G - gradient.
+                        |v|<EpsG is satisfied, where:
+                        * |.| means Euclidian norm
+                        * v - scaled gradient vector, v[i]=g[i]*s[i]
+                        * g - gradient
+                        * s - scaling coefficients set by MinLBFGSSetScale()
             EpsF    -   >=0
                         The  subroutine  finishes  its work if on k+1-th iteration
                         the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
                         is satisfied.
             EpsX    -   >=0
                         The subroutine finishes its work if  on  k+1-th  iteration
-                        the condition |X(k+1)-X(k)| <= EpsX is fulfilled.
+                        the condition |v|<=EpsX is fulfilled, where:
+                        * |.| means Euclidian norm
+                        * v - scaled step vector, v[i]=dx[i]/s[i]
+                        * dx - ste pvector, dx=X(k+1)-X(k)
+                        * s - scaling coefficients set by MinLBFGSSetScale()
             MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
                         iterations is unlimited.
 
@@ -3524,6 +7961,9 @@ public partial class alglib
         a) "how large" the variable is
         b) how large the step should be to make significant changes in the function
 
+        Scaling is also used by finite difference variant of the optimizer  - step
+        along I-th axis is equal to DiffStep*S[I].
+
         In  most  optimizers  (and  in  the  LBFGS  too)  scaling is NOT a form of
         preconditioning. It just  affects  stopping  conditions.  You  should  set
         preconditioner  by  separate  call  to  one  of  the  MinLBFGSSetPrec...()
@@ -3570,6 +8010,7 @@ public partial class alglib
                                     First  call MUST  be without this flag bit set,
                                     subsequent  calls   of   MinLBFGS   with   same
                                     MinLBFGSState structure can set Flags to 1.
+            DiffStep - numerical differentiation step
 
           -- ALGLIB --
              Copyright 02.04.2010 by Bochkanov Sergey
@@ -3578,6 +8019,7 @@ public partial class alglib
             int m,
             double[] x,
             int flags,
+            double diffstep,
             minlbfgsstate state)
         {
             bool allocatemem = new bool();
@@ -3590,6 +8032,7 @@ public partial class alglib
             //
             // Initialize
             //
+            state.diffstep = diffstep;
             state.n = n;
             state.m = m;
             allocatemem = flags%2==0;
@@ -3758,6 +8201,37 @@ public partial class alglib
 
 
         /*************************************************************************
+        NOTES:
+
+        1. This function has two different implementations: one which  uses  exact
+           (analytical) user-supplied gradient,  and one which uses function value
+           only  and  numerically  differentiates  function  in  order  to  obtain
+           gradient.
+
+           Depending  on  the  specific  function  used to create optimizer object
+           (either MinLBFGSCreate() for analytical gradient  or  MinLBFGSCreateF()
+           for numerical differentiation) you should choose appropriate variant of
+           MinLBFGSOptimize() - one  which  accepts  function  AND gradient or one
+           which accepts function ONLY.
+
+           Be careful to choose variant of MinLBFGSOptimize() which corresponds to
+           your optimization scheme! Table below lists different  combinations  of
+           callback (function/gradient) passed to MinLBFGSOptimize()  and specific
+           function used to create optimizer.
+
+
+                             |         USER PASSED TO MinLBFGSOptimize()
+           CREATED WITH      |  function only   |  function and gradient
+           ------------------------------------------------------------
+           MinLBFGSCreateF() |     work                FAIL
+           MinLBFGSCreate()  |     FAIL                work
+
+           Here "FAIL" denotes inappropriate combinations  of  optimizer  creation
+           function  and  MinLBFGSOptimize()  version.   Attemps   to   use   such
+           combination (for example, to create optimizer with MinLBFGSCreateF() and
+           to pass gradient information to MinCGOptimize()) will lead to exception
+           being thrown. Either  you  did  not pass gradient when it WAS needed or
+           you passed gradient when it was NOT needed.
 
           -- ALGLIB --
              Copyright 20.03.2009 by Bochkanov Sergey
@@ -3824,6 +8298,46 @@ public partial class alglib
             {
                 goto lbl_3;
             }
+            if( state.rstate.stage==4 )
+            {
+                goto lbl_4;
+            }
+            if( state.rstate.stage==5 )
+            {
+                goto lbl_5;
+            }
+            if( state.rstate.stage==6 )
+            {
+                goto lbl_6;
+            }
+            if( state.rstate.stage==7 )
+            {
+                goto lbl_7;
+            }
+            if( state.rstate.stage==8 )
+            {
+                goto lbl_8;
+            }
+            if( state.rstate.stage==9 )
+            {
+                goto lbl_9;
+            }
+            if( state.rstate.stage==10 )
+            {
+                goto lbl_10;
+            }
+            if( state.rstate.stage==11 )
+            {
+                goto lbl_11;
+            }
+            if( state.rstate.stage==12 )
+            {
+                goto lbl_12;
+            }
+            if( state.rstate.stage==13 )
+            {
+                goto lbl_13;
+            }
             
             //
             // Routine body
@@ -3843,22 +8357,69 @@ public partial class alglib
             // Calculate F/G at the initial point
             //
             clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_14;
+            }
             state.needfg = true;
             state.rstate.stage = 0;
             goto lbl_rcomm;
         lbl_0:
             state.needfg = false;
-            if( !state.xrep )
-            {
-                goto lbl_4;
-            }
-            clearrequestfields(state);
-            state.xupdated = true;
+            goto lbl_15;
+        lbl_14:
+            state.needf = true;
             state.rstate.stage = 1;
             goto lbl_rcomm;
         lbl_1:
-            state.xupdated = false;
+            state.fbase = state.f;
+            i = 0;
+        lbl_16:
+            if( i>n-1 )
+            {
+                goto lbl_18;
+            }
+            v = state.x[i];
+            state.x[i] = v-state.diffstep*state.s[i];
+            state.rstate.stage = 2;
+            goto lbl_rcomm;
+        lbl_2:
+            state.fm2 = state.f;
+            state.x[i] = v-0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 3;
+            goto lbl_rcomm;
+        lbl_3:
+            state.fm1 = state.f;
+            state.x[i] = v+0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 4;
+            goto lbl_rcomm;
         lbl_4:
+            state.fp1 = state.f;
+            state.x[i] = v+state.diffstep*state.s[i];
+            state.rstate.stage = 5;
+            goto lbl_rcomm;
+        lbl_5:
+            state.fp2 = state.f;
+            state.x[i] = v;
+            state.g[i] = (8*(state.fp1-state.fm1)-(state.fp2-state.fm2))/(6*state.diffstep*state.s[i]);
+            i = i+1;
+            goto lbl_16;
+        lbl_18:
+            state.f = state.fbase;
+            state.needf = false;
+        lbl_15:
+            optserv.trimprepare(state.f, ref state.trimthreshold);
+            if( !state.xrep )
+            {
+                goto lbl_19;
+            }
+            clearrequestfields(state);
+            state.xupdated = true;
+            state.rstate.stage = 6;
+            goto lbl_rcomm;
+        lbl_6:
+            state.xupdated = false;
+        lbl_19:
             state.repnfev = 1;
             state.fold = state.f;
             v = 0;
@@ -3940,10 +8501,10 @@ public partial class alglib
             // Main cycle
             //
             state.k = 0;
-        lbl_6:
+        lbl_21:
             if( false )
             {
-                goto lbl_7;
+                goto lbl_22;
             }
             
             //
@@ -3974,24 +8535,71 @@ public partial class alglib
                 state.stp = 1.0;
             }
             linmin.linminnormalized(ref state.d, ref state.stp, n);
-            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.stpmax, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
-        lbl_8:
+            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.stpmax, gtol, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
+        lbl_23:
             if( state.mcstage==0 )
             {
-                goto lbl_9;
+                goto lbl_24;
             }
             clearrequestfields(state);
+            if( (double)(state.diffstep)!=(double)(0) )
+            {
+                goto lbl_25;
+            }
             state.needfg = true;
-            state.rstate.stage = 2;
+            state.rstate.stage = 7;
             goto lbl_rcomm;
-        lbl_2:
+        lbl_7:
             state.needfg = false;
-            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.stpmax, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
-            goto lbl_8;
+            goto lbl_26;
+        lbl_25:
+            state.needf = true;
+            state.rstate.stage = 8;
+            goto lbl_rcomm;
+        lbl_8:
+            state.fbase = state.f;
+            i = 0;
+        lbl_27:
+            if( i>n-1 )
+            {
+                goto lbl_29;
+            }
+            v = state.x[i];
+            state.x[i] = v-state.diffstep*state.s[i];
+            state.rstate.stage = 9;
+            goto lbl_rcomm;
         lbl_9:
+            state.fm2 = state.f;
+            state.x[i] = v-0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 10;
+            goto lbl_rcomm;
+        lbl_10:
+            state.fm1 = state.f;
+            state.x[i] = v+0.5*state.diffstep*state.s[i];
+            state.rstate.stage = 11;
+            goto lbl_rcomm;
+        lbl_11:
+            state.fp1 = state.f;
+            state.x[i] = v+state.diffstep*state.s[i];
+            state.rstate.stage = 12;
+            goto lbl_rcomm;
+        lbl_12:
+            state.fp2 = state.f;
+            state.x[i] = v;
+            state.g[i] = (8*(state.fp1-state.fm1)-(state.fp2-state.fm2))/(6*state.diffstep*state.s[i]);
+            i = i+1;
+            goto lbl_27;
+        lbl_29:
+            state.f = state.fbase;
+            state.needf = false;
+        lbl_26:
+            optserv.trimfunction(ref state.f, ref state.g, n, state.trimthreshold);
+            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.stpmax, gtol, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
+            goto lbl_23;
+        lbl_24:
             if( !state.xrep )
             {
-                goto lbl_10;
+                goto lbl_30;
             }
             
             //
@@ -3999,11 +8607,11 @@ public partial class alglib
             //
             clearrequestfields(state);
             state.xupdated = true;
-            state.rstate.stage = 3;
+            state.rstate.stage = 13;
             goto lbl_rcomm;
-        lbl_3:
+        lbl_13:
             state.xupdated = false;
-        lbl_10:
+        lbl_30:
             state.repnfev = state.repnfev+state.nfev;
             state.repiterationscount = state.repiterationscount+1;
             for(i_=0; i_<=n-1;i_++)
@@ -4221,8 +8829,8 @@ public partial class alglib
                 state.fold = state.f;
                 state.k = state.k+1;
             }
-            goto lbl_6;
-        lbl_7:
+            goto lbl_21;
+        lbl_22:
             result = false;
             return result;
             
@@ -4347,6 +8955,7 @@ public partial class alglib
         *************************************************************************/
         private static void clearrequestfields(minlbfgsstate state)
         {
+            state.needf = false;
             state.needfg = false;
             state.xupdated = false;
         }
@@ -6164,6 +10773,7 @@ public partial class alglib
         NOTE 2: this solver has following useful properties:
         * bound constraints are always satisfied exactly
         * function is evaluated only INSIDE area specified by bound constraints
+          or at its boundary
 
           -- ALGLIB --
              Copyright 14.01.2011 by Bochkanov Sergey
@@ -7701,35 +12311,6 @@ public partial class alglib
     }
     public class mincomp
     {
-        /*************************************************************************
-        Obsolete function, use MinLBFGSSetPrecDefault() instead.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minlbfgssetdefaultpreconditioner(minlbfgs.minlbfgsstate state)
-        {
-            minlbfgs.minlbfgssetprecdefault(state);
-        }
-
-
-        /*************************************************************************
-        Obsolete function, use MinLBFGSSetCholeskyPreconditioner() instead.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minlbfgssetcholeskypreconditioner(minlbfgs.minlbfgsstate state,
-            double[,] p,
-            bool isupper)
-        {
-            minlbfgs.minlbfgssetpreccholesky(state, p, isupper);
-        }
-
-
-    }
-    public class minasa
-    {
         public class minasastate
         {
             public int n;
@@ -7812,68 +12393,67 @@ public partial class alglib
         public const int n1 = 2;
         public const int n2 = 2;
         public const double stpmin = 1.0E-300;
+        public const double gtol = 0.3;
         public const double gpaftol = 0.0001;
         public const double gpadecay = 0.5;
         public const double asarho = 0.5;
 
 
         /*************************************************************************
-                      NONLINEAR BOUND CONSTRAINED OPTIMIZATION USING
-                              MODIFIED ACTIVE SET ALGORITHM
-                           WILLIAM W. HAGER AND HONGCHAO ZHANG
+        Obsolete function, use MinLBFGSSetPrecDefault() instead.
 
-        DESCRIPTION:
-        The  subroutine  minimizes  function  F(x)  of  N  arguments  with   bound
-        constraints: BndL[i] <= x[i] <= BndU[i]
-
-        This method is  globally  convergent  as  long  as  grad(f)  is  Lipschitz
-        continuous on a level set: L = { x : f(x)<=f(x0) }.
-
-
-        REQUIREMENTS:
-        Algorithm will request following information during its operation:
-        * function value F and its gradient G (simultaneously) at given point X
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minlbfgssetdefaultpreconditioner(minlbfgs.minlbfgsstate state)
+        {
+            minlbfgs.minlbfgssetprecdefault(state);
+        }
 
 
-        USAGE:
-        1. User initializes algorithm state with MinASACreate() call
-        2. User tunes solver parameters with MinASASetCond() MinASASetStpMax() and
-           other functions
-        3. User calls MinASAOptimize() function which takes algorithm  state   and
-           pointer (delegate, etc.) to callback function which calculates F/G.
-        4. User calls MinASAResults() to get solution
-        5. Optionally, user may call MinASARestartFrom() to solve another  problem
-           with same N but another starting point and/or another function.
-           MinASARestartFrom() allows to reuse already initialized structure.
+        /*************************************************************************
+        Obsolete function, use MinLBFGSSetCholeskyPreconditioner() instead.
+
+          -- ALGLIB --
+             Copyright 13.10.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minlbfgssetcholeskypreconditioner(minlbfgs.minlbfgsstate state,
+            double[,] p,
+            bool isupper)
+        {
+            minlbfgs.minlbfgssetpreccholesky(state, p, isupper);
+        }
 
 
-        INPUT PARAMETERS:
-            N       -   problem dimension, N>0:
-                        * if given, only leading N elements of X are used
-                        * if not given, automatically determined from sizes of
-                          X/BndL/BndU.
-            X       -   starting point, array[0..N-1].
-            BndL    -   lower bounds, array[0..N-1].
-                        all elements MUST be specified,  i.e.  all  variables  are
-                        bounded. However, if some (all) variables  are  unbounded,
-                        you may specify very small number as bound: -1000,  -1.0E6
-                        or -1.0E300, or something like that.
-            BndU    -   upper bounds, array[0..N-1].
-                        all elements MUST be specified,  i.e.  all  variables  are
-                        bounded. However, if some (all) variables  are  unbounded,
-                        you may specify very large number as bound: +1000,  +1.0E6
-                        or +1.0E300, or something like that.
+        /*************************************************************************
+        This is obsolete function which was used by previous version of the  BLEIC
+        optimizer. It does nothing in the current version of BLEIC.
 
-        OUTPUT PARAMETERS:
-            State   -   structure stores algorithm state
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetbarrierwidth(minbleic.minbleicstate state,
+            double mu)
+        {
+        }
 
-        NOTES:
 
-        1. you may tune stopping conditions with MinASASetCond() function
-        2. if target function contains exp() or other fast growing functions,  and
-           optimization algorithm makes too large steps which leads  to  overflow,
-           use MinASASetStpMax() function to bound algorithm's steps.
-        3. this function does NOT support infinite/NaN values in X, BndL, BndU.
+        /*************************************************************************
+        This is obsolete function which was used by previous version of the  BLEIC
+        optimizer. It does nothing in the current version of BLEIC.
+
+          -- ALGLIB --
+             Copyright 28.11.2010 by Bochkanov Sergey
+        *************************************************************************/
+        public static void minbleicsetbarrierdecay(minbleic.minbleicstate state,
+            double mudecay)
+        {
+        }
+
+
+        /*************************************************************************
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 25.03.2010 by Bochkanov Sergey
@@ -7927,26 +12507,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        This function sets stopping conditions for the ASA optimization algorithm.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            EpsG    -   >=0
-                        The  subroutine  finishes  its  work   if   the  condition
-                        ||G||<EpsG is satisfied, where ||.|| means Euclidian norm,
-                        G - gradient.
-            EpsF    -   >=0
-                        The  subroutine  finishes  its work if on k+1-th iteration
-                        the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
-                        is satisfied.
-            EpsX    -   >=0
-                        The subroutine finishes its work if  on  k+1-th  iteration
-                        the condition |X(k+1)-X(k)| <= EpsX is fulfilled.
-            MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
-                        iterations is unlimited.
-
-        Passing EpsG=0, EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to
-        automatic stopping criterion selection (small EpsX).
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 02.04.2010 by Bochkanov Sergey
@@ -7976,14 +12538,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        This function turns on/off reporting.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            NeedXRep-   whether iteration reports are needed or not
-
-        If NeedXRep is True, algorithm will call rep() callback function if  it is
-        provided to MinASAOptimize().
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 02.04.2010 by Bochkanov Sergey
@@ -7996,14 +12552,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        This function sets optimization algorithm.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm stat
-            UAType  -   algorithm type:
-                        * -1    automatic selection of the best algorithm
-                        * 0     DY (Dai and Yuan) algorithm
-                        * 1     Hybrid DY-HS algorithm
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 02.04.2010 by Bochkanov Sergey
@@ -8021,18 +12571,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        This function sets maximum step length
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                        want to limit step length (zero by default).
-
-        Use this subroutine when you optimize target function which contains exp()
-        or  other  fast  growing  functions,  and optimization algorithm makes too
-        large  steps  which  leads  to overflow. This function allows us to reject
-        steps  that  are  too  large  (and  therefore  expose  us  to the possible
-        overflow) without actually calculating function value at the x+stp*d.
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 02.04.2010 by Bochkanov Sergey
@@ -8640,7 +13180,7 @@ public partial class alglib
             {
                 state.stp = state.laststep;
             }
-            linmin.mcsrch(n, ref state.xn, ref state.f, ref state.gc, state.d, ref state.stp, state.stpmax, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
+            linmin.mcsrch(n, ref state.xn, ref state.f, ref state.gc, state.d, ref state.stp, state.stpmax, gtol, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
         lbl_51:
             if( state.mcstage==0 )
             {
@@ -8681,7 +13221,7 @@ public partial class alglib
                     state.gc[i] = state.g[i];
                 }
             }
-            linmin.mcsrch(n, ref state.xn, ref state.f, ref state.gc, state.d, ref state.stp, state.stpmax, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
+            linmin.mcsrch(n, ref state.xn, ref state.f, ref state.gc, state.d, ref state.stp, state.stpmax, gtol, ref mcinfo, ref state.nfev, ref state.work, state.lstate, ref state.mcstage);
             goto lbl_51;
         lbl_52:
             diffcnt = 0;
@@ -8984,28 +13524,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        ASA results
-
-        INPUT PARAMETERS:
-            State   -   algorithm state
-
-        OUTPUT PARAMETERS:
-            X       -   array[0..N-1], solution
-            Rep     -   optimization report:
-                        * Rep.TerminationType completetion code:
-                            * -2    rounding errors prevent further improvement.
-                                    X contains best point found.
-                            * -1    incorrect parameters were specified
-                            *  1    relative function improvement is no more than
-                                    EpsF.
-                            *  2    relative step is no more than EpsX.
-                            *  4    gradient norm is no more than EpsG
-                            *  5    MaxIts steps was taken
-                            *  7    stopping conditions are too stringent,
-                                    further improvement is impossible
-                        * Rep.IterationsCount contains iterations count
-                        * NFEV countains number of function calculations
-                        * ActiveConstraints contains number of active constraints
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 20.03.2009 by Bochkanov Sergey
@@ -9021,12 +13541,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        ASA results
-
-        Buffered implementation of MinASAResults() which uses pre-allocated buffer
-        to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
-        intended to be used in the inner cycles of performance critical algorithms
-        where array reallocation penalty is too large to be ignored.
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 20.03.2009 by Bochkanov Sergey
@@ -9061,17 +13577,8 @@ public partial class alglib
 
 
         /*************************************************************************
-        This  subroutine  restarts  CG  algorithm from new point. All optimization
-        parameters are left unchanged.
-
-        This  function  allows  to  solve multiple  optimization  problems  (which
-        must have same number of dimensions) without object reallocation penalty.
-
-        INPUT PARAMETERS:
-            State   -   structure previously allocated with MinCGCreate call.
-            X       -   new starting point.
-            BndL    -   new lower bounds
-            BndU    -   new upper bounds
+        Obsolete optimization algorithm.
+        Was replaced by MinBLEIC subpackage.
 
           -- ALGLIB --
              Copyright 30.07.2010 by Bochkanov Sergey
@@ -9249,3599 +13756,6 @@ public partial class alglib
         {
             state.needfg = false;
             state.xupdated = false;
-        }
-
-
-    }
-    public class mincg
-    {
-        /*************************************************************************
-        This object stores state of the nonlinear CG optimizer.
-
-        You should use ALGLIB functions to work with this object.
-        *************************************************************************/
-        public class mincgstate
-        {
-            public int n;
-            public double epsg;
-            public double epsf;
-            public double epsx;
-            public int maxits;
-            public double stpmax;
-            public double suggestedstep;
-            public bool xrep;
-            public bool drep;
-            public int cgtype;
-            public int prectype;
-            public double[] diagh;
-            public double[] diaghl2;
-            public double[,] vcorr;
-            public int vcnt;
-            public double[] s;
-            public int nfev;
-            public int mcstage;
-            public int k;
-            public double[] xk;
-            public double[] dk;
-            public double[] xn;
-            public double[] dn;
-            public double[] d;
-            public double fold;
-            public double stp;
-            public double curstpmax;
-            public double[] yk;
-            public double laststep;
-            public double lastscaledstep;
-            public int mcinfo;
-            public bool innerresetneeded;
-            public bool terminationneeded;
-            public int rstimer;
-            public double[] x;
-            public double f;
-            public double[] g;
-            public bool needfg;
-            public bool xupdated;
-            public bool algpowerup;
-            public bool lsstart;
-            public bool lsend;
-            public rcommstate rstate;
-            public int repiterationscount;
-            public int repnfev;
-            public int repterminationtype;
-            public int debugrestartscount;
-            public linmin.linminstate lstate;
-            public double betahs;
-            public double betady;
-            public double[] work0;
-            public double[] work1;
-            public mincgstate()
-            {
-                diagh = new double[0];
-                diaghl2 = new double[0];
-                vcorr = new double[0,0];
-                s = new double[0];
-                xk = new double[0];
-                dk = new double[0];
-                xn = new double[0];
-                dn = new double[0];
-                d = new double[0];
-                yk = new double[0];
-                x = new double[0];
-                g = new double[0];
-                rstate = new rcommstate();
-                lstate = new linmin.linminstate();
-                work0 = new double[0];
-                work1 = new double[0];
-            }
-        };
-
-
-        public class mincgreport
-        {
-            public int iterationscount;
-            public int nfev;
-            public int terminationtype;
-        };
-
-
-
-
-        public const int rscountdownlen = 10;
-
-
-        /*************************************************************************
-                NONLINEAR CONJUGATE GRADIENT METHOD
-
-        DESCRIPTION:
-        The subroutine minimizes function F(x) of N arguments by using one of  the
-        nonlinear conjugate gradient methods.
-
-        These CG methods are globally convergent (even on non-convex functions) as
-        long as grad(f) is Lipschitz continuous in  a  some  neighborhood  of  the
-        L = { x : f(x)<=f(x0) }.
-
-
-        REQUIREMENTS:
-        Algorithm will request following information during its operation:
-        * function value F and its gradient G (simultaneously) at given point X
-
-
-        USAGE:
-        1. User initializes algorithm state with MinCGCreate() call
-        2. User tunes solver parameters with MinCGSetCond(), MinCGSetStpMax() and
-           other functions
-        3. User calls MinCGOptimize() function which takes algorithm  state   and
-           pointer (delegate, etc.) to callback function which calculates F/G.
-        4. User calls MinCGResults() to get solution
-        5. Optionally, user may call MinCGRestartFrom() to solve another  problem
-           with same N but another starting point and/or another function.
-           MinCGRestartFrom() allows to reuse already initialized structure.
-
-
-        INPUT PARAMETERS:
-            N       -   problem dimension, N>0:
-                        * if given, only leading N elements of X are used
-                        * if not given, automatically determined from size of X
-            X       -   starting point, array[0..N-1].
-
-        OUTPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 25.03.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgcreate(int n,
-            double[] x,
-            mincgstate state)
-        {
-            int i = 0;
-
-            ap.assert(n>=1, "MinCGCreate: N too small!");
-            ap.assert(ap.len(x)>=n, "MinCGCreate: Length(X)<N!");
-            ap.assert(apserv.isfinitevector(x, n), "MinCGCreate: X contains infinite or NaN values!");
-            
-            //
-            // Initialize
-            //
-            state.n = n;
-            mincgsetcond(state, 0, 0, 0, 0);
-            mincgsetxrep(state, false);
-            mincgsetdrep(state, false);
-            mincgsetstpmax(state, 0);
-            mincgsetcgtype(state, -1);
-            mincgsetprecdefault(state);
-            state.xk = new double[n];
-            state.dk = new double[n];
-            state.xn = new double[n];
-            state.dn = new double[n];
-            state.x = new double[n];
-            state.d = new double[n];
-            state.g = new double[n];
-            state.work0 = new double[n];
-            state.work1 = new double[n];
-            state.yk = new double[n];
-            state.s = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                state.s[i] = 1.0;
-            }
-            mincgrestartfrom(state, x);
-        }
-
-
-        /*************************************************************************
-        This function sets stopping conditions for CG optimization algorithm.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            EpsG    -   >=0
-                        The  subroutine  finishes  its  work   if   the  condition
-                        |v|<EpsG is satisfied, where:
-                        * |.| means Euclidian norm
-                        * v - scaled gradient vector, v[i]=g[i]*s[i]
-                        * g - gradient
-                        * s - scaling coefficients set by MinCGSetScale()
-            EpsF    -   >=0
-                        The  subroutine  finishes  its work if on k+1-th iteration
-                        the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
-                        is satisfied.
-            EpsX    -   >=0
-                        The subroutine finishes its work if  on  k+1-th  iteration
-                        the condition |v|<=EpsX is fulfilled, where:
-                        * |.| means Euclidian norm
-                        * v - scaled step vector, v[i]=dx[i]/s[i]
-                        * dx - ste pvector, dx=X(k+1)-X(k)
-                        * s - scaling coefficients set by MinCGSetScale()
-            MaxIts  -   maximum number of iterations. If MaxIts=0, the  number  of
-                        iterations is unlimited.
-
-        Passing EpsG=0, EpsF=0, EpsX=0 and MaxIts=0 (simultaneously) will lead to
-        automatic stopping criterion selection (small EpsX).
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetcond(mincgstate state,
-            double epsg,
-            double epsf,
-            double epsx,
-            int maxits)
-        {
-            ap.assert(math.isfinite(epsg), "MinCGSetCond: EpsG is not finite number!");
-            ap.assert((double)(epsg)>=(double)(0), "MinCGSetCond: negative EpsG!");
-            ap.assert(math.isfinite(epsf), "MinCGSetCond: EpsF is not finite number!");
-            ap.assert((double)(epsf)>=(double)(0), "MinCGSetCond: negative EpsF!");
-            ap.assert(math.isfinite(epsx), "MinCGSetCond: EpsX is not finite number!");
-            ap.assert((double)(epsx)>=(double)(0), "MinCGSetCond: negative EpsX!");
-            ap.assert(maxits>=0, "MinCGSetCond: negative MaxIts!");
-            if( (((double)(epsg)==(double)(0) & (double)(epsf)==(double)(0)) & (double)(epsx)==(double)(0)) & maxits==0 )
-            {
-                epsx = 1.0E-6;
-            }
-            state.epsg = epsg;
-            state.epsf = epsf;
-            state.epsx = epsx;
-            state.maxits = maxits;
-        }
-
-
-        /*************************************************************************
-        This function sets scaling coefficients for CG optimizer.
-
-        ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
-        size and gradient are scaled before comparison with tolerances).  Scale of
-        the I-th variable is a translation invariant measure of:
-        a) "how large" the variable is
-        b) how large the step should be to make significant changes in the function
-
-        In   most   optimizers  (and  in  the  CG  too)  scaling is NOT a form  of
-        preconditioning. It just  affects  stopping  conditions.  You  should  set
-        preconditioner by separate call to one of the MinCGSetPrec...() functions.
-
-        There  is  special  preconditioning  mode, however,  which  uses   scaling
-        coefficients to form diagonal preconditioning matrix. You  can  turn  this
-        mode on, if you want.   But  you should understand that scaling is not the
-        same thing as preconditioning - these are two different, although  related
-        forms of tuning solver.
-
-        INPUT PARAMETERS:
-            State   -   structure stores algorithm state
-            S       -   array[N], non-zero scaling coefficients
-                        S[i] may be negative, sign doesn't matter.
-
-          -- ALGLIB --
-             Copyright 14.01.2011 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetscale(mincgstate state,
-            double[] s)
-        {
-            int i = 0;
-
-            ap.assert(ap.len(s)>=state.n, "MinCGSetScale: Length(S)<N");
-            for(i=0; i<=state.n-1; i++)
-            {
-                ap.assert(math.isfinite(s[i]), "MinCGSetScale: S contains infinite or NAN elements");
-                ap.assert((double)(s[i])!=(double)(0), "MinCGSetScale: S contains zero elements");
-                state.s[i] = Math.Abs(s[i]);
-            }
-        }
-
-
-        /*************************************************************************
-        This function turns on/off reporting.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            NeedXRep-   whether iteration reports are needed or not
-
-        If NeedXRep is True, algorithm will call rep() callback function if  it is
-        provided to MinCGOptimize().
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetxrep(mincgstate state,
-            bool needxrep)
-        {
-            state.xrep = needxrep;
-        }
-
-
-        /*************************************************************************
-        This function turns on/off line search reports.
-        These reports are described in more details in developer-only  comments on
-        MinCGState object.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            NeedDRep-   whether line search reports are needed or not
-
-        This function is intended for private use only. Turning it on artificially
-        may cause program failure.
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetdrep(mincgstate state,
-            bool needdrep)
-        {
-            state.drep = needdrep;
-        }
-
-
-        /*************************************************************************
-        This function sets CG algorithm.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            CGType  -   algorithm type:
-                        * -1    automatic selection of the best algorithm
-                        * 0     DY (Dai and Yuan) algorithm
-                        * 1     Hybrid DY-HS algorithm
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetcgtype(mincgstate state,
-            int cgtype)
-        {
-            ap.assert(cgtype>=-1 & cgtype<=1, "MinCGSetCGType: incorrect CGType!");
-            if( cgtype==-1 )
-            {
-                cgtype = 1;
-            }
-            state.cgtype = cgtype;
-        }
-
-
-        /*************************************************************************
-        This function sets maximum step length
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                        want to limit step length.
-
-        Use this subroutine when you optimize target function which contains exp()
-        or  other  fast  growing  functions,  and optimization algorithm makes too
-        large  steps  which  leads  to overflow. This function allows us to reject
-        steps  that  are  too  large  (and  therefore  expose  us  to the possible
-        overflow) without actually calculating function value at the x+stp*d.
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetstpmax(mincgstate state,
-            double stpmax)
-        {
-            ap.assert(math.isfinite(stpmax), "MinCGSetStpMax: StpMax is not finite!");
-            ap.assert((double)(stpmax)>=(double)(0), "MinCGSetStpMax: StpMax<0!");
-            state.stpmax = stpmax;
-        }
-
-
-        /*************************************************************************
-        This function allows to suggest initial step length to the CG algorithm.
-
-        Suggested  step  length  is used as starting point for the line search. It
-        can be useful when you have  badly  scaled  problem,  i.e.  when  ||grad||
-        (which is used as initial estimate for the first step) is many  orders  of
-        magnitude different from the desired step.
-
-        Line search  may  fail  on  such problems without good estimate of initial
-        step length. Imagine, for example, problem with ||grad||=10^50 and desired
-        step equal to 0.1 Line  search function will use 10^50  as  initial  step,
-        then  it  will  decrease step length by 2 (up to 20 attempts) and will get
-        10^44, which is still too large.
-
-        This function allows us to tell than line search should  be  started  from
-        some moderate step length, like 1.0, so algorithm will be able  to  detect
-        desired step length in a several searches.
-
-        Default behavior (when no step is suggested) is to use preconditioner,  if
-        it is available, to generate initial estimate of step length.
-
-        This function influences only first iteration of algorithm. It  should  be
-        called between MinCGCreate/MinCGRestartFrom() call and MinCGOptimize call.
-        Suggested step is ignored if you have preconditioner.
-
-        INPUT PARAMETERS:
-            State   -   structure used to store algorithm state.
-            Stp     -   initial estimate of the step length.
-                        Can be zero (no estimate).
-
-          -- ALGLIB --
-             Copyright 30.07.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsuggeststep(mincgstate state,
-            double stp)
-        {
-            ap.assert(math.isfinite(stp), "MinCGSuggestStep: Stp is infinite or NAN");
-            ap.assert((double)(stp)>=(double)(0), "MinCGSuggestStep: Stp<0");
-            state.suggestedstep = stp;
-        }
-
-
-        /*************************************************************************
-        Modification of the preconditioner: preconditioning is turned off.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-        NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
-        iterations.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetprecdefault(mincgstate state)
-        {
-            state.prectype = 0;
-            state.innerresetneeded = true;
-        }
-
-
-        /*************************************************************************
-        Modification  of  the  preconditioner:  diagonal of approximate Hessian is
-        used.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            D       -   diagonal of the approximate Hessian, array[0..N-1],
-                        (if larger, only leading N elements are used).
-
-        NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
-        iterations.
-
-        NOTE 2: D[i] should be positive. Exception will be thrown otherwise.
-
-        NOTE 3: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetprecdiag(mincgstate state,
-            double[] d)
-        {
-            int i = 0;
-
-            ap.assert(ap.len(d)>=state.n, "MinCGSetPrecDiag: D is too short");
-            for(i=0; i<=state.n-1; i++)
-            {
-                ap.assert(math.isfinite(d[i]), "MinCGSetPrecDiag: D contains infinite or NAN elements");
-                ap.assert((double)(d[i])>(double)(0), "MinCGSetPrecDiag: D contains non-positive elements");
-            }
-            mincgsetprecdiagfast(state, d);
-        }
-
-
-        /*************************************************************************
-        Modification of the preconditioner: scale-based diagonal preconditioning.
-
-        This preconditioning mode can be useful when you  don't  have  approximate
-        diagonal of Hessian, but you know that your  variables  are  badly  scaled
-        (for  example,  one  variable is in [1,10], and another in [1000,100000]),
-        and most part of the ill-conditioning comes from different scales of vars.
-
-        In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
-        can greatly improve convergence.
-
-        IMPRTANT: you should set scale of your variables with MinCGSetScale() call
-        (before or after MinCGSetPrecScale() call). Without knowledge of the scale
-        of your variables scale-based preconditioner will be just unit matrix.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-        NOTE:  you  can  change  preconditioner  "on  the  fly",  during algorithm
-        iterations.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetprecscale(mincgstate state)
-        {
-            state.prectype = 3;
-            state.innerresetneeded = true;
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 20.04.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static bool mincgiteration(mincgstate state)
-        {
-            bool result = new bool();
-            int n = 0;
-            int i = 0;
-            double betak = 0;
-            double v = 0;
-            double vv = 0;
-            int i_ = 0;
-
-            
-            //
-            // Reverse communication preparations
-            // I know it looks ugly, but it works the same way
-            // anywhere from C++ to Python.
-            //
-            // This code initializes locals by:
-            // * random values determined during code
-            //   generation - on first subroutine call
-            // * values from previous call - on subsequent calls
-            //
-            if( state.rstate.stage>=0 )
-            {
-                n = state.rstate.ia[0];
-                i = state.rstate.ia[1];
-                betak = state.rstate.ra[0];
-                v = state.rstate.ra[1];
-                vv = state.rstate.ra[2];
-            }
-            else
-            {
-                n = -983;
-                i = -989;
-                betak = -834;
-                v = 900;
-                vv = -287;
-            }
-            if( state.rstate.stage==0 )
-            {
-                goto lbl_0;
-            }
-            if( state.rstate.stage==1 )
-            {
-                goto lbl_1;
-            }
-            if( state.rstate.stage==2 )
-            {
-                goto lbl_2;
-            }
-            if( state.rstate.stage==3 )
-            {
-                goto lbl_3;
-            }
-            if( state.rstate.stage==4 )
-            {
-                goto lbl_4;
-            }
-            if( state.rstate.stage==5 )
-            {
-                goto lbl_5;
-            }
-            if( state.rstate.stage==6 )
-            {
-                goto lbl_6;
-            }
-            
-            //
-            // Routine body
-            //
-            
-            //
-            // Prepare
-            //
-            n = state.n;
-            state.repterminationtype = 0;
-            state.repiterationscount = 0;
-            state.repnfev = 0;
-            state.debugrestartscount = 0;
-            
-            //
-            // Preparations continue:
-            // * calculate F/G
-            // * set XK
-            // * set DK to -G
-            // * powerup algo (it may change preconditioner)
-            // * apply preconditioner to DK
-            // * report update of X
-            // * check stopping conditions for G
-            //
-            state.terminationneeded = false;
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.xk[i_] = state.x[i_];
-            }
-            clearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 0;
-            goto lbl_rcomm;
-        lbl_0:
-            state.needfg = false;
-            if( !state.drep )
-            {
-                goto lbl_7;
-            }
-            
-            //
-            // Report algorithm powerup (if needed)
-            //
-            clearrequestfields(state);
-            state.algpowerup = true;
-            state.rstate.stage = 1;
-            goto lbl_rcomm;
-        lbl_1:
-            state.algpowerup = false;
-        lbl_7:
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.dk[i_] = -state.g[i_];
-            }
-            preconditionedmultiply(state, ref state.dk, ref state.work0, ref state.work1);
-            if( !state.xrep )
-            {
-                goto lbl_9;
-            }
-            clearrequestfields(state);
-            state.xupdated = true;
-            state.rstate.stage = 2;
-            goto lbl_rcomm;
-        lbl_2:
-            state.xupdated = false;
-        lbl_9:
-            if( state.terminationneeded )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.xn[i_] = state.xk[i_];
-                }
-                state.repterminationtype = 8;
-                result = false;
-                return result;
-            }
-            v = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                v = v+math.sqr(state.g[i]*state.s[i]);
-            }
-            if( (double)(Math.Sqrt(v))<=(double)(state.epsg) )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.xn[i_] = state.xk[i_];
-                }
-                state.repterminationtype = 4;
-                result = false;
-                return result;
-            }
-            state.repnfev = 1;
-            state.k = 0;
-            state.fold = state.f;
-            
-            //
-            // Choose initial step.
-            // Apply preconditioner, if we have something other than default.
-            //
-            if( state.prectype==2 | state.prectype==3 )
-            {
-                
-                //
-                // because we use preconditioner, step length must be equal
-                // to the norm of DK
-                //
-                v = 0.0;
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    v += state.dk[i_]*state.dk[i_];
-                }
-                state.laststep = Math.Sqrt(v);
-            }
-            else
-            {
-                
-                //
-                // No preconditioner is used, we try to use suggested step
-                //
-                if( (double)(state.suggestedstep)>(double)(0) )
-                {
-                    state.laststep = state.suggestedstep;
-                }
-                else
-                {
-                    v = 0.0;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        v += state.g[i_]*state.g[i_];
-                    }
-                    v = Math.Sqrt(v);
-                    if( (double)(state.stpmax)==(double)(0) )
-                    {
-                        state.laststep = Math.Min(1.0/v, 1);
-                    }
-                    else
-                    {
-                        state.laststep = Math.Min(1.0/v, state.stpmax);
-                    }
-                }
-            }
-            
-            //
-            // Main cycle
-            //
-            state.rstimer = rscountdownlen;
-        lbl_11:
-            if( false )
-            {
-                goto lbl_12;
-            }
-            
-            //
-            // * clear reset flag
-            // * clear termination flag
-            // * store G[k] for later calculation of Y[k]
-            // * prepare starting point and direction and step length for line search
-            //
-            state.innerresetneeded = false;
-            state.terminationneeded = false;
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.yk[i_] = -state.g[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.d[i_] = state.dk[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.x[i_] = state.xk[i_];
-            }
-            state.mcstage = 0;
-            state.stp = 1.0;
-            linmin.linminnormalized(ref state.d, ref state.stp, n);
-            if( (double)(state.laststep)!=(double)(0) )
-            {
-                state.stp = state.laststep;
-            }
-            state.curstpmax = state.stpmax;
-            
-            //
-            // Report beginning of line search (if needed)
-            // Terminate algorithm, if user request was detected
-            //
-            if( !state.drep )
-            {
-                goto lbl_13;
-            }
-            clearrequestfields(state);
-            state.lsstart = true;
-            state.rstate.stage = 3;
-            goto lbl_rcomm;
-        lbl_3:
-            state.lsstart = false;
-        lbl_13:
-            if( state.terminationneeded )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.xn[i_] = state.x[i_];
-                }
-                state.repterminationtype = 8;
-                result = false;
-                return result;
-            }
-            
-            //
-            // Minimization along D
-            //
-            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.curstpmax, ref state.mcinfo, ref state.nfev, ref state.work0, state.lstate, ref state.mcstage);
-        lbl_15:
-            if( state.mcstage==0 )
-            {
-                goto lbl_16;
-            }
-            clearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 4;
-            goto lbl_rcomm;
-        lbl_4:
-            state.needfg = false;
-            linmin.mcsrch(n, ref state.x, ref state.f, ref state.g, state.d, ref state.stp, state.curstpmax, ref state.mcinfo, ref state.nfev, ref state.work0, state.lstate, ref state.mcstage);
-            goto lbl_15;
-        lbl_16:
-            
-            //
-            // * report end of line search
-            // * store current point to XN
-            // * report iteration
-            // * terminate algorithm if user request was detected
-            //
-            if( !state.drep )
-            {
-                goto lbl_17;
-            }
-            
-            //
-            // Report end of line search (if needed)
-            //
-            clearrequestfields(state);
-            state.lsend = true;
-            state.rstate.stage = 5;
-            goto lbl_rcomm;
-        lbl_5:
-            state.lsend = false;
-        lbl_17:
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.xn[i_] = state.x[i_];
-            }
-            if( !state.xrep )
-            {
-                goto lbl_19;
-            }
-            clearrequestfields(state);
-            state.xupdated = true;
-            state.rstate.stage = 6;
-            goto lbl_rcomm;
-        lbl_6:
-            state.xupdated = false;
-        lbl_19:
-            if( state.terminationneeded )
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.xn[i_] = state.x[i_];
-                }
-                state.repterminationtype = 8;
-                result = false;
-                return result;
-            }
-            
-            //
-            // Line search is finished.
-            // * calculate BetaK
-            // * calculate DN
-            // * update timers
-            // * calculate step length
-            //
-            if( state.mcinfo==1 & !state.innerresetneeded )
-            {
-                
-                //
-                // Standard Wolfe conditions hold
-                // Calculate Y[K] and D[K]'*Y[K]
-                //
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.yk[i_] = state.yk[i_] + state.g[i_];
-                }
-                vv = 0.0;
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    vv += state.yk[i_]*state.dk[i_];
-                }
-                
-                //
-                // Calculate BetaK according to DY formula
-                //
-                v = preconditionedmultiply2(state, ref state.g, ref state.g, ref state.work0, ref state.work1);
-                state.betady = v/vv;
-                
-                //
-                // Calculate BetaK according to HS formula
-                //
-                v = preconditionedmultiply2(state, ref state.g, ref state.yk, ref state.work0, ref state.work1);
-                state.betahs = v/vv;
-                
-                //
-                // Choose BetaK
-                //
-                if( state.cgtype==0 )
-                {
-                    betak = state.betady;
-                }
-                if( state.cgtype==1 )
-                {
-                    betak = Math.Max(0, Math.Min(state.betady, state.betahs));
-                }
-            }
-            else
-            {
-                
-                //
-                // Something is wrong (may be function is too wild or too flat)
-                // or we just have to restart algo.
-                //
-                // We'll set BetaK=0, which will restart CG algorithm.
-                // We can stop later (during normal checks) if stopping conditions are met.
-                //
-                betak = 0;
-                state.debugrestartscount = state.debugrestartscount+1;
-            }
-            if( state.repiterationscount>0 & state.repiterationscount%(3+n)==0 )
-            {
-                
-                //
-                // clear Beta every N iterations
-                //
-                betak = 0;
-            }
-            if( state.mcinfo==1 | state.mcinfo==5 )
-            {
-                state.rstimer = rscountdownlen;
-            }
-            else
-            {
-                state.rstimer = state.rstimer-1;
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.dn[i_] = -state.g[i_];
-            }
-            preconditionedmultiply(state, ref state.dn, ref state.work0, ref state.work1);
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.dn[i_] = state.dn[i_] + betak*state.dk[i_];
-            }
-            state.laststep = 0;
-            state.lastscaledstep = 0.0;
-            for(i=0; i<=n-1; i++)
-            {
-                state.laststep = state.laststep+math.sqr(state.d[i]);
-                state.lastscaledstep = state.lastscaledstep+math.sqr(state.d[i]/state.s[i]);
-            }
-            state.laststep = state.stp*Math.Sqrt(state.laststep);
-            state.lastscaledstep = state.stp*Math.Sqrt(state.lastscaledstep);
-            
-            //
-            // Update information.
-            // Check stopping conditions.
-            //
-            state.repnfev = state.repnfev+state.nfev;
-            state.repiterationscount = state.repiterationscount+1;
-            if( state.repiterationscount>=state.maxits & state.maxits>0 )
-            {
-                
-                //
-                // Too many iterations
-                //
-                state.repterminationtype = 5;
-                result = false;
-                return result;
-            }
-            v = 0;
-            for(i=0; i<=n-1; i++)
-            {
-                v = v+math.sqr(state.g[i]*state.s[i]);
-            }
-            if( (double)(Math.Sqrt(v))<=(double)(state.epsg) )
-            {
-                
-                //
-                // Gradient is small enough
-                //
-                state.repterminationtype = 4;
-                result = false;
-                return result;
-            }
-            if( !state.innerresetneeded )
-            {
-                
-                //
-                // These conditions are checked only when no inner reset was requested by user
-                //
-                if( (double)(state.fold-state.f)<=(double)(state.epsf*Math.Max(Math.Abs(state.fold), Math.Max(Math.Abs(state.f), 1.0))) )
-                {
-                    
-                    //
-                    // F(k+1)-F(k) is small enough
-                    //
-                    state.repterminationtype = 1;
-                    result = false;
-                    return result;
-                }
-                if( (double)(state.lastscaledstep)<=(double)(state.epsx) )
-                {
-                    
-                    //
-                    // X(k+1)-X(k) is small enough
-                    //
-                    state.repterminationtype = 2;
-                    result = false;
-                    return result;
-                }
-            }
-            if( state.rstimer<=0 )
-            {
-                
-                //
-                // Too many subsequent restarts
-                //
-                state.repterminationtype = 7;
-                result = false;
-                return result;
-            }
-            
-            //
-            // Shift Xk/Dk, update other information
-            //
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.xk[i_] = state.xn[i_];
-            }
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.dk[i_] = state.dn[i_];
-            }
-            state.fold = state.f;
-            state.k = state.k+1;
-            goto lbl_11;
-        lbl_12:
-            result = false;
-            return result;
-            
-            //
-            // Saving state
-            //
-        lbl_rcomm:
-            result = true;
-            state.rstate.ia[0] = n;
-            state.rstate.ia[1] = i;
-            state.rstate.ra[0] = betak;
-            state.rstate.ra[1] = v;
-            state.rstate.ra[2] = vv;
-            return result;
-        }
-
-
-        /*************************************************************************
-        Conjugate gradient results
-
-        INPUT PARAMETERS:
-            State   -   algorithm state
-
-        OUTPUT PARAMETERS:
-            X       -   array[0..N-1], solution
-            Rep     -   optimization report:
-                        * Rep.TerminationType completetion code:
-                            *  1    relative function improvement is no more than
-                                    EpsF.
-                            *  2    relative step is no more than EpsX.
-                            *  4    gradient norm is no more than EpsG
-                            *  5    MaxIts steps was taken
-                            *  7    stopping conditions are too stringent,
-                                    further improvement is impossible,
-                                    we return best X found so far
-                            *  8    terminated by user
-                        * Rep.IterationsCount contains iterations count
-                        * NFEV countains number of function calculations
-
-          -- ALGLIB --
-             Copyright 20.04.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgresults(mincgstate state,
-            ref double[] x,
-            mincgreport rep)
-        {
-            x = new double[0];
-
-            mincgresultsbuf(state, ref x, rep);
-        }
-
-
-        /*************************************************************************
-        Conjugate gradient results
-
-        Buffered implementation of MinCGResults(), which uses pre-allocated buffer
-        to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
-        intended to be used in the inner cycles of performance critical algorithms
-        where array reallocation penalty is too large to be ignored.
-
-          -- ALGLIB --
-             Copyright 20.04.2009 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgresultsbuf(mincgstate state,
-            ref double[] x,
-            mincgreport rep)
-        {
-            int i_ = 0;
-
-            if( ap.len(x)<state.n )
-            {
-                x = new double[state.n];
-            }
-            for(i_=0; i_<=state.n-1;i_++)
-            {
-                x[i_] = state.xn[i_];
-            }
-            rep.iterationscount = state.repiterationscount;
-            rep.nfev = state.repnfev;
-            rep.terminationtype = state.repterminationtype;
-        }
-
-
-        /*************************************************************************
-        This  subroutine  restarts  CG  algorithm from new point. All optimization
-        parameters are left unchanged.
-
-        This  function  allows  to  solve multiple  optimization  problems  (which
-        must have same number of dimensions) without object reallocation penalty.
-
-        INPUT PARAMETERS:
-            State   -   structure used to store algorithm state.
-            X       -   new starting point.
-
-          -- ALGLIB --
-             Copyright 30.07.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgrestartfrom(mincgstate state,
-            double[] x)
-        {
-            int i_ = 0;
-
-            ap.assert(ap.len(x)>=state.n, "MinCGRestartFrom: Length(X)<N!");
-            ap.assert(apserv.isfinitevector(x, state.n), "MinCGCreate: X contains infinite or NaN values!");
-            for(i_=0; i_<=state.n-1;i_++)
-            {
-                state.x[i_] = x[i_];
-            }
-            mincgsuggeststep(state, 0.0);
-            state.rstate.ia = new int[1+1];
-            state.rstate.ra = new double[2+1];
-            state.rstate.stage = -1;
-            clearrequestfields(state);
-        }
-
-
-        /*************************************************************************
-        Faster version of MinCGSetPrecDiag(), for time-critical parts of code,
-        without safety checks.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetprecdiagfast(mincgstate state,
-            double[] d)
-        {
-            int i = 0;
-
-            apserv.rvectorsetlengthatleast(ref state.diagh, state.n);
-            apserv.rvectorsetlengthatleast(ref state.diaghl2, state.n);
-            state.prectype = 2;
-            state.vcnt = 0;
-            state.innerresetneeded = true;
-            for(i=0; i<=state.n-1; i++)
-            {
-                state.diagh[i] = d[i];
-                state.diaghl2[i] = 0.0;
-            }
-        }
-
-
-        /*************************************************************************
-        This function sets low-rank preconditioner for Hessian matrix  H=D+V'*C*V,
-        where:
-        * H is a Hessian matrix, which is approximated by D/V/C
-        * D=D1+D2 is a diagonal matrix, which includes two positive definite terms:
-          * constant term D1 (is not updated or infrequently updated)
-          * variable term D2 (can be cheaply updated from iteration to iteration)
-        * V is a low-rank correction
-        * C is a diagonal factor of low-rank correction
-
-        Preconditioner P is calculated using approximate Woodburry formula:
-            P  = D^(-1) - D^(-1)*V'*(C^(-1)+V*D1^(-1)*V')^(-1)*V*D^(-1)
-               = D^(-1) - D^(-1)*VC'*VC*D^(-1),
-        where
-            VC = sqrt(B)*V
-            B  = (C^(-1)+V*D1^(-1)*V')^(-1)
-            
-        Note that B is calculated using constant term (D1) only,  which  allows us
-        to update D2 without recalculation of B or   VC.  Such  preconditioner  is
-        exact when D2 is zero. When D2 is non-zero, it is only approximation,  but
-        very good and cheap one.
-
-        This function accepts D1, V, C.
-        D2 is set to zero by default.
-
-        Cost of this update is O(N*VCnt*VCnt), but D2 can be updated in just O(N)
-        by MinCGSetPrecVarPart.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetpreclowrankfast(mincgstate state,
-            double[] d1,
-            double[] c,
-            double[,] v,
-            int vcnt)
-        {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int n = 0;
-            double t = 0;
-            double[,] b = new double[0,0];
-            int i_ = 0;
-
-            if( vcnt==0 )
-            {
-                mincgsetprecdiagfast(state, d1);
-                return;
-            }
-            n = state.n;
-            b = new double[vcnt, vcnt];
-            apserv.rvectorsetlengthatleast(ref state.diagh, n);
-            apserv.rvectorsetlengthatleast(ref state.diaghl2, n);
-            apserv.rmatrixsetlengthatleast(ref state.vcorr, vcnt, n);
-            state.prectype = 2;
-            state.vcnt = vcnt;
-            state.innerresetneeded = true;
-            for(i=0; i<=n-1; i++)
-            {
-                state.diagh[i] = d1[i];
-                state.diaghl2[i] = 0.0;
-            }
-            for(i=0; i<=vcnt-1; i++)
-            {
-                for(j=i; j<=vcnt-1; j++)
-                {
-                    t = 0;
-                    for(k=0; k<=n-1; k++)
-                    {
-                        t = t+v[i,k]*v[j,k]/d1[k];
-                    }
-                    b[i,j] = t;
-                }
-                b[i,i] = b[i,i]+1.0/c[i];
-            }
-            if( !trfac.spdmatrixcholeskyrec(ref b, 0, vcnt, true, ref state.work0) )
-            {
-                state.vcnt = 0;
-                return;
-            }
-            for(i=0; i<=vcnt-1; i++)
-            {
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.vcorr[i,i_] = v[i,i_];
-                }
-                for(j=0; j<=i-1; j++)
-                {
-                    t = b[j,i];
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        state.vcorr[i,i_] = state.vcorr[i,i_] - t*state.vcorr[j,i_];
-                    }
-                }
-                t = 1/b[i,i];
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    state.vcorr[i,i_] = t*state.vcorr[i,i_];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        This function updates variable part (diagonal matrix D2)
-        of low-rank preconditioner.
-
-        This update is very cheap and takes just O(N) time.
-
-        It has no effect with default preconditioner.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void mincgsetprecvarpart(mincgstate state,
-            double[] d2)
-        {
-            int i = 0;
-            int n = 0;
-
-            n = state.n;
-            for(i=0; i<=n-1; i++)
-            {
-                state.diaghl2[i] = d2[i];
-            }
-        }
-
-
-        /*************************************************************************
-        Clears request fileds (to be sure that we don't forgot to clear something)
-        *************************************************************************/
-        private static void clearrequestfields(mincgstate state)
-        {
-            state.needfg = false;
-            state.xupdated = false;
-            state.lsstart = false;
-            state.lsend = false;
-            state.algpowerup = false;
-        }
-
-
-        /*************************************************************************
-        This function calculates preconditioned product H^(-1)*x and stores result
-        back into X. Work0[] and Work1[] are used as temporaries (size must be at
-        least N; this function doesn't allocate arrays).
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        private static void preconditionedmultiply(mincgstate state,
-            ref double[] x,
-            ref double[] work0,
-            ref double[] work1)
-        {
-            int i = 0;
-            int n = 0;
-            int vcnt = 0;
-            double v = 0;
-            int i_ = 0;
-
-            n = state.n;
-            vcnt = state.vcnt;
-            if( state.prectype==0 )
-            {
-                return;
-            }
-            if( state.prectype==3 )
-            {
-                for(i=0; i<=n-1; i++)
-                {
-                    x[i] = x[i]*state.s[i]*state.s[i];
-                }
-                return;
-            }
-            ap.assert(state.prectype==2, "MinCG: internal error (unexpected PrecType)");
-            
-            //
-            // handle part common for VCnt=0 and VCnt<>0
-            //
-            for(i=0; i<=n-1; i++)
-            {
-                x[i] = x[i]/(state.diagh[i]+state.diaghl2[i]);
-            }
-            
-            //
-            // if VCnt>0
-            //
-            if( vcnt>0 )
-            {
-                for(i=0; i<=vcnt-1; i++)
-                {
-                    v = 0.0;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        v += state.vcorr[i,i_]*x[i_];
-                    }
-                    work0[i] = v;
-                }
-                for(i=0; i<=n-1; i++)
-                {
-                    work1[i] = 0;
-                }
-                for(i=0; i<=vcnt-1; i++)
-                {
-                    v = work0[i];
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        state.work1[i_] = state.work1[i_] + v*state.vcorr[i,i_];
-                    }
-                }
-                for(i=0; i<=n-1; i++)
-                {
-                    x[i] = x[i]-state.work1[i]/(state.diagh[i]+state.diaghl2[i]);
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        This function calculates preconditioned product x'*H^(-1)*y. Work0[] and
-        Work1[] are used as temporaries (size must be at least N; this function
-        doesn't allocate arrays).
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        private static double preconditionedmultiply2(mincgstate state,
-            ref double[] x,
-            ref double[] y,
-            ref double[] work0,
-            ref double[] work1)
-        {
-            double result = 0;
-            int i = 0;
-            int n = 0;
-            int vcnt = 0;
-            double v0 = 0;
-            double v1 = 0;
-            int i_ = 0;
-
-            n = state.n;
-            vcnt = state.vcnt;
-            
-            //
-            // no preconditioning
-            //
-            if( state.prectype==0 )
-            {
-                v0 = 0.0;
-                for(i_=0; i_<=n-1;i_++)
-                {
-                    v0 += x[i_]*y[i_];
-                }
-                result = v0;
-                return result;
-            }
-            if( state.prectype==3 )
-            {
-                result = 0;
-                for(i=0; i<=n-1; i++)
-                {
-                    result = result+x[i]*state.s[i]*state.s[i]*y[i];
-                }
-                return result;
-            }
-            ap.assert(state.prectype==2, "MinCG: internal error (unexpected PrecType)");
-            
-            //
-            // low rank preconditioning
-            //
-            result = 0.0;
-            for(i=0; i<=n-1; i++)
-            {
-                result = result+x[i]*y[i]/(state.diagh[i]+state.diaghl2[i]);
-            }
-            if( vcnt>0 )
-            {
-                for(i=0; i<=n-1; i++)
-                {
-                    work0[i] = x[i]/(state.diagh[i]+state.diaghl2[i]);
-                    work1[i] = y[i]/(state.diagh[i]+state.diaghl2[i]);
-                }
-                for(i=0; i<=vcnt-1; i++)
-                {
-                    v0 = 0.0;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        v0 += work0[i_]*state.vcorr[i,i_];
-                    }
-                    v1 = 0.0;
-                    for(i_=0; i_<=n-1;i_++)
-                    {
-                        v1 += work1[i_]*state.vcorr[i,i_];
-                    }
-                    result = result-v0*v1;
-                }
-            }
-            return result;
-        }
-
-
-    }
-    public class minbleic
-    {
-        /*************************************************************************
-        This object stores nonlinear optimizer state.
-        You should use functions provided by MinBLEIC subpackage to work with this
-        object
-        *************************************************************************/
-        public class minbleicstate
-        {
-            public int nmain;
-            public int nslack;
-            public double innerepsg;
-            public double innerepsf;
-            public double innerepsx;
-            public double outerepsx;
-            public double outerepsi;
-            public int maxits;
-            public bool xrep;
-            public double stpmax;
-            public int prectype;
-            public double[] diaghoriginal;
-            public double[] diagh;
-            public double[] x;
-            public double f;
-            public double[] g;
-            public bool needfg;
-            public bool xupdated;
-            public rcommstate rstate;
-            public int repinneriterationscount;
-            public int repouteriterationscount;
-            public int repnfev;
-            public int repterminationtype;
-            public double repdebugeqerr;
-            public double repdebugfs;
-            public double repdebugff;
-            public double repdebugdx;
-            public double[] xcur;
-            public double[] xprev;
-            public double[] xstart;
-            public int itsleft;
-            public double[] xend;
-            public double[] lastg;
-            public double[,] ceoriginal;
-            public double[,] ceeffective;
-            public double[,] cecurrent;
-            public int[] ct;
-            public int cecnt;
-            public int cedim;
-            public double[] xe;
-            public bool[] hasbndl;
-            public bool[] hasbndu;
-            public double[] bndloriginal;
-            public double[] bnduoriginal;
-            public double[] bndleffective;
-            public double[] bndueffective;
-            public bool[] activeconstraints;
-            public double[] constrainedvalues;
-            public double[] transforms;
-            public double[] seffective;
-            public double[] soriginal;
-            public double[] w;
-            public double[] tmp0;
-            public double[] tmp1;
-            public double[] tmp2;
-            public double[] r;
-            public double[,] lmmatrix;
-            public double v0;
-            public double v1;
-            public double v2;
-            public double t;
-            public double errfeas;
-            public double gnorm;
-            public double mpgnorm;
-            public double mba;
-            public int variabletofreeze;
-            public double valuetofreeze;
-            public mincg.mincgstate cgstate;
-            public mincg.mincgreport cgrep;
-            public int optdim;
-            public minbleicstate()
-            {
-                diaghoriginal = new double[0];
-                diagh = new double[0];
-                x = new double[0];
-                g = new double[0];
-                rstate = new rcommstate();
-                xcur = new double[0];
-                xprev = new double[0];
-                xstart = new double[0];
-                xend = new double[0];
-                lastg = new double[0];
-                ceoriginal = new double[0,0];
-                ceeffective = new double[0,0];
-                cecurrent = new double[0,0];
-                ct = new int[0];
-                xe = new double[0];
-                hasbndl = new bool[0];
-                hasbndu = new bool[0];
-                bndloriginal = new double[0];
-                bnduoriginal = new double[0];
-                bndleffective = new double[0];
-                bndueffective = new double[0];
-                activeconstraints = new bool[0];
-                constrainedvalues = new double[0];
-                transforms = new double[0];
-                seffective = new double[0];
-                soriginal = new double[0];
-                w = new double[0];
-                tmp0 = new double[0];
-                tmp1 = new double[0];
-                tmp2 = new double[0];
-                r = new double[0];
-                lmmatrix = new double[0,0];
-                cgstate = new mincg.mincgstate();
-                cgrep = new mincg.mincgreport();
-            }
-        };
-
-
-        /*************************************************************************
-        This structure stores optimization report:
-        * InnerIterationsCount      number of inner iterations
-        * OuterIterationsCount      number of outer iterations
-        * NFEV                      number of gradient evaluations
-        * TerminationType           termination type (see below)
-
-        TERMINATION CODES
-
-        TerminationType field contains completion code, which can be:
-          -10   unsupported combination of algorithm settings:
-                1) StpMax is set to non-zero value,
-                AND 2) non-default preconditioner is used.
-                You can't use both features at the same moment,
-                so you have to choose one of them (and to turn
-                off another one).
-          -3    inconsistent constraints. Feasible point is
-                either nonexistent or too hard to find. Try to
-                restart optimizer with better initial
-                approximation
-           4    conditions on constraints are fulfilled
-                with error less than or equal to EpsC
-           5    MaxIts steps was taken
-           7    stopping conditions are too stringent,
-                further improvement is impossible,
-                X contains best point found so far.
-
-        ADDITIONAL FIELDS
-
-        There are additional fields which can be used for debugging:
-        * DebugEqErr                error in the equality constraints (2-norm)
-        * DebugFS                   f, calculated at projection of initial point
-                                    to the feasible set
-        * DebugFF                   f, calculated at the final point
-        * DebugDX                   |X_start-X_final|
-        *************************************************************************/
-        public class minbleicreport
-        {
-            public int inneriterationscount;
-            public int outeriterationscount;
-            public int nfev;
-            public int terminationtype;
-            public double debugeqerr;
-            public double debugfs;
-            public double debugff;
-            public double debugdx;
-        };
-
-
-
-
-        public const double svdtol = 100;
-        public const double maxouterits = 20;
-
-
-        /*************************************************************************
-                             BOUND CONSTRAINED OPTIMIZATION
-               WITH ADDITIONAL LINEAR EQUALITY AND INEQUALITY CONSTRAINTS
-
-        DESCRIPTION:
-        The  subroutine  minimizes  function   F(x)  of N arguments subject to any
-        combination of:
-        * bound constraints
-        * linear inequality constraints
-        * linear equality constraints
-
-        REQUIREMENTS:
-        * user must provide function value and gradient
-        * starting point X0 must be feasible or
-          not too far away from the feasible set
-        * grad(f) must be Lipschitz continuous on a level set:
-          L = { x : f(x)<=f(x0) }
-        * function must be defined everywhere on the feasible set F
-
-        USAGE:
-
-        Constrained optimization if far more complex than the unconstrained one.
-        Here we give very brief outline of the BLEIC optimizer. We strongly recommend
-        you to read examples in the ALGLIB Reference Manual and to read ALGLIB User Guide
-        on optimization, which is available at http://www.alglib.net/optimization/
-
-        1. User initializes algorithm state with MinBLEICCreate() call
-
-        2. USer adds boundary and/or linear constraints by calling
-           MinBLEICSetBC() and MinBLEICSetLC() functions.
-
-        3. User sets stopping conditions for underlying unconstrained solver
-           with MinBLEICSetInnerCond() call.
-           This function controls accuracy of underlying optimization algorithm.
-
-        4. User sets stopping conditions for outer iteration by calling
-           MinBLEICSetOuterCond() function.
-           This function controls handling of boundary and inequality constraints.
-
-        5. Additionally, user may set limit on number of internal iterations
-           by MinBLEICSetMaxIts() call.
-           This function allows to prevent algorithm from looping forever.
-
-        6. User calls MinBLEICOptimize() function which takes algorithm  state and
-           pointer (delegate, etc.) to callback function which calculates F/G.
-
-        7. User calls MinBLEICResults() to get solution
-
-        8. Optionally user may call MinBLEICRestartFrom() to solve another problem
-           with same N but another starting point.
-           MinBLEICRestartFrom() allows to reuse already initialized structure.
-
-
-        INPUT PARAMETERS:
-            N       -   problem dimension, N>0:
-                        * if given, only leading N elements of X are used
-                        * if not given, automatically determined from size ofX
-            X       -   starting point, array[N]:
-                        * it is better to set X to a feasible point
-                        * but X can be infeasible, in which case algorithm will try
-                          to find feasible point first, using X as initial
-                          approximation.
-
-        OUTPUT PARAMETERS:
-            State   -   structure stores algorithm state
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleiccreate(int n,
-            double[] x,
-            minbleicstate state)
-        {
-            int i = 0;
-            double[,] c = new double[0,0];
-            int[] ct = new int[0];
-
-            ap.assert(n>=1, "MinBLEICCreate: N<1");
-            ap.assert(ap.len(x)>=n, "MinBLEICCreate: Length(X)<N");
-            ap.assert(apserv.isfinitevector(x, n), "MinBLEICCreate: X contains infinite or NaN values!");
-            
-            //
-            // Initialize.
-            //
-            state.nmain = n;
-            state.optdim = 0;
-            state.bndloriginal = new double[n];
-            state.bndleffective = new double[n];
-            state.hasbndl = new bool[n];
-            state.bnduoriginal = new double[n];
-            state.bndueffective = new double[n];
-            state.hasbndu = new bool[n];
-            state.xstart = new double[n];
-            state.soriginal = new double[n];
-            state.x = new double[n];
-            state.g = new double[n];
-            for(i=0; i<=n-1; i++)
-            {
-                state.bndloriginal[i] = Double.NegativeInfinity;
-                state.hasbndl[i] = false;
-                state.bnduoriginal[i] = Double.PositiveInfinity;
-                state.hasbndu[i] = false;
-                state.soriginal[i] = 1.0;
-            }
-            minbleicsetlc(state, c, ct, 0);
-            minbleicsetinnercond(state, 0.0, 0.0, 0.0);
-            minbleicsetoutercond(state, 1.0E-6, 1.0E-6);
-            minbleicsetbarrierwidth(state, 1.0E-3);
-            minbleicsetbarrierdecay(state, 1.0);
-            minbleicsetmaxits(state, 0);
-            minbleicsetxrep(state, false);
-            minbleicsetstpmax(state, 0.0);
-            minbleicsetprecdefault(state);
-            minbleicrestartfrom(state, x);
-        }
-
-
-        /*************************************************************************
-        This function sets boundary constraints for BLEIC optimizer.
-
-        Boundary constraints are inactive by default (after initial creation).
-        They are preserved after algorithm restart with MinBLEICRestartFrom().
-
-        INPUT PARAMETERS:
-            State   -   structure stores algorithm state
-            BndL    -   lower bounds, array[N].
-                        If some (all) variables are unbounded, you may specify
-                        very small number or -INF.
-            BndU    -   upper bounds, array[N].
-                        If some (all) variables are unbounded, you may specify
-                        very large number or +INF.
-
-        NOTE 1: it is possible to specify BndL[i]=BndU[i]. In this case I-th
-        variable will be "frozen" at X[i]=BndL[i]=BndU[i].
-
-        NOTE 2: this solver has following useful properties:
-        * bound constraints are always satisfied exactly
-        * function is evaluated only INSIDE area specified by bound constraints
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetbc(minbleicstate state,
-            double[] bndl,
-            double[] bndu)
-        {
-            int i = 0;
-            int n = 0;
-
-            n = state.nmain;
-            ap.assert(ap.len(bndl)>=n, "MinBLEICSetBC: Length(BndL)<N");
-            ap.assert(ap.len(bndu)>=n, "MinBLEICSetBC: Length(BndU)<N");
-            for(i=0; i<=n-1; i++)
-            {
-                ap.assert(math.isfinite(bndl[i]) | Double.IsNegativeInfinity(bndl[i]), "MinBLEICSetBC: BndL contains NAN or +INF");
-                ap.assert(math.isfinite(bndu[i]) | Double.IsPositiveInfinity(bndu[i]), "MinBLEICSetBC: BndL contains NAN or -INF");
-                state.bndloriginal[i] = bndl[i];
-                state.hasbndl[i] = math.isfinite(bndl[i]);
-                state.bnduoriginal[i] = bndu[i];
-                state.hasbndu[i] = math.isfinite(bndu[i]);
-            }
-        }
-
-
-        /*************************************************************************
-        This function sets linear constraints for BLEIC optimizer.
-
-        Linear constraints are inactive by default (after initial creation).
-        They are preserved after algorithm restart with MinBLEICRestartFrom().
-
-        INPUT PARAMETERS:
-            State   -   structure previously allocated with MinBLEICCreate call.
-            C       -   linear constraints, array[K,N+1].
-                        Each row of C represents one constraint, either equality
-                        or inequality (see below):
-                        * first N elements correspond to coefficients,
-                        * last element corresponds to the right part.
-                        All elements of C (including right part) must be finite.
-            CT      -   type of constraints, array[K]:
-                        * if CT[i]>0, then I-th constraint is C[i,*]*x >= C[i,n+1]
-                        * if CT[i]=0, then I-th constraint is C[i,*]*x  = C[i,n+1]
-                        * if CT[i]<0, then I-th constraint is C[i,*]*x <= C[i,n+1]
-            K       -   number of equality/inequality constraints, K>=0:
-                        * if given, only leading K elements of C/CT are used
-                        * if not given, automatically determined from sizes of C/CT
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetlc(minbleicstate state,
-            double[,] c,
-            int[] ct,
-            int k)
-        {
-            int nmain = 0;
-            int i = 0;
-            int i_ = 0;
-
-            nmain = state.nmain;
-            
-            //
-            // First, check for errors in the inputs
-            //
-            ap.assert(k>=0, "MinBLEICSetLC: K<0");
-            ap.assert(ap.cols(c)>=nmain+1 | k==0, "MinBLEICSetLC: Cols(C)<N+1");
-            ap.assert(ap.rows(c)>=k, "MinBLEICSetLC: Rows(C)<K");
-            ap.assert(ap.len(ct)>=k, "MinBLEICSetLC: Length(CT)<K");
-            ap.assert(apserv.apservisfinitematrix(c, k, nmain+1), "MinBLEICSetLC: C contains infinite or NaN values!");
-            
-            //
-            // Determine number of constraints,
-            // allocate space and copy
-            //
-            state.cecnt = k;
-            apserv.rmatrixsetlengthatleast(ref state.ceoriginal, state.cecnt, nmain+1);
-            apserv.ivectorsetlengthatleast(ref state.ct, state.cecnt);
-            for(i=0; i<=k-1; i++)
-            {
-                state.ct[i] = ct[i];
-                for(i_=0; i_<=nmain;i_++)
-                {
-                    state.ceoriginal[i,i_] = c[i,i_];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        This function sets stopping conditions for the underlying nonlinear CG
-        optimizer. It controls overall accuracy of solution. These conditions
-        should be strict enough in order for algorithm to converge.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            EpsG    -   >=0
-                        The  subroutine  finishes  its  work   if   the  condition
-                        |v|<EpsG is satisfied, where:
-                        * |.| means Euclidian norm
-                        * v - scaled gradient vector, v[i]=g[i]*s[i]
-                        * g - gradient
-                        * s - scaling coefficients set by MinBLEICSetScale()
-            EpsF    -   >=0
-                        The  subroutine  finishes  its work if on k+1-th iteration
-                        the  condition  |F(k+1)-F(k)|<=EpsF*max{|F(k)|,|F(k+1)|,1}
-                        is satisfied.
-            EpsX    -   >=0
-                        The subroutine finishes its work if  on  k+1-th  iteration
-                        the condition |v|<=EpsX is fulfilled, where:
-                        * |.| means Euclidian norm
-                        * v - scaled step vector, v[i]=dx[i]/s[i]
-                        * dx - ste pvector, dx=X(k+1)-X(k)
-                        * s - scaling coefficients set by MinBLEICSetScale()
-
-        Passing EpsG=0, EpsF=0 and EpsX=0 (simultaneously) will lead to
-        automatic stopping criterion selection.
-
-        These conditions are used to terminate inner iterations. However, you
-        need to tune termination conditions for outer iterations too.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetinnercond(minbleicstate state,
-            double epsg,
-            double epsf,
-            double epsx)
-        {
-            ap.assert(math.isfinite(epsg), "MinBLEICSetInnerCond: EpsG is not finite number");
-            ap.assert((double)(epsg)>=(double)(0), "MinBLEICSetInnerCond: negative EpsG");
-            ap.assert(math.isfinite(epsf), "MinBLEICSetInnerCond: EpsF is not finite number");
-            ap.assert((double)(epsf)>=(double)(0), "MinBLEICSetInnerCond: negative EpsF");
-            ap.assert(math.isfinite(epsx), "MinBLEICSetInnerCond: EpsX is not finite number");
-            ap.assert((double)(epsx)>=(double)(0), "MinBLEICSetInnerCond: negative EpsX");
-            state.innerepsg = epsg;
-            state.innerepsf = epsf;
-            state.innerepsx = epsx;
-        }
-
-
-        /*************************************************************************
-        This function sets stopping conditions for outer iteration of BLEIC algo.
-
-        These conditions control accuracy of constraint handling and amount of
-        infeasibility allowed in the solution.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            EpsX    -   >0, stopping condition on outer iteration step length
-            EpsI    -   >0, stopping condition on infeasibility
-            
-        Both EpsX and EpsI must be non-zero.
-
-        MEANING OF EpsX
-
-        EpsX  is  a  stopping  condition for outer iterations. Algorithm will stop
-        when  solution  of  the  current  modified  subproblem will be within EpsX
-        (using 2-norm) of the previous solution.
-
-        MEANING OF EpsI
-
-        EpsI controls feasibility properties -  algorithm  won't  stop  until  all
-        inequality constraints will be satisfied with error (distance from current
-        point to the feasible area) at most EpsI.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetoutercond(minbleicstate state,
-            double epsx,
-            double epsi)
-        {
-            ap.assert(math.isfinite(epsx), "MinBLEICSetOuterCond: EpsX is not finite number");
-            ap.assert((double)(epsx)>(double)(0), "MinBLEICSetOuterCond: non-positive EpsX");
-            ap.assert(math.isfinite(epsi), "MinBLEICSetOuterCond: EpsI is not finite number");
-            ap.assert((double)(epsi)>(double)(0), "MinBLEICSetOuterCond: non-positive EpsI");
-            state.outerepsx = epsx;
-            state.outerepsi = epsi;
-        }
-
-
-        /*************************************************************************
-        This is obsolete function which was used by previous version of the  BLEIC
-        optimizer. It does nothing in the current version of BLEIC.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetbarrierwidth(minbleicstate state,
-            double mu)
-        {
-        }
-
-
-        /*************************************************************************
-        This is obsolete function which was used by previous version of the  BLEIC
-        optimizer. It does nothing in the current version of BLEIC.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetbarrierdecay(minbleicstate state,
-            double mudecay)
-        {
-        }
-
-
-        /*************************************************************************
-        This function sets scaling coefficients for BLEIC optimizer.
-
-        ALGLIB optimizers use scaling matrices to test stopping  conditions  (step
-        size and gradient are scaled before comparison with tolerances).  Scale of
-        the I-th variable is a translation invariant measure of:
-        a) "how large" the variable is
-        b) how large the step should be to make significant changes in the function
-
-        In  most  optimizers  (and  in  the  BLEIC  too)  scaling is NOT a form of
-        preconditioning. It just  affects  stopping  conditions.  You  should  set
-        preconditioner  by  separate  call  to  one  of  the  MinBLEICSetPrec...()
-        functions.
-
-        There is a special  preconditioning  mode, however,  which  uses   scaling
-        coefficients to form diagonal preconditioning matrix. You  can  turn  this
-        mode on, if you want.   But  you should understand that scaling is not the
-        same thing as preconditioning - these are two different, although  related
-        forms of tuning solver.
-
-        INPUT PARAMETERS:
-            State   -   structure stores algorithm state
-            S       -   array[N], non-zero scaling coefficients
-                        S[i] may be negative, sign doesn't matter.
-
-          -- ALGLIB --
-             Copyright 14.01.2011 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetscale(minbleicstate state,
-            double[] s)
-        {
-            int i = 0;
-
-            ap.assert(ap.len(s)>=state.nmain, "MinBLEICSetScale: Length(S)<N");
-            for(i=0; i<=state.nmain-1; i++)
-            {
-                ap.assert(math.isfinite(s[i]), "MinBLEICSetScale: S contains infinite or NAN elements");
-                ap.assert((double)(s[i])!=(double)(0), "MinBLEICSetScale: S contains zero elements");
-                state.soriginal[i] = Math.Abs(s[i]);
-            }
-        }
-
-
-        /*************************************************************************
-        Modification of the preconditioner: preconditioning is turned off.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetprecdefault(minbleicstate state)
-        {
-            state.prectype = 0;
-        }
-
-
-        /*************************************************************************
-        Modification  of  the  preconditioner:  diagonal of approximate Hessian is
-        used.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            D       -   diagonal of the approximate Hessian, array[0..N-1],
-                        (if larger, only leading N elements are used).
-
-        NOTE 1: D[i] should be positive. Exception will be thrown otherwise.
-
-        NOTE 2: you should pass diagonal of approximate Hessian - NOT ITS INVERSE.
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetprecdiag(minbleicstate state,
-            double[] d)
-        {
-            int i = 0;
-
-            ap.assert(ap.len(d)>=state.nmain, "MinBLEICSetPrecDiag: D is too short");
-            for(i=0; i<=state.nmain-1; i++)
-            {
-                ap.assert(math.isfinite(d[i]), "MinBLEICSetPrecDiag: D contains infinite or NAN elements");
-                ap.assert((double)(d[i])>(double)(0), "MinBLEICSetPrecDiag: D contains non-positive elements");
-            }
-            apserv.rvectorsetlengthatleast(ref state.diaghoriginal, state.nmain);
-            state.prectype = 2;
-            for(i=0; i<=state.nmain-1; i++)
-            {
-                state.diaghoriginal[i] = d[i];
-            }
-        }
-
-
-        /*************************************************************************
-        Modification of the preconditioner: scale-based diagonal preconditioning.
-
-        This preconditioning mode can be useful when you  don't  have  approximate
-        diagonal of Hessian, but you know that your  variables  are  badly  scaled
-        (for  example,  one  variable is in [1,10], and another in [1000,100000]),
-        and most part of the ill-conditioning comes from different scales of vars.
-
-        In this case simple  scale-based  preconditioner,  with H[i] = 1/(s[i]^2),
-        can greatly improve convergence.
-
-        IMPRTANT: you should set scale of your variables  with  MinBLEICSetScale()
-        call  (before  or after MinBLEICSetPrecScale() call). Without knowledge of
-        the scale of your variables scale-based preconditioner will be  just  unit
-        matrix.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-
-          -- ALGLIB --
-             Copyright 13.10.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetprecscale(minbleicstate state)
-        {
-            state.prectype = 3;
-        }
-
-
-        /*************************************************************************
-        This function allows to stop algorithm after specified number of inner
-        iterations.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            MaxIts  -   maximum number of inner iterations.
-                        If MaxIts=0, the number of iterations is unlimited.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetmaxits(minbleicstate state,
-            int maxits)
-        {
-            ap.assert(maxits>=0, "MinBLEICSetMaxIts: negative MaxIts!");
-            state.maxits = maxits;
-        }
-
-
-        /*************************************************************************
-        This function turns on/off reporting.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            NeedXRep-   whether iteration reports are needed or not
-
-        If NeedXRep is True, algorithm will call rep() callback function if  it is
-        provided to MinBLEICOptimize().
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetxrep(minbleicstate state,
-            bool needxrep)
-        {
-            state.xrep = needxrep;
-        }
-
-
-        /*************************************************************************
-        This function sets maximum step length
-
-        IMPORTANT: this feature is hard to combine with preconditioning. You can't
-        set upper limit on step length, when you solve optimization  problem  with
-        linear (non-boundary) constraints AND preconditioner turned on.
-
-        When  non-boundary  constraints  are  present,  you  have to either a) use
-        preconditioner, or b) use upper limit on step length.  YOU CAN'T USE BOTH!
-        In this case algorithm will terminate with appropriate error code.
-
-        INPUT PARAMETERS:
-            State   -   structure which stores algorithm state
-            StpMax  -   maximum step length, >=0. Set StpMax to 0.0,  if you don't
-                        want to limit step length.
-
-        Use this subroutine when you optimize target function which contains exp()
-        or  other  fast  growing  functions,  and optimization algorithm makes too
-        large  steps  which  lead   to overflow. This function allows us to reject
-        steps  that  are  too  large  (and  therefore  expose  us  to the possible
-        overflow) without actually calculating function value at the x+stp*d.
-
-          -- ALGLIB --
-             Copyright 02.04.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicsetstpmax(minbleicstate state,
-            double stpmax)
-        {
-            ap.assert(math.isfinite(stpmax), "MinBLEICSetStpMax: StpMax is not finite!");
-            ap.assert((double)(stpmax)>=(double)(0), "MinBLEICSetStpMax: StpMax<0!");
-            state.stpmax = stpmax;
-        }
-
-
-        /*************************************************************************
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static bool minbleiciteration(minbleicstate state)
-        {
-            bool result = new bool();
-            int nmain = 0;
-            int nslack = 0;
-            int m = 0;
-            int i = 0;
-            int j = 0;
-            double v = 0;
-            double vv = 0;
-            bool b = new bool();
-            int i_ = 0;
-
-            
-            //
-            // Reverse communication preparations
-            // I know it looks ugly, but it works the same way
-            // anywhere from C++ to Python.
-            //
-            // This code initializes locals by:
-            // * random values determined during code
-            //   generation - on first subroutine call
-            // * values from previous call - on subsequent calls
-            //
-            if( state.rstate.stage>=0 )
-            {
-                nmain = state.rstate.ia[0];
-                nslack = state.rstate.ia[1];
-                m = state.rstate.ia[2];
-                i = state.rstate.ia[3];
-                j = state.rstate.ia[4];
-                b = state.rstate.ba[0];
-                v = state.rstate.ra[0];
-                vv = state.rstate.ra[1];
-            }
-            else
-            {
-                nmain = -983;
-                nslack = -989;
-                m = -834;
-                i = 900;
-                j = -287;
-                b = false;
-                v = 214;
-                vv = -338;
-            }
-            if( state.rstate.stage==0 )
-            {
-                goto lbl_0;
-            }
-            if( state.rstate.stage==1 )
-            {
-                goto lbl_1;
-            }
-            if( state.rstate.stage==2 )
-            {
-                goto lbl_2;
-            }
-            if( state.rstate.stage==3 )
-            {
-                goto lbl_3;
-            }
-            
-            //
-            // Routine body
-            //
-            
-            //
-            // Prepare:
-            // * calculate number of slack variables
-            // * initialize locals
-            // * initialize debug fields
-            // * make quick check
-            //
-            nmain = state.nmain;
-            nslack = 0;
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                if( state.ct[i]!=0 )
-                {
-                    nslack = nslack+1;
-                }
-            }
-            state.nslack = nslack;
-            state.repterminationtype = 0;
-            state.repinneriterationscount = 0;
-            state.repouteriterationscount = 0;
-            state.repnfev = 0;
-            state.repdebugeqerr = 0.0;
-            state.repdebugfs = Double.NaN;
-            state.repdebugff = Double.NaN;
-            state.repdebugdx = Double.NaN;
-            if( (double)(state.stpmax)!=(double)(0) & state.prectype!=0 )
-            {
-                state.repterminationtype = -10;
-                result = false;
-                return result;
-            }
-            
-            //
-            // allocate
-            //
-            apserv.rvectorsetlengthatleast(ref state.r, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.diagh, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.tmp0, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.tmp1, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.tmp2, nmain+nslack);
-            apserv.rmatrixsetlengthatleast(ref state.cecurrent, state.cecnt, nmain+nslack+1);
-            apserv.bvectorsetlengthatleast(ref state.activeconstraints, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.constrainedvalues, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.lastg, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.xe, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.xcur, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.xprev, nmain+nslack);
-            apserv.rvectorsetlengthatleast(ref state.xend, nmain);
-            
-            //
-            // Create/restart optimizer.
-            //
-            // State.OptDim is used to determine current state of optimizer.
-            //
-            if( state.optdim!=nmain+nslack )
-            {
-                for(i=0; i<=nmain+nslack-1; i++)
-                {
-                    state.tmp1[i] = 0.0;
-                }
-                mincg.mincgcreate(nmain+nslack, state.tmp1, state.cgstate);
-                state.optdim = nmain+nslack;
-            }
-            
-            //
-            // Prepare transformation.
-            //
-            // MinBLEIC's handling of preconditioner matrix is somewhat unusual -
-            // instead of incorporating it into algorithm and making implicit
-            // scaling (as most optimizers do) BLEIC optimizer uses explicit
-            // scaling - it solves problem in the scaled parameters space S,
-            // making transition between scaled (S) and unscaled (X) variables
-            // every time we ask for function value.
-            //
-            // Following fields are calculated here:
-            // * TransformS         X[i] = TransformS[i]*S[i], array[NMain]
-            // * SEffective         "effective" scale of the variables after
-            //                      transformation, array[NMain+NSlack]
-            //
-            apserv.rvectorsetlengthatleast(ref state.transforms, nmain);
-            for(i=0; i<=nmain-1; i++)
-            {
-                if( state.prectype==2 )
-                {
-                    state.transforms[i] = 1/Math.Sqrt(state.diaghoriginal[i]);
-                    continue;
-                }
-                if( state.prectype==3 )
-                {
-                    state.transforms[i] = state.soriginal[i];
-                    continue;
-                }
-                state.transforms[i] = 1;
-            }
-            apserv.rvectorsetlengthatleast(ref state.seffective, nmain+nslack);
-            for(i=0; i<=nmain-1; i++)
-            {
-                state.seffective[i] = state.soriginal[i]/state.transforms[i];
-            }
-            for(i=0; i<=nslack-1; i++)
-            {
-                state.seffective[nmain+i] = 1;
-            }
-            mincg.mincgsetscale(state.cgstate, state.seffective);
-            
-            //
-            // Pre-process constraints
-            // * check consistency of bound constraints
-            // * add slack vars, convert problem to the bound/equality
-            //   constrained one
-            //
-            // We calculate here:
-            // * BndLEffective - lower bounds after transformation of variables (see above)
-            // * BndUEffective - upper bounds after transformation of variables (see above)
-            // * CEEffective - matrix of equality constraints for transformed variables
-            //
-            for(i=0; i<=nmain-1; i++)
-            {
-                if( state.hasbndl[i] )
-                {
-                    state.bndleffective[i] = state.bndloriginal[i]/state.transforms[i];
-                }
-                if( state.hasbndu[i] )
-                {
-                    state.bndueffective[i] = state.bnduoriginal[i]/state.transforms[i];
-                }
-            }
-            for(i=0; i<=nmain-1; i++)
-            {
-                if( state.hasbndl[i] & state.hasbndu[i] )
-                {
-                    if( (double)(state.bndleffective[i])>(double)(state.bndueffective[i]) )
-                    {
-                        state.repterminationtype = -3;
-                        result = false;
-                        return result;
-                    }
-                }
-            }
-            apserv.rmatrixsetlengthatleast(ref state.ceeffective, state.cecnt, nmain+nslack+1);
-            m = 0;
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                
-                //
-                // NOTE: when we add slack variable, we use V = max(abs(CE[i,...])) as
-                // coefficient before it in order to make linear equations better
-                // conditioned.
-                //
-                v = 0;
-                for(j=0; j<=nmain-1; j++)
-                {
-                    state.ceeffective[i,j] = state.ceoriginal[i,j]*state.transforms[j];
-                    v = Math.Max(v, Math.Abs(state.ceeffective[i,j]));
-                }
-                if( (double)(v)==(double)(0) )
-                {
-                    v = 1;
-                }
-                for(j=0; j<=nslack-1; j++)
-                {
-                    state.ceeffective[i,nmain+j] = 0.0;
-                }
-                state.ceeffective[i,nmain+nslack] = state.ceoriginal[i,nmain];
-                if( state.ct[i]<0 )
-                {
-                    state.ceeffective[i,nmain+m] = v;
-                    m = m+1;
-                }
-                if( state.ct[i]>0 )
-                {
-                    state.ceeffective[i,nmain+m] = -v;
-                    m = m+1;
-                }
-            }
-            
-            //
-            // Find feasible point.
-            //
-            // 0. Convert from unscaled values (as stored in XStart) to scaled
-            //    ones
-            // 1. calculate values of slack variables such that starting
-            //    point satisfies inequality constraints (after conversion to
-            //    equality ones) as much as possible.
-            // 2. use PrepareConstraintMatrix() function, which forces X
-            //    to be strictly feasible.
-            //
-            for(i=0; i<=nmain-1; i++)
-            {
-                state.tmp0[i] = state.xstart[i]/state.transforms[i];
-            }
-            m = 0;
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain-1;i_++)
-                {
-                    v += state.ceeffective[i,i_]*state.tmp0[i_];
-                }
-                if( state.ct[i]<0 )
-                {
-                    state.tmp0[nmain+m] = state.ceeffective[i,nmain+nslack]-v;
-                    m = m+1;
-                }
-                if( state.ct[i]>0 )
-                {
-                    state.tmp0[nmain+m] = v-state.ceeffective[i,nmain+nslack];
-                    m = m+1;
-                }
-            }
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                state.tmp1[i] = 0;
-            }
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                state.activeconstraints[i] = false;
-            }
-            b = prepareconstraintmatrix(state, state.tmp0, state.tmp1, ref state.xcur, ref state.tmp2);
-            state.repdebugeqerr = 0.0;
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += state.ceeffective[i,i_]*state.xcur[i_];
-                }
-                state.repdebugeqerr = state.repdebugeqerr+math.sqr(v-state.ceeffective[i,nmain+nslack]);
-            }
-            state.repdebugeqerr = Math.Sqrt(state.repdebugeqerr);
-            if( !b )
-            {
-                state.repterminationtype = -3;
-                result = false;
-                return result;
-            }
-            
-            //
-            // Initialize RepDebugFS with function value at initial point
-            //
-            unscalepoint(state, state.xcur, ref state.x);
-            clearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 0;
-            goto lbl_rcomm;
-        lbl_0:
-            state.needfg = false;
-            state.repnfev = state.repnfev+1;
-            state.repdebugfs = state.f;
-            
-            //
-            // Outer cycle
-            //
-            state.itsleft = state.maxits;
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                state.xprev[i_] = state.xcur[i_];
-            }
-        lbl_4:
-            if( false )
-            {
-                goto lbl_5;
-            }
-            ap.assert(state.prectype==0 | (double)(state.stpmax)==(double)(0), "MinBLEIC: internal error (-10)");
-            
-            //
-            // Inner cycle: CG with projections and penalty functions
-            //
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                state.tmp0[i_] = state.xcur[i_];
-            }
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                state.tmp1[i] = 0;
-                state.activeconstraints[i] = false;
-            }
-            if( !prepareconstraintmatrix(state, state.tmp0, state.tmp1, ref state.xcur, ref state.tmp2) )
-            {
-                state.repterminationtype = -3;
-                result = false;
-                return result;
-            }
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                state.activeconstraints[i] = false;
-            }
-            rebuildcexe(state);
-            mincg.mincgrestartfrom(state.cgstate, state.xcur);
-            mincg.mincgsetcond(state.cgstate, state.innerepsg, state.innerepsf, state.innerepsx, state.itsleft);
-            mincg.mincgsetxrep(state.cgstate, state.xrep);
-            mincg.mincgsetdrep(state.cgstate, true);
-            mincg.mincgsetstpmax(state.cgstate, state.stpmax);
-        lbl_6:
-            if( !mincg.mincgiteration(state.cgstate) )
-            {
-                goto lbl_7;
-            }
-            
-            //
-            // process different requests/reports of inner optimizer
-            //
-            if( state.cgstate.algpowerup )
-            {
-                for(i=0; i<=nmain+nslack-1; i++)
-                {
-                    state.activeconstraints[i] = false;
-                }
-                do
-                {
-                    rebuildcexe(state);
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        state.tmp1[i_] = state.cgstate.g[i_];
-                    }
-                    makegradientprojection(state, ref state.tmp1);
-                    b = false;
-                    for(i=0; i<=nmain-1; i++)
-                    {
-                        if( !state.activeconstraints[i] )
-                        {
-                            if( state.hasbndl[i] )
-                            {
-                                if( (double)(state.cgstate.x[i])==(double)(state.bndleffective[i]) & (double)(state.tmp1[i])>=(double)(0) )
-                                {
-                                    state.activeconstraints[i] = true;
-                                    state.constrainedvalues[i] = state.bndleffective[i];
-                                    b = true;
-                                }
-                            }
-                            if( state.hasbndu[i] )
-                            {
-                                if( (double)(state.cgstate.x[i])==(double)(state.bndueffective[i]) & (double)(state.tmp1[i])<=(double)(0) )
-                                {
-                                    state.activeconstraints[i] = true;
-                                    state.constrainedvalues[i] = state.bndueffective[i];
-                                    b = true;
-                                }
-                            }
-                        }
-                    }
-                    for(i=0; i<=nslack-1; i++)
-                    {
-                        if( !state.activeconstraints[nmain+i] )
-                        {
-                            if( (double)(state.cgstate.x[nmain+i])==(double)(0) & (double)(state.tmp1[nmain+i])>=(double)(0) )
-                            {
-                                state.activeconstraints[nmain+i] = true;
-                                state.constrainedvalues[nmain+i] = 0;
-                                b = true;
-                            }
-                        }
-                    }
-                }
-                while( b );
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    state.cgstate.g[i_] = state.tmp1[i_];
-                }
-                goto lbl_6;
-            }
-            if( state.cgstate.lsstart )
-            {
-                
-                //
-                // Beginning of the line search: set upper limit on step size
-                // to prevent algo from leaving feasible area.
-                //
-                state.variabletofreeze = -1;
-                if( (double)(state.cgstate.curstpmax)==(double)(0) )
-                {
-                    state.cgstate.curstpmax = 1.0E50;
-                }
-                for(i=0; i<=nmain-1; i++)
-                {
-                    if( state.hasbndl[i] & (double)(state.cgstate.d[i])<(double)(0) )
-                    {
-                        v = state.cgstate.curstpmax;
-                        vv = state.cgstate.x[i]-state.bndleffective[i];
-                        if( (double)(vv)<(double)(0) )
-                        {
-                            vv = 0;
-                        }
-                        state.cgstate.curstpmax = apserv.safeminposrv(vv, -state.cgstate.d[i], state.cgstate.curstpmax);
-                        if( (double)(state.cgstate.curstpmax)<(double)(v) )
-                        {
-                            state.variabletofreeze = i;
-                            state.valuetofreeze = state.bndleffective[i];
-                        }
-                    }
-                    if( state.hasbndu[i] & (double)(state.cgstate.d[i])>(double)(0) )
-                    {
-                        v = state.cgstate.curstpmax;
-                        vv = state.bndueffective[i]-state.cgstate.x[i];
-                        if( (double)(vv)<(double)(0) )
-                        {
-                            vv = 0;
-                        }
-                        state.cgstate.curstpmax = apserv.safeminposrv(vv, state.cgstate.d[i], state.cgstate.curstpmax);
-                        if( (double)(state.cgstate.curstpmax)<(double)(v) )
-                        {
-                            state.variabletofreeze = i;
-                            state.valuetofreeze = state.bndueffective[i];
-                        }
-                    }
-                }
-                for(i=0; i<=nslack-1; i++)
-                {
-                    if( (double)(state.cgstate.d[nmain+i])<(double)(0) )
-                    {
-                        v = state.cgstate.curstpmax;
-                        vv = state.cgstate.x[nmain+i];
-                        if( (double)(vv)<(double)(0) )
-                        {
-                            vv = 0;
-                        }
-                        state.cgstate.curstpmax = apserv.safeminposrv(vv, -state.cgstate.d[nmain+i], state.cgstate.curstpmax);
-                        if( (double)(state.cgstate.curstpmax)<(double)(v) )
-                        {
-                            state.variabletofreeze = nmain+i;
-                            state.valuetofreeze = 0;
-                        }
-                    }
-                }
-                if( (double)(state.cgstate.curstpmax)==(double)(0) )
-                {
-                    state.activeconstraints[state.variabletofreeze] = true;
-                    state.constrainedvalues[state.variabletofreeze] = state.valuetofreeze;
-                    state.cgstate.x[state.variabletofreeze] = state.valuetofreeze;
-                    state.cgstate.terminationneeded = true;
-                }
-                goto lbl_6;
-            }
-            if( state.cgstate.lsend )
-            {
-                
-                //
-                // Line search just finished.
-                // Maybe we should activate some constraints?
-                //
-                b = (double)(state.cgstate.stp)>=(double)(state.cgstate.curstpmax) & state.variabletofreeze>=0;
-                if( !b )
-                {
-                    b = b | additionalcheckforconstraints(state, state.cgstate.x);
-                }
-                if( b )
-                {
-                    state.activeconstraints[state.variabletofreeze] = true;
-                    state.constrainedvalues[state.variabletofreeze] = state.valuetofreeze;
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        state.tmp0[i_] = state.cgstate.x[i_];
-                    }
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        state.tmp1[i_] = state.lastg[i_];
-                    }
-                    if( !prepareconstraintmatrix(state, state.tmp0, state.tmp1, ref state.cgstate.x, ref state.cgstate.g) )
-                    {
-                        state.repterminationtype = -3;
-                        result = false;
-                        return result;
-                    }
-                    state.cgstate.innerresetneeded = true;
-                }
-                goto lbl_6;
-            }
-            if( !state.cgstate.needfg )
-            {
-                goto lbl_8;
-            }
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                state.tmp1[i_] = state.cgstate.x[i_];
-            }
-            projectpointandunscale(state, ref state.tmp1, ref state.x, ref state.r, ref vv);
-            clearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 1;
-            goto lbl_rcomm;
-        lbl_1:
-            state.needfg = false;
-            state.cgstate.f = state.f;
-            scalegradientandexpand(state, state.g, ref state.cgstate.g);
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                state.lastg[i_] = state.cgstate.g[i_];
-            }
-            modifytargetfunction(state, state.tmp1, state.r, vv, ref state.cgstate.f, ref state.cgstate.g, ref state.gnorm, ref state.mpgnorm);
-            goto lbl_6;
-        lbl_8:
-            if( !state.cgstate.xupdated )
-            {
-                goto lbl_10;
-            }
-            
-            //
-            // Report
-            //
-            unscalepoint(state, state.cgstate.x, ref state.x);
-            state.f = state.cgstate.f;
-            clearrequestfields(state);
-            state.xupdated = true;
-            state.rstate.stage = 2;
-            goto lbl_rcomm;
-        lbl_2:
-            state.xupdated = false;
-            goto lbl_6;
-        lbl_10:
-            goto lbl_6;
-        lbl_7:
-            mincg.mincgresults(state.cgstate, ref state.xcur, state.cgrep);
-            unscalepoint(state, state.xcur, ref state.xend);
-            state.repinneriterationscount = state.repinneriterationscount+state.cgrep.iterationscount;
-            state.repouteriterationscount = state.repouteriterationscount+1;
-            state.repnfev = state.repnfev+state.cgrep.nfev;
-            
-            //
-            // Update RepDebugFF with function value at current point
-            //
-            unscalepoint(state, state.xcur, ref state.x);
-            clearrequestfields(state);
-            state.needfg = true;
-            state.rstate.stage = 3;
-            goto lbl_rcomm;
-        lbl_3:
-            state.needfg = false;
-            state.repnfev = state.repnfev+1;
-            state.repdebugff = state.f;
-            
-            //
-            // Check for stopping:
-            // * "normal", outer step size is small enough, infeasibility is within bounds
-            // * "inconsistent",  if Lagrange multipliers increased beyond threshold given by MaxLagrangeMul
-            // * "too stringent", in other cases
-            //
-            v = 0;
-            for(i=0; i<=nmain-1; i++)
-            {
-                v = v+math.sqr((state.xcur[i]-state.xprev[i])/state.seffective[i]);
-            }
-            v = Math.Sqrt(v);
-            if( (double)(v)<=(double)(state.outerepsx) )
-            {
-                state.repterminationtype = 4;
-                goto lbl_5;
-            }
-            if( state.maxits>0 )
-            {
-                state.itsleft = state.itsleft-state.cgrep.iterationscount;
-                if( state.itsleft<=0 )
-                {
-                    state.repterminationtype = 5;
-                    goto lbl_5;
-                }
-            }
-            if( (double)(state.repouteriterationscount)>=(double)(maxouterits) )
-            {
-                state.repterminationtype = 5;
-                goto lbl_5;
-            }
-            
-            //
-            // Next iteration
-            //
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                state.xprev[i_] = state.xcur[i_];
-            }
-            goto lbl_4;
-        lbl_5:
-            
-            //
-            // We've stopped, fill debug information
-            //
-            state.repdebugeqerr = 0.0;
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += state.ceeffective[i,i_]*state.xcur[i_];
-                }
-                state.repdebugeqerr = state.repdebugeqerr+math.sqr(v-state.ceeffective[i,nmain+nslack]);
-            }
-            state.repdebugeqerr = Math.Sqrt(state.repdebugeqerr);
-            state.repdebugdx = 0;
-            for(i=0; i<=nmain-1; i++)
-            {
-                state.repdebugdx = state.repdebugdx+math.sqr(state.xcur[i]-state.xstart[i]);
-            }
-            state.repdebugdx = Math.Sqrt(state.repdebugdx);
-            result = false;
-            return result;
-            
-            //
-            // Saving state
-            //
-        lbl_rcomm:
-            result = true;
-            state.rstate.ia[0] = nmain;
-            state.rstate.ia[1] = nslack;
-            state.rstate.ia[2] = m;
-            state.rstate.ia[3] = i;
-            state.rstate.ia[4] = j;
-            state.rstate.ba[0] = b;
-            state.rstate.ra[0] = v;
-            state.rstate.ra[1] = vv;
-            return result;
-        }
-
-
-        /*************************************************************************
-        BLEIC results
-
-        INPUT PARAMETERS:
-            State   -   algorithm state
-
-        OUTPUT PARAMETERS:
-            X       -   array[0..N-1], solution
-            Rep     -   optimization report. You should check Rep.TerminationType
-                        in  order  to  distinguish  successful  termination  from
-                        unsuccessful one.
-                        More information about fields of this  structure  can  be
-                        found in the comments on MinBLEICReport datatype.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicresults(minbleicstate state,
-            ref double[] x,
-            minbleicreport rep)
-        {
-            x = new double[0];
-
-            minbleicresultsbuf(state, ref x, rep);
-        }
-
-
-        /*************************************************************************
-        BLEIC results
-
-        Buffered implementation of MinBLEICResults() which uses pre-allocated buffer
-        to store X[]. If buffer size is  too  small,  it  resizes  buffer.  It  is
-        intended to be used in the inner cycles of performance critical algorithms
-        where array reallocation penalty is too large to be ignored.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicresultsbuf(minbleicstate state,
-            ref double[] x,
-            minbleicreport rep)
-        {
-            int i = 0;
-            int i_ = 0;
-
-            if( ap.len(x)<state.nmain )
-            {
-                x = new double[state.nmain];
-            }
-            rep.inneriterationscount = state.repinneriterationscount;
-            rep.outeriterationscount = state.repouteriterationscount;
-            rep.nfev = state.repnfev;
-            rep.terminationtype = state.repterminationtype;
-            if( state.repterminationtype>0 )
-            {
-                for(i_=0; i_<=state.nmain-1;i_++)
-                {
-                    x[i_] = state.xend[i_];
-                }
-            }
-            else
-            {
-                for(i=0; i<=state.nmain-1; i++)
-                {
-                    x[i] = Double.NaN;
-                }
-            }
-            rep.debugeqerr = state.repdebugeqerr;
-            rep.debugfs = state.repdebugfs;
-            rep.debugff = state.repdebugff;
-            rep.debugdx = state.repdebugdx;
-        }
-
-
-        /*************************************************************************
-        This subroutine restarts algorithm from new point.
-        All optimization parameters (including constraints) are left unchanged.
-
-        This  function  allows  to  solve multiple  optimization  problems  (which
-        must have  same number of dimensions) without object reallocation penalty.
-
-        INPUT PARAMETERS:
-            State   -   structure previously allocated with MinBLEICCreate call.
-            X       -   new starting point.
-
-          -- ALGLIB --
-             Copyright 28.11.2010 by Bochkanov Sergey
-        *************************************************************************/
-        public static void minbleicrestartfrom(minbleicstate state,
-            double[] x)
-        {
-            int n = 0;
-            int i_ = 0;
-
-            n = state.nmain;
-            
-            //
-            // First, check for errors in the inputs
-            //
-            ap.assert(ap.len(x)>=n, "MinBLEICRestartFrom: Length(X)<N");
-            ap.assert(apserv.isfinitevector(x, n), "MinBLEICRestartFrom: X contains infinite or NaN values!");
-            
-            //
-            // Set XC
-            //
-            for(i_=0; i_<=n-1;i_++)
-            {
-                state.xstart[i_] = x[i_];
-            }
-            
-            //
-            // prepare RComm facilities
-            //
-            state.rstate.ia = new int[4+1];
-            state.rstate.ba = new bool[0+1];
-            state.rstate.ra = new double[1+1];
-            state.rstate.stage = -1;
-            clearrequestfields(state);
-        }
-
-
-        /*************************************************************************
-        Clears request fileds (to be sure that we don't forget to clear something)
-        *************************************************************************/
-        private static void clearrequestfields(minbleicstate state)
-        {
-            state.needfg = false;
-            state.xupdated = false;
-        }
-
-
-        /*************************************************************************
-        This functions "unscales" point, i.e. it makes transformation  from scaled
-        variables to unscaled ones. Only leading NMain variables are copied from
-        XUnscaled to XScaled.
-        *************************************************************************/
-        private static void unscalepoint(minbleicstate state,
-            double[] xscaled,
-            ref double[] xunscaled)
-        {
-            int i = 0;
-            double v = 0;
-
-            for(i=0; i<=state.nmain-1; i++)
-            {
-                v = xscaled[i]*state.transforms[i];
-                if( state.hasbndl[i] )
-                {
-                    if( (double)(v)<(double)(state.bndloriginal[i]) )
-                    {
-                        v = state.bndloriginal[i];
-                    }
-                }
-                if( state.hasbndu[i] )
-                {
-                    if( (double)(v)>(double)(state.bnduoriginal[i]) )
-                    {
-                        v = state.bnduoriginal[i];
-                    }
-                }
-                xunscaled[i] = v;
-            }
-        }
-
-
-        /*************************************************************************
-        This function:
-        1. makes projection of XScaled into equality constrained subspace
-           (X is modified in-place)
-        2. stores residual from the projection into R
-        3. unscales projected XScaled and stores result into XUnscaled with
-           additional enforcement
-        It calculates set of additional values which are used later for
-        modification of the target function F.
-
-        INPUT PARAMETERS:
-            State   -   optimizer state (we use its fields to get information
-                        about constraints)
-            X       -   vector being projected
-            R       -   preallocated buffer, used to store residual from projection
-
-        OUTPUT PARAMETERS:
-            X       -   projection of input X
-            R       -   residual
-            RNorm   -   residual norm squared, used later to modify target function
-        *************************************************************************/
-        private static void projectpointandunscale(minbleicstate state,
-            ref double[] xscaled,
-            ref double[] xunscaled,
-            ref double[] rscaled,
-            ref double rnorm2)
-        {
-            double v = 0;
-            int i = 0;
-            int nmain = 0;
-            int nslack = 0;
-            int i_ = 0;
-
-            rnorm2 = 0;
-
-            nmain = state.nmain;
-            nslack = state.nslack;
-            
-            //
-            // * subtract XE from XScaled
-            // * project XScaled
-            // * calculate norm of deviation from null space, store it in RNorm2
-            // * calculate residual from projection, store it in R
-            // * add XE to XScaled
-            // * unscale variables
-            //
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                xscaled[i_] = xscaled[i_] - state.xe[i_];
-            }
-            rnorm2 = 0;
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                rscaled[i] = 0;
-            }
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                if( state.activeconstraints[i] )
-                {
-                    v = xscaled[i];
-                    xscaled[i] = 0;
-                    rscaled[i] = rscaled[i]+v;
-                    rnorm2 = rnorm2+math.sqr(v);
-                }
-            }
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += xscaled[i_]*state.cecurrent[i,i_];
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    xscaled[i_] = xscaled[i_] - v*state.cecurrent[i,i_];
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    rscaled[i_] = rscaled[i_] + v*state.cecurrent[i,i_];
-                }
-                rnorm2 = rnorm2+math.sqr(v);
-            }
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                xscaled[i_] = xscaled[i_] + state.xe[i_];
-            }
-            unscalepoint(state, xscaled, ref xunscaled);
-        }
-
-
-        /*************************************************************************
-        This function scales and copies NMain elements of GUnscaled into GScaled.
-        Other NSlack components of GScaled are set to zero.
-        *************************************************************************/
-        private static void scalegradientandexpand(minbleicstate state,
-            double[] gunscaled,
-            ref double[] gscaled)
-        {
-            int i = 0;
-
-            for(i=0; i<=state.nmain-1; i++)
-            {
-                gscaled[i] = gunscaled[i]*state.transforms[i];
-            }
-            for(i=0; i<=state.nslack-1; i++)
-            {
-                gscaled[state.nmain+i] = 0;
-            }
-        }
-
-
-        /*************************************************************************
-        This subroutine applies modifications to the target function given by
-        its value F and gradient G at the projected point X which lies in the
-        equality constrained subspace.
-
-        Following modifications are applied:
-        * modified barrier functions to handle inequality constraints
-          (both F and G are modified)
-        * projection of gradient into equality constrained subspace
-          (only G is modified)
-        * quadratic penalty for deviations from equality constrained subspace
-          (both F and G are modified)
-
-        It also calculates gradient norm (three different norms for three
-        different types of gradient), feasibility and complementary slackness
-        errors.
-
-        INPUT PARAMETERS:
-            State   -   optimizer state (we use its fields to get information
-                        about constraints)
-            X       -   point (projected into equality constrained subspace)
-            R       -   residual from projection
-            RNorm2  -   residual norm squared
-            F       -   function value at X
-            G       -   function gradient at X
-
-        OUTPUT PARAMETERS:
-            F       -   modified function value at X
-            G       -   modified function gradient at X
-            GNorm   -   2-norm of unmodified G
-            MPGNorm -   2-norm of modified G
-            MBA     -   minimum argument of barrier functions.
-                        If X is strictly feasible, it is greater than zero.
-                        If X lies on a boundary, it is zero.
-                        It is negative for infeasible X.
-            FIErr   -   2-norm of feasibility error with respect to
-                        inequality/bound constraints
-            CSErr   -   2-norm of complementarity slackness error
-        *************************************************************************/
-        private static void modifytargetfunction(minbleicstate state,
-            double[] x,
-            double[] r,
-            double rnorm2,
-            ref double f,
-            ref double[] g,
-            ref double gnorm,
-            ref double mpgnorm)
-        {
-            double v = 0;
-            double vv = 0;
-            double t = 0;
-            int i = 0;
-            int nmain = 0;
-            int nslack = 0;
-            int m = 0;
-            double v0 = 0;
-            double v1 = 0;
-            double v2 = 0;
-            bool hasconstraints = new bool();
-            int i_ = 0;
-
-            gnorm = 0;
-            mpgnorm = 0;
-
-            nmain = state.nmain;
-            nslack = state.nslack;
-            hasconstraints = false;
-            
-            //
-            // GNorm
-            //
-            v = 0.0;
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                v += g[i_]*g[i_];
-            }
-            gnorm = Math.Sqrt(v);
-            
-            //
-            // Process equality constraints:
-            // * modify F to handle penalty term for equality constraints
-            // * project gradient on null space of equality constraints
-            // * add penalty term for equality constraints to gradient
-            //
-            f = f+rnorm2;
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                if( state.activeconstraints[i] )
-                {
-                    g[i] = 0;
-                }
-            }
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += g[i_]*state.cecurrent[i,i_];
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    g[i_] = g[i_] - v*state.cecurrent[i,i_];
-                }
-            }
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                g[i_] = g[i_] + 2*r[i_];
-            }
-            
-            //
-            // MPGNorm
-            //
-            v = 0.0;
-            for(i_=0; i_<=nmain+nslack-1;i_++)
-            {
-                v += g[i_]*g[i_];
-            }
-            mpgnorm = Math.Sqrt(v);
-        }
-
-
-        /*************************************************************************
-        This function makes additional check for constraints which can be activated.
-
-        We try activate constraints one by one, but it is possible that several
-        constraints should be activated during one iteration. It this case only
-        one of them (probably last) will be activated. This function will fix it -
-        it will pass through constraints and activate those which are at the boundary
-        or beyond it.
-
-        It will return True, if at least one constraint was activated by this function.
-        *************************************************************************/
-        private static bool additionalcheckforconstraints(minbleicstate state,
-            double[] x)
-        {
-            bool result = new bool();
-            int i = 0;
-            int nmain = 0;
-            int nslack = 0;
-
-            result = false;
-            nmain = state.nmain;
-            nslack = state.nslack;
-            for(i=0; i<=nmain-1; i++)
-            {
-                if( !state.activeconstraints[i] )
-                {
-                    if( state.hasbndl[i] )
-                    {
-                        if( (double)(x[i])<=(double)(state.bndleffective[i]) )
-                        {
-                            state.activeconstraints[i] = true;
-                            state.constrainedvalues[i] = state.bndleffective[i];
-                            result = true;
-                        }
-                    }
-                    if( state.hasbndu[i] )
-                    {
-                        if( (double)(x[i])>=(double)(state.bndueffective[i]) )
-                        {
-                            state.activeconstraints[i] = true;
-                            state.constrainedvalues[i] = state.bndueffective[i];
-                            result = true;
-                        }
-                    }
-                }
-            }
-            for(i=0; i<=nslack-1; i++)
-            {
-                if( !state.activeconstraints[nmain+i] )
-                {
-                    if( (double)(x[nmain+i])<=(double)(0) )
-                    {
-                        state.activeconstraints[nmain+i] = true;
-                        state.constrainedvalues[nmain+i] = 0;
-                        result = true;
-                    }
-                }
-            }
-            return result;
-        }
-
-
-        /*************************************************************************
-        This function rebuilds CECurrent and XE according to current set of
-        active bound constraints.
-        *************************************************************************/
-        private static void rebuildcexe(minbleicstate state)
-        {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int nmain = 0;
-            int nslack = 0;
-            double v = 0;
-            int i_ = 0;
-
-            nmain = state.nmain;
-            nslack = state.nslack;
-            ablas.rmatrixcopy(state.cecnt, nmain+nslack+1, state.ceeffective, 0, 0, ref state.cecurrent, 0, 0);
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                
-                //
-                // "Subtract" active bound constraints from I-th linear constraint
-                //
-                for(j=0; j<=nmain+nslack-1; j++)
-                {
-                    if( state.activeconstraints[j] )
-                    {
-                        state.cecurrent[i,nmain+nslack] = state.cecurrent[i,nmain+nslack]-state.cecurrent[i,j]*state.constrainedvalues[j];
-                        state.cecurrent[i,j] = 0.0;
-                    }
-                }
-                
-                //
-                // Reorthogonalize I-th constraint with respect to previous ones
-                // NOTE: we also update right part, which is CECurrent[...,NMain+NSlack].
-                //
-                for(k=0; k<=i-1; k++)
-                {
-                    v = 0.0;
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        v += state.cecurrent[k,i_]*state.cecurrent[i,i_];
-                    }
-                    for(i_=0; i_<=nmain+nslack;i_++)
-                    {
-                        state.cecurrent[i,i_] = state.cecurrent[i,i_] - v*state.cecurrent[k,i_];
-                    }
-                }
-                
-                //
-                // Calculate norm of I-th row of CECurrent. Fill by zeros, if it is
-                // too small. Normalize otherwise.
-                //
-                // NOTE: we also scale last column of CECurrent (right part)
-                //
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += state.cecurrent[i,i_]*state.cecurrent[i,i_];
-                }
-                v = Math.Sqrt(v);
-                if( (double)(v)>(double)(10000*math.machineepsilon) )
-                {
-                    v = 1/v;
-                    for(i_=0; i_<=nmain+nslack;i_++)
-                    {
-                        state.cecurrent[i,i_] = v*state.cecurrent[i,i_];
-                    }
-                }
-                else
-                {
-                    for(j=0; j<=nmain+nslack; j++)
-                    {
-                        state.cecurrent[i,j] = 0;
-                    }
-                }
-            }
-            for(j=0; j<=nmain+nslack-1; j++)
-            {
-                state.xe[j] = 0;
-            }
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                if( state.activeconstraints[i] )
-                {
-                    state.xe[i] = state.xe[i]+state.constrainedvalues[i];
-                }
-            }
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = state.cecurrent[i,nmain+nslack];
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    state.xe[i_] = state.xe[i_] + v*state.cecurrent[i,i_];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        This function projects gradient onto equality constrained subspace
-        *************************************************************************/
-        private static void makegradientprojection(minbleicstate state,
-            ref double[] pg)
-        {
-            int i = 0;
-            int nmain = 0;
-            int nslack = 0;
-            double v = 0;
-            int i_ = 0;
-
-            nmain = state.nmain;
-            nslack = state.nslack;
-            for(i=0; i<=nmain+nslack-1; i++)
-            {
-                if( state.activeconstraints[i] )
-                {
-                    pg[i] = 0;
-                }
-            }
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += pg[i_]*state.cecurrent[i,i_];
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    pg[i_] = pg[i_] - v*state.cecurrent[i,i_];
-                }
-            }
-        }
-
-
-        /*************************************************************************
-        This function prepares equality constrained subproblem:
-
-        1. X is used to activate constraints (if there are ones which are still
-           inactive, but should be activated).
-        2. constraints matrix CEOrt is copied to CECurrent and modified  according
-           to the list of active bound constraints (corresponding elements are
-           filled by zeros and reorthogonalized).
-        3. XE - least squares solution of equality constraints - is recalculated
-        4. X is copied to PX and projected onto equality constrained subspace
-        5. inactive constraints are checked against PX - if there is at least one
-           which should be activated, we activate it and move back to (2)
-        6. as result, PX is feasible with respect to bound constraints - step (5)
-           guarantees it. But PX can be infeasible with respect to equality ones,
-           because step (2) is done without checks for consistency. As the final
-           step, we check that PX is feasible. If not, we return False. True is
-           returned otherwise.
-
-        If this algorithm returned True, then:
-        * X is not changed
-        * PX contains projection of X onto constrained subspace
-        * G is not changed
-        * PG contains projection of G onto constrained subspace
-        * PX is feasible with respect to all constraints
-        * all constraints which are active at PX, are activated
-        *************************************************************************/
-        private static bool prepareconstraintmatrix(minbleicstate state,
-            double[] x,
-            double[] g,
-            ref double[] px,
-            ref double[] pg)
-        {
-            bool result = new bool();
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int nmain = 0;
-            int nslack = 0;
-            double v = 0;
-            double ferr = 0;
-            int i_ = 0;
-
-            nmain = state.nmain;
-            nslack = state.nslack;
-            result = true;
-            
-            //
-            // Step 1
-            //
-            additionalcheckforconstraints(state, x);
-            
-            //
-            // Steps 2-5
-            //
-            do
-            {
-                
-                //
-                // Steps 2-3
-                //
-                rebuildcexe(state);
-                
-                //
-                // Step 4
-                //
-                // Calculate PX, PG
-                //
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    px[i_] = x[i_];
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    px[i_] = px[i_] - state.xe[i_];
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    pg[i_] = g[i_];
-                }
-                for(i=0; i<=nmain+nslack-1; i++)
-                {
-                    if( state.activeconstraints[i] )
-                    {
-                        px[i] = 0;
-                        pg[i] = 0;
-                    }
-                }
-                for(i=0; i<=state.cecnt-1; i++)
-                {
-                    v = 0.0;
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        v += px[i_]*state.cecurrent[i,i_];
-                    }
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        px[i_] = px[i_] - v*state.cecurrent[i,i_];
-                    }
-                    v = 0.0;
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        v += pg[i_]*state.cecurrent[i,i_];
-                    }
-                    for(i_=0; i_<=nmain+nslack-1;i_++)
-                    {
-                        pg[i_] = pg[i_] - v*state.cecurrent[i,i_];
-                    }
-                }
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    px[i_] = px[i_] + state.xe[i_];
-                }
-                
-                //
-                // Step 5 (loop condition below)
-                //
-            }
-            while( additionalcheckforconstraints(state, px) );
-            
-            //
-            // Step 6
-            //
-            ferr = 0;
-            for(i=0; i<=state.cecnt-1; i++)
-            {
-                v = 0.0;
-                for(i_=0; i_<=nmain+nslack-1;i_++)
-                {
-                    v += px[i_]*state.ceeffective[i,i_];
-                }
-                v = v-state.ceeffective[i,nmain+nslack];
-                ferr = Math.Max(ferr, Math.Abs(v));
-            }
-            result = (double)(ferr)<=(double)(state.outerepsi);
-            return result;
         }
 
 

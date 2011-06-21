@@ -2519,6 +2519,9 @@ public partial class alglib
 
 
 
+        public const int maxsubintervals = 10000;
+
+
         /*************************************************************************
         Integration of a smooth function F(x) on a finite interval [a,b].
 
@@ -3152,7 +3155,7 @@ public partial class alglib
             state.info = 1;
             if( (double)(state.eps)==(double)(0) )
             {
-                state.eps = 1000*math.machineepsilon;
+                state.eps = 100000*math.machineepsilon;
             }
             
             //
@@ -3318,9 +3321,8 @@ public partial class alglib
             
             //
             // TODO: every 20 iterations recalculate errors/sums
-            // TODO: one more criterion to prevent infinite loops with too strict Eps
             //
-            if( (double)(state.sumerr)<=(double)(state.eps*state.sumabs) )
+            if( (double)(state.sumerr)<=(double)(state.eps*state.sumabs) | state.heapused>=maxsubintervals )
             {
                 state.r = 0;
                 for(j=0; j<=state.heapused-1; j++)
