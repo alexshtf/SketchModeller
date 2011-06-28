@@ -168,7 +168,9 @@ namespace SketchModeller.Modelling.Services.Snap
             var vars = variablesWriter.ToArray();
             var vals = startVectorWriter.ToArray();
 
-            var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10, tolerance:1E-5);
+            //var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10, tolerance:1E-5);
+            var optimum = ALBFGSOptimizer.Minimize(
+                finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
 
             #endregion
 

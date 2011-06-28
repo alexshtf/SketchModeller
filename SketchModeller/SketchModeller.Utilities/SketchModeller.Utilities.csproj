@@ -99,6 +99,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ALBFGSOptimizer.cs" />
+    <Compile Include="ALOptimizer.cs" />
     <Compile Include="AverageSmooth.cs" />
     <Compile Include="CircleFitter.cs" />
     <Compile Include="ContractExtensions.cs" />
@@ -116,7 +118,6 @@
     <Compile Include="IndexedUnionFind.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="NewPrimitiveExtensions.cs" />
-    <Compile Include="Optimizer.cs" />
     <Compile Include="PCA2D.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
