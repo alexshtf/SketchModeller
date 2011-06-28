@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Media.Media3D;
 using Enumerable = System.Linq.Enumerable;
 using TermUtils = SketchModeller.Utilities.TermUtils;
+using SketchModeller.Modelling.Computations;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -116,8 +117,10 @@ namespace SketchModeller.Modelling.Services.Snap
             var sil1Top = GetForwardPoint(sil1, axis2d);
             var sil1Bot = GetForwardPoint(sil1, -axis2d);
 
-            var topFit = ProjectionFit(snappedPrimitive.TopFeatureCurve, new Point[] { sil0Top, sil1Top });
-            var botFit = ProjectionFit(snappedPrimitive.BottomFeatureCurve, new Point[] { sil0Bot, sil1Bot });
+            var topFit = ProjectionFit.Compute(
+                snappedPrimitive.TopFeatureCurve, new Point[] { sil0Top, sil1Top });
+            var botFit = ProjectionFit.Compute(
+                snappedPrimitive.BottomFeatureCurve, new Point[] { sil0Bot, sil1Bot });
 
             if (annotated.Contains(snappedPrimitive.TopFeatureCurve))
                 topFit = Enumerable.Empty<Term>();
@@ -150,7 +153,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var sil0Far = isTopSnapped ? sil0Bot : sil0Top;
             var sil1Far = isTopSnapped ? sil1Bot : sil1Top;
 
-            var featureProj = ProjectionFit(snappedFeatureCurve);
+            var featureProj = ProjectionFit.Compute(snappedFeatureCurve);
             var farProj = Enumerable.Repeat(EndpointsProjectionFit(unsnappedFeatureCurve, sil0Far, sil1Far), 1);
 
             if (annotated.Contains(unsnappedFeatureCurve))
@@ -197,7 +200,7 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var terms =
                 from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
-                from term in ProjectionFit(item)
+                from term in ProjectionFit.Compute(item)
                 select term;
 
             var objective = TermUtils.SafeAvg(terms);
@@ -222,31 +225,6 @@ namespace SketchModeller.Modelling.Services.Snap
             return snapped;
         }
 
-
-        protected IEnumerable<Term> ProjectionFit(CircleFeatureCurve item)
-        {
-            const int SAMPLE_SIZE = 20;
-            var sample = CurveSampler.UniformSample(item.SnappedTo, SAMPLE_SIZE);
-            return ProjectionFit(item, sample);
-        }
-
-        /// <summary>
-        /// Generates a set of terms, one for each given 2D point, that measure the fitness of each point to being
-        /// a 2D projection of the given set.
-        /// </summary>
-        /// <param name="pointsSet">A representation for the 3D points set</param>
-        /// <param name="sample">The set of 2D points</param>
-        /// <returns>The set of terms, one for each point in <paramref name="sample"/> that measures the fitness of each such point
-        /// to the set in <paramref name="pointsSet"/>.</returns>
-        protected IEnumerable<Term> ProjectionFit(CircleFeatureCurve pointsSet, Point[] sample)
-        {
-            var terms =
-                from point in sample
-                select ProjectionFit(pointsSet, point);
-
-            return terms;
-        }
-
         protected Term EndpointsProjectionFit(CircleFeatureCurve pointsSet, Point p1, Point p2)
         {
             var x1 = p1.X;
@@ -266,40 +244,5 @@ namespace SketchModeller.Modelling.Services.Snap
 
             return result;
         }
-
-        /// <summary>
-        /// Generates a term that gets smaller as the given 2D point fits a 3D points set projection.
-        /// </summary>
-        /// <param name="pointsSet">A representation for the 3D points set</param>
-        /// <param name="point">The 2D point</param>
-        /// <returns>The term that measures fitness of <paramref name="point"/> being on the 2D projection of the set specified by <paramref name="pointsSet"/></returns>
-        protected Term ProjectionFit(CircleFeatureCurve pointsSet, Point point)
-        {
-            // here we explicitly assume that the view vector is (0, 0, 1) or (0, 0, -1)
-            var x_ = point.X;
-            var y_ = point.Y;
-
-            var cx = pointsSet.Center.X;
-            var cy = pointsSet.Center.Y;
-            var cz = pointsSet.Center.Z;
-
-            var nx = pointsSet.Normal.X;
-            var ny = pointsSet.Normal.Y;
-            var nz = pointsSet.Normal.Z;
-
-            var r = pointsSet.Radius;
-
-            var dx = cx - x_;
-            var dy = cy + y_;
-
-            var lhs = TermBuilder.Sum(
-                TermBuilder.Power(dx * nz, 2),
-                TermBuilder.Power(dy * nz, 2),
-                TermBuilder.Power(dx * nx + dy * ny, 2));
-            var rhs = TermBuilder.Power(r * nz, 2);
-
-            return TermBuilder.Power(lhs - rhs, 2);
-        }
-
     }
 }

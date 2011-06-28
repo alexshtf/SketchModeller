@@ -118,7 +118,6 @@
     <Compile Include="IndexedUnionFind.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="NewPrimitiveExtensions.cs" />
-    <Compile Include="PCA2D.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
     <Compile Include="PointsToPolylineConverter.cs" />

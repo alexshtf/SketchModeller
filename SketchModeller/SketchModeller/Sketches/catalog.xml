@@ -21,4 +21,7 @@
   <sketch name="danny_lamp"
           file="danny_lamp.svg"
           modelFile="danny_lamp.model" />
+  <sketch name="straight generalized cylinder"
+          file="sgc.svg"
+          modelFile="sgc.model" />
 </catalog>

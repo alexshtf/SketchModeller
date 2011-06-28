@@ -121,6 +121,8 @@
     <Compile Include="Computations\LSIntervalsFitter.cs" />
     <Compile Include="Computations\LSPointsIntervalsFitter.cs" />
     <Compile Include="Computations\PointsToPolylineConverter.cs" />
+    <Compile Include="Computations\ProjectionFit.cs" />
+    <Compile Include="Computations\StraightSpine.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />

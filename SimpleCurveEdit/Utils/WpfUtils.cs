@@ -174,12 +174,24 @@ namespace Utils
         public static Point ProjectOnLine(this Point pnt, Point p, Point q)
         {
             var v = q - p;
-            var u = pnt - p;
-
-            var t = (u * v) / v.LengthSquared;
+            var t = pnt.ProjectOnLine(p, v);
             var candidate = p + t * v;
 
             return candidate;
+        }
+
+        /// <summary>
+        /// Projects a point on a line given by a point and its direction vector.
+        /// </summary>
+        /// <param name="pnt">The point to project</param>
+        /// <param name="p">A point on the line</param>
+        /// <param name="v">The line's direction vector</param>
+        /// <returns>A value <c>t</c> such that the projected point is <c>p + t * v</c></returns>
+        public static double ProjectOnLine(this Point pnt, Point p, Vector v)
+        {
+            var u = pnt - p;
+            var t = (u * v) / v.LengthSquared;
+            return t;
         }
 
         /// <summary>

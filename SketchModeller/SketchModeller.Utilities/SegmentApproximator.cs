@@ -48,12 +48,7 @@ namespace SketchModeller.Utilities
             Contract.Requires(seq.Count >= 2);
             Contract.Ensures(Contract.Result<Tuple<Point, Vector>>() != null);
 
-            var pca = seq.PCA();
-
-            var centroid = pca.Item1;
-            var mainAxis = pca.Item2;
-
-            return Tuple.Create(centroid, mainAxis);
+            return PCALine.Compute(seq.ToArray());
         }
     }
 }
