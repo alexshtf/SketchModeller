@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using Accord.Math;
-using Accord.Math.Decompositions;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Windows.Media;
+using Accord.Math.Decompositions;
+using Accord.Math;
 
 namespace SketchModeller.Utilities
 {
