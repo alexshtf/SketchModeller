@@ -94,8 +94,6 @@
     </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Research.Science.Data, Version=1.2.6754.0, Culture=neutral, PublicKeyToken=e550de0161496f12, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Research.Science.Data.CSV, Version=1.2.6754.0, Culture=neutral, PublicKeyToken=e550de0161496f12, processorArchitecture=MSIL" />
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
     </Reference>

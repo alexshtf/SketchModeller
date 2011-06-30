@@ -8,7 +8,6 @@ using SketchModeller.Infrastructure.Data;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
 using System.IO;
-using Microsoft.Research.Science.Data;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
