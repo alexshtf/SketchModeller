@@ -1,63 +1,0 @@
-10
-
-dir
-0
-https://helixtoolkit.svn.codeplex.com/svn/trunk/Packages/HelixToolkit
-https://helixtoolkit.svn.codeplex.com/svn
-add
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-e17a0e51-4ae3-4d35-97c3-1a29b211df97
-
-pack.cmd
-file
-
-
-
-add
-
-tools
-dir
-
-
-
-add
-
-lib
-dir
-
-
-
-add
-
-content
-dir
-
-
-
-add
-
-HelixToolkit.nuspec
-file
-
-
-
-add
-
