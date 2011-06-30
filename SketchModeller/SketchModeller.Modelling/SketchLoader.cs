@@ -12,6 +12,7 @@ using Utils;
 using SketchModeller.Infrastructure;
 using System.IO;
 using System.Xml.Serialization;
+using System.Reactive.Linq;
 
 namespace SketchModeller.Modelling
 {

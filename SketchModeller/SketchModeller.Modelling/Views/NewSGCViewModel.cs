@@ -19,7 +19,12 @@ namespace SketchModeller.Modelling.Views
             IEventAggregator eventAggregator = null)
             : base(uiState, curveAssigner, eventAggregator)
         {
-            model = new NewStraightGenCylinder;
+            model = new NewStraightGenCylinder();
+        }
+
+        public override void UpdateFromModel()
+        {
+            throw new NotImplementedException();
         }
     }
 }

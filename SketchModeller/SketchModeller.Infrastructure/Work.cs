@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
+using System.Reactive.Linq;
 
 namespace SketchModeller.Infrastructure
 {
@@ -49,7 +50,6 @@ namespace SketchModeller.Infrastructure
                         eventAggregator.GetEvent<StopWorkingEvent>().Publish(workId);
                     }
                 };
-
             // perform the operation + subscribe on dispatcher
             workItem().ObserveOnDispatcher().Subscribe(onNext, wrappedOnError, wrappedOnCompleted);
             eventAggregator.GetEvent<StartWorkingEvent>().Publish(workId);

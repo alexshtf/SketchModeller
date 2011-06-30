@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SketchModeller.Infrastructure.Data;
 using System.Diagnostics.Contracts;
+using System.Reactive;
 
 namespace SketchModeller.Infrastructure.Services
 {

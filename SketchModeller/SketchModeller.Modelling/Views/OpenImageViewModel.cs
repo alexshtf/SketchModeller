@@ -11,9 +11,9 @@ using Microsoft.Practices.Prism.Commands;
 using SketchModeller.Infrastructure.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Concurrency;
 using System.Diagnostics;
 using SketchModeller.Modelling.Events;
+using System.Reactive.Linq;
 
 namespace SketchModeller.Modelling.Views
 {

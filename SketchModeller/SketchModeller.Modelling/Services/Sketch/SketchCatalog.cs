@@ -14,6 +14,8 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using SketchModeller.Infrastructure;
 using System.IO.Compression;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace SketchModeller.Modelling.Services.Sketch
 {
@@ -31,7 +33,9 @@ namespace SketchModeller.Modelling.Services.Sketch
         {
             var result =
                 from catalog in LoadCatalogAsync()
-                from i1 in Observable.If(() => !ExistsSketch(catalog, sketchName), AddToCatalogAsync(catalog, sketchName))
+                from i1 in ExistsSketch(catalog, sketchName)
+                               ? Observable.Empty<Unit>()
+                               : AddToCatalogAsync(catalog, sketchName)
                 from i2 in SaveSketchAsync(sketchName, sketchData)
                 select default(Unit);
             return result;
