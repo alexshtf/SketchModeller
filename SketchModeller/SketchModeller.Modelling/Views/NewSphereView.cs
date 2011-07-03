@@ -8,6 +8,7 @@ using Microsoft.Practices.Prism.Logging;
 using System.Windows.Input;
 using Petzold.Media3D;
 using Utils;
+using SketchModeller.Utilities;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -28,7 +29,7 @@ namespace SketchModeller.Modelling.Views
 
             sphere.Bind(Sphere.RadiusProperty, () => viewModel.Radius);
             sphere.Bind(Sphere.CenterProperty, () => viewModel.Center);
-            SetDefaultMaterial(sphere, viewModel);
+            sphere.SetMaterials(GetDefaultFrontAndBackMaterials(viewModel));
         }
 
         protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)

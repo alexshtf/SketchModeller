@@ -124,6 +124,7 @@
     <Compile Include="Graphs\IndicesGraph.cs" />
     <Compile Include="Hungarian.cs" />
     <Compile Include="IndexedUnionFind.cs" />
+    <Compile Include="ModelVisualBaseHelper.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="NewPrimitiveExtensions.cs" />
     <Compile Include="PCALine.cs" />

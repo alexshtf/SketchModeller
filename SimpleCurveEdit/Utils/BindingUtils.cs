@@ -153,6 +153,42 @@ namespace Utils
             Bind(target, prop, CreateConverter(converter), expr1, expr2, expr3);
         }
 
+        /// <summary>
+        /// Binds a dependency property of a dependency object to three source using type-safe lambda syntax.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first source property</typeparam>
+        /// <typeparam name="T2">The type of the second source property</typeparam>
+        /// <typeparam name="T3">The type of the third source property</typeparam>
+        /// <typeparam name="T4">The type of the fourth source property</typeparam>
+        /// <param name="target">The binding target</param>
+        /// <param name="prop">The target property</param>
+        /// <param name="expr1">Lambda expression specifying the first binding source</param>
+        /// <param name="expr2">Lambda expression specifying the second binding source</param>
+        /// <param name="expr3">Lambda expression specifying the third binding source</param>
+        /// <param name="expr4">Lambda expression specifying the fourth binding source</param>
+        /// <param name="converter">A converter delegate to convert the three source values to the target value</param>
+        /// <remarks>The expressions <paramref name="expr1"/>, <paramref name="expr2"/> and <paramref name="expr3"/> must be of the form <c>() => source.Property</c></remarks>
+        /// <seealso cref="Bind{T}"/>
+        public static void Bind<T1, T2, T3, T4>(
+            this DependencyObject target,
+            DependencyProperty prop,
+            Expression<Func<T1>> expr1,
+            Expression<Func<T2>> expr2,
+            Expression<Func<T3>> expr3,
+            Expression<Func<T4>> expr4,
+            Func<T1, T2, T3, T4, object> converter)
+        {
+            Contract.Requires(target != null);
+            Contract.Requires(prop != null);
+            Contract.Requires(expr1 != null);
+            Contract.Requires(expr2 != null);
+            Contract.Requires(expr3 != null);
+            Contract.Requires(expr4 != null);
+            Contract.Requires(converter != null);
+
+            Bind(target, prop, CreateConverter(converter), expr1, expr2, expr3, expr4);
+        }
+
         private static void Bind(DependencyObject target, DependencyProperty prop, IMultiValueConverter converter, params System.Linq.Expressions.Expression[] expressions)
         {
             var multiBinding = new MultiBinding();
@@ -186,6 +222,40 @@ namespace Utils
         {
             return new TripleDelegateConverter<T1, T2, T3>(func);
         }
+
+        private static QuadDelegateConverter<T1, T2, T3, T4> CreateConverter<T1, T2, T3, T4>(Func<T1, T2, T3, T4, object> func)
+        {
+            return new QuadDelegateConverter<T1, T2, T3, T4>(func);
+        }
+
+        #region QuadDelegateConverter class
+
+        private class QuadDelegateConverter<T1, T2, T3, T4> : IMultiValueConverter
+        {
+            private readonly Func<T1, T2, T3, T4, object> converter;
+
+            public QuadDelegateConverter(Func<T1, T2, T3, T4, object> converter)
+            {
+                this.converter = converter;
+            }
+
+            public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+            {
+                var v1 = (T1)values[0];
+                var v2 = (T2)values[1];
+                var v3 = (T3)values[2];
+                var v4 = (T4)values[3];
+
+                return converter(v1, v2, v3, v4);
+            }
+
+            public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        #endregion
 
         #region TripleDelegateConverter class
 

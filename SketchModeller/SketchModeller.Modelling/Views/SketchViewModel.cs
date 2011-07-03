@@ -19,6 +19,7 @@ using System.Windows.Input;
 using Microsoft.Practices.Prism.Commands;
 using SketchModeller.Infrastructure.Services;
 using System.Collections.ObjectModel;
+using SketchModeller.Modelling.Computations;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -132,6 +133,15 @@ namespace SketchModeller.Modelling.Views
                             {
                                 Center = pos3d.Value,
                                 Radius = 0.2,
+                            });
+                        break;
+                    case PrimitiveKinds.SGC:
+                        sessionData.NewPrimitives.Add(new NewStraightGenCylinder
+                            {
+                                Center = pos3d.Value,
+                                Axis = sketchPlane.YAxis,
+                                Length = 0.6,
+                                Components = SgcComponents.Create(20, 0.2, 0.6),
                             });
                         break;
                     default:

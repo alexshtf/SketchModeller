@@ -106,7 +106,7 @@
                 </Style>     	
             </StackPanel.Resources>
             <GroupBox Header="Basic primitives">
-                <UniformGrid Rows="2" Columns="1" VerticalAlignment="Top">
+                <UniformGrid VerticalAlignment="Top">
                     <UniformGrid.Resources>
                         <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
                             <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
@@ -130,7 +130,8 @@
                     </UniformGrid.Resources>
                     <Thumb x:Name="cylinderThumb" Tag="Cylinder" />
                     <Thumb x:Name="coneThumb" Tag="Cone" />
-                    <Thumb x:Name="sphereThumb" d:LayoutOverrides="Height" Tag="Sphere"/>
+                    <Thumb x:Name="sphereThumb" Tag="Sphere"/>
+                    <Thumb x:Name="sgcThumb" Tag="SGC" />
                 </UniformGrid>
             </GroupBox>
             <GroupBox Header="Primive operations">

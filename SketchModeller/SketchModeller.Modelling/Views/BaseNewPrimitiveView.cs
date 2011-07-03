@@ -95,7 +95,21 @@ namespace SketchModeller.Modelling.Views
         protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition);
         protected abstract Vector3D ApproximateAxis { get; }
 
-        protected void SetDefaultMaterial(ModelVisualBase mv3d, NewPrimitiveViewModel viewModel)
+        protected Tuple<Material, Material> GetDefaultFrontAndBackMaterials(NewPrimitiveViewModel viewModel)
+        {
+            return Tuple.Create(
+                GetDefaultFrontMaterial(viewModel), 
+                GetDefaultBackMaterial());
+        }
+
+        protected static Material GetDefaultBackMaterial()
+        {
+            var backMaterial = new DiffuseMaterial { Brush = Brushes.Red };
+            backMaterial.Freeze();
+            return backMaterial;
+        }
+
+        protected static Material GetDefaultFrontMaterial(NewPrimitiveViewModel viewModel)
         {
             var material = new DiffuseMaterial();
             material.Bind(
@@ -110,12 +124,7 @@ namespace SketchModeller.Modelling.Views
                         else
                             return UNSELECTED_BRUSH;
                     }));
-
-            var backMaterial = new DiffuseMaterial { Brush = Brushes.Red };
-            backMaterial.Freeze();
-
-            mv3d.Material = material;
-            mv3d.BackMaterial = backMaterial;
+            return material;
         }
 
         protected Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)

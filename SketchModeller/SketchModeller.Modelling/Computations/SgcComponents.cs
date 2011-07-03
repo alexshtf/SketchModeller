@@ -12,7 +12,26 @@ namespace SketchModeller.Modelling.Computations
         public const double MIN_COMPONENTS_DISTANCE = 0.02;
         public const double MAX_COMPONENTS_DISTANCE = 0.05;
 
-        public static CylinderComponent[] GenerateComponents(
+        public static CylinderComponent[] Create(int count, double r1, double r2)
+        {
+            Contract.Requires(count >= 2);
+            Contract.Requires(r1 > 0);
+            Contract.Requires(r2 > 0);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>() != null);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>().Length == count);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>()[0].Radius == r1);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>().Last().Radius == r2);
+
+            var resultQuery =
+                from i in Enumerable.Range(0, count)
+                let t = i / (double)(count - 1)
+                let r = (1 - t) * r1 + t * r2
+                select new CylinderComponent(r, t);
+
+            return resultQuery.ToArray();
+        }
+
+        public static CylinderComponent[] Update(
             double length,
             CylinderComponent[] oldComponents,
             double minDistance = MIN_COMPONENTS_DISTANCE,
@@ -37,13 +56,14 @@ namespace SketchModeller.Modelling.Computations
                 // we remove next (unless it's the last node)
                 if (distance < minDistance && currentNode.Next != list.Last)
                 {
+                    throw new NotImplementedException("TODO");
                 };
 
                 // if the distance between current and next is too high 
                 // we insert a new component
                 if (distance > maxDistance)
                 {
-
+                    throw new NotImplementedException("TODO");
                 }
             }
 

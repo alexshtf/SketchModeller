@@ -13,8 +13,8 @@ namespace SketchModeller.Infrastructure.Data
         {
             Components = new CylinderComponent[]
             {
-                new CylinderComponent(0, 0),
-                new CylinderComponent(0, 1),
+                new CylinderComponent(1, 0),
+                new CylinderComponent(1, 1),
             };
         }
 

@@ -52,7 +52,7 @@ namespace SketchModeller.Modelling.Views
                 () => viewModel.Length,
                 (center, axis, length) => center - 0.5 * length * axis);
 
-            SetDefaultMaterial(cylinder, viewModel);
+            cylinder.SetMaterials(GetDefaultFrontAndBackMaterials(viewModel));
         }
 
         public override void DragStart(Point startPos, LineRange startRay)

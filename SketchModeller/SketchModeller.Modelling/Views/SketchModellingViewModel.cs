@@ -137,6 +137,12 @@ namespace SketchModeller.Modelling.Views
                     viewModel.Init(newSphere);
                     result = viewModel;
                 });
+            data.MatchClass<NewStraightGenCylinder>(newSgc =>
+                {
+                    var viewModel = container.Resolve<NewSGCViewModel>();
+                    viewModel.Init(newSgc);
+                    result = viewModel;
+                });
             Contract.Assume(result != null);
 
             result.Model = data;

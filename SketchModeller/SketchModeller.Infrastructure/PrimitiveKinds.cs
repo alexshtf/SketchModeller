@@ -10,5 +10,6 @@ namespace SketchModeller.Infrastructure
         Cylinder,
         Cone,
         Sphere,
+        SGC,
     }
 }

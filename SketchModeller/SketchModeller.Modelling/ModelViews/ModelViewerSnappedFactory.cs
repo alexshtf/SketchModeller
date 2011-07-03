@@ -27,6 +27,7 @@ namespace SketchModeller.Modelling.ModelViews
             item.MatchClass<SnappedCylinder>(cylinderData => result = CreateCylinderView(cylinderData));
             item.MatchClass<SnappedCone>(coneData => result = CreateConeView(coneData));
             item.MatchClass<SnappedSphere>(sphereData => result = CreateSphereView(sphereData));
+            item.MatchClass<SnappedStraightGenCylinder>(sgc => result = CreateSgcView(sgc));
             
             Contract.Assume(result != null);
             PrimitivesPickService.SetPrimitiveData(result, item as SnappedPrimitive);

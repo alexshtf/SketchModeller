@@ -95,5 +95,47 @@ namespace SketchModeller.Modelling.Services.Snap
         }
 
         #endregion
+
+        #region SnappedStraightGenCylinder methods
+
+        public static VectorsWriter Write(this VectorsWriter writer, SnappedStraightGenCylinder sgc)
+        {
+            writer = writer
+                .Write(sgc.BottomCenterResult)
+                .Write(sgc.AxisResult)
+                .Write(sgc.LengthResult);
+            foreach (var component in sgc.ComponentResults)
+                writer = writer
+                    .Write(component.Radius);
+
+            return writer;
+        }
+
+        public static VariableVectorsWriter Write(this VariableVectorsWriter writer, SnappedStraightGenCylinder sgc)
+        {
+            writer = writer
+                .Write(sgc.BottomCenter)
+                .Write(sgc.Axis)
+                .Write(sgc.Length);
+
+            foreach (var component in sgc.Components)
+                writer = writer
+                    .Write(component.Radius);
+
+            return writer;
+        }
+
+        public static void Read(this VectorsReader reader, SnappedStraightGenCylinder sgc)
+        {
+            sgc.BottomCenterResult = reader.ReadPoint3D();
+            sgc.AxisResult = reader.ReadVector3D();
+            sgc.LengthResult = reader.ReadValue();
+
+            foreach (var i in Enumerable.Range(0, sgc.ComponentResults.Length))
+                sgc.ComponentResults[i] = 
+                    new CylinderComponent(reader.ReadValue(), sgc.ComponentResults[i].Progress);
+        }
+
+        #endregion
     }
 }
