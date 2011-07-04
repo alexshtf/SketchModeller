@@ -22,7 +22,7 @@ namespace SketchModeller.Utilities
             Contract.Requires(values != null);
             Contract.Requires(amount >= 0 && amount <= 1);
             Contract.Ensures(Contract.Result<double[]>() != null);
-            Contract.Ensures(Contract.Result<double[]>().Length != values.Length);
+            Contract.Ensures(Contract.Result<double[]>().Length == values.Length);
 
             var result = new double[values.Length];
             for (int i = 0; i < values.Length; ++i)
@@ -50,7 +50,7 @@ namespace SketchModeller.Utilities
             Contract.Requires(values != null);
             Contract.Requires(amount >= 0 && amount <= 1);
             Contract.Ensures(Contract.Result<double[]>() != null);
-            Contract.Ensures(Contract.Result<double[]>().Length != values.Length);
+            Contract.Ensures(Contract.Result<double[]>().Length == values.Length);
 
             var n = values.Length;
             if (n <= 2)
@@ -82,7 +82,7 @@ namespace SketchModeller.Utilities
             Contract.Requires(vecs != null);
             Contract.Requires(scalarSmooth != null);
             Contract.Ensures(Contract.Result<Vector[]>() != null);
-            Contract.Ensures(Contract.Result<Vector[]>().Length != vecs.Length);
+            Contract.Ensures(Contract.Result<Vector[]>().Length == vecs.Length);
 
             var x = vecs.Select(v => v.X).ToArray();
             var y = vecs.Select(v => v.Y).ToArray();
@@ -111,7 +111,7 @@ namespace SketchModeller.Utilities
             Contract.Requires(points != null);
             Contract.Requires(scalarSmooth != null);
             Contract.Ensures(Contract.Result<Point[]>() != null);
-            Contract.Ensures(Contract.Result<Point[]>().Length != points.Length);
+            Contract.Ensures(Contract.Result<Point[]>().Length == points.Length);
 
             var x = points.Select(p => p.X).ToArray();
             var y = points.Select(p => p.Y).ToArray();

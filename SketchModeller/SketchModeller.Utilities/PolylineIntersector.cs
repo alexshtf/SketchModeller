@@ -88,9 +88,10 @@ namespace SketchModeller.Utilities
             var u = p - q;
             var w = p - x;
 
+            // find α using Kramer's rule. 
             var det = u.X * v.Y - v.X * u.Y;
-            var detα = u.X * w.Y - w.X * u.Y;
-            var α = det / detα;
+            var detα = w.X * u.Y - u.X * w.Y;
+            var α = detα / det;
 
             // no intersection exists if the system has no solution,
             // or the intersection is outside the segment's bounds

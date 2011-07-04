@@ -23,7 +23,7 @@ namespace SketchModeller.Modelling.Computations
         /// <param name="points">The set of points</param>
         /// <param name="proximityThreshold">The threshold to consider to points "neighbors" on the polyline</param>
         /// <returns>A set of points that approximate the polyline given by <paramref name="points"/></returns>
-        public static Point[] Convert(Point[] points, double proximityThreshold = 3.0)
+        public static Point[] Convert(Point[] points, double proximityThreshold)
         {
             Contract.Requires(points != null);
             Contract.Requires(points.Length >= 1);

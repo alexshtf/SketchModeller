@@ -9,6 +9,22 @@ namespace SketchModeller.Utilities
     public static class EnumerableExtensions
     {
         /// <summary>
+        /// Generates a sequence of cumulative sums of the input sequence.
+        /// </summary>
+        /// <param name="values">The input sequence</param>
+        /// <returns>A sequence in which the i-th element is the sum of the first i elements
+        /// of <paramref name="values"/>.</returns>
+        public static IEnumerable<double> CumulativeSums(IEnumerable<double> values)
+        {
+            var result = 0.0;
+            foreach (var value in values)
+            {
+                result += value;
+                yield return result;
+            }
+        }
+
+        /// <summary>
         /// Generates an infinite sequence of values given a seed and a generator function that
         /// transforms an element to the next element in the sequence.
         /// </summary>

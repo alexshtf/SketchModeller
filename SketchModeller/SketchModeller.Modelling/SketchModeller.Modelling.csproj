@@ -125,7 +125,9 @@
     <Compile Include="Computations\LSIntervalsFitter.cs" />
     <Compile Include="Computations\LSPointsIntervalsFitter.cs" />
     <Compile Include="Computations\PointsToPolylineConverter.cs" />
+    <Compile Include="Computations\PolylineDirectionChecker.cs" />
     <Compile Include="Computations\ProjectionFit.cs" />
+    <Compile Include="Computations\ProximityDistanceEstimate.cs" />
     <Compile Include="Computations\SgcComponents.cs" />
     <Compile Include="Computations\StraightSpine.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />

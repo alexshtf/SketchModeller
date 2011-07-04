@@ -114,6 +114,10 @@
     <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
     <Compile Include="CylinderComponentExtensions.cs" />
+    <Compile Include="Debugging\ArrayCSV.cs" />
+    <Compile Include="Debugging\ArrayImage.cs" />
+    <Compile Include="Debugging\ArrayPlot.cs" />
+    <Compile Include="Debugging\FWElementHelper.cs" />
     <Compile Include="DebugPrint.cs" />
     <Compile Include="DelegateComparer.cs" />
     <Compile Include="EllipseFitter.cs" />
@@ -122,6 +126,7 @@
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Graphs\Dijkstra.cs" />
     <Compile Include="Graphs\IndicesGraph.cs" />
+    <Compile Include="Histogram.cs" />
     <Compile Include="Hungarian.cs" />
     <Compile Include="IndexedUnionFind.cs" />
     <Compile Include="ModelVisualBaseHelper.cs" />

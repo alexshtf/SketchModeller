@@ -5,29 +5,79 @@ using System.Text;
 using System.Windows;
 using SketchModeller.Utilities;
 using System.Diagnostics.Contracts;
+using System.Windows.Media;
+using Utils;
+
+using Enumerable = System.Linq.Enumerable;
 
 namespace SketchModeller.Modelling.Computations
 {
     static class TwoLinesMedialAxis
     {
+        private const int IMAGE_SPACE_WIDTH = 512;
+        private const int IMAGE_SPACE_HEIGHT = 512;
+
         public const double PROXIMITY_DISTANCE = 3.0;
 
         public static Point[] Compute(Point[] l1, Point[] l2, Point[] polygon, double proximityDistance = PROXIMITY_DISTANCE)
         {
+            var transformMatrix = GetTransformToImageSpace(l1, l2, polygon);
+
+            // we are going to transform the arrays, so we copy them to not touch the original ones
+            l1 = (Point[])l1.Clone();
+            l2 = (Point[])l2.Clone();
+            polygon = (Point[])polygon.Clone();
+
+            // transform the arrays to image space coordinates
+            transformMatrix.Transform(l1);
+            transformMatrix.Transform(l2);
+            transformMatrix.Transform(polygon);
+
+            // compute distance transform of the polylines
             var distanceTransform = GetDistanceTransform(l1, l2);
 
-            // rasterize the polygon to get the coordinates of pixels inside the polygon
-            var medAxisPoints = FindExtremePoints(distanceTransform, polygon);
+            // find extreme points of the distance transform that lie inside the given polygon
+            var medAxisPoints = FindExtremePoints(distanceTransform, polygon).ToArray();
 
-            // filter extreme points (remove outliers) and add first/last medial points
-            var filteredPoints = GetLargestCluster(medAxisPoints, threshold: PROXIMITY_DISTANCE);
+            // transform the medial axis points back to original coordinates
+            transformMatrix.Invert();
+            transformMatrix.Transform(medAxisPoints);
+
+            // filter extreme points (remove outliers)
+            var filteredPoints = GetLargestCluster(medAxisPoints, threshold: proximityDistance);
 
             return filteredPoints;
         }
 
+        private static Matrix GetTransformToImageSpace(params Point[][] lines)
+        {
+            // get sequences of X and Y coordinates (seperately) for all points
+            var flat = lines.Flatten();
+            var x = flat.Select(p => p.X);
+            var y = flat.Select(p => p.Y);
+
+            // use the above sequences to compute the bounding box (minX, minY) <--> (maxX, maxY)
+            var maxX = x.Max();
+            var minX = x.Min();
+            var maxY = y.Max();
+            var minY = y.Min();
+
+            // compute transformation that normalizes the bounding box to image space
+            // (minX, minY) --> (0,0)
+            // (maxX, maxY) --> (IMAGE_SPACE_WIDTH - 1, IMAGE_SPACE_HEIGHT - 1)
+            var translate = new Matrix(1, 0, 0, 1, -minX, -minY);
+            var boxWidth = maxX - minX;
+            var boxHeight = maxY - minY;
+            var scale = new Matrix(IMAGE_SPACE_WIDTH / boxWidth, 0, 0, IMAGE_SPACE_HEIGHT / boxHeight, 0, 0);
+            var result = translate * scale;
+
+            // result is the computed matrix
+            return result;
+        }
+
         private static List<Point> FindExtremePoints(double[,] totalTransform, Point[] polygon)
         {
-            var bitmask = PolygonRasterizer.Rasterize(polygon, 512, 512);
+            var bitmask = PolygonRasterizer.Rasterize(polygon, IMAGE_SPACE_WIDTH, IMAGE_SPACE_HEIGHT);
             Tuple<int[], int[]> nonZeros = GetNonZeros(bitmask);
 
             // find extreme points
@@ -42,7 +92,9 @@ namespace SketchModeller.Modelling.Computations
                 var val = totalTransform[row, col];
 
                 var neighbors = from nRow in Enumerable.Range(row - 1, 3)
+                                where nRow >= 0 && nRow < IMAGE_SPACE_HEIGHT
                                 from nCol in Enumerable.Range(col - 1, 3)
+                                where nCol >= 0 && nCol < IMAGE_SPACE_WIDTH
                                 select new { Row = nRow, Col = nCol };
                 var allInside = neighbors.All(x => bitmask[x.Row, x.Col] == true);
 
@@ -62,8 +114,8 @@ namespace SketchModeller.Modelling.Computations
 
         private static double[,] GetDistanceTransform(Point[] l1, Point[] l2)
         {
-            var transform1 = new double[512, 512];
-            var transform2 = new double[512, 512];
+            var transform1 = new double[IMAGE_SPACE_WIDTH, IMAGE_SPACE_HEIGHT];
+            var transform2 = new double[IMAGE_SPACE_WIDTH, IMAGE_SPACE_HEIGHT];
             ChamferDistanceTransform.Compute(l1, transform1);
             ChamferDistanceTransform.Compute(l2, transform2);
             var totalTransform = Min(transform1, transform2);
@@ -107,10 +159,13 @@ namespace SketchModeller.Modelling.Computations
                 cluster.Add(medAxisPoints[i]);
             }
 
-            var largestCluster =
-                (from cluster in clustersDictionary.Values
-                 orderby cluster.Count descending
-                 select cluster).First();
+            var clustersDescenging = from cluster in clustersDictionary.Values
+                     orderby cluster.Count descending
+                     select cluster;
+
+            var largestCluster = clustersDictionary.Values.Any() 
+                ? clustersDescenging.First() 
+                : new List<Point>(0);
 
             return largestCluster.ToArray();
         }

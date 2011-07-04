@@ -8,6 +8,7 @@ using System.Diagnostics.Contracts;
 using System.Windows.Media;
 using Accord.Math.Decompositions;
 using Accord.Math;
+using Meta.Numerics.Matrices;
 
 namespace SketchModeller.Utilities
 {
@@ -55,43 +56,46 @@ namespace SketchModeller.Utilities
             Contract.Ensures(Contract.Result<EllipseParams>().XRadius >= 0);
             Contract.Ensures(Contract.Result<EllipseParams>().YRadius >= 0);
 
-            // we have a constant constraints matrix describing the constraint 4ac-b² = 1
-            var constraintMatrix = new double[6, 6];
-            constraintMatrix[0, 2] = 2;
-            constraintMatrix[1, 1] = -1;
-            constraintMatrix[2, 0] = 2;
+            // construct the design matrix parts
+            var d1 = new RectangularMatrix(points.Count, 3);
+            var d2 = new RectangularMatrix(points.Count, 3);
 
-            // a data matrix - each row is [x² xy y² x y 1] for each data point (x, y)
-            var dataMatrix = new double[points.Count, 6];
-            for (int row = 0; row < points.Count; ++row)
+            for (int i = 0; i < points.Count; ++i)
             {
-                var x = points[row].X;
-                var y = points[row].Y;
-                dataMatrix[row, 0] = x * x;
-                dataMatrix[row, 1] = x * y;
-                dataMatrix[row, 2] = y * y;
-                dataMatrix[row, 3] = x;
-                dataMatrix[row, 4] = y;
-                dataMatrix[row, 5] = 1;
+                d1[i, 0] = points[i].X * points[i].X;
+                d1[i, 1] = points[i].X * points[i].Y;
+                d1[i, 2] = points[i].Y * points[i].Y;
+
+                d2[i, 0] = points[i].X;
+                d2[i, 1] = points[i].Y;
+                d2[i, 2] = 1;
             }
 
-            // The scatter matrix - D^T * D
-            var scatterMatrix = dataMatrix.Transpose().Multiply(dataMatrix);
+            var s1 = MultiplyTranspose(d1, d1);
+            var s2 = MultiplyTranspose(d1, d2);
+            var s3 = MultiplyTranspose(d2, d2);
 
-            // get the eigenvector of the only positive eigenvalue of the scatter matrix - this is the 
-            // ellipse's equation coefficients.
-            var eigen = new GeneralizedEigenvalueDecomposition(scatterMatrix, constraintMatrix);
-            int positiveEigIndex = -1;
-            for (int i = 0; i < 6; ++i)
-                if (eigen.RealEigenvalues[i] > 0 && !double.IsInfinity(eigen.RealEigenvalues[i]))
-                {
-                    Debug.Assert(positiveEigIndex == -1);
-                    positiveEigIndex = i;
-                }
-            var coefficients = eigen.Eigenvectors.GetColumn(positiveEigIndex);
+            var c1 = new SquareMatrix(3);
+            c1[0, 2] = 2;
+            c1[1, 1] = -1;
+            c1[2, 0] = 2;
 
-            // extract ellipse parameters from the coefficients.
-            var ellipseParams = Conic2Parametric(coefficients);
+            var m = c1.Inverse() * (s1 - s2 * s3.Inverse() * s2.Transpose());
+
+            ColumnVector a1 = null;
+            var eigen = m.Eigensystem();
+            for (int i = 0; i < eigen.Dimension; ++i)
+            {
+                var evec = eigen.Eigenvector(i);
+                var cond = 4 * evec[0].Re * evec[2].Re - evec[1].Re * evec[1].Re;
+                if (cond > 0)
+                    a1 = new ColumnVector(evec[0].Re, evec[1].Re, evec[2].Re);
+            }
+            Debug.Assert(a1 != null);
+            var a2 = -s3.Inverse() * s2.Transpose() * a1;
+
+            var conic = a1.Concat(a2).ToArray();
+            var ellipseParams = Conic2Parametric(conic);
             return ellipseParams;
         }
 
@@ -100,24 +104,24 @@ namespace SketchModeller.Utilities
         /// </summary>
         /// <param name="coefficients">The implicit equation coefficients</param>
         /// <returns>Parametric representation</returns>
-        private static EllipseParams Conic2Parametric(double[] coefficients)
+        private static EllipseParams Conic2Parametric(double[] conic)
         {
-            var A = new double[2, 2];
-            A[0, 0] = coefficients[0];                 // a
-            A[1, 1] = coefficients[2];                 // c
-            A[0, 1] = A[1, 0] = 0.5 * coefficients[1]; // half b
+            var A = new SymmetricMatrix(2);
+            A[0, 0] = conic[0];                 // a
+            A[1, 1] = conic[2];                 // c
+            A[0, 1] = A[1, 0] = 0.5 * conic[1]; // half b
 
-            var B = new double[] { coefficients[3], coefficients[4] };
-            var C = coefficients[5];
+            var B = new ColumnVector(conic[3], conic[4]);
+            var C = conic[5];
 
-            var eig = new EigenvalueDecomposition(A);
-            Debug.Assert(eig.RealEigenvalues.Product() > 0);
+            var eig = A.Eigensystem();
+            Debug.Assert(eig.Eigenvalue(0) * eig.Eigenvalue(1) > 0);
 
-            var D = eig.RealEigenvalues;
-            var Q = eig.Eigenvectors.Transpose();
-            var t = A.Solve(B).Multiply(-0.5);
+            var D = new double[] { eig.Eigenvalue(0), eig.Eigenvalue(1) };
+            var Q = eig.Eigentransformation().Transpose();
+            var t = -0.5 * A.Inverse() * B;
 
-            var c_h = t.Multiply(A).InnerProduct(t) + B.InnerProduct(t) + C;
+            var c_h = t.Transpose() * A * t + B.Transpose() * t + C;
 
             return new EllipseParams
             {
@@ -127,6 +131,28 @@ namespace SketchModeller.Utilities
                 Degrees = 180 * Math.Atan2(Q[0, 1], Q[0, 0]) / Math.PI,
             };
 
+        }
+
+        private static SquareMatrix MultiplyTranspose(RectangularMatrix m1, RectangularMatrix m2)
+        {
+            var resultRectangular = m1.Transpose() * m2;
+            return ToSquareMatrix(resultRectangular);
+        }
+
+        private static SquareMatrix ToSquareMatrix(RectangularMatrix source)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(source.RowCount == source.ColumnCount);
+            Contract.Ensures(Contract.Result<SquareMatrix>() != null);
+            Contract.Ensures(Contract.Result<SquareMatrix>().Dimension == source.RowCount);
+
+            var n = source.RowCount;
+            var result = new SquareMatrix(n);
+            for (int row = 0; row < n; ++row)
+                for (int col = 0; col < n; ++col)
+                    result[row, col] = source[row, col];
+
+            return result;
         }
     }
 

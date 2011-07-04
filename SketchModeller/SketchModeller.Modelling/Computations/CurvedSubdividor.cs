@@ -21,11 +21,12 @@ namespace SketchModeller.Modelling.Computations
         {
             // create a polygon from l1, l2: we assume here that l1 and l2 have the same direction
             var polygon = l1.Concat(l2.Reverse()).ToArray();
+            var proximityDistance = EstimateProximityDistance(l1, l2);
 
-            var filteredPoints = TwoLinesMedialAxis.Compute(l1, l2, polygon, proximityDistance: 3.0);
+            var filteredPoints = TwoLinesMedialAxis.Compute(l1, l2, polygon, proximityDistance);
 
             // connect the extreme points with a long path (dijkstra algorithm)
-            var path = PointsToPolylineConverter.Convert(filteredPoints);
+            var path = PointsToPolylineConverter.Convert(filteredPoints, proximityDistance);
 
             // smooth the path
             var smoothed = SmoothPath(path);
@@ -39,6 +40,13 @@ namespace SketchModeller.Modelling.Computations
                 SpinePoints = points,
                 Normals = normals,
             };
+        }
+
+        private static double EstimateProximityDistance(Point[] l1, Point[] l2)
+        {
+            var d1 = ProximityDistanceEstimate.Compute(l1);
+            var d2 = ProximityDistanceEstimate.Compute(l2);
+            return Math.Min(d1, d2);
         }
 
         public static double[] ComputeRadii(Point[] points, Vector[] normals, Point[] l1, Point[] l2)
@@ -67,23 +75,23 @@ namespace SketchModeller.Modelling.Computations
         private static double[] ComputeRadii(
             Point[] points,
             Vector[] normals,
-            Func<Point, Vector, double> l1,
-            Func<Point, Vector, double> l2)
+            Func<Point, Vector, double> distanceToLine1,
+            Func<Point, Vector, double> distanceToLine2)
         {
             Contract.Requires(points != null);
             Contract.Requires(normals != null);
             Contract.Requires(points.Length == normals.Length);
-            Contract.Requires(l1 != null);
-            Contract.Requires(l2 != null);
+            Contract.Requires(distanceToLine1 != null);
+            Contract.Requires(distanceToLine2 != null);
             Contract.Ensures(Contract.Result<double[]>() != null);
             Contract.Ensures(Contract.Result<double[]>().Length == points.Length);
 
             var n = points.Length;
             var resultQuery =
                 from i in Enumerable.Range(0, n)
-                let r1 = l1(points[i], normals[i])
-                let r2 = l2(points[i], normals[i])
-                select Math.Min(r1, r2);
+                let d1 = distanceToLine1(points[i], normals[i])
+                let d2 = distanceToLine2(points[i], normals[i])
+                select Math.Min(d1, d2);
 
             return resultQuery.ToArray();
         }

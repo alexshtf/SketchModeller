@@ -99,7 +99,7 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var leftPts = snappedPrimitive.LeftSilhouette.Points;
             var rightPts = snappedPrimitive.RightSilhouette.Points;
-            MakeSureSameDirection(ref leftPts, ref rightPts);
+            MakeSureSameDirection(leftPts, rightPts);
 
             var pointsProgress = 
                 snappedPrimitive.Components.Select(x => x.Progress).ToArray();
@@ -172,9 +172,10 @@ namespace SketchModeller.Modelling.Services.Snap
             throw new NotImplementedException();
         }
 
-        private void MakeSureSameDirection(ref Point[] l1pts, ref Point[] l2pts)
+        private void MakeSureSameDirection(Point[] l1pts, Point[] l2pts)
         {
-            throw new NotImplementedException();
+            if (!PolylineDirectionChecker.AreSameDirection(l1pts, l2pts))
+                Array.Reverse(l2pts);
         }
     }
 }
