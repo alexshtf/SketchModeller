@@ -121,6 +121,7 @@
   <ItemGroup>
     <Compile Include="ChamferDistanceTransform.cs" />
     <Compile Include="Computations\CurvedSubdividor.cs" />
+    <Compile Include="Computations\EllipseHelper.cs" />
     <Compile Include="Computations\IntervalsSampler.cs" />
     <Compile Include="Computations\LSIntervalsFitter.cs" />
     <Compile Include="Computations\LSPointsIntervalsFitter.cs" />

@@ -11,6 +11,7 @@ using System.Windows;
 
 using Enumerable = System.Linq.Enumerable;
 using TermUtils = SketchModeller.Utilities.TermUtils;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -136,7 +137,14 @@ namespace SketchModeller.Modelling.Services.Snap
 
             // compute the term we get from the feature curves. used mainly to optimize
             // for the axis orientation
-            var featuresTerm = FeaturesTerm(snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>());
+            var topEllipse = EllipseFitter.Fit(snappedPrimitive.TopFeatureCurve.SnappedTo.Points);
+            var botEllipse = EllipseFitter.Fit(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points);
+            var approxOrientation = GetOrientation(topEllipse, botEllipse, snappedPrimitive.AxisResult);
+            var orientationSimilarity = 
+                approxOrientation.X * snappedPrimitive.Axis.X + 
+                approxOrientation.Y * snappedPrimitive.Axis.Y + 
+                approxOrientation.Z * snappedPrimitive.Axis.Z;
+            var featuresTerm = TermBuilder.Power(orientationSimilarity, 2);
 
             // objective - weighed average of all terms
             var objective =
@@ -148,6 +156,42 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
             return Tuple.Create(objective, constraints);
+        }
+
+        private Vector3D GetOrientation(
+            EllipseParams topEllipse, 
+            EllipseParams botEllipse,
+            Vector3D axisApproximation)
+        {
+            var topCircleBasis = EllipseHelper.CircleOrientation(topEllipse);
+            var botCircleBasis = EllipseHelper.CircleOrientation(botEllipse);
+
+            var topOrientation = GetOrientation(topCircleBasis, axisApproximation);
+            var botOrientation = GetOrientation(botCircleBasis, axisApproximation);
+
+            if (Vector3D.DotProduct(botOrientation, topOrientation) < 0)
+                botOrientation = -botOrientation;
+
+            var result = new Vector3D(
+                0.5 * topOrientation.X + 0.5 * botOrientation.X,
+                0.5 * topOrientation.Y + 0.5 * botOrientation.Y,
+                0.5 * topOrientation.Z + 0.5 * botOrientation.Z);
+            result.Normalize();
+
+            return result;
+        }
+
+        private Vector3D GetOrientation(Tuple<Vector3D, Vector3D> circleBasis, Vector3D axisApproximation)
+        {
+            var normal1 = Vector3D.CrossProduct(circleBasis.Item1, circleBasis.Item2);
+            normal1.Normalize();
+
+            var normal2 = new Vector3D(normal1.X, normal1.Y, -normal1.Z);
+
+            if (Vector3D.DotProduct(normal1, axisApproximation) > Vector3D.DotProduct(normal2, axisApproximation))
+                return normal1;
+            else
+                return normal2;
         }
 
         private Term FeaturesTerm(IEnumerable<CircleFeatureCurve> iEnumerable)
