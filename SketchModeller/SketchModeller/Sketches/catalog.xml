@@ -24,4 +24,7 @@
   <sketch name="straight generalized cylinder"
           file="sgc.svg"
           modelFile="sgc.model" />
+  <sketch name="jug"
+          file="jug.svg"
+          modelFile="jug.model" />
 </catalog>
