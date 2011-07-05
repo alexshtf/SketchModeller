@@ -117,7 +117,10 @@
     <Compile Include="Debugging\ArrayCSV.cs" />
     <Compile Include="Debugging\ArrayImage.cs" />
     <Compile Include="Debugging\ArrayPlot.cs" />
+    <Compile Include="Debugging\CloudPlotter.cs" />
     <Compile Include="Debugging\FWElementHelper.cs" />
+    <Compile Include="Debugging\LinesPlotter.cs" />
+    <Compile Include="Debugging\PointsPlotter.cs" />
     <Compile Include="DebugPrint.cs" />
     <Compile Include="DelegateComparer.cs" />
     <Compile Include="EllipseFitter.cs" />

@@ -60,7 +60,7 @@ namespace SketchModeller.Utilities.Debugging
 
         private static Image GetImage(int width, int height, ImageSource imageSource)
         {
-            var image = new Image { Source = imageSource };
+            var image = new Image { Source = imageSource, Width = width, Height = height };
             FWElementHelper.FakeLayout(image);
             return image;
         }

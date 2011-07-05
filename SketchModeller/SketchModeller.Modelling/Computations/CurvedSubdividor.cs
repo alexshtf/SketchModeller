@@ -21,11 +21,11 @@ namespace SketchModeller.Modelling.Computations
         {
             // create a polygon from l1, l2: we assume here that l1 and l2 have the same direction
             var polygon = l1.Concat(l2.Reverse()).ToArray();
-            var proximityDistance = EstimateProximityDistance(l1, l2);
 
-            var filteredPoints = TwoLinesMedialAxis.Compute(l1, l2, polygon, proximityDistance);
+            var filteredPoints = TwoLinesMedialAxis.Compute(l1, l2, polygon);
 
             // connect the extreme points with a long path (dijkstra algorithm)
+            var proximityDistance = ProximityDistanceEstimate.Compute(filteredPoints);
             var path = PointsToPolylineConverter.Convert(filteredPoints, proximityDistance);
 
             // smooth the path
@@ -40,13 +40,6 @@ namespace SketchModeller.Modelling.Computations
                 SpinePoints = points,
                 Normals = normals,
             };
-        }
-
-        private static double EstimateProximityDistance(Point[] l1, Point[] l2)
-        {
-            var d1 = ProximityDistanceEstimate.Compute(l1);
-            var d2 = ProximityDistanceEstimate.Compute(l2);
-            return Math.Min(d1, d2);
         }
 
         public static double[] ComputeRadii(Point[] points, Vector[] normals, Point[] l1, Point[] l2)

@@ -14,10 +14,8 @@ namespace SketchModeller.Modelling.Computations
             var p1 = l1.Concat(l2).ToArray();
             var p2 = l1.Concat(l2.Reverse()).ToArray();
 
-            var proximityDistance = GetProximityDistance(l1, l2);
-
-            var ma1 = TwoLinesMedialAxis.Compute(l1, l2, p1, proximityDistance);
-            var ma2 = TwoLinesMedialAxis.Compute(l1, l2, p2, proximityDistance);
+            var ma1 = TwoLinesMedialAxis.Compute(l1, l2, p1);
+            var ma2 = TwoLinesMedialAxis.Compute(l1, l2, p2);
 
             var length1 = ma1.Length >= 2 ? PointsSequenceExtensions.ComputeCurveLength(ma1) : 0;
             var length2 = ma2.Length >= 2 ? PointsSequenceExtensions.ComputeCurveLength(ma2) : 0;

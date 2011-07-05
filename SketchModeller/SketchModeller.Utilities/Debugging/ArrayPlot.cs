@@ -13,63 +13,30 @@ namespace SketchModeller.Utilities.Debugging
 {
     public static class ArrayPlot
     {
-        public static FrameworkElement Lines(
-            Point[][] lines,
+        public static PointsPlotter Lines(
             double width = 256,
             double height = 256,
             Tuple<double, double> xRange = null,
             Tuple<double, double> yRange = null)
         {
-            Contract.Requires(lines != null);
             Contract.Requires(width > 0);
             Contract.Requires(height > 0);
-            Contract.Ensures(Contract.Result<FrameworkElement>() != null);
+            Contract.Ensures(Contract.Result<PointsPlotter>() != null);
 
-            double xMin, xMax, yMin, yMax;
-            ExtractRange(lines.Flatten(), xRange, p => p.X, out xMin, out xMax);
-            ExtractRange(lines.Flatten(), yRange, p => p.Y, out yMin, out yMax);
-
-            var canvas = new Canvas
-            {
-                Width = width,
-                Height = height,
-                Background = Brushes.White
-            };
-            foreach (var singleLine in lines)
-            {
-                var transformedPoints = from pnt in singleLine
-                                        let x = width * (pnt.X - xMin) / (xMax - xMin)
-                                        let y = height * (pnt.Y - yMin) / (yMax - yMin)
-                                        select new Point(x, y);
-                var polyline = new Polyline
-                {
-                    Points = new PointCollection(transformedPoints),
-                    StrokeThickness = 2.0,
-                    Stroke = Brushes.DarkSlateBlue,
-                };
-                canvas.Children.Add(polyline);
-            }
-
-            FWElementHelper.FakeLayout(canvas);
-            return canvas;
+            return new LinesPlotter(width, height, xRange, yRange);
         }
 
-        private static void ExtractRange(
-            IEnumerable<Point> points,
-            Tuple<double, double> userRange,
-            Func<Point, double> valueExtract,
-            out double xMin, out double xMax)
+        public static PointsPlotter Cloud(
+            double width = 256,
+            double height = 256,
+            Tuple<double, double> xRange = null,
+            Tuple<double, double> yRange = null)
         {
-            if (userRange == null)
-            {
-                xMin = points.Select(valueExtract).Min();
-                xMax = points.Select(valueExtract).Max();
-            }
-            else
-            {
-                xMin = userRange.Item1;
-                xMax = userRange.Item2;
-            }
+            Contract.Requires(width > 0);
+            Contract.Requires(height > 0);
+            Contract.Ensures(Contract.Result<PointsPlotter>() != null);
+
+            return new CloudPlotter(width, height, xRange, yRange);
         }
     }
 }

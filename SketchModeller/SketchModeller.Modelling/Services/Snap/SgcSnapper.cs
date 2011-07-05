@@ -139,12 +139,12 @@ namespace SketchModeller.Modelling.Services.Snap
             // for the axis orientation
             var topEllipse = EllipseFitter.Fit(snappedPrimitive.TopFeatureCurve.SnappedTo.Points);
             var botEllipse = EllipseFitter.Fit(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points);
+
             var approxOrientation = GetOrientation(topEllipse, botEllipse, snappedPrimitive.AxisResult);
-            var orientationSimilarity = 
-                approxOrientation.X * snappedPrimitive.Axis.X + 
-                approxOrientation.Y * snappedPrimitive.Axis.Y + 
-                approxOrientation.Z * snappedPrimitive.Axis.Z;
-            var featuresTerm = TermBuilder.Power(orientationSimilarity, 2);
+            var featuresTerm =
+                TermBuilder.Power(approxOrientation.X - snappedPrimitive.Axis.X, 2) +
+                TermBuilder.Power(approxOrientation.Y - snappedPrimitive.Axis.Y, 2) +
+                TermBuilder.Power(-approxOrientation.Z - snappedPrimitive.Axis.Z, 2);
 
             // we specifically wish to give higher weight to first and last radii, so we have
             // an additional first/last radii term.
@@ -154,7 +154,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             // objective - weighed average of all terms
             var objective =
-                1000 * radiiApproxTerm +
+                radiiApproxTerm +
                 radiiSmoothTerm +
                 startTerm +
                 endTerm +
@@ -181,17 +181,12 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var topPerimeter = EllipseHelper.ApproxPerimeter(topEllipse.XRadius, topEllipse.YRadius);
             var botPerimeter = EllipseHelper.ApproxPerimeter(botEllipse.XRadius, botEllipse.YRadius);
-            
-            var topWeight = topPerimeter / (topPerimeter + botPerimeter);
-            var botWeight = 1 - topWeight;
 
-            var result = new Vector3D(
-                topWeight * topOrientation.X + botWeight * botOrientation.X,
-                topWeight * topOrientation.Y + botWeight * botOrientation.Y,
-                topWeight * topOrientation.Z + botWeight * botOrientation.Z);
-            result.Normalize();
-
-            return result;
+            //return result;
+            if (topPerimeter > botPerimeter)
+                return topOrientation;
+            else
+                return botOrientation;
         }
 
         private Vector3D GetOrientation(Tuple<Vector3D, Vector3D> circleBasis, Vector3D axisApproximation)
@@ -201,7 +196,10 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var normal2 = new Vector3D(normal1.X, normal1.Y, -normal1.Z);
 
-            if (Vector3D.DotProduct(normal1, axisApproximation) > Vector3D.DotProduct(normal2, axisApproximation))
+            var normal1Difference = (normal1 - axisApproximation).LengthSquared;
+            var normal2Difference = (normal2 - axisApproximation).LengthSquared;
+
+            if (normal1Difference < normal2Difference)
                 return normal1;
             else
                 return normal2;

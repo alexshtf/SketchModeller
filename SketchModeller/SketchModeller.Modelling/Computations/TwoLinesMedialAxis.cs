@@ -19,7 +19,7 @@ namespace SketchModeller.Modelling.Computations
 
         public const double PROXIMITY_DISTANCE = 3.0;
 
-        public static Point[] Compute(Point[] l1, Point[] l2, Point[] polygon, double proximityDistance = PROXIMITY_DISTANCE)
+        public static Point[] Compute(Point[] l1, Point[] l2, Point[] polygon)
         {
             var transformMatrix = GetTransformToImageSpace(l1, l2, polygon);
 
@@ -35,17 +35,18 @@ namespace SketchModeller.Modelling.Computations
 
             // compute distance transform of the polylines
             var distanceTransform = GetDistanceTransform(l1, l2);
+            //Sharpen(distanceTransform);
 
             // find extreme points of the distance transform that lie inside the given polygon
             var medAxisPoints = FindExtremePoints(distanceTransform, polygon).ToArray();
 
+            // filter extreme points (remove outliers)
+            var filteredPoints = GetLargestCluster(medAxisPoints, threshold: 3);
+            
             // transform the medial axis points back to original coordinates
             transformMatrix.Invert();
-            transformMatrix.Transform(medAxisPoints);
-
-            // filter extreme points (remove outliers)
-            var filteredPoints = GetLargestCluster(medAxisPoints, threshold: proximityDistance);
-
+            transformMatrix.Transform(filteredPoints);
+            
             return filteredPoints;
         }
 
@@ -73,6 +74,35 @@ namespace SketchModeller.Modelling.Computations
 
             // result is the computed matrix
             return result;
+        }
+
+        private static void Sharpen(double[,] image)
+        {
+            double[,] filter = 
+            { {-0.1667, -0.6667, -0.1667},
+              {-0.6667, +4.3333, -0.6667},
+              {-0.1667, -0.6667, -0.1667} 
+            };
+            double[,] clone = (double[,])image.Clone();
+
+            for (int row = 0; row < image.GetLength(0) - 2; ++row)
+            {
+                for (int col = 0; col < image.GetLength(1) - 2; ++col)
+                {
+                    image[row + 1, col + 1] =
+                        clone[row + 0, col + 0] * filter[0, 0] +
+                        clone[row + 0, col + 1] * filter[0, 1] +
+                        clone[row + 0, col + 2] * filter[0, 2] +
+
+                        clone[row + 1, col + 0] * filter[1, 0] +
+                        clone[row + 1, col + 1] * filter[1, 1] +
+                        clone[row + 1, col + 2] * filter[1, 2] +
+
+                        clone[row + 2, col + 0] * filter[2, 0] +
+                        clone[row + 2, col + 1] * filter[2, 1] +
+                        clone[row + 2, col + 2] * filter[2, 2];
+                }
+            }
         }
 
         private static List<Point> FindExtremePoints(double[,] totalTransform, Point[] polygon)
