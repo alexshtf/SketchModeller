@@ -146,13 +146,20 @@ namespace SketchModeller.Modelling.Services.Snap
                 approxOrientation.Z * snappedPrimitive.Axis.Z;
             var featuresTerm = TermBuilder.Power(orientationSimilarity, 2);
 
+            // we specifically wish to give higher weight to first and last radii, so we have
+            // an additional first/last radii term.
+            var endpointsRadiiTerm =
+                TermBuilder.Power(radii[0] - snappedPrimitive.ComponentResults[0].Radius, 2) +
+                TermBuilder.Power(radii.Last() - snappedPrimitive.Components.Last().Radius, 2);
+
             // objective - weighed average of all terms
             var objective =
-                radiiApproxTerm +
+                1000 * radiiApproxTerm +
                 radiiSmoothTerm +
                 startTerm +
                 endTerm +
-                featuresTerm;
+                featuresTerm +
+                endpointsRadiiTerm;
 
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
             return Tuple.Create(objective, constraints);
@@ -172,10 +179,16 @@ namespace SketchModeller.Modelling.Services.Snap
             if (Vector3D.DotProduct(botOrientation, topOrientation) < 0)
                 botOrientation = -botOrientation;
 
+            var topPerimeter = EllipseHelper.ApproxPerimeter(topEllipse.XRadius, topEllipse.YRadius);
+            var botPerimeter = EllipseHelper.ApproxPerimeter(botEllipse.XRadius, botEllipse.YRadius);
+            
+            var topWeight = topPerimeter / (topPerimeter + botPerimeter);
+            var botWeight = 1 - topWeight;
+
             var result = new Vector3D(
-                0.5 * topOrientation.X + 0.5 * botOrientation.X,
-                0.5 * topOrientation.Y + 0.5 * botOrientation.Y,
-                0.5 * topOrientation.Z + 0.5 * botOrientation.Z);
+                topWeight * topOrientation.X + botWeight * botOrientation.X,
+                topWeight * topOrientation.Y + botWeight * botOrientation.Y,
+                topWeight * topOrientation.Z + botWeight * botOrientation.Z);
             result.Normalize();
 
             return result;

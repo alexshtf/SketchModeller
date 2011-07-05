@@ -74,36 +74,35 @@ namespace SketchModeller.Utilities
         /// <param name="result">The resulting intersection point</param>
         /// <param name="distance">The resulting intersection distance</param>
         /// <returns><c>true</c> if and only if the intersection exists</returns>
+        /// <remarks>Algorithm from http://paulbourke.net/geometry/lineline2d/ </remarks>
         private static bool IntersectSegment(
             ref Point p, ref Point q,
             ref Point x, ref Vector v,
             out Point result, out double distance)
         {
-            // we model the segment p<-->q as:
-            //     (1 - α)·p + α·q
-            // and the line as
-            //     x + β·v
-            // we find α, and use it to find the intersection point
+            var x1 = p.X;
+            var x2 = q.X;
+            var x3 = x.X;
+            var x4 = x.X + v.X;
 
-            var u = p - q;
-            var w = p - x;
+            var y1 = p.Y;
+            var y2 = q.Y;
+            var y3 = x.Y;
+            var y4 = x.Y + v.Y;
 
-            // find α using Kramer's rule. 
-            var det = u.X * v.Y - v.X * u.Y;
-            var detα = w.X * u.Y - u.X * w.Y;
-            var α = detα / det;
+            var numerator = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
+            var denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+            var ua = numerator / denominator;
 
-            // no intersection exists if the system has no solution,
-            // or the intersection is outside the segment's bounds
-            if (double.IsNaN(α) || α < 0 || α > 1)
+            if (double.IsNaN(ua) || ua > 1 || ua < 0)
             {
                 result = default(Point);
-                distance = double.NaN;
+                distance = double.PositiveInfinity;
                 return false;
             }
 
-            result = WpfUtils.Lerp(p, q, α);
-            distance = (result - x).Length;
+            result = WpfUtils.Lerp(p, q, ua);
+            distance = (x - result).Length;
             return true;
         }
     }

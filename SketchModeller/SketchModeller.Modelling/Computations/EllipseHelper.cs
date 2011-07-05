@@ -13,6 +13,31 @@ namespace SketchModeller.Modelling.Computations
     static class EllipseHelper
     {
         /// <summary>
+        /// Approximates the perimeter of an ellipse given the lengths of its two major/minor
+        /// axes.
+        /// </summary>
+        /// <param name="a">The length of the first axis</param>
+        /// <param name="b">The length of the second axis</param>
+        /// <returns>An approximation of the perimeter of an ellipse.</returns>
+        /// <remarks>The formula was taken from http://www.mathsisfun.com/geometry/ellipse-perimeter.html. </remarks>
+        public static double ApproxPerimeter(double a, double b)
+        {
+            Contract.Requires(a >= 0);
+            Contract.Requires(b >= 0);
+            Contract.Ensures(Contract.Result<double>() >= a);
+            Contract.Ensures(Contract.Result<double>() >= b);
+
+            var h = Math.Pow(a - b, 2) / Math.Pow(a + b, 2);
+            var p = Math.PI * (a + b) * (
+                1 + 
+                h / 4 + 
+                h * h / 64 + 
+                h * h * h / 256 + 
+                25 * h * h * h * h / 16384);
+            return p;
+        }
+
+        /// <summary>
         /// Computes 3D circle orientation given its projection as a 2D ellipse.
         /// </summary>
         /// <param name="ellipseParams">The parameters of the 2D ellipse</param>
