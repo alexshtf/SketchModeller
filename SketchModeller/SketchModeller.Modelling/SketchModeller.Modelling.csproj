@@ -168,6 +168,7 @@
     <Compile Include="Services\PrimitivesConverter\NewConverters\ConeCylinderConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderCylinderConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\SgcConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\SgcSgcConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\SphereSphereConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\PrimitivesConverter.cs" />
