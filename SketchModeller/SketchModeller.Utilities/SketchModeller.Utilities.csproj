@@ -135,6 +135,7 @@
     <Compile Include="ModelVisualBaseHelper.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="NewPrimitiveExtensions.cs" />
+    <Compile Include="NumArrayUtils.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
     <Compile Include="PointsToPolylineConverter.cs" />

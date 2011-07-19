@@ -100,12 +100,11 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var leftPts = snappedPrimitive.LeftSilhouette.Points;
             var rightPts = snappedPrimitive.RightSilhouette.Points;
-            MakeSureSameDirection(leftPts, rightPts);
 
             var pointsProgress = 
                 snappedPrimitive.Components.Select(x => x.Progress).ToArray();
 
-            var spine = StraightSpine.Compute(leftPts, rightPts, pointsProgress);
+            var spine = StraightSpine.Compute(leftPts, rightPts, pointsProgress, new Vector(snappedPrimitive.AxisResult.X, -snappedPrimitive.AxisResult.Y));
             var radii = spine.Item1;
             var spineStart = spine.Item2;
             var spineEnd = spine.Item3;
@@ -225,12 +224,6 @@ namespace SketchModeller.Modelling.Services.Snap
         private Tuple<Term, Term[]> TwoSilhouettesSingleFeature(SnappedStraightGenCylinder snappedPrimitive, HashSet<FeatureCurve> annotated)
         {
             throw new NotImplementedException();
-        }
-
-        private void MakeSureSameDirection(Point[] l1pts, Point[] l2pts)
-        {
-            if (!PolylineDirectionChecker.AreSameDirection(l1pts, l2pts))
-                Array.Reverse(l2pts);
         }
     }
 }

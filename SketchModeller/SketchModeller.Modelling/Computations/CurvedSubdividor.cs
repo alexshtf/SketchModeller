@@ -117,8 +117,17 @@ namespace SketchModeller.Modelling.Computations
 
         private static double[] AverageSmoothRadii(double[] radii, double amount = 0.1, int count = 100)
         {
-            Func<double[], double[]> smooth = vals => AverageSmooth.SmoothKeepEdges(vals, amount);
+            // handle infinities
+            radii = (double[])radii.Clone();
+            var firstFiniteIndex = Enumerable.Range(0, radii.Length).First(i => !double.IsInfinity(radii[i]));
+            var lastFiniteIndex = Enumerable.Range(0, radii.Length).Last(i => !double.IsInfinity(radii[i]));
+            for (int i = 0; i < firstFiniteIndex; ++i)
+                radii[i] = radii[firstFiniteIndex];
+            for (int i = lastFiniteIndex + 1; i < radii.Length; ++i)
+                radii[i] = radii[lastFiniteIndex];
 
+            // average smooth radii multiple times
+            Func<double[], double[]> smooth = vals => AverageSmooth.SmoothKeepEdges(vals, amount);
             var result = EnumerableExtensions.Generate(radii, smooth)
                 .Take(count)
                 .Last();

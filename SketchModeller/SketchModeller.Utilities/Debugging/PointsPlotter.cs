@@ -50,17 +50,17 @@ namespace SketchModeller.Utilities.Debugging
             IEnumerable<Point> points,
             Tuple<double, double> userRange,
             Func<Point, double> valueExtract,
-            out double xMin, out double xMax)
+            out double min, out double max)
         {
             if (userRange == null)
             {
-                xMin = points.Select(valueExtract).Min();
-                xMax = points.Select(valueExtract).Max();
+                min = points.Select(valueExtract).Min();
+                max = points.Select(valueExtract).Max();
             }
             else
             {
-                xMin = userRange.Item1;
-                xMax = userRange.Item2;
+                min = userRange.Item1;
+                max = userRange.Item2;
             }
         }
     }

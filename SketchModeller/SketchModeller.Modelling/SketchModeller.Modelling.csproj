@@ -84,6 +84,15 @@
     <Reference Include="3DTools">
       <HintPath>..\..\..\..\..\..\3DTools-1.01-bin\3DTools.dll</HintPath>
     </Reference>
+    <Reference Include="AForge">
+      <HintPath>..\libs\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging">
+      <HintPath>..\libs\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math">
+      <HintPath>..\libs\AForge.Math.dll</HintPath>
+    </Reference>
     <Reference Include="HelixToolkit, Version=2011.6.4187.20095, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HelixToolkit.2011.6.0\lib\HelixToolkit.dll</HintPath>
@@ -125,6 +134,7 @@
     <Compile Include="Computations\IntervalsSampler.cs" />
     <Compile Include="Computations\LSIntervalsFitter.cs" />
     <Compile Include="Computations\LSPointsIntervalsFitter.cs" />
+    <Compile Include="Computations\PointsPCA2D.cs" />
     <Compile Include="Computations\PointsToPolylineConverter.cs" />
     <Compile Include="Computations\PolylineDirectionChecker.cs" />
     <Compile Include="Computations\ProjectionFit.cs" />
