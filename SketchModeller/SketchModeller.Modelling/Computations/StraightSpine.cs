@@ -19,6 +19,8 @@ namespace SketchModeller.Modelling.Computations
             var lineVec = Math.Abs(pca2d.First * prior) > Math.Abs(pca2d.Second * prior) ? pca2d.First : pca2d.Second;
             var linePoint = pca2d.Mean;
 
+
+
             IEnumerable<double> spineProjections = null;
             IEnumerable<double> progressProjections = null;
             Tuple<Point, Vector> spineLine = null;
@@ -26,6 +28,8 @@ namespace SketchModeller.Modelling.Computations
             double[] r = null;
 
             const double ALPHA = 0.05;
+            var leftDistanceFunc = DistanceFunc(new PolylineIntersector(l1pts));
+            var rightDistanceFunc = DistanceFunc(new PolylineIntersector(l2pts));
             for (int i = 0; i < 100; ++i)
             {
                 spineProjections =
@@ -37,10 +41,10 @@ namespace SketchModeller.Modelling.Computations
                 progressProjections = ComputeProgressProjections(progress, spineProjections);
                 spineLine = Tuple.Create(linePoint, lineVec);
 
-                l = ComputeRadii(l1pts, spineLine, progressProjections);
-                r = ComputeRadii(l2pts, spineLine, progressProjections);
-                var lGrad = RadiiGradientsApprox(l1pts, spineLine, progressProjections);
-                var rGrad = RadiiGradientsApprox(l2pts, spineLine, progressProjections);
+                l = ComputeRadii(leftDistanceFunc, spineLine, progressProjections);
+                r = ComputeRadii(rightDistanceFunc, spineLine, progressProjections);
+                var lGrad = RadiiGradientsApprox(leftDistanceFunc, spineLine, progressProjections);
+                var rGrad = RadiiGradientsApprox(rightDistanceFunc, spineLine, progressProjections);
 
                 var allArrays = new double[][] { l, r, lGrad.Item1, lGrad.Item2, lGrad.Item3, lGrad.Item4, rGrad.Item1, rGrad.Item2, rGrad.Item3, rGrad.Item4 };
                 var finiteIndices =
@@ -60,7 +64,7 @@ namespace SketchModeller.Modelling.Computations
                 lineVec.Normalize();
             }
 
-            var radii = ComputeRadiiFromLeftRight(l, r);
+            var radii = ComputeFinalRadii(l, r);
 
             var pStart = spineLine.Item1 + spineProjections.Min() * spineLine.Item2;
             var pEnd = spineLine.Item1 + spineProjections.Max() * spineLine.Item2;
@@ -68,7 +72,7 @@ namespace SketchModeller.Modelling.Computations
             return Tuple.Create(radii, pStart, pEnd);
         }
 
-        private static double[] ComputeRadiiFromLeftRight(double[] leftRadii, double[] rightRadii)
+        private static double[] ComputeFinalRadii(double[] leftRadii, double[] rightRadii)
         {
             Contract.Requires(leftRadii != null && rightRadii != null);
             Contract.Requires(leftRadii.Length == rightRadii.Length);
@@ -110,21 +114,21 @@ namespace SketchModeller.Modelling.Computations
             return progressProjections;
         }
 
-        private static Tuple<double[], double[], double[], double[]> RadiiGradientsApprox(Point[] polyline, Tuple<Point, Vector> line, IEnumerable<double> spineProjections, double delta = 1E-3)
+        private static Tuple<double[], double[], double[], double[]> RadiiGradientsApprox(Func<Point, Vector, double> distanceFunc, Tuple<Point, Vector> line, IEnumerable<double> spineProjections, double delta = 1E-3)
         {
-            var radii = ComputeRadii(polyline, line, spineProjections);
+            var radii = ComputeRadii(distanceFunc, line, spineProjections);
             
             var dpx = Tuple.Create(new Point(line.Item1.X + delta, line.Item1.Y), line.Item2);
-            var dpxRadii = ComputeRadii(polyline, dpx, spineProjections);
+            var dpxRadii = ComputeRadii(distanceFunc, dpx, spineProjections);
 
             var dpy = Tuple.Create(new Point(line.Item1.X, line.Item1.Y + delta), line.Item2);
-            var dpyRadii = ComputeRadii(polyline, dpy, spineProjections);
+            var dpyRadii = ComputeRadii(distanceFunc, dpy, spineProjections);
 
             var dvx = Tuple.Create(line.Item1, new Vector(line.Item2.X + delta, line.Item2.Y));
-            var dvxRadii = ComputeRadii(polyline, dvx, spineProjections);
+            var dvxRadii = ComputeRadii(distanceFunc, dvx, spineProjections);
 
             var dvy = Tuple.Create(line.Item1, new Vector(line.Item2.X, line.Item2.Y + delta));
-            var dvyRadii = ComputeRadii(polyline, dvy, spineProjections);
+            var dvyRadii = ComputeRadii(distanceFunc, dvy, spineProjections);
 
             for (int i = 0; i < radii.Length; ++i)
             {
@@ -137,43 +141,29 @@ namespace SketchModeller.Modelling.Computations
             return Tuple.Create(dpxRadii, dpyRadii, dvxRadii, dvyRadii);
         }
 
-        private static double[] ComputeRadii(Point[] polyline, Tuple<Point, Vector> line, IEnumerable<double> spineProjections)
+        private static double[] ComputeRadii(Func<Point, Vector, double> distanceFunc, Tuple<Point, Vector> line, IEnumerable<double> spineProjections)
         {
             var linePnt = line.Item1;
             var lineDir = line.Item2;
             var lineNormal = new Vector(-lineDir.Y, lineDir.X).Normalized();
 
-            var intersector = new PolylineIntersector(polyline);
-
             var radii =
                 from t in spineProjections
                 let pnt = line.Item1 + t * line.Item2
-                let intersection = intersector.IntersectLine(pnt, lineNormal)
-                let distance = intersection != null ? intersection.Item2 : double.PositiveInfinity
+                let distance = distanceFunc(pnt, lineNormal)
                 select distance;
 
             return radii.ToArray();
         }
 
-        private static double[] ComputeRadii(
-           Point[] l1pts, Point[] l2pts,
-           Tuple<Point, Vector> spineLine,
-           IEnumerable<double> spineProjections)
+        private static Func<Point, Vector, double> DistanceFunc(PolylineIntersector intersector)
         {
-            var spineLineNormal = new Vector(-spineLine.Item2.Y, spineLine.Item2.X).Normalized();
-            var straightSpinePoints =
-                (from t in spineProjections
-                 select spineLine.Item1 + t * spineLine.Item2).ToArray();
-            var straightSpineNormals =
-                Enumerable.Repeat(spineLineNormal, straightSpinePoints.Length)
-                .ToArray();
-
-            var radii = CurvedSubdividor.ComputeRadii(
-                straightSpinePoints,
-                straightSpineNormals,
-                l1pts,
-                l2pts);
-            return radii;
+            Func<Point, Vector, double> result = (pnt, normal) =>
+                {
+                    var intersection = intersector.IntersectLine(pnt, normal);
+                    return intersection != null ? intersection.Item2 : double.PositiveInfinity;
+                };
+            return result;
         }
     }
 }
