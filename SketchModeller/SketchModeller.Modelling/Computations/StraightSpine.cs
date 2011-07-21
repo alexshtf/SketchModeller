@@ -13,13 +13,75 @@ namespace SketchModeller.Modelling.Computations
 {
     static class StraightSpine
     {
+        /// <summary>
+        /// Computes a straight spine approximation given two silhouette lines, 
+        /// </summary>
+        /// <param name="l1pts">Polyline defining the first silhouette line.</param>
+        /// <param name="l2pts">Polyline defining the second silhouette line.</param>
+        /// <param name="progress">The progress points along the spine for which to compute the radii.</param>
+        /// <param name="onSpine">A point on the spine</param>
+        /// <param name="spineDirection">The direction vector of the spine</param>
+        /// <returns>
+        /// A tuple (radii, start, end). <c>radii</c> is an array of the radii along the spine points defined by <paramref name="progress"/>. 
+        /// <c>start</c> is the spine's starting point and <c>end</c> is the spine's ending point.
+        /// </returns>
+        public static Tuple<double[], Point, Point> Compute(Point[] l1pts, Point[] l2pts, double[] progress, Point onSpine, Vector spineDirection)
+        {
+            Contract.Requires(l1pts != null);
+            Contract.Requires(l2pts != null);
+            Contract.Requires(progress != null && progress.Length >= 2); // we need at-least two spine pints
+            Contract.Requires(progress.First() == 0 && progress.Last() == 1);
+
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>() != null);
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1 != null);
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1.Length == progress.Length);
+
+            var spineProjections =
+                from pnt in l1pts.Concat(l2pts)
+                let t = pnt.ProjectOnLine(onSpine, spineDirection)
+                select t;
+            spineProjections = spineProjections.ToArray();
+            var progressProjections = ComputeProgressProjections(progress, spineProjections);
+
+            var leftDistanceFunc = DistanceFunc(new PolylineIntersector(l1pts));
+            var rightDistanceFunc = DistanceFunc(new PolylineIntersector(l2pts));
+            var spineLine = Tuple.Create(onSpine, spineDirection);
+            var l = ComputeRadii(leftDistanceFunc, spineLine, progressProjections);
+            var r = ComputeRadii(rightDistanceFunc, spineLine, progressProjections);
+
+            var radii = ComputeFinalRadii(l, r);
+
+            var pStart = spineLine.Item1 + spineProjections.Min() * spineLine.Item2;
+            var pEnd = spineLine.Item1 + spineProjections.Max() * spineLine.Item2;
+
+            return Tuple.Create(radii, pStart, pEnd);
+        }
+        
+        /// <summary>
+        /// Computes a straight spine approximation given two silhouette lines and a prior vector describing an approximate direction of the spine.
+        /// </summary>
+        /// <param name="l1pts">Polyline defining the first silhouette line.</param>
+        /// <param name="l2pts">Polyline defining the second silhouette line.</param>
+        /// <param name="progress">The progress points along the spine for which to compute the radii.</param>
+        /// <param name="prior">The approximate prior vector</param>
+        /// <returns>
+        /// A tuple (radii, start, end). <c>radii</c> is an array of the radii along the spine points defined by <paramref name="progress"/>. 
+        /// <c>start</c> is the spine's starting point and <c>end</c> is the spine's ending point.
+        /// </returns>
         public static Tuple<double[], Point, Point> Compute(Point[] l1pts, Point[] l2pts, double[] progress, Vector prior)
         {
+            Contract.Requires(l1pts != null);
+            Contract.Requires(l2pts != null);
+            Contract.Requires(progress != null && progress.Length >= 2); // we need at-least two spine pints
+            Contract.Requires(progress.First() == 0 && progress.Last() == 1);
+
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>() != null);
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1 != null);
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1.Length == progress.Length);
+
             var pca2d = PointsPCA2D.Compute(l1pts.Concat(l2pts));
             var lineVec = Math.Abs(pca2d.First * prior) > Math.Abs(pca2d.Second * prior) ? pca2d.First : pca2d.Second;
             var linePoint = pca2d.Mean;
-
-
 
             IEnumerable<double> spineProjections = null;
             IEnumerable<double> progressProjections = null;
