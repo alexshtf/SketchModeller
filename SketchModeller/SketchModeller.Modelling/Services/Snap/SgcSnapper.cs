@@ -104,7 +104,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             Point[] featureCurve;
             bool isTop;
-            if (snappedPrimitive.TopFeatureCurve != null)
+            if (snappedPrimitive.TopFeatureCurve.SnappedTo != null)
             {
                 featureCurve = snappedPrimitive.TopFeatureCurve.SnappedTo.Points;
                 isTop = true;

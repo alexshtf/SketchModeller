@@ -27,4 +27,7 @@
   <sketch name="jug"
           file="jug.svg"
           modelFile="jug.model" />
+  <sketch name="topless_jug"
+          file="topless_jug.svg"
+          modelFile="topless_jug.model" />
 </catalog>
