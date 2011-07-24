@@ -10,6 +10,8 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public abstract class NewPrimitive : SelectablePrimitive
     {
+        public PrimitiveEditConstraint[] EditConstraints { get; set; }
+
         private PrimitiveCurve[] featureCurves;
         public PrimitiveCurve[] FeatureCurves
         {

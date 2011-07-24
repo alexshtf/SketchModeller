@@ -113,6 +113,8 @@
     <Compile Include="Data\CylinderComponent.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />
+    <Compile Include="Data\AxisEditConstraint.cs" />
+    <Compile Include="Data\PrimitiveEditConstraint.cs" />
     <Compile Include="Data\NewSphere.cs" />
     <Compile Include="Data\NewStraightGenCylinder.cs" />
     <Compile Include="Data\PrimitiveCurve.cs" />
