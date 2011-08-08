@@ -21,14 +21,8 @@ namespace SketchModeller.Modelling.Views
 {
     public class NewConeView : BaseNewPrimitiveView
     {
-        private const ModifierKeys TRACKBALL_MODIFIERS = ModifierKeys.Alt;
-        private const ModifierKeys LENGTH_MODIFIER = ModifierKeys.Control;
-        private const ModifierKeys DIAMETER_MODIFIER = ModifierKeys.Shift;
-        private const ModifierKeys AXIS_MOVE_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
-
         private readonly NewConeViewModel viewModel;
         private readonly Cylinder cylinder;
-        private DragStartProximity dragStartProximity;
 
         [InjectionConstructor]
         public NewConeView(NewConeViewModel viewModel, ILoggerFacade logger)
@@ -58,7 +52,7 @@ namespace SketchModeller.Modelling.Views
         public override void DragStart(Point startPos, LineRange startRay)
         {
             base.DragStart(startPos, startRay);
-            dragStartProximity = GetDragStartProximity(startRay);
+            viewModel.DragStartProximity = GetDragStartProximity(startRay);
         }
 
         protected override Vector3D ApproximateAxis
@@ -66,40 +60,10 @@ namespace SketchModeller.Modelling.Views
             get { return viewModel.Axis; }
         }
 
-        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
+        
+        private NewConeViewModel.DragStartProximities GetDragStartProximity(LineRange startRay)
         {
-            if (Keyboard.Modifiers == ModifierKeys.None)
-                viewModel.Center = viewModel.Center + dragVector3d;
-            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
-                viewModel.Center = viewModel.Center + axisDragVector;
-            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
-            {
-                viewModel.Axis = TrackballRotate(viewModel.Axis, dragVector2d);
-            }
-            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
-            {
-                var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
-                if (axis != default(Vector3D))
-                {
-                    axis.Normalize();
-                    var radiusDelta = 0.5 * Vector3D.DotProduct(axis, dragVector3d);
-                    if (dragStartProximity == DragStartProximity.Top)
-                        viewModel.TopRadius = Math.Max(NewConeViewModel.MIN_DIAMETER, viewModel.TopRadius + radiusDelta);
-                    else if (dragStartProximity == DragStartProximity.Bottom)
-                        viewModel.BottomRadius = Math.Max(NewConeViewModel.MIN_DIAMETER, viewModel.BottomRadius + radiusDelta);
-                }
-            }
-            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
-            {
-                var axis = viewModel.Axis.Normalized();
-                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
-                viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
-            }
-        }
-
-        private DragStartProximity GetDragStartProximity(LineRange startRay)
-        {
-            DragStartProximity result = default(DragStartProximity);
+            NewConeViewModel.DragStartProximities result = default(NewConeViewModel.DragStartProximities);
             bool success = false;
 
             var htParams = new RayHitTestParameters(startRay.Point1, startRay.Point2 - startRay.Point1);
@@ -120,9 +84,9 @@ namespace SketchModeller.Modelling.Views
                         var botDist = botPlane.DistanceFromPoint(htResult3d.PointHit);
 
                         if (topDist < botDist)
-                            result = DragStartProximity.Top;
+                            result = NewConeViewModel.DragStartProximities.Top;
                         else
-                            result = DragStartProximity.Bottom;
+                            result = NewConeViewModel.DragStartProximities.Bottom;
 
                         success = true;
                         return HitTestResultBehavior.Stop;
@@ -136,10 +100,5 @@ namespace SketchModeller.Modelling.Views
             return result;
         }
 
-        private enum DragStartProximity
-        {
-            Top,
-            Bottom,
-        }
     }
 }

@@ -8,11 +8,15 @@ using SketchModeller.Infrastructure.Services;
 using Microsoft.Practices.Prism.Events;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SketchModeller.Modelling.Views
 {
     class NewSphereViewModel : NewPrimitiveViewModel
     {
+        private const ModifierKeys RADIUS_MODIFIER = ModifierKeys.Shift;
+
         public const double MIN_RADIUS = 0.005;
 
         private NewSphere model;
@@ -86,5 +90,21 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+
+        protected override void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.None)
+                center = center + dragVector3d;
+            if (Keyboard.Modifiers == RADIUS_MODIFIER)
+            {
+                if (sketchPlanePosition != null)
+                {
+                    var fromCenter = sketchPlanePosition.Value - center;
+                    fromCenter.Normalize();
+                    var radiusDelta = Vector3D.DotProduct(fromCenter, dragVector3d);
+                    radius = Math.Max(radius + radiusDelta, NewSphereViewModel.MIN_RADIUS);
+                }
+            }
+        }
     }
 }

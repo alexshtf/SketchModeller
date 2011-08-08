@@ -8,6 +8,7 @@ using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Infrastructure.Data;
 using Microsoft.Practices.Unity;
 using SketchModeller.Utilities;
+using Utils;
 
 using SketchModeller.Infrastructure;
 using Microsoft.Practices.Prism.Commands;
@@ -16,6 +17,8 @@ using MathUtils3D = Utils.MathUtils3D;
 using System.Diagnostics.Contracts;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Services;
+using System.Windows.Input;
+using System.Windows;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -23,6 +26,11 @@ namespace SketchModeller.Modelling.Views
     {
         public const double MIN_LENGTH = 0.01;
         public const double MIN_DIAMETER = 0.01;
+
+        private const ModifierKeys TRACKBALL_MODIFIERS = ModifierKeys.Alt;
+        private const ModifierKeys LENGTH_MODIFIER = ModifierKeys.Control;
+        private const ModifierKeys DIAMETER_MODIFIER = ModifierKeys.Shift;
+        private const ModifierKeys AXIS_MOVE_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
 
         private NewCylinder model;
         private bool isUpdating;
@@ -142,5 +150,32 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        protected override void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.None)
+                Center = Center + dragVector3d;
+            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
+                Center = Center + axisDragVector;
+            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+            {
+                Axis = TrackballRotate(Axis, dragVector2d);
+            }
+            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+            {
+                var axis = Vector3D.CrossProduct(Axis, SketchPlane.Normal);
+                if (axis != default(Vector3D))
+                {
+                    axis.Normalize();
+                    var diameterDelta = Vector3D.DotProduct(axis, dragVector3d);
+                    Diameter = Math.Max(NewCylinderViewModel.MIN_DIAMETER, Diameter + diameterDelta);
+                }
+            }
+            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
+            {
+                var axis = Axis.Normalized();
+                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
+                Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, Length + lengthDelta);
+            }
+        }
     }
 }

@@ -73,8 +73,7 @@ namespace SketchModeller.Modelling.Views
             if (dragVector3d != null)
             {
                 var axisDragVector = MathUtils3D.ProjectVector(dragVector3d.Value, ApproximateAxis);
-                PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector, currDragPosition);
-                viewModel.NotifyDragged();
+                viewModel.PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector, currDragPosition);
             }
 
             if (currDragPosition != null)
@@ -92,7 +91,6 @@ namespace SketchModeller.Modelling.Views
             get { return isDragging; }
         }
 
-        protected abstract void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition);
         protected abstract Vector3D ApproximateAxis { get; }
 
         protected Tuple<Material, Material> GetDefaultFrontAndBackMaterials(NewPrimitiveViewModel viewModel)
@@ -125,21 +123,6 @@ namespace SketchModeller.Modelling.Views
                             return UNSELECTED_BRUSH;
                     }));
             return material;
-        }
-
-        protected Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)
-        {
-            const double TRACKBALL_ROTATE_SPEED = 0.5;
-
-            var horzDegrees = -dragVector2d.X * TRACKBALL_ROTATE_SPEED;
-            var vertDegrees = -dragVector2d.Y * TRACKBALL_ROTATE_SPEED;
-
-            var horzAxis = viewModel.SketchPlane.Normal;
-            var vertAxis = viewModel.SketchPlane.XAxis;
-
-            toRotate = RotationHelper.RotateVector(toRotate, horzAxis, horzDegrees);
-            toRotate = RotationHelper.RotateVector(toRotate, vertAxis, vertDegrees);
-            return toRotate;
         }
 
         protected Point3D? PointOnSketchPlane(LineRange lineRange)

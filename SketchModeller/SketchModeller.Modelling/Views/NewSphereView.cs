@@ -14,8 +14,6 @@ namespace SketchModeller.Modelling.Views
 {
     class NewSphereView : BaseNewPrimitiveView
     {
-        private const ModifierKeys RADIUS_MODIFIER = ModifierKeys.Shift;
-
         private readonly NewSphereViewModel viewModel;
         private readonly Sphere sphere;
 
@@ -30,22 +28,6 @@ namespace SketchModeller.Modelling.Views
             sphere.Bind(Sphere.RadiusProperty, () => viewModel.Radius);
             sphere.Bind(Sphere.CenterProperty, () => viewModel.Center);
             sphere.SetMaterials(GetDefaultFrontAndBackMaterials(viewModel));
-        }
-
-        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.None)
-                viewModel.Center = viewModel.Center + dragVector3d;
-            if (Keyboard.Modifiers == RADIUS_MODIFIER)
-            {
-                if (sketchPlanePosition != null)
-                {
-                    var fromCenter = sketchPlanePosition.Value - viewModel.Center;
-                    fromCenter.Normalize();
-                    var radiusDelta = Vector3D.DotProduct(fromCenter, dragVector3d);
-                    viewModel.Radius = Math.Max(viewModel.Radius + radiusDelta, NewSphereViewModel.MIN_RADIUS);
-                }
-            }
         }
 
         protected override Vector3D ApproximateAxis

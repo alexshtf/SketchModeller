@@ -17,6 +17,7 @@ using SketchModeller.Modelling.Events;
 using System.Threading.Tasks;
 using SketchModeller.Infrastructure.Services;
 using System.ComponentModel;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -63,11 +64,34 @@ namespace SketchModeller.Modelling.Views
 
         public abstract void UpdateFromModel();
 
+        protected abstract void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition);
+
+        public void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
+        {
+            PerformDragCore(dragVector2d, dragVector3d, axisDragVector, sketchPlanePosition);
+            NotifyDragged();
+        }
+
         public void NotifyDragged()
         {
             Model.UpdateCurvesGeometry();
             ComputeCurvesAssignment();
             eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(Model);
+        }
+
+        protected Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)
+        {
+            const double TRACKBALL_ROTATE_SPEED = 0.5;
+
+            var horzDegrees = -dragVector2d.X * TRACKBALL_ROTATE_SPEED;
+            var vertDegrees = -dragVector2d.Y * TRACKBALL_ROTATE_SPEED;
+
+            var horzAxis = SketchPlane.Normal;
+            var vertAxis = SketchPlane.XAxis;
+
+            toRotate = RotationHelper.RotateVector(toRotate, horzAxis, horzDegrees);
+            toRotate = RotationHelper.RotateVector(toRotate, vertAxis, vertDegrees);
+            return toRotate;
         }
 
         private void ComputeCurvesAssignment()

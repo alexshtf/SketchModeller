@@ -18,10 +18,7 @@ namespace SketchModeller.Modelling.Views
 {
     class NewCylinderView : BaseNewPrimitiveView
     {
-        private const ModifierKeys TRACKBALL_MODIFIERS = ModifierKeys.Alt;
-        private const ModifierKeys LENGTH_MODIFIER = ModifierKeys.Control;
-        private const ModifierKeys DIAMETER_MODIFIER = ModifierKeys.Shift;
-        private const ModifierKeys AXIS_MOVE_MODIFIER = ModifierKeys.Control | ModifierKeys.Shift;
+
 
         private readonly NewCylinderViewModel viewModel;
         private readonly Cylinder cylinder;
@@ -55,32 +52,6 @@ namespace SketchModeller.Modelling.Views
             get { return viewModel.Axis; }
         }
 
-        protected override void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.None)
-                viewModel.Center = viewModel.Center + dragVector3d;
-            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
-                viewModel.Center = viewModel.Center + axisDragVector;
-            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
-            {
-                viewModel.Axis = TrackballRotate(viewModel.Axis, dragVector2d);
-            }
-            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
-            {
-                var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
-                if (axis != default(Vector3D))
-                {
-                    axis.Normalize();
-                    var diameterDelta = Vector3D.DotProduct(axis, dragVector3d);
-                    viewModel.Diameter = Math.Max(NewCylinderViewModel.MIN_DIAMETER, viewModel.Diameter + diameterDelta);
-                }
-            }
-            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
-            {
-                var axis = viewModel.Axis.Normalized();
-                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
-                viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
-            }
-        }
+        
     }
 }
