@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Xml.Serialization;
+using SketchModeller.Infrastructure.Data.EditConstraints;
 
 namespace SketchModeller.Infrastructure.Data
 {

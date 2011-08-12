@@ -111,10 +111,15 @@
     <Compile Include="Data\Coplanarity.cs" />
     <Compile Include="Data\CurveCategories.cs" />
     <Compile Include="Data\CylinderComponent.cs" />
+    <Compile Include="Data\EditConstraints\AxisOnLineConstraint.cs" />
+    <Compile Include="Data\EditConstraints\EditParameter.cs" />
+    <Compile Include="Data\EditConstraints\IEditParameter.cs" />
+    <Compile Include="Data\EditConstraints\PointOnPlaneConstraint.cs" />
+    <Compile Include="Data\EditConstraints\PointParameter.cs" />
+    <Compile Include="Data\EditConstraints\VectorParameter.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />
-    <Compile Include="Data\AxisEditConstraint.cs" />
-    <Compile Include="Data\PrimitiveEditConstraint.cs" />
+    <Compile Include="Data\EditConstraints\PrimitiveEditConstraint.cs" />
     <Compile Include="Data\NewSphere.cs" />
     <Compile Include="Data\NewStraightGenCylinder.cs" />
     <Compile Include="Data\PrimitiveCurve.cs" />

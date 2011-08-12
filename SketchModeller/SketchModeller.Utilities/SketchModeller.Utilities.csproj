@@ -111,6 +111,7 @@
     <Compile Include="ALOptimizer.cs" />
     <Compile Include="AverageSmooth.cs" />
     <Compile Include="CircleFitter.cs" />
+    <Compile Include="ConstraintsProjector.cs" />
     <Compile Include="ContractExtensions.cs" />
     <Compile Include="CurveSampler.cs" />
     <Compile Include="CylinderComponentExtensions.cs" />

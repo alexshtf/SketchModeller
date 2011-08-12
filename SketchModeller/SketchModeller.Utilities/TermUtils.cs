@@ -5,11 +5,22 @@ using System.Text;
 using AutoDiff;
 using System.Diagnostics.Contracts;
 using Utils;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Utilities
 {
     public static class TermUtils
     {
+        public static TVec ToTermVector(this Point3D pnt)
+        {
+            return new TVec(pnt.X, pnt.Y, pnt.Z);
+        }
+
+        public static TVec ToTermVector(this Vector3D vec)
+        {
+            return new TVec(vec.X, vec.Y, vec.Z);
+        }
+
         public static Term SafeAvg(IEnumerable<Term> terms)
         {
             var count = (double)terms.Count();
