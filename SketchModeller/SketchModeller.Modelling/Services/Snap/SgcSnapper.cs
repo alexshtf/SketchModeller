@@ -52,7 +52,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 Length = new Variable(),
                 Components = GenerateComponents(newPrimitive.Components),
             
-                AxisResult = newPrimitive.Axis.Normalized(),
+                AxisResult = newPrimitive.Axis.Value.Normalized(),
                 BottomCenterResult = newPrimitive.Bottom,
                 LengthResult = newPrimitive.Length,
                 ComponentResults = newPrimitive.Components.CloneArray(),

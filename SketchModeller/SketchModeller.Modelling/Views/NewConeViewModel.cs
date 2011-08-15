@@ -191,11 +191,11 @@ namespace SketchModeller.Modelling.Views
         {
             if (!initializing)
             {
-                model.Axis = axis;
-                model.Center = center;
-                model.Length = length;
-                model.TopRadius = topRadius;
-                model.BottomRadius = bottomRadius;
+                model.Axis.Value = axis;
+                model.Center.Value = center;
+                model.Length.Value = length;
+                model.TopRadius.Value = topRadius;
+                model.BottomRadius.Value = bottomRadius;
             }
         }
 

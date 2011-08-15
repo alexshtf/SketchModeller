@@ -11,18 +11,17 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
     {
         protected override NewCylinder ConvertCore(NewCone source, Vector3D moveVector)
         {
-            return new NewCylinder
-            {
-                Axis = source.Axis,
-                Center = source.Center + moveVector,
-                Diameter = source.TopRadius + source.BottomRadius,
-                Length = source.Length,
-            };
+            var result = new NewCylinder();
+            result.Axis.Value = source.Axis;
+            result.Center.Value = source.Center.Value + moveVector;
+            result.Diameter.Value = source.TopRadius + source.BottomRadius;
+            result.Length.Value = source.Length;
+            return result;
         }
 
         protected override void ApplyMovementCore(NewCone source, NewCylinder target, Vector3D moveVector)
         {
-            target.Center = source.Center + moveVector;
+            target.Center.Value = source.Center.Value + moveVector;
         }
     }
 }

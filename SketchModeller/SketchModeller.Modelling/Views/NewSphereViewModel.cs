@@ -29,7 +29,8 @@ namespace SketchModeller.Modelling.Views
             : base(uiState, curveAssigner, eventAggregator)
         {
             radius = 0.1;
-            model = new NewSphere { Radius = radius };
+            model = new NewSphere();
+            model.Radius.Value = radius;
         }
 
         public void Init(NewSphere newSphere)
@@ -67,7 +68,7 @@ namespace SketchModeller.Modelling.Views
                 radius = value;
                 RaisePropertyChanged(() => Radius);
                 if (!isUpdating)
-                    model.Radius = value;
+                    model.Radius.Value = value;
             }
         }
 
@@ -85,7 +86,7 @@ namespace SketchModeller.Modelling.Views
                 center = value;
                 RaisePropertyChanged(() => Center);
                 if (!isUpdating)
-                    model.Center = value;
+                    model.Center.Value = value;
             }
         }
 

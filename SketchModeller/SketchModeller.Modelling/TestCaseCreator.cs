@@ -92,7 +92,11 @@ namespace SketchModeller.Modelling
             var rightCurve = new Polyline { CurveCategory = CurveCategories.Silhouette, Points = rightLine2d.ToArray() };
 
             // generate new primitive that exactly matches the curves
-            var newcylinder = new NewCylinder { Axis = axis, Center = center, Length = halfLength * 2, Diameter = radius * 2 };
+            var newcylinder = new NewCylinder();
+            newcylinder.Axis.Value = axis;
+            newcylinder.Center.Value = center; 
+            newcylinder.Length.Value = halfLength * 2; 
+            newcylinder.Diameter.Value = radius * 2;
 
             // reset session data
             var sketchData =

@@ -11,13 +11,12 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
     {
         protected override NewPrimitive ConvertCore(SnappedCylinder snapped)
         {
-            return new NewCylinder
-            {
-                Axis = snapped.AxisResult,
-                Length = snapped.LengthResult,
-                Diameter = 2 * snapped.RadiusResult,
-                Center = MathUtils3D.Lerp(snapped.TopCenterResult, snapped.BottomCenterResult, 0.5),
-            };
+            var result = new NewCylinder();
+            result.Axis.Value = snapped.AxisResult;
+            result.Length.Value = snapped.LengthResult;
+            result.Diameter.Value = 2 * snapped.RadiusResult;
+            result.Center.Value = MathUtils3D.Lerp(snapped.TopCenterResult, snapped.BottomCenterResult, 0.5);
+            return result;
         }
     }
 }

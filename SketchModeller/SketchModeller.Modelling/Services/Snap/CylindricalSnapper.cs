@@ -216,7 +216,7 @@ namespace SketchModeller.Modelling.Services.Snap
             snapped.BottomCenter = SnapperHelper.GenerateVarVector();
             snapped.Length = new Variable();
 
-            snapped.AxisResult = newPrimitive.Axis.Normalized();
+            snapped.AxisResult = newPrimitive.Axis.Value.Normalized();
             snapped.BottomCenterResult = newPrimitive.Bottom;
             snapped.LengthResult = newPrimitive.Length;
 

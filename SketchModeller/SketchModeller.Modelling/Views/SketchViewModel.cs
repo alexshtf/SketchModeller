@@ -110,39 +110,35 @@ namespace SketchModeller.Modelling.Views
                 switch (primitiveKind)
                 {
                     case PrimitiveKinds.Cylinder:
-                        sessionData.NewPrimitives.Add(new NewCylinder
-                            {
-                                Center = pos3d.Value,
-                                Axis = sketchPlane.YAxis,
-                                Diameter = 0.4,
-                                Length = 0.6,
-                            });
+                        var newCylinder = new NewCylinder();
+                        newCylinder.Center.Value = pos3d.Value;
+                        newCylinder.Axis.Value = sketchPlane.YAxis;
+                        newCylinder.Diameter.Value = 0.4;
+                        newCylinder.Length.Value = 0.6;
+                        sessionData.NewPrimitives.Add(newCylinder);
                         break;
                     case PrimitiveKinds.Cone:
-                        sessionData.NewPrimitives.Add(new NewCone
-                            {
-                                Center = pos3d.Value,
-                                Axis = sketchPlane.YAxis,
-                                BottomRadius = 0.2,
-                                TopRadius = 0.2,
-                                Length = 0.6,
-                            });
+                        var newCone = new NewCone();
+                        newCone.Center.Value = pos3d.Value;
+                        newCone.Axis.Value = sketchPlane.YAxis;
+                        newCone.BottomRadius.Value = 0.2;
+                        newCone.TopRadius.Value = 0.2;
+                        newCone.Length.Value = 0.6;
+                        sessionData.NewPrimitives.Add(newCone);
                         break;
                     case PrimitiveKinds.Sphere:
-                        sessionData.NewPrimitives.Add(new NewSphere
-                            {
-                                Center = pos3d.Value,
-                                Radius = 0.2,
-                            });
+                        var newSphere = new NewSphere();
+                        newSphere.Center.Value = pos3d.Value;
+                        newSphere.Radius.Value = 0.2;
+                        sessionData.NewPrimitives.Add(newSphere);
                         break;
                     case PrimitiveKinds.SGC:
-                        sessionData.NewPrimitives.Add(new NewStraightGenCylinder
-                            {
-                                Center = pos3d.Value,
-                                Axis = sketchPlane.YAxis,
-                                Length = 0.6,
-                                Components = SgcComponents.Create(20, 0.2, 0.6),
-                            });
+                        var newSGC = new NewStraightGenCylinder();
+                        newSGC.Center.Value = pos3d.Value;
+                        newSGC.Axis.Value = sketchPlane.YAxis;
+                        newSGC.Length.Value = 0.6;
+                        newSGC.Components = SgcComponents.Create(20, 0.2, 0.6);
+                        sessionData.NewPrimitives.Add(newSGC);
                         break;
                     default:
                         Trace.Fail("Invalid primitive kind");

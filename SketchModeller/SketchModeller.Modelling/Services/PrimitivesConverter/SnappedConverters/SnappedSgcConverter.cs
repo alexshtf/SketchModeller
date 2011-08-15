@@ -12,13 +12,12 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
     {
         protected override NewPrimitive ConvertCore(SnappedStraightGenCylinder snapped)
         {
-            return new NewStraightGenCylinder
-            {
-                Axis = snapped.AxisResult,
-                Length = snapped.LengthResult,
-                Center = MathUtils3D.Lerp(snapped.TopCenterResult, snapped.BottomCenterResult, 0.5),
-                Components = snapped.ComponentResults.CloneArray(),
-            };
+            var result = new NewStraightGenCylinder();
+            result.Axis.Value = snapped.AxisResult;
+            result.Length.Value = snapped.LengthResult;
+            result.Center.Value = MathUtils3D.Lerp(snapped.TopCenterResult, snapped.BottomCenterResult, 0.5);
+            result.Components = snapped.ComponentResults.CloneArray();
+            return result;
         }
     }
 }

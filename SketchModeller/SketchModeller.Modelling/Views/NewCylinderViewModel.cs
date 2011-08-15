@@ -43,12 +43,10 @@ namespace SketchModeller.Modelling.Views
             diameter = 0.2;
             length = 0.5;
             axis = MathUtils3D.UnitZ;
-            model = new NewCylinder
-            {
-                Axis = axis,
-                Length = length,
-                Diameter = diameter,
-            };
+            model = new NewCylinder();
+            model.Axis.Value = axis;
+            model.Length.Value = length;
+            model.Diameter.Value = diameter;
         }
 
         public void Init(NewCylinder newCylinder)
@@ -90,7 +88,7 @@ namespace SketchModeller.Modelling.Views
                 axis = value;
                 RaisePropertyChanged(() => Axis);
                 if (!isUpdating)
-                    model.Axis = value;
+                    model.Axis.Value = value;
             }
         }
 
@@ -108,7 +106,7 @@ namespace SketchModeller.Modelling.Views
                 diameter = value;
                 RaisePropertyChanged(() => Diameter);
                 if (!isUpdating)
-                    model.Diameter = value;
+                    model.Diameter.Value = value;
             }
         }
 
@@ -126,7 +124,7 @@ namespace SketchModeller.Modelling.Views
                 center = value;
                 RaisePropertyChanged(() => Center);
                 if (!isUpdating)
-                    model.Center = value;
+                    model.Center.Value = value;
             }
         }
 
@@ -144,7 +142,7 @@ namespace SketchModeller.Modelling.Views
                 length = value;
                 RaisePropertyChanged(() => Length);
                 if (!isUpdating)
-                    model.Length = value;
+                    model.Length.Value = value;
             }
         }
 

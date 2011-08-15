@@ -116,6 +116,7 @@
     <Compile Include="Data\EditConstraints\IEditParameter.cs" />
     <Compile Include="Data\EditConstraints\PointOnPlaneConstraint.cs" />
     <Compile Include="Data\EditConstraints\PointParameter.cs" />
+    <Compile Include="Data\EditConstraints\ValueParameter.cs" />
     <Compile Include="Data\EditConstraints\VectorParameter.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />

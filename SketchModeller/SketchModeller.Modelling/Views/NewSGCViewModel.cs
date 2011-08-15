@@ -80,7 +80,7 @@ namespace SketchModeller.Modelling.Views
                 center = value;
                 RaisePropertyChanged(() => Center);
                 if (!isUpdating)
-                    model.Center = value;
+                    model.Center.Value = value;
             }
         }
 
@@ -98,7 +98,7 @@ namespace SketchModeller.Modelling.Views
                 axis = value;
                 RaisePropertyChanged(() => Axis);
                 if (!isUpdating)
-                    model.Axis = value;
+                    model.Axis.Value = value;
             }
         }
 
@@ -116,7 +116,7 @@ namespace SketchModeller.Modelling.Views
                 length = value;
                 RaisePropertyChanged(() => Length);
                 if (!isUpdating)
-                    model.Length = value;
+                    model.Length.Value = value;
             }
         }
 

@@ -5,27 +5,14 @@ using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Xml.Serialization;
 using System.Windows.Media.Media3D;
+using SketchModeller.Infrastructure.Data.EditConstraints;
 
 namespace SketchModeller.Infrastructure.Data
 {
     [Serializable]
     public class NewCylinder : NewCylindricalPrimitive
     {
-        #region Diameter property
-
-        private double diameter;
-
-        public double Diameter
-        {
-            get { return diameter; }
-            set
-            {
-                diameter = value;
-                RaisePropertyChanged(() => Diameter);
-            }
-        }
-
-        #endregion
+        public ValueParameter Diameter { get; private set; }
 
         public double Radius
         {

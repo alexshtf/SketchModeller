@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Media.Media3D;
 using Utils;
 using System.Windows;
+using SketchModeller.Infrastructure.Data.EditConstraints;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -17,62 +18,18 @@ namespace SketchModeller.Infrastructure.Data
             SilhouetteCurves = ArrayUtils.Generate<PrimitiveCurve>(2);
         }
 
-        #region Center property
-
-        private Point3D center;
-
-        public Point3D Center
-        {
-            get { return center; }
-            set
-            {
-                center = value;
-                RaisePropertyChanged(() => Center);
-            }
-        }
-
-        #endregion
-
-        #region Axis property
-
-        private Vector3D axis;
-
-        public Vector3D Axis
-        {
-            get { return axis; }
-            set
-            {
-                axis = value;
-                RaisePropertyChanged(() => Axis);
-            }
-        }
-
-        #endregion
-
-        #region Length property
-
-        private double length;
-
-        public double Length
-        {
-            get { return length; }
-            set
-            {
-                length = value;
-                RaisePropertyChanged(() => Length);
-            }
-        }
-
-        #endregion
+        public PointParameter Center { get; private set; }
+        public VectorParameter Axis { get; private set; }
+        public ValueParameter Length { get; private set; }
 
         public Point3D Top
         {
-            get { return Center + 0.5 * Length * Axis; }
+            get { return Center.Value + 0.5 * Length.Value * Axis.Value; }
         }
 
         public Point3D Bottom
         {
-            get { return Center - 0.5 * Length * Axis; }
+            get { return Center.Value - 0.5 * Length.Value * Axis.Value; }
         }
 
         #region Primitive curves
@@ -105,11 +62,11 @@ namespace SketchModeller.Infrastructure.Data
         public override void UpdateCurvesGeometry()
         {
             // get projected versions of top/bottom circles
-            var top = Center + 0.5 * Length * Axis;
+            var top = Center.Value + 0.5 * Length.Value * Axis.Value;
             var topCircle3d = ShapeHelper.GenerateCircle(top, Axis, TopRadiusInternal, 20);
             var topCircle = ShapeHelper.ProjectCurve(topCircle3d);
 
-            var bottom = Center - 0.5 * Length * Axis;
+            var bottom = Center.Value - 0.5 * Length.Value * Axis.Value;
             var bottomCircle3d = ShapeHelper.GenerateCircle(bottom, Axis, BottomRadiusInternal, 20);
             var bottomCircle = ShapeHelper.ProjectCurve(bottomCircle3d);
 

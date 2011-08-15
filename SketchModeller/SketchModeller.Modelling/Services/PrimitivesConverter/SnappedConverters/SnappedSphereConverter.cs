@@ -10,11 +10,10 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
     {
         protected override NewPrimitive ConvertCore(SnappedSphere snapped)
         {
-            return new NewSphere
-            {
-                Center = snapped.CenterResult,
-                Radius = snapped.RadiusResult,
-            };
+            var result = new NewSphere();
+            result.Center.Value = snapped.CenterResult;
+            result.Radius.Value = snapped.RadiusResult;
+            return result;
         }
     }
 }

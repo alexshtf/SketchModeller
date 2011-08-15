@@ -8,18 +8,17 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
     {
         protected override NewStraightGenCylinder ConvertCore(NewStraightGenCylinder source, Vector3D moveVector)
         {
-            return new NewStraightGenCylinder
-            {
-                Axis = source.Axis,
-                Center = source.Center,
-                Length = source.Length,
-                Components = source.Components.CloneArray(),
-            };
+            var result = new NewStraightGenCylinder();
+            result.Axis.Value = source.Axis;
+            result.Center.Value = source.Center;
+            result.Length.Value = source.Length;
+            result.Components = source.Components.CloneArray();
+            return result;
         }
 
         protected override void ApplyMovementCore(NewStraightGenCylinder source, NewStraightGenCylinder target, Vector3D moveVector)
         {
-            target.Center = source.Center + moveVector;
+            target.Center.Value = source.Center.Value + moveVector;
         }
     }
 }
