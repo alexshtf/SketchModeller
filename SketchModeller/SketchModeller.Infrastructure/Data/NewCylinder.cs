@@ -12,6 +12,12 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class NewCylinder : NewCylindricalPrimitive
     {
+        public NewCylinder()
+        {
+            Diameter = new ValueParameter();
+
+            RegisterParameter(() => Diameter);
+        }
         public ValueParameter Diameter { get; private set; }
 
         public double Radius

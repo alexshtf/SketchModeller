@@ -16,6 +16,14 @@ namespace SketchModeller.Infrastructure.Data
         {
             FeatureCurves = ArrayUtils.Generate<PrimitiveCurve>(2);
             SilhouetteCurves = ArrayUtils.Generate<PrimitiveCurve>(2);
+
+            Center = new PointParameter();
+            Axis = new VectorParameter();
+            Length = new ValueParameter();
+
+            RegisterParameter(() => Center);
+            RegisterParameter(() => Axis);
+            RegisterParameter(() => Length);
         }
 
         public PointParameter Center { get; private set; }

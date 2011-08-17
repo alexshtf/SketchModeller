@@ -10,6 +10,15 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class NewCone : NewCylindricalPrimitive
     {
+        public NewCone()
+        {
+            TopRadius = new ValueParameter();
+            BottomRadius = new ValueParameter();
+
+            RegisterParameter(() => TopRadius);
+            RegisterParameter(() => BottomRadius);
+        }
+
         public ValueParameter TopRadius { get; private set; }
         public ValueParameter BottomRadius { get; private set; }
 

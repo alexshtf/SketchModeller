@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Xml.Serialization;
 using SketchModeller.Infrastructure.Data.EditConstraints;
+using System.Linq.Expressions;
+using System.ComponentModel;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -38,5 +40,12 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         public abstract void UpdateCurvesGeometry();
+
+        protected void RegisterParameter(Expression<Func<INotifyPropertyChanged>> parameterExpression)
+        {
+            var parameterName = PropertySupport.ExtractPropertyName(parameterExpression);
+            var parameterObject = parameterExpression.Compile()();
+            parameterObject.PropertyChanged += (sender, args) => RaisePropertyChanged(parameterName);
+        }
     }
 }
