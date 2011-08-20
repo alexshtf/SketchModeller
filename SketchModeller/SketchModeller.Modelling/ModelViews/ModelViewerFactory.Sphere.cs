@@ -19,8 +19,8 @@ namespace SketchModeller.Modelling.ModelViews
             Contract.Ensures(Contract.Result<Visual3D>() != null);
 
             var sphere = new Sphere();
-            sphere.Bind(Sphere.CenterProperty, () => sphereData.Center);
-            sphere.Bind(Sphere.RadiusProperty, () => sphereData.Radius);
+            sphere.Bind(Sphere.CenterProperty, () => sphereData.Center, center => center.Value);
+            sphere.Bind(Sphere.RadiusProperty, () => sphereData.Radius, radius => radius.Value);
 
             sphere.Material = new DiffuseMaterial { Brush = Brushes.White };
 

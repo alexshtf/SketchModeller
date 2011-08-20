@@ -15,8 +15,8 @@ namespace SketchModeller.Modelling.ModelViews
         private Visual3D CreateConeView(NewCone data)
         {
             var cylinder = new Cylinder();
-            cylinder.Bind(Cylinder.Radius1Property, () => data.TopRadius);
-            cylinder.Bind(Cylinder.Radius2Property, () => data.BottomRadius);
+            cylinder.Bind(Cylinder.Radius1Property, () => data.TopRadius, radius => radius.Value);
+            cylinder.Bind(Cylinder.Radius2Property, () => data.BottomRadius, radius => radius.Value);
             cylinder.Bind(Cylinder.Point1Property,
                 () => data.Center,
                 () => data.Axis,

@@ -27,6 +27,7 @@ namespace SketchModeller.Infrastructure.Data.EditConstraints
 
             this.linePoint = linePoint;
             this.lineDirection = lineDirection;
+
             this.axisPoint = axisPoint;
             this.axisDirection = axisDirection;
         }

@@ -74,9 +74,20 @@ namespace SketchModeller.Modelling.Views
 
         public void NotifyDragged()
         {
+            ApplyConstraints();
+            UpdateFromModel();
             Model.UpdateCurvesGeometry();
             ComputeCurvesAssignment();
             eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(Model);
+        }
+
+        private void ApplyConstraints()
+        {
+            if (model.EditConstraints != null)
+            {
+                var projector = new ConstraintsProjector(model.EditConstraints);
+                projector.Project();
+            }
         }
 
         protected Vector3D TrackballRotate(Vector3D toRotate, Vector dragVector2d)

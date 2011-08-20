@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using Meta.Numerics.Statistics;
+using System.Diagnostics.Contracts;
+using Utils;
 
 namespace SketchModeller.Utilities
 {
@@ -11,6 +13,12 @@ namespace SketchModeller.Utilities
     {
         public static Tuple<Point, Vector> Compute(Point[] points)
         {
+            Contract.Requires(points.Length >= 2);
+            Contract.Ensures(Contract.Result<Tuple<Point, Vector>>() != null);
+
+            if (points.Length == 2)
+                return Tuple.Create(points[0], (points[1] - points[0]).Normalized());
+            
             var avgX = points.Select(p => p.X).Average();
             var avgY = points.Select(p => p.Y).Average();
 

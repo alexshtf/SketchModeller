@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SketchModeller.Infrastructure.Data;
 using System.Windows.Media.Media3D;
+using SketchModeller.Infrastructure.Data.EditConstraints;
 
 namespace SketchModeller.Modelling.Services.PrimitivesConverter
 {
@@ -16,12 +17,21 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             result.Center.Value = source.Center.Value + moveVector;
             result.Diameter.Value = source.TopRadius + source.BottomRadius;
             result.Length.Value = source.Length;
+
+            foreach (var constraint in source.EditConstraints)
+                result.EditConstraints.Add(DuplicateConstraint(source, result, constraint));
+
             return result;
         }
 
         protected override void ApplyMovementCore(NewCone source, NewCylinder target, Vector3D moveVector)
         {
             target.Center.Value = source.Center.Value + moveVector;
+        }
+
+        private PrimitiveEditConstraint DuplicateConstraint(NewCone source, NewCylinder result, PrimitiveEditConstraint constraint)
+        {
+            throw new InvalidOperationException();
         }
     }
 }

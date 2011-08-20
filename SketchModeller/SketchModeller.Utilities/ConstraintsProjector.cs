@@ -20,9 +20,12 @@ namespace SketchModeller.Utilities
 
         public void Project()
         {
-            var optimizationProgram = GetOptimizationProblem(constraints);
-            var optimalSolution = SolveProgram(optimizationProgram);
-            ApplySolution(optimizationProgram.Variables, optimalSolution);
+            if (constraints.Count > 0)
+            {
+                var optimizationProgram = GetOptimizationProblem(constraints);
+                var optimalSolution = SolveProgram(optimizationProgram);
+                ApplySolution(optimizationProgram.Variables, optimalSolution);
+            }
         }
 
         #region Project method steps (build problem, solve, apply solution)
@@ -143,7 +146,7 @@ namespace SketchModeller.Utilities
 
         private static IEnumerable<Term> VectorsParallelism3DTerms(TVec u, TVec v)
         {
-            yield return u.X * v.Y - u.Y - v.X;
+            yield return u.X * v.Y - u.Y * v.X;
             yield return u.Y * v.Z - u.Z * v.Y;
         }
 
@@ -171,8 +174,8 @@ namespace SketchModeller.Utilities
                 vars = new ParameterVariable[editParameter.Dimension];
                 for (int i = 0; i < editParameter.Dimension; i++)
                     vars[i] = new ParameterVariable(editParameter, i);
+                paramsToVars.Add(editParameter, vars);
             }
-
             return new TVec(vars);
         }
 
