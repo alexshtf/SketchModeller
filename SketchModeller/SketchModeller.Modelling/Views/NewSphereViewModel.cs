@@ -95,15 +95,15 @@ namespace SketchModeller.Modelling.Views
         protected override void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
         {
             if (Keyboard.Modifiers == ModifierKeys.None)
-                center = center + dragVector3d;
+                Center = Center + dragVector3d;
             if (Keyboard.Modifiers == RADIUS_MODIFIER)
             {
                 if (sketchPlanePosition != null)
                 {
-                    var fromCenter = sketchPlanePosition.Value - center;
+                    var fromCenter = sketchPlanePosition.Value - Center;
                     fromCenter.Normalize();
                     var radiusDelta = Vector3D.DotProduct(fromCenter, dragVector3d);
-                    radius = Math.Max(radius + radiusDelta, NewSphereViewModel.MIN_RADIUS);
+                    Radius = Math.Max(Radius + radiusDelta, NewSphereViewModel.MIN_RADIUS);
                 }
             }
         }
