@@ -18,10 +18,12 @@ using System.Threading.Tasks;
 using SketchModeller.Infrastructure.Services;
 using System.ComponentModel;
 using System.Windows.Media.Media3D;
+using Petzold.Media3D;
+using SketchModeller.Modelling.Editing;
 
 namespace SketchModeller.Modelling.Views
 {
-    abstract public class NewPrimitiveViewModel : NotificationObject, IWeakEventListener
+    abstract public class NewPrimitiveViewModel : NotificationObject, IWeakEventListener, IEditable
     {
         private NewPrimitive model;
         protected UiState uiState;
@@ -60,18 +62,16 @@ namespace SketchModeller.Modelling.Views
                 }
             }
         }
-        public SketchPlane SketchPlane { get { return uiState.SketchPlane; } }
 
         public abstract void UpdateFromModel();
+        public abstract IEditor StartEdit(Point startPos, LineRange startRay);
 
-        protected abstract void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition);
+        #region IEditable implementation 
 
-        public void PerformDrag(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
-        {
-            PerformDragCore(dragVector2d, dragVector3d, axisDragVector, sketchPlanePosition);
-            NotifyDragged();
-        }
-
+        public abstract Vector3D ApproximateAxis { get; }
+        
+        public SketchPlane SketchPlane { get { return uiState.SketchPlane; } }
+        
         public void NotifyDragged()
         {
             ApplyConstraints();
@@ -80,6 +80,8 @@ namespace SketchModeller.Modelling.Views
             ComputeCurvesAssignment();
             eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(Model);
         }
+        
+        #endregion
 
         private void ApplyConstraints()
         {

@@ -13,10 +13,6 @@ namespace SketchModeller.Modelling.Views
     internal interface INewPrimitiveView
     {
         NewPrimitiveViewModel ViewModel { get; }
-        void DragStart(Point startPos, LineRange startRay);
-        void Drag(Point currPos, LineRange currRay);
-        void DragEnd();
-        bool IsDragging { get; }
     }
 
     #region INewPrimitiveView contracts
@@ -33,27 +29,10 @@ namespace SketchModeller.Modelling.Views
             }
         }
 
-        public void DragStart(Point startPos, LineRange startRay)
+        public IEditor StartEdit(Point startPos, LineRange startRay)
         {
-            Contract.Requires(IsDragging == false);
-            Contract.Ensures(IsDragging == true);
-        }
-
-        public void Drag(Point currPos, LineRange currRay)
-        {
-            Contract.Requires(IsDragging == true);
-            throw new NotImplementedException();
-        }
-
-        public void DragEnd()
-        {
-            Contract.Requires(IsDragging == true);
-            Contract.Ensures(IsDragging == false);
-        }
-
-        public bool IsDragging
-        {
-            get { return default(bool); }
+            Contract.Ensures(Contract.Result<IEditor>() != null);
+            return default(IEditor);
         }
     }
 

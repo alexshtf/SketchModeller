@@ -32,10 +32,6 @@ namespace SketchModeller.Modelling.Views
         protected readonly ScaleTransform3D scale;
         protected readonly RotateTransform3D rotation;
 
-        private bool isDragging;
-        private Point3D? lastDragPosition3d;
-        private Point lastDragPosition2d; 
-
         public BaseNewPrimitiveView(NewPrimitiveViewModel viewModel, ILoggerFacade logger)
         {
             this.viewModel = viewModel;
@@ -55,40 +51,6 @@ namespace SketchModeller.Modelling.Views
         NewPrimitiveViewModel INewPrimitiveView.ViewModel
         {
             get { return viewModel; }
-        }
-
-        public virtual void DragStart(Point startPos, LineRange startRay)
-        {
-            lastDragPosition3d = PointOnSketchPlane(startRay);
-            lastDragPosition2d = startPos;
-            isDragging = true;
-        }
-
-        public virtual void Drag(Point currPos, LineRange currRay)
-        {
-            var currDragPosition = PointOnSketchPlane(currRay);
-            var dragVector3d = currDragPosition - lastDragPosition3d;
-            var dragVector2d = currPos - lastDragPosition2d;
-
-            if (dragVector3d != null)
-            {
-                var axisDragVector = MathUtils3D.ProjectVector(dragVector3d.Value, ApproximateAxis);
-                viewModel.PerformDrag(dragVector2d, dragVector3d.Value, axisDragVector, currDragPosition);
-            }
-
-            if (currDragPosition != null)
-                lastDragPosition3d = currDragPosition;
-            lastDragPosition2d = currPos;
-        }
-
-        public virtual void DragEnd()
-        {
-            isDragging = false;
-        }
-
-        public bool IsDragging
-        {
-            get { return isDragging; }
         }
 
         protected abstract Vector3D ApproximateAxis { get; }
@@ -130,5 +92,7 @@ namespace SketchModeller.Modelling.Views
             var sketchPlane = viewModel.SketchPlane;
             return sketchPlane.PointFromRay(lineRange);
         }
+
+        public abstract IEditor StartEdit(Point startPos, LineRange startRay);
     }
 }

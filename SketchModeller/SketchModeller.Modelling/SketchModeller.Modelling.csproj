@@ -146,8 +146,11 @@
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
     <Compile Include="DistanceTransform.cs" />
     <Compile Include="DistanceTransformIntegral.cs" />
+    <Compile Include="Editing\BaseEditor.cs" />
+    <Compile Include="Editing\IEditable.cs" />
     <Compile Include="Events\PrimitiveCurvesChangedEvent.cs" />
     <Compile Include="Events\TestCaseEvent.cs" />
+    <Compile Include="Editing\IEditor.cs" />
     <Compile Include="IFeatureCurveVisual.cs" />
     <Compile Include="ModellingModule.cs" />
     <Compile Include="ModelViews\CircleFeatureVisual.cs" />

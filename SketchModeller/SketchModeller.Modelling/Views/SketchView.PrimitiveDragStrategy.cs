@@ -14,7 +14,7 @@ namespace SketchModeller.Modelling.Views
         private class PrimitiveDragStrategy : DragStrategyBase
         {
             private readonly SketchModellingView sketchModellingView;
-            private INewPrimitiveView draggedPrimitive;
+            private IEditor editor;
 
             public PrimitiveDragStrategy(UiState uiState, SketchModellingView sketchModellingView)
                 : base(uiState)
@@ -24,22 +24,20 @@ namespace SketchModeller.Modelling.Views
 
             protected override void MouseDownCore(MousePosInfo3D position, dynamic data)
             {
-                draggedPrimitive = data.Item1 as INewPrimitiveView;
+                var draggedPrimitive = data.Item1 as INewPrimitiveView;
                 if (draggedPrimitive != null && position.Ray3D != null)
-                    draggedPrimitive.DragStart(position.Pos2D, position.Ray3D.Value);
+                    editor = draggedPrimitive.StartEdit(position.Pos2D, position.Ray3D.Value);
             }
 
             protected override void MouseMoveCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
-                if (draggedPrimitive != null && position.Ray3D != null)
-                    draggedPrimitive.Drag(position.Pos2D, position.Ray3D.Value);
+                if (editor != null && position.Ray3D != null)
+                    editor.Drag(position.Pos2D, position.Ray3D.Value);
             }
 
             protected override void MouseUpCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
-                if (draggedPrimitive != null)
-                    draggedPrimitive.DragEnd();
-                draggedPrimitive = null;
+                editor = null;
             }
         }
 
