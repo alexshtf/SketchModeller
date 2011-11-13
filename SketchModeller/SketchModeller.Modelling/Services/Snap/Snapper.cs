@@ -27,7 +27,6 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly ILoggerFacade logger;
         private readonly IUnityContainer container;
         private readonly IEventAggregator eventAggregator;
-        private readonly Random random;
         private readonly SnappersManager snappersManager;
 
         [InjectionConstructor]
@@ -43,7 +42,6 @@ namespace SketchModeller.Modelling.Services.Snap
             this.logger = logger;
             this.container = container;
             this.eventAggregator = eventAggregator;
-            this.random = new Random();
 
             snappersManager = new SnappersManager(uiState, sessionData);
             snappersManager.RegisterSnapper(new ConeSnapper());
@@ -275,13 +273,9 @@ namespace SketchModeller.Modelling.Services.Snap
                     var n1 = fst.Normal;
                     var n2 = snd.Normal;
 
-                    var pts1 = GetPointsOnPlane(p1, n1);
-                    var pts2 = GetPointsOnPlane(p2, n2);
-
-                    var planarity1 = PointsOnPlaneConstraint(p1, n1, pts2);
-                    var planarity2 = PointsOnPlaneConstraint(p2, n2, pts1);
-                    constraints.AddRange(planarity1);
-                    constraints.AddRange(planarity2);
+                    constraints.AddRange(VectorParallelism(n1, n2));
+                    constraints.AddRange(PointsOnPlaneConstraint(p1, n1, new TVec[] { p2 }));
+                    constraints.AddRange(PointsOnPlaneConstraint(p2, n2, new TVec[] { p1 }));
                 }
             }
             return constraints.ToArray();
@@ -296,18 +290,6 @@ namespace SketchModeller.Modelling.Services.Snap
             return constraints.ToArray();
         }
 
-        private IEnumerable<TVec> GetPointsOnPlane(TVec p, TVec n)
-        {
-            var vec3d = random.NextVector3D().Normalized();
-            var tvec = new TVec(vec3d.X, vec3d.Y, vec3d.Z);
-            var t = TVec.CrossProduct(n, tvec);
-            var u = TVec.CrossProduct(n, t);
-
-            yield return p + t;
-            yield return p + u;
-            yield return p - t;
-            yield return p - u;
-        }
 
         private Term[] GetConcreteAnnotationTerm(Parallelism parallelism)
         {

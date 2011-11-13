@@ -188,6 +188,29 @@ namespace AutoDiff.Tests
         }
 
         [TestMethod]
+        public void DiffTermPower()
+        {
+            var x = new Variable();
+            var y = new Variable();
+            var func = TermBuilder.Power(x, y);
+
+            var grad = func.Differentiate(Utils.Array(x, y), Utils.Vector(2, 3));
+
+            CollectionAssert.AreEqual(Utils.Vector(12, 8 * Math.Log(2)), grad);
+        }
+
+        [TestMethod]
+        public void DiffTermPowerSingleVariable()
+        {
+            var x = new Variable();
+            var func = TermBuilder.Power(x, x);
+
+            var grad = func.Differentiate(Utils.Array(x), Utils.Vector(2.5));
+
+            CollectionAssert.AreEqual(Utils.Vector(Math.Pow(2.5, 2.5) * (Math.Log(2.5) + 1)), grad);
+        }
+
+        [TestMethod]
         public void DiffUnarySimple()
         {
             var v = new Variable();
@@ -268,6 +291,23 @@ namespace AutoDiff.Tests
             CollectionAssert.AreEqual(Utils.Array(2.0, 0.0), y1);
             CollectionAssert.AreEqual(Utils.Array(0.0, -2.0), y2);
             CollectionAssert.AreEqual(Utils.Array(4.0, -2.0), y3);
+        }
+
+        [TestMethod]
+        public void DiffParametric()
+        {
+            var x = new Variable();
+            var y = new Variable();
+            var z = new Variable();
+            var m = new Variable();
+            var n = new Variable();
+
+            var func = x + 2 * y + 3 * z + 4 * m + 5 * n;
+            var compiled = func.Compile(Utils.Array(x, y, z), Utils.Array(m, n));
+
+            var diffResult = compiled.Differentiate(Utils.Vector(1, 1, 1), Utils.Vector(1, 1));
+            Assert.AreEqual(15, diffResult.Item2); // 15 = 1 + 2 + 3 + 4 + 5
+            CollectionAssert.AreEqual(Utils.Vector(1, 2, 3), diffResult.Item1);
         }
     }
 }
