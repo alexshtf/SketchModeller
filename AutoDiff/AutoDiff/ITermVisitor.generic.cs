@@ -28,9 +28,16 @@ namespace AutoDiff
         /// <summary>
         /// Computes a value for a power term.
         /// </summary>
-        /// <param name="intPower">The input term.</param>
+        /// <param name="power">The input term.</param>
         /// <returns>The result of the computation.</returns>
-        TResult Visit(IntPower intPower);
+        TResult Visit(ConstPower power);
+
+        /// <summary>
+        /// Computes a value for a power term.
+        /// </summary>
+        /// <param name="power">The input term.</param>
+        /// <returns>The result of the computation.</returns>
+        TResult Visit(TermPower power);
 
         /// <summary>
         /// Computes a value for a product term.
@@ -80,5 +87,12 @@ namespace AutoDiff
         /// <param name="func">The binary function</param>
         /// <returns>The result of the computation</returns>
         TResult Visit(BinaryFunc func);
+
+        /// <summary>
+        /// Computes a value for a n-ary function
+        /// </summary>
+        /// <param name="func">The n-ary function</param>
+        /// <returns>The result of the computation</returns>
+        TResult Visit(NaryFunc func);
     }
 }
