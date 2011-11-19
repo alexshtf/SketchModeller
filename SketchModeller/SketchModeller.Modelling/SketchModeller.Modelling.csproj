@@ -82,7 +82,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="3DTools">
-      <HintPath>..\..\..\..\..\..\3DTools-1.01-bin\3DTools.dll</HintPath>
+      <HintPath>..\libs\3DTools.dll</HintPath>
     </Reference>
     <Reference Include="AForge">
       <HintPath>..\libs\AForge.dll</HintPath>
@@ -108,7 +108,7 @@
     <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Petzold.Media3D">
-      <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
+      <HintPath>..\libs\Petzold.Media3D.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
