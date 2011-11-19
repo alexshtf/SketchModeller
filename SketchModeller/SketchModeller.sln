@@ -42,17 +42,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SketchModeller.Utilities", "SketchModeller.Utilities\SketchModeller.Utilities.csproj", "{C36039E6-7E07-46F8-BBB2-CB396DBB95BC}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 1
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = 
-		SccProjectUniqueName0 = ..\\AutoDiff\\AutoDiff\\AutoDiff.csproj
-		SccProjectTopLevelParentUniqueName0 = SketchModeller.sln
-		SccProjectName0 = $/autodiff/AutoDiff/AutoDiff
-		SccAuxPath0 = https://tfs.codeplex.com/tfs/tfs15
-		SccLocalPath0 = ..\\AutoDiff\\AutoDiff
-		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
