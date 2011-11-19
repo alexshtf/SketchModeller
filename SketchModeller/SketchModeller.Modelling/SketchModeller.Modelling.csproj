@@ -93,6 +93,10 @@
     <Reference Include="AForge.Math">
       <HintPath>..\libs\AForge.Math.dll</HintPath>
     </Reference>
+    <Reference Include="AutoDiff, Version=0.5.4321.2401, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AutoDiff.0.5.4321.2402\lib\net40\AutoDiff.dll</HintPath>
+    </Reference>
     <Reference Include="HelixToolkit, Version=2011.6.4187.20095, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HelixToolkit.2011.6.0\lib\HelixToolkit.dll</HintPath>
@@ -296,14 +300,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AlgLib\AlgLib.csproj">
-      <Project>{2704B03D-E674-4086-93F9-F0D129514D31}</Project>
-      <Name>AlgLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\AutoDiff\AutoDiff\AutoDiff.csproj">
-      <Project>{62551FD3-C21F-4E16-A7FC-6A017508809C}</Project>
-      <Name>AutoDiff</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SimpleCurveEdit\Utils\Utils.csproj">
       <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>
       <Name>Utils</Name>

@@ -77,6 +77,10 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoDiff, Version=0.5.4321.2401, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AutoDiff.0.5.4321.2402\lib\net40\AutoDiff.dll</HintPath>
+    </Reference>
     <Reference Include="ContinuousLinq">
       <HintPath>..\libs\ContinuousLinq.dll</HintPath>
     </Reference>
@@ -169,10 +173,6 @@
     <Compile Include="Shared\UiState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AutoDiff\AutoDiff\AutoDiff.csproj">
-      <Project>{62551FD3-C21F-4E16-A7FC-6A017508809C}</Project>
-      <Name>AutoDiff</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SimpleCurveEdit\Utils\Utils.csproj">
       <Project>{062A3D45-7340-484E-AA04-D2446D7D5203}</Project>
       <Name>Utils</Name>
