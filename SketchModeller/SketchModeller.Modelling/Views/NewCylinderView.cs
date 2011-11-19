@@ -18,8 +18,6 @@ namespace SketchModeller.Modelling.Views
 {
     class NewCylinderView : BaseNewPrimitiveView
     {
-
-
         private readonly NewCylinderViewModel viewModel;
         private readonly Cylinder cylinder;
 
@@ -46,12 +44,5 @@ namespace SketchModeller.Modelling.Views
 
             cylinder.SetMaterials(GetDefaultFrontAndBackMaterials(viewModel));
         }
-
-        protected override Vector3D ApproximateAxis
-        {
-            get { return viewModel.Axis; }
-        }
-
-        
     }
 }

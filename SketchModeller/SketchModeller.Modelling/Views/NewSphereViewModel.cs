@@ -10,6 +10,8 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics.Contracts;
 using System.Windows;
 using System.Windows.Input;
+using SketchModeller.Modelling.Editing;
+using Petzold.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -92,20 +94,45 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        protected override void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
+        public override IEditor StartEdit(Point startPos, LineRange startRay)
         {
-            if (Keyboard.Modifiers == ModifierKeys.None)
-                Center = Center + dragVector3d;
-            if (Keyboard.Modifiers == RADIUS_MODIFIER)
+            return new Editor(startPos, startRay, this);
+        }
+
+        public override Vector3D ApproximateAxis
+        {
+            get { return new Vector3D(0, 0, 0); }
+        }
+
+        #region Editor class
+
+        class Editor : BaseEditor
+        {
+            private NewSphereViewModel viewModel;
+
+            public Editor(Point startPoint, LineRange startRay, NewSphereViewModel viewModel)
+                : base(startPoint, startRay, viewModel)
             {
-                if (sketchPlanePosition != null)
+            }
+
+            protected override void PerformDrag(Vector dragVector2d, Vector3D vector3D, Vector3D axisDragVector, Point3D? currDragPosition)
+            {
+                if (Keyboard.Modifiers == ModifierKeys.None)
+                    viewModel.Center = viewModel.Center + vector3D;
+                if (Keyboard.Modifiers == RADIUS_MODIFIER)
                 {
-                    var fromCenter = sketchPlanePosition.Value - Center;
-                    fromCenter.Normalize();
-                    var radiusDelta = Vector3D.DotProduct(fromCenter, dragVector3d);
-                    Radius = Math.Max(Radius + radiusDelta, NewSphereViewModel.MIN_RADIUS);
+                    if (currDragPosition != null)
+                    {
+                        var fromCenter = currDragPosition.Value - viewModel.Center;
+                        fromCenter.Normalize();
+                        var radiusDelta = Vector3D.DotProduct(fromCenter, vector3D);
+                        viewModel.Radius = Math.Max(viewModel.Radius + radiusDelta, NewSphereViewModel.MIN_RADIUS);
+                    }
                 }
             }
         }
+
+        #endregion
+
     }
 }

@@ -13,6 +13,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows;
 using Utils;
+using SketchModeller.Modelling.Editing;
+using Petzold.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -139,6 +141,16 @@ namespace SketchModeller.Modelling.Views
         }
 
         #endregion
+
+        public override IEditor StartEdit(Point startPos, LineRange startRay)
+        {
+            return new Editor(startPos, startRay, this);
+        }
+
+        public override Vector3D ApproximateAxis
+        {
+            get { return Axis; }
+        }
         
         #region component <--> component view models methods
 
@@ -188,44 +200,50 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        protected override void PerformDragCore(
-           Vector dragVector2d,
-           Vector3D dragVector3d,
-           Vector3D axisDragVector,
-           Point3D? sketchPlanePosition)
+        #region Editor class
+
+        class Editor : BaseEditor
         {
-            if (Keyboard.Modifiers == ModifierKeys.None)
-                Center = Center + dragVector3d;
-            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
-                Center = Center + axisDragVector;
-            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
-                Axis = TrackballRotate(Axis, dragVector2d);
-            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+            private NewSGCViewModel viewModel;
+
+            public Editor(Point startPoint, LineRange startRay, NewSGCViewModel viewModel)
+                : base(startPoint, startRay, viewModel)
             {
-                var axis = Vector3D.CrossProduct(Axis, SketchPlane.Normal);
-                if (axis != default(Vector3D))
+                this.viewModel = viewModel;
+            }
+
+            protected override void PerformDrag(Vector dragVector2d, Vector3D vector3D, Vector3D axisDragVector, Point3D? currDragPosition)
+            {
+                if (Keyboard.Modifiers == ModifierKeys.None)
+                    viewModel.Center = viewModel.Center + vector3D;
+                else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
+                    viewModel.Center = viewModel.Center + axisDragVector;
+                else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+                    viewModel.Axis = viewModel.TrackballRotate(viewModel.Axis, dragVector2d);
+                else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
                 {
-                    axis.Normalize();
-                    var radiusDelta = 0.5 * Vector3D.DotProduct(axis, dragVector3d);
-                    Components = RecomputeComponents(
-                        Components,
-                        radiusDelta,
-                        dragStartComponent);
+                    var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
+                    if (axis != default(Vector3D))
+                    {
+                        axis.Normalize();
+                        var radiusDelta = 0.5 * Vector3D.DotProduct(axis, vector3D);
+                        // TODO: Implement RecomputeComponents
+                        //viewModel.Components = viewModel.RecomputeComponents(
+                        //    viewModel.Components,
+                        //    radiusDelta,
+                        //    viewModel.dragStartComponent);
+                    }
+                }
+                else if (Keyboard.Modifiers == LENGTH_MODIFIER)
+                {
+                    var axis = viewModel.Axis.Normalized();
+                    var lengthDelta = Vector3D.DotProduct(axis, vector3D) * 2;
+                    viewModel.Length = Math.Max(MIN_LENGTH, viewModel.Length + lengthDelta);
                 }
             }
-            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
-            {
-                var axis = Axis.Normalized();
-                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
-                Length = Math.Max(MIN_LENGTH, Length + lengthDelta);
-            }
         }
 
-        private ReadOnlyCollection<NewSGCViewModel.ComponentViewModel> RecomputeComponents(ReadOnlyCollection<NewSGCViewModel.ComponentViewModel> readOnlyCollection, double radiusDelta, int dragStartComponent)
-        {
-            throw new NotImplementedException();
-        }
+
+        #endregion
     }
-
-
 }

@@ -49,17 +49,11 @@ namespace SketchModeller.Modelling.Views
             cylinder.SetMaterials(GetDefaultFrontAndBackMaterials(viewModel));
         }
 
-        public override void DragStart(Point startPos, LineRange startRay)
+        public override void OnStartEdit(Point startPos, LineRange startRay)
         {
-            base.DragStart(startPos, startRay);
+            base.OnStartEdit(startPos, startRay);
             viewModel.DragStartProximity = GetDragStartProximity(startRay);
         }
-
-        protected override Vector3D ApproximateAxis
-        {
-            get { return viewModel.Axis; }
-        }
-
         
         private NewConeViewModel.DragStartProximities GetDragStartProximity(LineRange startRay)
         {

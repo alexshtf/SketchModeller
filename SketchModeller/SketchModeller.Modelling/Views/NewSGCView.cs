@@ -67,15 +67,5 @@ namespace SketchModeller.Modelling.Views
             var geometry = builder.ToMesh(freeze: true);
             return geometry;
         }
-
-        public override void DragStart(Point startPos, LineRange startRay)
-        {
-            base.DragStart(startPos, startRay);
-        }
-
-        protected override Vector3D ApproximateAxis
-        {
-            get { return viewModel.Axis; }
-        }
     }
 }

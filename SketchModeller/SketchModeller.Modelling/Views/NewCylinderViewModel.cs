@@ -19,6 +19,8 @@ using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Services;
 using System.Windows.Input;
 using System.Windows;
+using SketchModeller.Modelling.Editing;
+using Petzold.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -148,32 +150,58 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        protected override void PerformDragCore(Vector dragVector2d, Vector3D dragVector3d, Vector3D axisDragVector, Point3D? sketchPlanePosition)
+        #region Editor class
+
+        private class Editor : BaseEditor
         {
-            if (Keyboard.Modifiers == ModifierKeys.None)
-                Center = Center + dragVector3d;
-            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
-                Center = Center + axisDragVector;
-            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+            private NewCylinderViewModel viewModel;
+
+            public Editor(Point startPos, LineRange lineRange, NewCylinderViewModel viewModel)
+                : base(startPos, lineRange, viewModel)
             {
-                Axis = TrackballRotate(Axis, dragVector2d);
+                this.viewModel = viewModel;
             }
-            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+
+            protected override void PerformDrag(Vector dragVector2d, Vector3D vector3D, Vector3D axisDragVector, Point3D? currDragPosition)
             {
-                var axis = Vector3D.CrossProduct(Axis, SketchPlane.Normal);
-                if (axis != default(Vector3D))
+                if (Keyboard.Modifiers == ModifierKeys.None)
+                    viewModel.Center = viewModel.Center + vector3D;
+                else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
+                    viewModel.Center = viewModel.Center + axisDragVector;
+                else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
                 {
-                    axis.Normalize();
-                    var diameterDelta = Vector3D.DotProduct(axis, dragVector3d);
-                    Diameter = Math.Max(NewCylinderViewModel.MIN_DIAMETER, Diameter + diameterDelta);
+                    viewModel.Axis = viewModel.TrackballRotate(viewModel.Axis, dragVector2d);
+                }
+                else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+                {
+                    var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
+                    if (axis != default(Vector3D))
+                    {
+                        axis.Normalize();
+                        var diameterDelta = Vector3D.DotProduct(axis, vector3D);
+                        viewModel.Diameter = Math.Max(NewCylinderViewModel.MIN_DIAMETER, viewModel.Diameter + diameterDelta);
+                    }
+                }
+                else if (Keyboard.Modifiers == LENGTH_MODIFIER)
+                {
+                    var axis = viewModel.Axis.Normalized();
+                    var lengthDelta = Vector3D.DotProduct(axis, vector3D) * 2;
+                    viewModel.Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, viewModel.Length + lengthDelta);
                 }
             }
-            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
-            {
-                var axis = Axis.Normalized();
-                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
-                Length = Math.Max(NewCylinderViewModel.MIN_LENGTH, Length + lengthDelta);
-            }
+        }
+
+        #endregion
+
+
+        public override IEditor StartEdit(Point startPos, LineRange startRay)
+        {
+            return new Editor(startPos, startRay, this);
+        }
+
+        public override Vector3D ApproximateAxis
+        {
+            get { return Axis; }
         }
     }
 }

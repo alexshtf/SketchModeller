@@ -53,8 +53,6 @@ namespace SketchModeller.Modelling.Views
             get { return viewModel; }
         }
 
-        protected abstract Vector3D ApproximateAxis { get; }
-
         protected Tuple<Material, Material> GetDefaultFrontAndBackMaterials(NewPrimitiveViewModel viewModel)
         {
             return Tuple.Create(
@@ -93,6 +91,13 @@ namespace SketchModeller.Modelling.Views
             return sketchPlane.PointFromRay(lineRange);
         }
 
-        public abstract IEditor StartEdit(Point startPos, LineRange startRay);
+        public IEditor StartEdit(Point startPos, LineRange startRay)
+        {
+            return viewModel.StartEdit(startPos, startRay);
+        }
+
+        public virtual void OnStartEdit(Point startPos, LineRange startRay)
+        {
+        }
     }
 }

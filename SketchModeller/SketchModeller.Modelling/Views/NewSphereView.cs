@@ -29,10 +29,5 @@ namespace SketchModeller.Modelling.Views
             sphere.Bind(Sphere.CenterProperty, () => viewModel.Center);
             sphere.SetMaterials(GetDefaultFrontAndBackMaterials(viewModel));
         }
-
-        protected override Vector3D ApproximateAxis
-        {
-            get { return new Vector3D(0,0,0); }
-        }
     }
 }

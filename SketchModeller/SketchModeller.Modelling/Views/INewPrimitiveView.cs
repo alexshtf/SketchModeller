@@ -13,6 +13,7 @@ namespace SketchModeller.Modelling.Views
     internal interface INewPrimitiveView
     {
         NewPrimitiveViewModel ViewModel { get; }
+        void OnStartEdit(Point position, LineRange ray);
     }
 
     #region INewPrimitiveView contracts
@@ -33,6 +34,11 @@ namespace SketchModeller.Modelling.Views
         {
             Contract.Ensures(Contract.Result<IEditor>() != null);
             return default(IEditor);
+        }
+
+
+        public void OnStartEdit(Point position, LineRange ray)
+        {
         }
     }
 

@@ -26,7 +26,10 @@ namespace SketchModeller.Modelling.Views
             {
                 var draggedPrimitive = data.Item1 as INewPrimitiveView;
                 if (draggedPrimitive != null && position.Ray3D != null)
-                    editor = draggedPrimitive.StartEdit(position.Pos2D, position.Ray3D.Value);
+                {
+                    draggedPrimitive.OnStartEdit(position.Pos2D, position.Ray3D.Value);
+                    editor = draggedPrimitive.ViewModel.StartEdit(position.Pos2D, position.Ray3D.Value);
+                }
             }
 
             protected override void MouseMoveCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
