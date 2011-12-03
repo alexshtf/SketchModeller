@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using SketchModeller.Infrastructure.Data;
 using Microsoft.Practices.Prism.Events;
 using SketchModeller.Modelling.Events;
+using SketchModeller.Modelling.Editing;
 
 namespace SketchModeller.Modelling.Views
 {

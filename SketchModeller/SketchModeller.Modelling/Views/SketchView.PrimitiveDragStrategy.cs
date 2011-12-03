@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media.Media3D;
 using SketchModeller.Infrastructure.Shared;
 using SketchModeller.Infrastructure.Data;
+using SketchModeller.Modelling.Editing;
 
 namespace SketchModeller.Modelling.Views
 {

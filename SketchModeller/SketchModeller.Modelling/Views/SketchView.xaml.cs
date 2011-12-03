@@ -20,6 +20,7 @@ using SketchModeller.Infrastructure.Data;
 using System.Diagnostics;
 using SketchModeller.Modelling.Events;
 using System.Linq;
+using SketchModeller.Modelling.Editing;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -85,7 +86,7 @@ namespace SketchModeller.Modelling.Views
             root.Children.Insert(1, sketchImageView);
 
             newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
-            snappedDragStrategy = new SnappedDragStrategy(uiState, sketchModellingView, viewModel, eventAggregator);
+            snappedDragStrategy = new SnappedDragStrategy(uiState, new DuplicateEditor(viewModel.SketchModellingViewModel), eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
             assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot, sketchImageView, eventAggregator);
 
@@ -259,16 +260,6 @@ namespace SketchModeller.Modelling.Views
                 var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
                 viewModel.AddNewPrimitive(primitiveKind, pos3d.Ray3D.Value);
             }
-        }
-
-        #endregion
-
-        #region MousePosInfo3D structure
-        
-        private struct MousePosInfo3D
-        {
-            public Point Pos2D;
-            public LineRange? Ray3D;
         }
 
         #endregion

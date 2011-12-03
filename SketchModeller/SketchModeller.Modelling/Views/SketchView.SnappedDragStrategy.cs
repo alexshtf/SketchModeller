@@ -11,6 +11,7 @@ using SketchModeller.Infrastructure.Events;
 using System.Windows.Input;
 using SketchModeller.Infrastructure;
 using SketchModeller.Modelling.ModelViews;
+using SketchModeller.Modelling.Editing;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -18,76 +19,39 @@ namespace SketchModeller.Modelling.Views
     {
         private class SnappedDragStrategy : DragStrategyBase
         {
+            private readonly IDuplicateEditor duplicateEditor;
             private readonly SketchModellingView sketchModellingView;
-            private readonly SketchViewModel sketchViewModel;
-            private readonly SketchModellingViewModel sketchModellingViewModel;
-
-            private NewPrimitive originalDuplicate;
-            private NewPrimitive currentDuplicate;
-            
-            private Visual3D currentSnappedPrimitive;
-            private Vector3D currentDragVector;
 
             public SnappedDragStrategy(
                 UiState uiState, 
-                SketchModellingView sketchModellingView,
-                SketchViewModel sketchViewModel, 
+                IDuplicateEditor duplicateEditor,
                 IEventAggregator eventAggregator)
                 : base(uiState)
             {
-                this.sketchModellingView = sketchModellingView;
-                this.sketchViewModel = sketchViewModel;
-                this.sketchModellingViewModel = sketchViewModel.SketchModellingViewModel;
                 eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
             }
 
             protected override void MouseDownCore(MousePosInfo3D position, dynamic data)
             {
-                currentDragVector = new Vector3D(0, 0, 0);
-                currentSnappedPrimitive = data.Item1;
-                originalDuplicate = null;
+                Visual3D snappedPrimitive = data.Item1;
+                duplicateEditor.Start(snappedPrimitive);
             }
 
             protected override void MouseMoveCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
-                if (vec3d != null && currentSnappedPrimitive != null)
-                {
-                    currentDragVector += vec3d.Value;
-                    DuplicateIfNecessary();
-                    UpdateNewPosition();
-                }
+                if (vec3d != null)
+                    duplicateEditor.Update(position, vec2d, vec3d.Value);
             }
 
             protected override void MouseUpCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
-                currentSnappedPrimitive = null;
-                currentDuplicate = null;
-                originalDuplicate = null;
+                duplicateEditor.Reset();
             }
 
             private void OnGlobalShortcut(KeyEventArgs e)
             {
                 if (e.Key == GlobalShortcuts.CyclePrimitives)
-                    CycleNextPrimitive();
-            }
-
-            private void DuplicateIfNecessary()
-            {
-                if (originalDuplicate == null)
-                {
-                    var primitiveData = PrimitivesPickService.GetPrimitiveData(currentSnappedPrimitive) as SnappedPrimitive;
-                    sketchModellingViewModel.DuplicateSnapped(primitiveData, out currentDuplicate, out originalDuplicate);
-                }
-            }
-
-            private void UpdateNewPosition()
-            {
-                sketchModellingViewModel.UpdateDuplicatePosition(originalDuplicate, ref currentDuplicate, currentDragVector);
-            }
-
-            private void CycleNextPrimitive()
-            {
-                sketchModellingViewModel.CycleDuplicates(originalDuplicate, ref currentDuplicate, currentDragVector);
+                    duplicateEditor.CycleNext();
             }
         }
     }

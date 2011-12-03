@@ -23,10 +23,11 @@ using System.Collections.Specialized;
 using SnappedPrimitivesCollection = SketchModeller.Modelling.ModelViews.ModelViewerViewModel.SnappedPrimitivesCollection;
 using System.Diagnostics.Contracts;
 using SketchModeller.Modelling.Events;
+using SketchModeller.Modelling.Editing;
 
 namespace SketchModeller.Modelling.Views
 {
-    public class SketchModellingViewModel : NotificationObject, IWeakEventListener
+    public class SketchModellingViewModel : NotificationObject, IEditorPrimitiveDuplicator, IWeakEventListener
     {
         private UiState uiState;
         private SessionData sessionData;
@@ -198,7 +199,7 @@ namespace SketchModeller.Modelling.Views
             OnPrimitiveDragged(currentDuplicate);
         }
 
-        internal void CycleDuplicates(NewPrimitive originalDuplicate, ref NewPrimitive currentDuplicate, Vector3D currentDragVector)
+        public void CycleDuplicates(NewPrimitive originalDuplicate, ref NewPrimitive currentDuplicate, Vector3D currentDragVector)
         {
             var targetTypes = primitivesConverter.GetTargetTypes(originalDuplicate);
             var currIndex = Array.IndexOf(targetTypes, currentDuplicate.GetType());
