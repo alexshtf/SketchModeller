@@ -152,10 +152,12 @@
     <Compile Include="DistanceTransformIntegral.cs" />
     <Compile Include="Editing\BaseEditor.cs" />
     <Compile Include="Editing\DuplicateEditor.cs" />
+    <Compile Include="Editing\IDirectionInference.cs" />
     <Compile Include="Editing\IDuplicateEditor.cs" />
     <Compile Include="Editing\IEditable.cs" />
     <Compile Include="Editing\IEditorPrimitiveDuplicator.cs" />
     <Compile Include="Editing\MousePosInfo3D.cs" />
+    <Compile Include="Editing\PCADirectionInference.cs" />
     <Compile Include="Events\PrimitiveCurvesChangedEvent.cs" />
     <Compile Include="Events\TestCaseEvent.cs" />
     <Compile Include="Editing\IEditor.cs" />

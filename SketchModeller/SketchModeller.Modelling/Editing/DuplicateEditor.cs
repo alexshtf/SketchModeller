@@ -11,6 +11,7 @@ namespace SketchModeller.Modelling.Editing
     class DuplicateEditor : IDuplicateEditor
     {
         private IEditorPrimitiveDuplicator duplicator;
+        private IDirectionInference directionInference;
 
         private NewPrimitive originalDuplicate;
         private NewPrimitive currentDuplicate;
@@ -18,9 +19,11 @@ namespace SketchModeller.Modelling.Editing
         private Visual3D currentSnappedPrimitive;
         private Vector3D currentDragVector;
 
-        public DuplicateEditor(IEditorPrimitiveDuplicator duplicator)
+        public DuplicateEditor(IEditorPrimitiveDuplicator duplicator,
+                               IDirectionInference directionInference)
         {
             this.duplicator = duplicator;
+            this.directionInference = directionInference;
         }
 
         public void Start(Visual3D snappedPrimitive)

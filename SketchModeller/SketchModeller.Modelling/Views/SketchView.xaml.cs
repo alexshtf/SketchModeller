@@ -49,6 +49,7 @@ namespace SketchModeller.Modelling.Views
 
         private readonly ILoggerFacade logger;
         private readonly SketchViewModel viewModel;
+        private readonly DuplicateEditorFactory duplicateEditorFactory;
         private readonly IDragStrategy newPrimitiveDragStrategy;
         private readonly IDragStrategy snappedDragStrategy;
         private readonly IDragStrategy curveDragStrategy;
@@ -72,6 +73,7 @@ namespace SketchModeller.Modelling.Views
             DataContext = viewModel;
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
             this.viewModel = viewModel;
+            this.duplicateEditorFactory = new DuplicateEditorFactory(this);
 
             sketchModellingView = 
                 container.Resolve<SketchModellingView>(
@@ -86,7 +88,7 @@ namespace SketchModeller.Modelling.Views
             root.Children.Insert(1, sketchImageView);
 
             newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
-            snappedDragStrategy = new SnappedDragStrategy(uiState, new DuplicateEditor(viewModel.SketchModellingViewModel), eventAggregator);
+            snappedDragStrategy = new SnappedDragStrategy(uiState, duplicateEditorFactory.Create(), eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
             assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot, sketchImageView, eventAggregator);
 
@@ -138,7 +140,6 @@ namespace SketchModeller.Modelling.Views
 
                 var projMatrix = Matrix3D.Identity;
                 projMatrix.M33 = 0.0001;
-                //projMatrix.OffsetZ = -lookAt.OffsetZ + 0.5;
                 projMatrix.OffsetZ = 0.2;
                 camera.ProjectionMatrix = projMatrix;
             }
@@ -422,6 +423,27 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
+        #region DuplicateEditorFactory class
+
+        private class DuplicateEditorFactory
+        {
+            private readonly SketchView sketchView;
+            private readonly IDirectionInference directionInference;
+
+            public DuplicateEditorFactory(SketchView sketchView)
+            {
+                this.sketchView = sketchView;
+                directionInference = new PCADirectionInference();
+            }
+
+            public IDuplicateEditor Create()
+            {
+                return new DuplicateEditor(sketchView.viewModel.SketchModellingViewModel, 
+                                           directionInference);
+            }
+        }
+
+        #endregion
 
     }
 }
