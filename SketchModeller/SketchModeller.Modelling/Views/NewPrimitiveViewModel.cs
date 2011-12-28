@@ -63,7 +63,18 @@ namespace SketchModeller.Modelling.Views
             }
         }
 
+        /// <summary>
+        /// Updates the intrinsic properties of this view model from the data model. Called when we know
+        /// that the model has changes, and the view-model should reflect those changes.
+        /// </summary>
         public abstract void UpdateFromModel();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startPos"></param>
+        /// <param name="startRay"></param>
+        /// <returns></returns>
         public abstract IEditor StartEdit(Point startPos, LineRange startRay);
 
         #region IEditable implementation 

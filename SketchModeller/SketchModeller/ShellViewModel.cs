@@ -20,7 +20,8 @@ namespace SketchModeller
 {
     class ShellViewModel : NotificationObject, IWeakEventListener
     {
-        private const string TITLE_FORMAT = "Editing {0}";
+        private const string TITLE_FORMAT = "SnapSketch - Editing {0}";
+        private const string EMPTY_TITLE = "SnapSketch";
 
         private HashSet<Guid> workingIds;
         private SessionData sessionData;
@@ -29,6 +30,7 @@ namespace SketchModeller
         public ShellViewModel()
         {
             workingIds = new HashSet<Guid>();
+            SetTitle(sketchName: string.Empty);
         }
 
         [InjectionConstructor]
@@ -80,6 +82,14 @@ namespace SketchModeller
             RaisePropertyChanged(() => IsWorking);
         }
 
+        private void SetTitle(string sketchName)
+        {
+            if (string.IsNullOrEmpty(sketchName))
+                Title = string.Format(TITLE_FORMAT, sketchName);
+            else
+                Title = EMPTY_TITLE;
+        }
+
         #region Event handling
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -90,7 +100,7 @@ namespace SketchModeller
             var eventArgs = (PropertyChangedEventArgs)e;
 
             if (eventArgs.Match(() => sessionData.SketchName))
-                Title = string.Format(TITLE_FORMAT, sessionData.SketchName);
+                SetTitle(sessionData.SketchName);
 
             return true;
         }
