@@ -18,20 +18,12 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             result.Diameter.Value = source.TopRadius + source.BottomRadius;
             result.Length.Value = source.Length;
 
-            foreach (var constraint in source.EditConstraints)
-                result.EditConstraints.Add(DuplicateConstraint(source, result, constraint));
-
             return result;
         }
 
         protected override void ApplyMovementCore(NewCone source, NewCylinder target, Vector3D moveVector)
         {
             target.Center.Value = source.Center.Value + moveVector;
-        }
-
-        private PrimitiveEditConstraint DuplicateConstraint(NewCone source, NewCylinder result, PrimitiveEditConstraint constraint)
-        {
-            throw new InvalidOperationException();
         }
     }
 }

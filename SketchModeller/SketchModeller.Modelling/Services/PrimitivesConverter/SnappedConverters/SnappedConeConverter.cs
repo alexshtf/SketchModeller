@@ -18,12 +18,6 @@ namespace SketchModeller.Modelling.Services.PrimitivesConverter
             result.BottomRadius.Value = snapped.BottomRadiusResult;
             result.Length.Value = snapped.LengthResult;
             result.Center.Value = MathUtils3D.Lerp(snapped.TopCenterResult, snapped.BottomCenterResult, 0.5);
-            
-            result.EditConstraints.Add(new AxisOnLineConstraint(
-                snapped.BottomCenterResult, 
-                snapped.AxisResult, 
-                result.Center, 
-                result.Axis));
             return result;
         }
     }

@@ -20,7 +20,6 @@ namespace SketchModeller.Modelling.Views
         private class SnappedDragStrategy : DragStrategyBase
         {
             private readonly IDuplicateEditor duplicateEditor;
-            private readonly SketchModellingView sketchModellingView;
 
             public SnappedDragStrategy(
                 UiState uiState, 
@@ -29,6 +28,7 @@ namespace SketchModeller.Modelling.Views
                 : base(uiState)
             {
                 eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
+                this.duplicateEditor = duplicateEditor;
             }
 
             protected override void MouseDownCore(MousePosInfo3D position, dynamic data)
