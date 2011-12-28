@@ -33,6 +33,7 @@ namespace SketchModeller.Modelling.Views
             CocentricCommand = new DelegateCommand(CocentricExecue);
             ColinearCentersCommand = new DelegateCommand(ColinearCentersExecute);
             CoplanarCentersCommand = new DelegateCommand(CoplanarCentersExecute);
+            OrthogonalAxesCommand = new DelegateCommand(OrthogonalAxesExecute);
             Annotations = new ObservableCollection<Annotation>();
         }
 
@@ -52,6 +53,7 @@ namespace SketchModeller.Modelling.Views
         public ICommand CocentricCommand { get; private set; }
         public ICommand ColinearCentersCommand { get; private set; }
         public ICommand CoplanarCentersCommand { get; private set; }
+        public ICommand OrthogonalAxesCommand { get; private set; }
 
         public ObservableCollection<Annotation> Annotations { get; private set; }
 
@@ -108,6 +110,11 @@ namespace SketchModeller.Modelling.Views
         private void CoplanarCentersExecute()
         {
             AddAnnotation(selectedElements => new CoplanarCenters { Elements = selectedElements });
+        }
+
+        private void OrthogonalAxesExecute()
+        {
+            AddAnnotation(selectedElements => new OrthogonalAxis { Elements = selectedElements });
         }
 
         #endregion

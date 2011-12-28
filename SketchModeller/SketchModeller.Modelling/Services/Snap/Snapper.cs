@@ -17,6 +17,7 @@ using SketchModeller.Infrastructure.Events;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using TermUtils = SketchModeller.Utilities.TermUtils;
+using Enumerable = System.Linq.Enumerable;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -44,6 +45,7 @@ namespace SketchModeller.Modelling.Services.Snap
             this.logger = logger;
             this.container = container;
             this.eventAggregator = eventAggregator;
+            this.annotationInference = annotationInference;
 
             snappersManager = new SnappersManager(uiState, sessionData);
             snappersManager.RegisterSnapper(new ConeSnapper());
@@ -220,7 +222,20 @@ namespace SketchModeller.Modelling.Services.Snap
             x.MatchClass<Cocentrality>(cocentrality => constraints = GetConcreteAnnotationTerm(cocentrality));
             x.MatchClass<ColinearCenters>(colinearCenters => constraints = GetConcreteAnnotationTerm(colinearCenters));
             x.MatchClass<CoplanarCenters>(coplanarCenters => constraints = GetConcreteAnnotationTerm(coplanarCenters));
+            x.MatchClass<OrthogonalAxis>(orthogonalAxes => constraints = GetConcreteAnnotationTerm(orthogonalAxes));
             return constraints;
+        }
+
+        private Term[] GetConcreteAnnotationTerm(OrthogonalAxis orthoonalAxes)
+        {
+            if (orthoonalAxes.Elements.Length != 2)
+                return Enumerable.Empty<Term>().ToArray();
+
+            var firstNormal = orthoonalAxes.Elements[0].Normal;
+            var secondNormal = orthoonalAxes.Elements[1].Normal;
+            var innerProduct = firstNormal * secondNormal;
+
+            return new Term[] { innerProduct };
         }
 
         private Term[] GetConcreteAnnotationTerm(CoplanarCenters coplanarCenters)
