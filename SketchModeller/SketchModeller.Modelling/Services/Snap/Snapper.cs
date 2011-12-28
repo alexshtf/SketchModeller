@@ -28,6 +28,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly IUnityContainer container;
         private readonly IEventAggregator eventAggregator;
         private readonly SnappersManager snappersManager;
+        private readonly IAnnotationInference annotationInference;
 
         [InjectionConstructor]
         public Snapper(
@@ -35,7 +36,8 @@ namespace SketchModeller.Modelling.Services.Snap
             UiState uiState,
             ILoggerFacade logger,
             IUnityContainer container,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IAnnotationInference annotationInference)
         {
             this.sessionData = sessionData;
             this.uiState = uiState;
@@ -71,6 +73,10 @@ namespace SketchModeller.Modelling.Services.Snap
                 sessionData.SnappedPrimitives.Add(snappedPrimitive);
                 sessionData.NewPrimitives.Remove(newPrimitive);
                 sessionData.FeatureCurves.AddRange(snappedPrimitive.FeatureCurves);
+
+                // update annotations with the inferred ones
+                var annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive);
+                sessionData.Annotations.AddRange(annotations);
             }
 
             OptimizeAll();

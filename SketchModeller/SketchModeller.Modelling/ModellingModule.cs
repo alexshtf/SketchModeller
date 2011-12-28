@@ -16,6 +16,7 @@ using SketchModeller.Modelling.ModelViews;
 using SketchModeller.Modelling.Services.Snap;
 using SketchModeller.Modelling.Services.PrimitivesConverter;
 using SketchModeller.Modelling.Services.Assign;
+using SketchModeller.Modelling.Services.AnnotationInference;
 
 namespace SketchModeller.Modelling
 {
@@ -34,6 +35,7 @@ namespace SketchModeller.Modelling
         {
             // register services
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IAnnotationInference, AnnotationInferenceService>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPrimitivesConverter, PrimitivesConverter>(new ContainerControlledLifetimeManager());
             container.RegisterType<ICurveAssigner, CurveAssigner>(new ContainerControlledLifetimeManager());
