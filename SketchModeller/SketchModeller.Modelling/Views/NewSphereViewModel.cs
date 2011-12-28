@@ -113,6 +113,7 @@ namespace SketchModeller.Modelling.Views
             public Editor(Point startPoint, LineRange startRay, NewSphereViewModel viewModel)
                 : base(startPoint, startRay, viewModel)
             {
+                this.viewModel = viewModel;
             }
 
             protected override void PerformDrag(Vector dragVector2d, Vector3D vector3D, Vector3D axisDragVector, Point3D? currDragPosition)

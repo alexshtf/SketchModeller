@@ -183,6 +183,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleSelector3D.cs" />
     <Compile Include="Services\AnnotationInference\AnnotationInferenceService.cs" />
+    <Compile Include="Services\AnnotationInference\IInferrer.cs" />
+    <Compile Include="Services\AnnotationInference\InferenceEngine.cs" />
+    <Compile Include="Services\AnnotationInference\OrthogonalityInferrer.cs" />
     <Compile Include="Services\Assign\CurveAssigner.cs" />
     <Compile Include="Services\PrimitivesConverter\BaseNewConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\BaseSnappedConverter.cs" />
