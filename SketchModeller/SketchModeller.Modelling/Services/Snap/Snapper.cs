@@ -78,12 +78,18 @@ namespace SketchModeller.Modelling.Services.Snap
                 sessionData.NewPrimitives.Remove(newPrimitive);
                 sessionData.FeatureCurves.AddRange(snappedPrimitive.FeatureCurves);
 
-                // update annotations with the inferred ones
-                var annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive);
-                sessionData.Annotations.AddRange(annotations);
-            }
+                OptimizeAll();
 
-            OptimizeAll();
+                // update annotations with the inferred ones and optimize again
+                var annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive);
+                if (annotations.Any())
+                {
+                    sessionData.Annotations.AddRange(annotations);
+                    OptimizeAll();
+                }
+            }
+            else
+                OptimizeAll();
 
             eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
         }
