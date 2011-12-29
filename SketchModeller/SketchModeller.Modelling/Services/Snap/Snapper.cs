@@ -185,7 +185,7 @@ namespace SketchModeller.Modelling.Services.Snap
             }
 
             #endregion
-            MessageBox.Show("Performing Optimization");
+            //MessageBox.Show("Performing Optimization");
             #region perform optimization
 
             var finalObjective = TermUtils.SafeSum(objectives);
@@ -195,7 +195,7 @@ namespace SketchModeller.Modelling.Services.Snap
             //var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10, tolerance:1E-5);
             var optimum = ALBFGSOptimizer.Minimize(
                 finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
-            MessageBox.Show("Ended Optimization");
+            //MessageBox.Show("Ended Optimization");
             #endregion
 
             #region read data back from the optimized vector

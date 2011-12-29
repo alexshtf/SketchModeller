@@ -91,7 +91,7 @@ namespace SketchModeller.Modelling.Services.Snap
             }
             else
             {
-                MessageBox.Show("Sorry not applicable");
+                //MessageBox.Show("Sorry not applicable");
             }
             /*else if (silhouettesCount == 1 && featuresCount == 2)
                 result = SingleSilhouetteTwoFeatures(snappedPrimitive, annotated);
@@ -210,7 +210,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 spinePointTerm;
 
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
-            MessageBox.Show("Finished Generating Optimization");
+            //MessageBox.Show("Finished Generating Optimization");
             return Tuple.Create(objective, constraints);
         }
 
@@ -306,7 +306,7 @@ namespace SketchModeller.Modelling.Services.Snap
             detC = Cxx * Cyy - Cxy * Cxy;
             l1 = 0.5 * trC + Math.Sqrt(0.25 * trC * trC - detC);
             l2 = 0.5 * trC - Math.Sqrt(0.25 * trC * trC - detC);
-            MessageBox.Show(String.Format("({0}, {1}), ({2}, {3})", 2*botEllipse.XRadius, 2*botEllipse.YRadius, 2 * Math.Sqrt(l1), 2 * Math.Sqrt(l2)));
+            //MessageBox.Show(String.Format("({0}, {1}), ({2}, {3})", 2*botEllipse.XRadius, 2*botEllipse.YRadius, 2 * Math.Sqrt(l1), 2 * Math.Sqrt(l2)));
             a1 = 2*Math.Sqrt(l1);
             a2 = 2*Math.Sqrt(l2);
             if (a1 < a2)
