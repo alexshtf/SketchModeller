@@ -13,6 +13,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows;
 using Utils;
+using SketchModeller.Modelling.Editing;
+using Petzold.Media3D;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -201,49 +203,69 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        protected override void PerformDragCore(
-           Vector dragVector2d,
-           Vector3D dragVector3d,
-           Vector3D axisDragVector,
-           Point3D? sketchPlanePosition)
+        public override IEditor StartEdit(Point startPos, Petzold.Media3D.LineRange startRay)
         {
-            //MessageBox.Show("InsidePerformDragCore");
-            if (Keyboard.Modifiers == ModifierKeys.None)
+            return new Editor(startPos, startRay, this);
+        }
+
+        public override Vector3D ApproximateAxis
+        {
+            get { return Axis; }
+        }
+
+        #region Editor class
+
+        class Editor : BaseEditor
+        {
+            private NewBGCViewModel viewModel;
+
+            public Editor(Point startPoint, LineRange startRay, NewBGCViewModel viewModel)
+                : base(startPoint, startRay, viewModel)
             {
-                Center = Center + dragVector3d;
-                var newComponents =
-                    from comp in Components
-                    select new ComponentViewModel(comp.Radius, comp.Progress, new Point(comp.Pnt2D.X + dragVector2d.X, comp.Pnt2D.Y + dragVector2d.Y),
-                                                  new Point3D(comp.Pnt3D.X + dragVector3d.X, comp.Pnt3D.Y + dragVector3d.Y, comp.Pnt3D.Z + dragVector3d.Z));
-                Components = Array.AsReadOnly(newComponents.ToArray());
+                this.viewModel = viewModel;
             }
-            else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
-                Center = Center + axisDragVector;
-            else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+
+            protected override void PerformDrag(Vector dragVector2d, Vector3D vector3D, Vector3D axisDragVector, Point3D? currDragPosition)
             {
-                //MessageBox.Show("InsidePerformDragCore");
-                Axis = TrackballRotate(Axis, dragVector2d);
-            }
-            else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
-            {
-                var axis = Vector3D.CrossProduct(Axis, SketchPlane.Normal);
-                if (axis != default(Vector3D))
+                if (Keyboard.Modifiers == ModifierKeys.None)
                 {
-                    axis.Normalize();
-                    var radiusDelta = 0.5 * Vector3D.DotProduct(axis, dragVector3d);
-                    Components = RecomputeComponents(
-                        Components,
-                        radiusDelta,
-                        dragStartComponent);
+                    viewModel.Center = viewModel.Center + vector3D;
+                    var newComponents =
+                        from comp in viewModel.Components
+                        select new ComponentViewModel(comp.Radius, comp.Progress, new Point(comp.Pnt2D.X + dragVector2d.X, comp.Pnt2D.Y + dragVector2d.Y),
+                                                      new Point3D(comp.Pnt3D.X + vector3D.X, comp.Pnt3D.Y + vector3D.Y, comp.Pnt3D.Z + vector3D.Z));
+                    viewModel.Components = Array.AsReadOnly(newComponents.ToArray());
+                }
+                else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
+                    viewModel.Center = viewModel.Center + axisDragVector;
+                else if (Keyboard.Modifiers == TRACKBALL_MODIFIERS)
+                {
+                    //MessageBox.Show("InsidePerformDragCore");
+                    viewModel.Axis = viewModel.TrackballRotate(viewModel.Axis, dragVector2d);
+                }
+                else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
+                {
+                    var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);
+                    if (axis != default(Vector3D))
+                    {
+                        axis.Normalize();
+                        var radiusDelta = 0.5 * Vector3D.DotProduct(axis, vector3D);
+                        viewModel.Components = viewModel.RecomputeComponents(
+                            viewModel.Components,
+                            radiusDelta,
+                            viewModel.dragStartComponent);
+                    }
+                }
+                else if (Keyboard.Modifiers == LENGTH_MODIFIER)
+                {
+                    var axis = viewModel.Axis.Normalized();
+                    var lengthDelta = Vector3D.DotProduct(axis, vector3D) * 2;
+                    viewModel.Length = Math.Max(MIN_LENGTH, viewModel.Length + lengthDelta);
                 }
             }
-            else if (Keyboard.Modifiers == LENGTH_MODIFIER)
-            {
-                var axis = Axis.Normalized();
-                var lengthDelta = Vector3D.DotProduct(axis, dragVector3d) * 2;
-                Length = Math.Max(MIN_LENGTH, Length + lengthDelta);
-            }
         }
+
+        #endregion
 
         private ReadOnlyCollection<NewBGCViewModel.ComponentViewModel> RecomputeComponents(ReadOnlyCollection<NewBGCViewModel.ComponentViewModel> readOnlyCollection, double radiusDelta, int dragStartComponent)
         {
