@@ -235,5 +235,22 @@ namespace Utils
 
             return minimizer;
         }
+
+        /// <summary>
+        /// Allows easy construction of arrays of items.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the array</typeparam>
+        /// <param name="items">The items in the array</param>
+        /// <returns>The array <paramref name="items"/></returns>
+        /// <example>
+        /// <code>
+        /// // this will be an int[] array containing 1, 2, 3, 4, 5
+        /// var numbers = Enumerable.ArrayOf(1, 2, 3, 4, 5);
+        /// </code>
+        /// </example>
+        public static T[] ArrayOf<T>(params T[] items)
+        {
+            return items;
+        }
     }
 }

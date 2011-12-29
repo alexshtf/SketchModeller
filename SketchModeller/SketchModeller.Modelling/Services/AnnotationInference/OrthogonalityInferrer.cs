@@ -7,6 +7,7 @@ using SketchModeller.Infrastructure.Shared;
 using Utils;
 
 using Enumerable = System.Linq.Enumerable;
+using UtilsEnumerable = Utils.Enumerable;
 using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
@@ -38,13 +39,30 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             if (candidates.Any())
             {
                 var bestCandidate = candidates.Minimizer(pair => DistanceBetweenCurves(pair.Item1, pair.Item2));
-                var annotation = new OrthogonalAxis 
+                var newFeatureCurve = bestCandidate.Item1;
+                var existingFeatureCurve = bestCandidate.Item2;
+
+                Annotation curveOrthogonality = new OrthogonalAxis 
                 { 
-                    Elements = new FeatureCurve[] { bestCandidate.Item1, bestCandidate.Item2 } 
+                    Elements = new FeatureCurve[] { newFeatureCurve, existingFeatureCurve } 
                 };
-                return Enumerable.Repeat(annotation, 1);
+                Annotation coplanarCenters = new CoplanarCenters
+                {
+                    Elements = AllCurvesOnPrimitiveOf(existingFeatureCurve).Append(newFeatureCurve).ToArray()
+                };
+
+                return UtilsEnumerable.ArrayOf(curveOrthogonality, coplanarCenters);
             }
+            else
                 return Enumerable.Empty<Annotation>();
+        }
+
+        private IEnumerable<FeatureCurve> AllCurvesOnPrimitiveOf(FeatureCurve featureCurve)
+        {
+            var containingPrimitive = from primitive in sessionData.SnappedPrimitives
+                                      where primitive.FeatureCurves.Contains(featureCurve)
+                                      select primitive;
+            return containingPrimitive.First().FeatureCurves;
         }
 
         private bool AreGoodCandidates(FeatureCurve firstCurve, FeatureCurve secondCurve)
