@@ -143,6 +143,12 @@ namespace SketchModeller.Modelling.Views
                     viewModel.Init(newSgc);
                     result = viewModel;
                 });
+            data.MatchClass<NewBendedGenCylinder>(newBgc =>
+            {
+                var viewModel = container.Resolve<NewBGCViewModel>();
+                viewModel.Init(newBgc);
+                result = viewModel;
+                });
             Contract.Assume(result != null);
 
             result.Model = data;

@@ -16,6 +16,7 @@ using Microsoft.Practices.Prism.Events;
 using SketchModeller.Infrastructure.Events;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows;
 using TermUtils = SketchModeller.Utilities.TermUtils;
 
 namespace SketchModeller.Modelling.Services.Snap
@@ -50,6 +51,7 @@ namespace SketchModeller.Modelling.Services.Snap
             snappersManager.RegisterSnapper(new CylinderSnapper());
             snappersManager.RegisterSnapper(new SphereSnapper());
             snappersManager.RegisterSnapper(new SgcSnapper());
+            snappersManager.RegisterSnapper(new BgcSnapper());
 
             logger.Log("NewSnapper created", Category.Debug, Priority.None);
         }
@@ -91,8 +93,10 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void OptimizeAll()
         {
+            
             #region Write all variables and their current values to a vector
 
+            //MessageBox.Show("Inside Optimize All");
             var variablesWriter = new VariableVectorsWriter();
             var startVectorWriter = new VectorsWriter();
 
@@ -121,6 +125,13 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 variablesWriter.Write(snappedSgc);
                 startVectorWriter.Write(snappedSgc);
+            }
+
+            foreach (var snappedBgc in sessionData.SnappedPrimitives.OfType<SnappedBendedGenCylinder>())
+            {
+                //MessageBox.Show("Writting Bgc");
+                variablesWriter.Write(snappedBgc);
+                startVectorWriter.Write(snappedBgc);
             }
 
             #endregion
@@ -168,7 +179,7 @@ namespace SketchModeller.Modelling.Services.Snap
             }
 
             #endregion
-
+            MessageBox.Show("Performing Optimization");
             #region perform optimization
 
             var finalObjective = TermUtils.SafeSum(objectives);
@@ -178,7 +189,7 @@ namespace SketchModeller.Modelling.Services.Snap
             //var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10, tolerance:1E-5);
             var optimum = ALBFGSOptimizer.Minimize(
                 finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
-
+            MessageBox.Show("Ended Optimization");
             #endregion
 
             #region read data back from the optimized vector
@@ -196,6 +207,12 @@ namespace SketchModeller.Modelling.Services.Snap
             foreach (var snappedSgc in sessionData.SnappedPrimitives.OfType<SnappedStraightGenCylinder>())
                 resultReader.Read(snappedSgc);
 
+            foreach (var snappedBgc in sessionData.SnappedPrimitives.OfType<SnappedBendedGenCylinder>())
+            {
+                MessageBox.Show("Reading Variables....");
+                resultReader.Read(snappedBgc);
+                //MessageBox.Show("Done Reading Variables....");
+            }
             #endregion
 
             #region Update feature curves

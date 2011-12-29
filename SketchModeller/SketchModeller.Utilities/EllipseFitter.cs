@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Windows;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -32,6 +33,40 @@ namespace SketchModeller.Utilities
             Contract.Ensures(Contract.Result<Point[]>().Length == count);
             
             var ellipse = Fit(points);
+            var result = new Point[count];
+            var rotMatrix = new RotateTransform(ellipse.Degrees).Value;
+            for (int i = 0; i < count; ++i)
+            {
+                var t = 2 * Math.PI * i / (double)(count - 1);
+                var vec = new Vector(ellipse.XRadius * Math.Cos(t), ellipse.YRadius * Math.Sin(t));
+                result[i] = ellipse.Center + rotMatrix.Transform(vec);
+            }
+            return result;
+        }
+
+        public static Point[] Sample(IList<Point> points, EllipseParams ellipse, int count = 20)
+        {
+            Contract.Requires(points != null);
+            Contract.Requires(points.Count > 6);
+            Contract.Requires(count > 0);
+            Contract.Ensures(Contract.Result<Point[]>() != null);
+            Contract.Ensures(Contract.Result<Point[]>().Length == count);
+            /*using (StreamWriter writer = File.CreateText("Points.txt"))
+            {
+                foreach (Point pnt in points)
+                {
+                    writer.Write(pnt.X + " " + pnt.Y);
+                    writer.Write(writer.NewLine);
+                }
+            }
+            MessageBox.Show("Done Writing Points");*/
+            /*EllipseParams ellipse = new EllipseParams
+            {
+                Center = new Point(0.9566, 0.8023),
+                XRadius = 0.1149,
+                YRadius = 0.0894,
+                Degrees = -1.2418 * 180 / Math.PI
+            };*/
             var result = new Point[count];
             var rotMatrix = new RotateTransform(ellipse.Degrees).Value;
             for (int i = 0; i < count; ++i)
@@ -125,7 +160,7 @@ namespace SketchModeller.Utilities
 
             return new EllipseParams
             {
-                Center = new Point(t[0], t[1]),
+                Center = new Point(t[0], -t[1]),
                 XRadius = Math.Sqrt(-c_h / D[0]),
                 YRadius = Math.Sqrt(-c_h / D[1]),
                 Degrees = 180 * Math.Atan2(Q[0, 1], Q[0, 0]) / Math.PI,

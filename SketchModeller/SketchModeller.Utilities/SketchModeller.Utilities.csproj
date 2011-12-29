@@ -86,7 +86,9 @@
     <Reference Include="Meta.Numerics">
       <HintPath>..\packages\Meta.Numerics.2.0.0\lib\Meta.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>..\..\..\..\PrismLibrary\Desktop\Prism\bin\Release\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\SimpleCurveEdit\libs\Petzold.Media3D.dll</HintPath>
     </Reference>
@@ -110,6 +112,7 @@
     <Compile Include="ALBFGSOptimizer.cs" />
     <Compile Include="ALOptimizer.cs" />
     <Compile Include="AverageSmooth.cs" />
+    <Compile Include="BendedCylinderComponentExtensions.cs" />
     <Compile Include="CircleFitter.cs" />
     <Compile Include="ConstraintsProjector.cs" />
     <Compile Include="ContractExtensions.cs" />
