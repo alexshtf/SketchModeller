@@ -150,7 +150,8 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var leftPts = snappedPrimitive.LeftSilhouette.Points;
             var rightPts = snappedPrimitive.RightSilhouette.Points;
-
+            var totPts = leftPts.Concat(rightPts).ToArray(); 
+            
             var pointsProgress = 
                 snappedPrimitive.Components.Select(x => x.Progress).ToArray();
 
@@ -159,8 +160,9 @@ namespace SketchModeller.Modelling.Services.Snap
             var topEllipse = EllipseFitter.Fit(snappedPrimitive.TopFeatureCurve.SnappedTo.Points);
             var botEllipse = EllipseFitter.Fit(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points);
 
-            var approxOrientation = GetOrientation(topEllipse, botEllipse, snappedPrimitive.AxisResult);
-
+            
+            //var approxOrientation = GetOrientation(topEllipse, botEllipse, snappedPrimitive.AxisResult);
+            var approxOrientation = NewGetOrientation(snappedPrimitive.TopFeatureCurve.SnappedTo.Points, snappedPrimitive.BottomFeatureCurve.SnappedTo.Points, topEllipse, botEllipse, snappedPrimitive.AxisResult);
             // compute the spine of the primitive
             var spine = StraightSpine.Compute(leftPts, rightPts, pointsProgress, topEllipse.Center, botEllipse.Center - topEllipse.Center);
 
@@ -170,6 +172,90 @@ namespace SketchModeller.Modelling.Services.Snap
 
             return CreateSGCTerms(snappedPrimitive, approxOrientation, radii, spineStart, spineEnd);
         }
+
+        private Vector3D NewGetOrientation(
+            Point[] topPnts,
+            Point[] botPnts,
+            EllipseParams topEllipse, 
+            EllipseParams botEllipse,
+            Vector3D axisApproximation)
+        {
+            double mx = 0.0;
+            double my = 0.0;
+            foreach (Point pnt in topPnts)
+            {
+                mx += pnt.X;
+                my += pnt.Y;
+            }
+            mx /= topPnts.Length;
+            my /= topPnts.Length;
+            double Cxx = 0.0;
+            double Cyy = 0.0;
+            double Cxy = 0.0;
+
+            foreach (Point pnt in topPnts){
+                Cxx += Math.Pow(pnt.X - mx, 2.0);
+                Cyy += Math.Pow(pnt.Y - my, 2.0);
+                Cxy += (pnt.X - mx)*(pnt.Y - my);
+            }
+            Cxx *= 1.0 / topPnts.Length;
+            Cyy *= 1.0 / topPnts.Length;
+            Cxy *= 1.0 / topPnts.Length;
+            double trC = Cxx + Cyy;
+            double detC = Cxx * Cyy - Cxy * Cxy;
+            double l1 = 0.5 * trC + Math.Sqrt(0.25 * trC * trC - detC);
+            double l2 = 0.5 * trC - Math.Sqrt(0.25 * trC * trC - detC);
+
+            double a1 = 2 * Math.Sqrt(l1);
+            double a2 = 2 * Math.Sqrt(l2);
+            /*if (a1 < a2){
+                double temp = a1;
+                a1 = a2;
+                a2 = temp;
+            }*/
+            Vector3D ApproxOrientation1 = new Vector3D( Math.Sqrt(a1 * a1 - 4 * Cxx) / a1, Math.Sqrt( a1 * a1 - 4 * Cyy) / a1 , a2 / a1);
+            mx = 0.0;
+            my = 0.0;
+            foreach (Point pnt in botPnts)
+            {
+                mx += pnt.X;
+                my += pnt.Y;
+            }
+            mx /= topPnts.Length;
+            my /= topPnts.Length;
+            Cxx = 0.0;
+            Cyy = 0.0;
+            Cxy = 0.0;
+
+            foreach (Point pnt in botPnts)
+            {
+                Cxx += Math.Pow(pnt.X - mx, 2.0);
+                Cyy += Math.Pow(pnt.Y - my, 2.0);
+                Cxy += (pnt.X - mx) * (pnt.Y - my);
+            }
+            Cxx *= 1.0 / botPnts.Length;
+            Cyy *= 1.0 / botPnts.Length;
+            Cxy *= 1.0 / botPnts.Length;
+            trC = Cxx + Cyy;
+            detC = Cxx * Cyy - Cxy * Cxy;
+            l1 = 0.5 * trC + Math.Sqrt(0.25 * trC * trC - detC);
+            l2 = 0.5 * trC - Math.Sqrt(0.25 * trC * trC - detC);
+
+            a1 = 2 * Math.Sqrt(l1);
+            a2 = 2 * Math.Sqrt(l2);
+            /*if (a1 < a2){
+                double temp = a1;
+                a1 = a2;
+                a2 = temp;
+            }*/
+            Vector3D ApproxOrientation2 = new Vector3D(Math.Sqrt(a1 * a1 - 4 * Cxx) / a1, Math.Sqrt(a1 * a1 - 4 * Cyy) / a1, a2 / a1);
+            short sign = 1;
+            if (Vector3D.DotProduct(ApproxOrientation2, ApproxOrientation1) < 0) sign = -1;
+
+            Vector3D ApproxOrientation = 0.5 * (ApproxOrientation1.Normalized() + sign * ApproxOrientation2.Normalized());
+            return ApproxOrientation.Normalized();   
+        }
+
 
         private static Tuple<Term, Term[]> CreateSGCTerms(SnappedStraightGenCylinder snappedPrimitive, Vector3D approxOrientation, double[] radii, Point spineStart, Point spineEnd)
         {
@@ -249,6 +335,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private Vector3D GetOrientation(Tuple<Vector3D, Vector3D> circleBasis, Vector3D axisApproximation)
         {
             var normal1 = Vector3D.CrossProduct(circleBasis.Item1, circleBasis.Item2);
+            //var normal1 = circleBasis.Item1;
             normal1.Normalize();
 
             var normal2 = new Vector3D(normal1.X, normal1.Y, -normal1.Z);

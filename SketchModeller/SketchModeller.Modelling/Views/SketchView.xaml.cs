@@ -244,6 +244,8 @@ namespace SketchModeller.Modelling.Views
                 primitiveKind = PrimitiveKinds.Sphere;
             else if (sender == sgcThumb)
                 primitiveKind = PrimitiveKinds.SGC;
+            else if (sender == bgcThumb)
+                primitiveKind = PrimitiveKinds.BGC;
             else
                 logger.Log("Invalid event sender", Category.Exception, Priority.High);
 

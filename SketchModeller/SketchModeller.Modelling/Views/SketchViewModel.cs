@@ -140,6 +140,14 @@ namespace SketchModeller.Modelling.Views
                         newSGC.Components = SgcComponents.Create(20, 0.2, 0.6);
                         sessionData.NewPrimitives.Add(newSGC);
                         break;
+                    case PrimitiveKinds.BGC:
+                        var newBGC = new NewBendedGenCylinder();
+                        newBGC.Center.Value = pos3d.Value;
+                        newBGC.Axis.Value = sketchPlane.YAxis;
+                        newBGC.Length.Value = 0.6;
+                        newBGC.Components = BgcComponents.Create(20, 0.2, 0.6, newBGC.Center.Value, newBGC.Axis.Value, newBGC.Length.Value);
+                        sessionData.NewPrimitives.Add(newBGC);
+                        break;
                     default:
                         Trace.Fail("Invalid primitive kind");
                         break;

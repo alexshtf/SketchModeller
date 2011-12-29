@@ -132,6 +132,7 @@
                     <Thumb x:Name="coneThumb" Tag="Cone" />
                     <Thumb x:Name="sphereThumb" Tag="Sphere"/>
                     <Thumb x:Name="sgcThumb" Tag="SGC" />
+                    <Thumb x:Name="bgcThumb" Tag="BGC" />
                 </UniformGrid>
             </GroupBox>
             <GroupBox Header="Primive operations">

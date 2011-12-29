@@ -84,7 +84,9 @@
     <Reference Include="ContinuousLinq">
       <HintPath>..\libs\ContinuousLinq.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>..\..\..\..\PrismLibrary\Desktop\Prism\bin\Release\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -108,7 +110,9 @@
     <Compile Include="CheckedMenuCommandData.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Data\Annotation.cs" />
+    <Compile Include="Data\BendedCylinderCompoent.cs" />
     <Compile Include="Data\CircleFeatureCurve.cs" />
+    <Compile Include="Data\NewBendedGenCylinder.cs" />
     <Compile Include="Data\Cocentrality.cs" />
     <Compile Include="Data\ColinearCenters.cs" />
     <Compile Include="Data\CoplanarCenters.cs" />
@@ -130,6 +134,7 @@
     <Compile Include="Data\OrthogonalAxis.cs" />
     <Compile Include="Data\PrimitiveCurve.cs" />
     <Compile Include="Data\SelectablePrimitive.cs" />
+    <Compile Include="Data\SnappedBendedCylinderComponent.cs" />
     <Compile Include="Data\SnappedCyliderComponent.cs" />
     <Compile Include="Data\SnappedCylindricalPrimitive.cs" />
     <Compile Include="Data\NewCone.cs" />
@@ -166,6 +171,7 @@
     <Compile Include="Services\IPrimitivesConverter.cs" />
     <Compile Include="Services\ISnapper.cs" />
     <Compile Include="ShapeHelper.cs" />
+    <Compile Include="Data\SnappedBendedGenCylinder.cs" />
     <Compile Include="Work.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegionNames.cs" />

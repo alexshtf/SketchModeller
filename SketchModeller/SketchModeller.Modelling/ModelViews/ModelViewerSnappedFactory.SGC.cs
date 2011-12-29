@@ -7,6 +7,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Media;
 using Utils;
 using HelixToolkit;
+using System.Windows;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -14,6 +15,7 @@ namespace SketchModeller.Modelling.ModelViews
     {
         private Visual3D CreateSgcView(SnappedStraightGenCylinder sgc)
         {
+            //MessageBox.Show("Snapped Factory");
             var model = new GeometryModel3D
             {
                 Material = new DiffuseMaterial { Brush = Brushes.White },
@@ -36,6 +38,7 @@ namespace SketchModeller.Modelling.ModelViews
             Point3D bottomCenter, 
             IEnumerable<CylinderComponent> components)
         {
+            //MessageBox.Show("Snapped Factory");
             var startPoint = bottomCenter;
             var endPoint = bottomCenter + axis * length;
 

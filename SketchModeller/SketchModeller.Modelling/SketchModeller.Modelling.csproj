@@ -82,7 +82,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="3DTools">
-      <HintPath>..\libs\3DTools.dll</HintPath>
+      <HintPath>..\..\..\..\3DTools-1.01-bin\3DTools.dll</HintPath>
     </Reference>
     <Reference Include="AForge">
       <HintPath>..\libs\AForge.dll</HintPath>
@@ -105,8 +105,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Meta.Numerics.2.0.0\lib\Meta.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>..\..\..\..\PrismLibrary\Desktop\Prism\bin\Release\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\..\..\..\PrismLibrary\Desktop\Prism.UnityExtensions\bin\Release\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
     <Reference Include="Petzold.Media3D">
       <HintPath>..\libs\Petzold.Media3D.dll</HintPath>
     </Reference>
@@ -133,8 +137,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChamferDistanceTransform.cs" />
+    <Compile Include="Computations\BendedSpine.cs" />
+    <Compile Include="Computations\BgcCompenents.cs" />
     <Compile Include="Computations\CurvedSubdividor.cs" />
     <Compile Include="Computations\EllipseHelper.cs" />
+    <Compile Include="Computations\FourthDegreeBSplineApproximatin.cs" />
     <Compile Include="Computations\IntervalsSampler.cs" />
     <Compile Include="Computations\LSIntervalsFitter.cs" />
     <Compile Include="Computations\LSPointsIntervalsFitter.cs" />
@@ -168,6 +175,7 @@
     <Compile Include="ModelViews\ModelViewerFactory.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Cylinder.cs" />
     <Compile Include="ModelViews\ModelViewerFactory.Sphere.cs" />
+    <Compile Include="ModelViews\ModelViewerSnappedFactory.BGC.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cylinder.cs" />
@@ -191,6 +199,8 @@
     <Compile Include="Services\PrimitivesConverter\BaseSnappedConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\INewConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\ISnappedConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\BgcBgcConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\NewConverters\BgcConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\ConeConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\ConeCylinderConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\CylinderConeConverter.cs" />
@@ -199,6 +209,7 @@
     <Compile Include="Services\PrimitivesConverter\NewConverters\SgcSgcConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\NewConverters\SphereSphereConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\PrimitivesConverter.cs" />
+    <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedBgcConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedConeConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedCylinderConverter.cs" />
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedSgcConverter.cs" />
@@ -206,6 +217,7 @@
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
     <Compile Include="Services\Snap\BasePrimitiveSnapper.cs" />
+    <Compile Include="Services\Snap\BgcSnapper.cs" />
     <Compile Include="Services\Snap\ConeSnapper.cs" />
     <Compile Include="Services\Snap\CylinderSnapper.cs" />
     <Compile Include="Services\Snap\CylindricalSnapper.cs" />
@@ -236,6 +248,8 @@
     </Compile>
     <Compile Include="Views\DisplayOptionsViewModel.cs" />
     <Compile Include="Views\INewPrimitiveView.cs" />
+    <Compile Include="Views\NewBGCView.cs" />
+    <Compile Include="Views\NewBGCViewModel.cs" />
     <Compile Include="Views\NewConeView.cs" />
     <Compile Include="Views\NewConeViewModel.cs" />
     <Compile Include="Views\NewCylinderView.cs" />

@@ -79,7 +79,8 @@ namespace SketchModeller.Modelling.Views
                     viewModel => result = new NewSphereView(viewModel, logger));
                 item.MatchClass<NewSGCViewModel>(
                     viewModel => result = new NewSGCView(viewModel, logger));
-
+                item.MatchClass<NewBGCViewModel>(
+                    viewModel => result = new NewBGCView(viewModel, logger));
                 Contract.Assume(result != null);
                 return result;
             }
