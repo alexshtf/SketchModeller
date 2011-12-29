@@ -54,6 +54,7 @@ namespace SketchModeller.Modelling
             sessionData.NewPrimitives.Clear();
             sessionData.SnappedPrimitives.Clear();
             sessionData.Annotations.Clear();
+            sessionData.FeatureCurves.Clear();
 
             if (sketchData.NewPrimitives != null)
                 sessionData.NewPrimitives.AddRange(sketchData.NewPrimitives);
