@@ -19,7 +19,7 @@ namespace SketchModeller.Modelling.Services.Snap
         where TNew : NewCylindricalPrimitive
         where TSnapped : SnappedCylindricalPrimitive, new()
     {
-        protected override TSnapped Create(PointsSequence[] selectedCurves, TNew newPrimitive)
+        protected override TSnapped Create(TNew newPrimitive)
         {
             var snappedPrimitive = InitNewSnapped(newPrimitive);
             snappedPrimitive.SnappedTo = 

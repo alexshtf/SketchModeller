@@ -53,7 +53,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 throw new InvalidOperationException("Cannot find snapper that can snap new primitives of type " + newPrimitiveType);
 
             // return the snapper's result
-            return snapper.Create(selectedCurves, newPrimitive);
+            return snapper.Create(newPrimitive);
         }
 
         public Tuple<Term, Term[]> Reconstruct(SnappedPrimitive snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)

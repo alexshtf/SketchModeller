@@ -17,7 +17,7 @@ namespace SketchModeller.Modelling.Services.Snap
 {
     class BgcSnapper : BasePrimitivesSnapper<NewBendedGenCylinder, SnappedBendedGenCylinder>
     {
-        protected override SnappedBendedGenCylinder Create(PointsSequence[] selectedCurves, NewBendedGenCylinder newPrimitive)
+        protected override SnappedBendedGenCylinder Create(NewBendedGenCylinder newPrimitive)
         {
             var snappedPrimitive = InitNewSnapped(newPrimitive);
             snappedPrimitive.SnappedTo =

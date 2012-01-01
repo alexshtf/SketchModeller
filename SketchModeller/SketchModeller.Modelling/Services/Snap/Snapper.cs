@@ -63,13 +63,13 @@ namespace SketchModeller.Modelling.Services.Snap
             logger.Log("NewSnapper created", Category.Debug, Priority.None);
         }
 
+        public ITemporarySnap TemporarySnap(NewPrimitive newPrimitive)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Snap()
         {
-            var selectedPolylines = sessionData.SelectedSketchObjects.OfType<Polyline>().ToArray();
-            var selectedPolygons = sessionData.SelectedSketchObjects.OfType<Polygon>().ToArray();
-            var selectedCylinder = sessionData.SelectedNewPrimitives.OfType<NewCylinder>().FirstOrDefault();
-            var selectedCone = sessionData.SelectedNewPrimitives.OfType<NewCone>().FirstOrDefault();
-
             if (sessionData.SelectedNewPrimitives.Count == 1)
             {
                 // initialize our snapped primitive

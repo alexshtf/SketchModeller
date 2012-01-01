@@ -255,6 +255,7 @@
     <Compile Include="Services\Snap\SnappersManager.cs" />
     <Compile Include="Services\Snap\SphereSnapper.cs" />
     <Compile Include="Computations\TwoLinesMedialAxis.cs" />
+    <Compile Include="Services\Snap\TemporarySnap.cs" />
     <Compile Include="SketchCreator\SketchCreatorView.xaml.cs">
       <DependentUpon>SketchCreatorView.xaml</DependentUpon>
     </Compile>

@@ -25,10 +25,10 @@ namespace SketchModeller.Modelling.Services.Snap
             this.sessionData = sessionData;
         }
 
-        public SnappedPrimitive Create(PointsSequence[] selectedCurves, NewPrimitive newPrimitive)
+        public SnappedPrimitive Create(NewPrimitive newPrimitive)
         {
             TNew concrete = (TNew)newPrimitive;
-            return Create(selectedCurves, concrete);
+            return Create(concrete);
         }
 
         public Tuple<Term, Term[]> Reconstruct(SnappedPrimitive snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations)
@@ -47,7 +47,7 @@ namespace SketchModeller.Modelling.Services.Snap
             get { return typeof(TSnapped); }
         }
 
-        protected abstract TSnapped Create(PointsSequence[] selectedCurves, TNew newPrimitive);
+        protected abstract TSnapped Create(TNew newPrimitive);
         protected abstract Tuple<Term, Term[]> Reconstruct(TSnapped snappedPrimitive, Dictionary<FeatureCurve, ISet<Annotation>> curvesToAnnotations);
 
         protected UiState UiState

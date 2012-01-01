@@ -25,12 +25,11 @@ namespace SketchModeller.Modelling.Services.Snap
         /// <summary>
         /// Creates a snapped primitive given a new (temporary) primitive.
         /// </summary>
-        /// <param name="selectedCurves">The curves selected by the user.</param>
         /// <param name="newPrimitive">The new primitive selected for snapping</param>
         /// <returns>A <c>SnappedPrimitive</c> object that represents the snapped version of this primitive.</returns>
         /// <exception cref="InvalidOperationException">Thrown when a snapped primitive cannot be created because of
         /// missing or invalid input.</exception>
-        SnappedPrimitive Create(PointsSequence[] selectedCurves, NewPrimitive newPrimitive);
+        SnappedPrimitive Create(NewPrimitive newPrimitive);
 
         /// <summary>
         /// Creates the objective term and constraint terms that are used to reconstruct the primitive given its curves.
@@ -60,10 +59,8 @@ namespace SketchModeller.Modelling.Services.Snap
             Contract.Requires(sessionData != null);
         }
 
-        SnappedPrimitive IPrimitiveSnapper.Create(PointsSequence[] selectedCurves, NewPrimitive newPrimitive)
+        SnappedPrimitive IPrimitiveSnapper.Create(NewPrimitive newPrimitive)
         {
-            Contract.Requires(selectedCurves != null);
-            Contract.Requires(Contract.ForAll(selectedCurves, c => c != null));
             Contract.Requires(newPrimitive != null);
             Contract.Requires(NewPrimitiveType.IsAssignableFrom(newPrimitive.GetType()));
             
