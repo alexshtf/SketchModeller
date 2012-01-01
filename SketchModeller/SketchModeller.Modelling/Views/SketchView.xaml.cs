@@ -63,14 +63,15 @@ namespace SketchModeller.Modelling.Views
 
         private readonly SketchModellingView sketchModellingView;
         private readonly SketchImageView sketchImageView;
-
+        private readonly ISnapper snapper;
+        
         public SketchView()
         {
             InitializeComponent();
         }
 
         [InjectionConstructor]
-        public SketchView(SketchViewModel viewModel, UiState uiState, IEventAggregator eventAggregator, IUnityContainer container, ILoggerFacade logger = null)
+        public SketchView(SketchViewModel viewModel, UiState uiState, IEventAggregator eventAggregator, IUnityContainer container, ISnapper snapper, ILoggerFacade logger = null)
             : this()
         {
             this.logger = logger ?? new EmptyLogger();
@@ -79,6 +80,7 @@ namespace SketchModeller.Modelling.Views
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
             this.viewModel = viewModel;
             this.duplicateEditorFactory = new DuplicateEditorFactory(this);
+            this.snapper = snapper;
 
             sketchModellingView = 
                 container.Resolve<SketchModellingView>(
@@ -92,7 +94,7 @@ namespace SketchModeller.Modelling.Views
             sketchImageView.Margin = vpRoot.Margin;
             root.Children.Insert(1, sketchImageView);
 
-            newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView);
+            newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView, snapper);
             snappedDragStrategy = new SnappedDragStrategy(uiState, duplicateEditorFactory.Create(), eventAggregator);
             curveDragStrategy = new CurveDragStrategy(uiState, sketchImageView, selectionRectangle);
             assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot, sketchImageView, eventAggregator);
@@ -177,11 +179,12 @@ namespace SketchModeller.Modelling.Views
 
         private void vpRoot_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (currentDragStrategy == newPrimitiveDragStrategy || currentDragStrategy == snappedDragStrategy)
+            if (/*currentDragStrategy == newPrimitiveDragStrategy ||*/ currentDragStrategy == snappedDragStrategy)
             {
                 currentDragStrategy.OnMouseUp(GetPosition3D(e));
                 currentDragStrategy = null;
                 vpRoot.ReleaseMouseCapture();
+                viewModel.SnapPrimitive.Execute(null);
             }
         }
 

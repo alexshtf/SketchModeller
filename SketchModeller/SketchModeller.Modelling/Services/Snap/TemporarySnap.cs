@@ -12,6 +12,8 @@ using SketchModeller.Utilities;
 using TermUtils = SketchModeller.Utilities.TermUtils;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Diagnostics;
+using SketchModeller.Infrastructure.Events;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -21,11 +23,12 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly SnappersManager snappersManager;
         private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
         private readonly IEventAggregator eventAggregator;
-        private readonly SnappedPrimitive snappedPrimitive;
+        private readonly NewPrimitive newPrimitive;
 
+        private SnappedPrimitive snappedPrimitive;
+        private CancellationTokenSource cancellationTokenSource;
         private Task optimizationTask;
-        private CancellationToken cancellationToken;
-        private bool shouldOptimizeAgain;
+        private volatile bool shouldOptimizeAgain;
 
         public TemporarySnap(SessionData sessionData,
                              SnappersManager snappersManager,
@@ -37,9 +40,7 @@ namespace SketchModeller.Modelling.Services.Snap
             this.snappersManager = snappersManager;
             this.primitivesReaderWriterFactory = primitivesReaderWriterFactory;
             this.eventAggregator = eventAggregator;
-
-            snappedPrimitive = snappersManager.Create(newPrimitive);
-            sessionData.SnappedPrimitives.Add(snappedPrimitive);
+            this.newPrimitive = newPrimitive;
         }
 
         public void Update()
@@ -49,6 +50,13 @@ namespace SketchModeller.Modelling.Services.Snap
                 shouldOptimizeAgain = true;
                 return;
             }
+
+            if (snappedPrimitive != null)
+                sessionData.SnappedPrimitives.Remove(snappedPrimitive);
+
+            snappedPrimitive = snappersManager.Create(newPrimitive);
+            snappedPrimitive.UpdateFeatureCurves();
+            sessionData.SnappedPrimitives.Add(snappedPrimitive);
 
             var emptyCurvesToAnnotations = new Dictionary<FeatureCurve, ISet<Annotation>>();
 
@@ -62,15 +70,21 @@ namespace SketchModeller.Modelling.Services.Snap
             var vars = primitivesWriter.GetVariables();
             var vals = primitivesWriter.GetValues();
 
+            cancellationTokenSource = new CancellationTokenSource();
             optimizationTask = Task.Factory.StartNew<double[]>(
-                () => ALBFGSOptimizer.Minimize(objective, constraints, vars, vals, mu: 10, tolerance: 1E-5))
+                _ => ALBFGSOptimizer.Minimize(objective, constraints, vars, vals, mu: 10, tolerance: 1E-5), TaskScheduler.Default, cancellationTokenSource.Token)
                 .ContinueWith(task =>
                 {
+                    cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                     var optimum = task.Result;
 
                     // update primitives from the optimal values
                     primitivesReaderWriterFactory.CreateReader().Read(optimum, snappedPrimitive);
-                    
+                    snappedPrimitive.UpdateFeatureCurves();
+
+                    eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
+
                     // update the task managment fields.
                     optimizationTask = null;
                     if (shouldOptimizeAgain)
@@ -83,6 +97,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public void Dispose()
         {
+            cancellationTokenSource.Cancel();
             if (optimizationTask != null)
                 optimizationTask.Wait();
 
