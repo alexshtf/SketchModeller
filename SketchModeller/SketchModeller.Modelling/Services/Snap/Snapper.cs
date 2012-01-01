@@ -73,6 +73,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 var snappedPrimitive = snappersManager.Create(selectedCurves, newPrimitive);
                 snappedPrimitive.UpdateFeatureCurves();
 
+                //MessageBox.Show("So far so good");
                 // update session data
                 sessionData.SnappedPrimitives.Add(snappedPrimitive);
                 sessionData.NewPrimitives.Remove(newPrimitive);
@@ -82,7 +83,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 var annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive);
                 sessionData.Annotations.AddRange(annotations);
             }
-
+            //MessageBox.Show("So far so good");
             OptimizeAll();
 
             eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);

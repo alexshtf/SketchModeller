@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
 using Microsoft.Practices.Prism.Events;
@@ -21,6 +23,7 @@ using System.Diagnostics;
 using SketchModeller.Modelling.Events;
 using System.Linq;
 using SketchModeller.Modelling.Editing;
+using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -31,9 +34,11 @@ namespace SketchModeller.Modelling.Views
     {
         private static readonly Cursor ADD_CURSOR;
         private static readonly Cursor REMOVE_CURSOR;
-
+        private static bool AddedOnce;
+        
         static SketchView()
         {
+            AddedOnce = false;
             var assembly = Assembly.GetCallingAssembly();
             using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowadd.cur"))
             {
@@ -233,7 +238,7 @@ namespace SketchModeller.Modelling.Views
 
         #region Primitive drag & drop handling
 
-        private void OnThumbDragStarted(object sender, RoutedEventArgs e)
+        private void OnThumbDragStarted(object sender, DragStartedEventArgs e)
         {
             PrimitiveKinds primitiveKind = default(PrimitiveKinds);
             if (sender == cylinderThumb)
@@ -248,20 +253,55 @@ namespace SketchModeller.Modelling.Views
                 primitiveKind = PrimitiveKinds.BGC;
             else
                 logger.Log("Invalid event sender", Category.Exception, Priority.High);
-
             var dataObject = new DataObject(DataFormats.Serializable, primitiveKind);
             DragDrop.DoDragDrop((DependencyObject)sender, dataObject, DragDropEffects.Copy);
+        }
+
+        private void vpRoot_DragOver(object sender, DragEventArgs e)
+        {
+            var mousePos2d = e.GetPosition(viewport3d);
+            var pos3d = GetPosition3D(mousePos2d);
+            
+            if (pos3d.Ray3D != null)
+            {
+                var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
+                if (!AddedOnce)
+                {
+                    viewModel.AddNewPrimitive(primitiveKind, pos3d.Ray3D.Value);
+                    var primitiveVisual = PrimitivesPickService.PickPrimitiveVisual(viewport3d, pos3d.Pos2D);
+                    if (primitiveVisual != null)
+                    {
+                        var primitiveData = PrimitivesPickService.GetPrimitiveData(primitiveVisual);
+                        viewModel.SelectPrimitive(primitiveData);
+
+                        primitiveData.MatchClass<NewPrimitive>(_ => currentDragStrategy = newPrimitiveDragStrategy);
+                        primitiveData.MatchClass<SnappedPrimitive>(_ => currentDragStrategy = snappedDragStrategy);
+                        Debug.Assert(currentDragStrategy != null);
+
+                        currentDragStrategy.OnMouseDown(GetPosition3D(e.GetPosition(viewport3d)), Tuple.Create(primitiveVisual, primitiveData));
+                        vpRoot.CaptureMouse();
+                    }
+                    AddedOnce = true;
+                }
+                else
+                {
+                    currentDragStrategy.OnMouseMove(pos3d);
+                }
+            }
         }
 
         private void vpRoot_Drop(object sender, DragEventArgs e)
         {
             var mousePos2d = e.GetPosition(viewport3d);
             var pos3d = GetPosition3D(mousePos2d);
-
+     
             if (pos3d.Ray3D != null)
             {
-                var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
-                viewModel.AddNewPrimitive(primitiveKind, pos3d.Ray3D.Value);
+                AddedOnce = false;
+                currentDragStrategy.OnMouseUp(pos3d);
+                currentDragStrategy = null;
+                vpRoot.ReleaseMouseCapture();
+                viewModel.SnapPrimitive.Execute(null);
             }
         }
 
@@ -351,6 +391,7 @@ namespace SketchModeller.Modelling.Views
 
             public void OnMouseMove(MousePosInfo3D position)
             {
+                //MessageBox.Show("I am moving");
                 Vector vec2d;
                 Vector3D? vec3d;
                 GetDragVectors(position, out vec2d, out vec3d);

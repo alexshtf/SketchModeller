@@ -33,7 +33,8 @@
                 MouseLeftButtonUp="vpRoot_MouseLeftButtonUp"
                 MouseRightButtonDown="vpRoot_MouseRightButtonDown"
                 MouseRightButtonUp="vpRoot_MouseRightButtonUp"
-                MouseMove="vpRoot_MouseMove">
+                MouseMove="vpRoot_MouseMove"
+                DragOver="vpRoot_DragOver">
             <Viewport3D x:Name="viewport3d" IsHitTestVisible="False">
                 <Viewport3D.Camera>
                     <MatrixCamera x:Name="camera"
