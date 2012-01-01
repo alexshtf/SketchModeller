@@ -30,9 +30,15 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)
         {
+            // we skip orthogonality inference for spheres
+            if (toBeSnapped is NewSphere)
+                return Enumerable.Empty<Annotation>();
+
+            var curvesToSkip = toBeAnnotated.FeatureCurves.Concat(GetSphereFeatureCurves()).ToArray();
+
             var candidates = 
                 from firstCurve in toBeAnnotated.FeatureCurves
-                from secondCurve in sessionData.FeatureCurves.Except(toBeAnnotated.FeatureCurves)
+                from secondCurve in sessionData.FeatureCurves.Except(curvesToSkip)
                 where AreGoodCandidates(firstCurve, secondCurve)
                 select Tuple.Create(firstCurve, secondCurve);
 
@@ -55,6 +61,14 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             }
             else
                 return Enumerable.Empty<Annotation>();
+        }
+
+        private IEnumerable<FeatureCurve> GetSphereFeatureCurves()
+        {
+            return from primitive in sessionData.SnappedPrimitives
+                   where primitive is SnappedSphere
+                   from curve in primitive.FeatureCurves
+                   select curve;
         }
 
         private IEnumerable<FeatureCurve> AllCurvesOnPrimitiveOf(FeatureCurve featureCurve)

@@ -9,13 +9,14 @@ using Utils;
 using Enumerable = System.Linq.Enumerable;
 using UtilsEnumerable = Utils.Enumerable;
 using System.Windows.Media.Media3D;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
     class ColinearCentersInferer : IInferrer
     {
         private const double DEFAULT_PROXIMITY_THRESHOLD = 0.6;
-        private const double DEFAULT_COLINEARITY_THRESHOLD = 10 * Math.PI / 180; // 10 degrees angle to be considered "colinear"
+        private const double DEFAULT_COLINEARITY_THRESHOLD = 160 * Math.PI / 180; // 10 degrees angle to be considered "colinear"
         private const double DEFAULT_PARALLELISM_THRSHOLD = 5 * Math.PI / 180; // 5 degrees angle between vectors to be considered "parallel"
 
         private SessionData sessionData;
@@ -68,11 +69,12 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         {
             bool areAlmostColinear = AreAlmostColinear(firstNewCurve, secondNewCurve, existingCurve);
             bool areCloseEnough = AreCloseEnough(firstNewCurve, secondNewCurve, existingCurve);
-            bool areAlmostParallel = AreAlmostParallel(firstNewCurve, secondNewCurve, existingCurve);
+            //bool areAlmostParallel = AreAlmostParallel(firstNewCurve, secondNewCurve, existingCurve);
 
-            return areAlmostColinear && areCloseEnough;
+            return areAlmostColinear && areCloseEnough; // && areAlmostParallel;
         }
 
+        /*
         private bool AreAlmostParallel(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
         {
             var firstCrossLength = Vector3D.CrossProduct(firstNewCurve.NormalResult, secondNewCurve.NormalResult).Length;
@@ -80,14 +82,15 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             var thirdCrossLength = Vector3D.CrossProduct(secondNewCurve.NormalResult, existingCurve.NormalResult).Length;
 
             var maxCross = Math.Max(firstCrossLength, Math.Max(secondCrossLength, thirdCrossLength));
-            var angle = Math.Acos(maxCross);
+            var angle = Math.Asin(maxCross);
 
             return Math.Abs(angle) <= parallelismThreshold;
-        }
+        }*/
 
         private bool AreCloseEnough(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
         {
-            return ProximityMeasure(firstNewCurve, secondNewCurve, existingCurve) <= proximityThreshold;
+            double proximity = ProximityMeasure(firstNewCurve, secondNewCurve, existingCurve);
+            return proximity <= proximityThreshold;
         }
 
         private bool AreAlmostColinear(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
@@ -95,8 +98,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             double[] angles = { GetAngle(firstNewCurve, secondNewCurve, existingCurve),
                                 GetAngle(firstNewCurve, existingCurve, secondNewCurve),
                                 GetAngle(secondNewCurve, firstNewCurve, existingCurve) };
-            var minAngle = angles.Min();
-            return minAngle < colinearityThreshold;
+            var maxAngle = angles.Max();
+
+            return maxAngle >= colinearityThreshold;
         }
 
         private double GetAngle(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
