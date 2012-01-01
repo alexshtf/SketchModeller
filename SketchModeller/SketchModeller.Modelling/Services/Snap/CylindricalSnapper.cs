@@ -156,9 +156,6 @@ namespace SketchModeller.Modelling.Services.Snap
             var featureProj = ProjectionFit.Compute(snappedFeatureCurve);
             var farProj = Enumerable.Repeat(EndpointsProjectionFit(unsnappedFeatureCurve, sil0Far, sil1Far), 1);
 
-            if (annotated.Contains(unsnappedFeatureCurve))
-                farProj = Enumerable.Empty<Term>();
-
             var objective = TermUtils.SafeSum(new Term[] { TermUtils.SafeAvg(featureProj), TermUtils.SafeAvg(farProj) });
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
 

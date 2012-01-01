@@ -17,7 +17,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         public AnnotationInferenceService(SessionData sessionData)
         {
-            this.inferenceEngine = new InferenceEngine(new OrthogonalityInferrer(sessionData));
+            this.inferenceEngine = new InferenceEngine(
+                new OrthogonalityInferrer(sessionData),
+                new ColinearCentersInferer(sessionData));
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)
