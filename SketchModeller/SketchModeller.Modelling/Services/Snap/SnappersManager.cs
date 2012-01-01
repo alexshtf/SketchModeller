@@ -35,10 +35,8 @@ namespace SketchModeller.Modelling.Services.Snap
             snappers.Add(snapper);
         }
 
-        public SnappedPrimitive Create(PointsSequence[] selectedCurves, NewPrimitive newPrimitive)
+        public SnappedPrimitive Create(NewPrimitive newPrimitive)
         {
-            Contract.Requires(selectedCurves != null);
-            Contract.Requires(Contract.ForAll(selectedCurves, c => c != null));
             Contract.Requires(newPrimitive != null);
             Contract.Ensures(Contract.Result<SnappedPrimitive>() != null);
 

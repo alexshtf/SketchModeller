@@ -65,7 +65,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public ITemporarySnap TemporarySnap(NewPrimitive newPrimitive)
         {
-            throw new NotImplementedException();
+            return new TemporarySnap(sessionData, snappersManager, primitivesReaderWriterFactory, eventAggregator, newPrimitive);
         }
 
         public void Snap()
@@ -74,8 +74,7 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 // initialize our snapped primitive
                 var newPrimitive = sessionData.SelectedNewPrimitives.First();
-                var selectedCurves = sessionData.SelectedSketchObjects.ToArray();
-                var snappedPrimitive = snappersManager.Create(selectedCurves, newPrimitive);
+                var snappedPrimitive = snappersManager.Create(newPrimitive);
                 snappedPrimitive.UpdateFeatureCurves();
 
                 // update session data
