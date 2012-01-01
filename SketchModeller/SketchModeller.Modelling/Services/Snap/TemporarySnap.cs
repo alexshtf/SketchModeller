@@ -25,10 +25,11 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly IEventAggregator eventAggregator;
         private readonly NewPrimitive newPrimitive;
 
+        private SnappedPrimitive oldSnappedPrimitive;
         private SnappedPrimitive snappedPrimitive;
-        private CancellationTokenSource cancellationTokenSource;
         private Task optimizationTask;
         private volatile bool shouldOptimizeAgain;
+        private bool disposed;
 
         public TemporarySnap(SessionData sessionData,
                              SnappersManager snappersManager,
@@ -45,18 +46,23 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public void Update()
         {
+            if (disposed)
+                return;
+
+            DoUpdate();
+        }
+
+        private void DoUpdate()
+        {
             if (optimizationTask != null)
             {
                 shouldOptimizeAgain = true;
                 return;
             }
 
-            if (snappedPrimitive != null)
-                sessionData.SnappedPrimitives.Remove(snappedPrimitive);
-
+            oldSnappedPrimitive = snappedPrimitive;
             snappedPrimitive = snappersManager.Create(newPrimitive);
             snappedPrimitive.UpdateFeatureCurves();
-            sessionData.SnappedPrimitives.Add(snappedPrimitive);
 
             var emptyCurvesToAnnotations = new Dictionary<FeatureCurve, ISet<Annotation>>();
 
@@ -70,12 +76,12 @@ namespace SketchModeller.Modelling.Services.Snap
             var vars = primitivesWriter.GetVariables();
             var vals = primitivesWriter.GetValues();
 
-            cancellationTokenSource = new CancellationTokenSource();
             optimizationTask = Task.Factory.StartNew<double[]>(
-                _ => ALBFGSOptimizer.Minimize(objective, constraints, vars, vals, mu: 10, tolerance: 1E-5), TaskScheduler.Default, cancellationTokenSource.Token)
+                _ => ALBFGSOptimizer.Minimize(objective, constraints, vars, vals, mu: 10, tolerance: 1E-5), TaskScheduler.Default)
                 .ContinueWith(task =>
                 {
-                    cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    if (disposed)
+                        return;
 
                     var optimum = task.Result;
 
@@ -83,25 +89,27 @@ namespace SketchModeller.Modelling.Services.Snap
                     primitivesReaderWriterFactory.CreateReader().Read(optimum, snappedPrimitive);
                     snappedPrimitive.UpdateFeatureCurves();
 
-                    eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
-
                     // update the task managment fields.
+                    sessionData.SnappedPrimitives.Remove(oldSnappedPrimitive);
                     optimizationTask = null;
                     if (shouldOptimizeAgain)
                     {
                         shouldOptimizeAgain = false;
-                        Update();
+                        DoUpdate();
+                    }
+                    else
+                    {
+                        sessionData.SnappedPrimitives.Add(snappedPrimitive);
+                        eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
                     }
                 }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         public void Dispose()
         {
-            cancellationTokenSource.Cancel();
-            if (optimizationTask != null)
-                optimizationTask.Wait();
-
+            sessionData.SnappedPrimitives.Remove(oldSnappedPrimitive);
             sessionData.SnappedPrimitives.Remove(snappedPrimitive);
+            disposed = true;
         }
     }
 }

@@ -9,8 +9,8 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <ContainerUIElement3D>
         <ContainerUIElement3D.Children>
-            <skm:CloningVisual3D x:Name="cloningVisual3D"/>
             <skm:CloningVisual3D x:Name="snappedCloningVisual3d" />
+            <skm:CloningVisual3D x:Name="cloningVisual3D"/>
         </ContainerUIElement3D.Children>
     </ContainerUIElement3D>
 </ModelVisual3D>
