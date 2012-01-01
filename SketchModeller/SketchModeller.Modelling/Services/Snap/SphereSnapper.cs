@@ -13,7 +13,7 @@ namespace SketchModeller.Modelling.Services.Snap
     {
         public static readonly Term[] NO_TERMS = new Term[0];
 
-        protected override SnappedSphere Create(PointsSequence[] selectedCurves, NewSphere newPrimitive)
+        protected override SnappedSphere Create(NewSphere newPrimitive)
         {
             var result = new SnappedSphere();
             result.RadiusResult = newPrimitive.Radius;

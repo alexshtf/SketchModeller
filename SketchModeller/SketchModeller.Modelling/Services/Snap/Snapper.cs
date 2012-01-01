@@ -63,19 +63,18 @@ namespace SketchModeller.Modelling.Services.Snap
             logger.Log("NewSnapper created", Category.Debug, Priority.None);
         }
 
+        public ITemporarySnap TemporarySnap(NewPrimitive newPrimitive)
+        {
+            return new TemporarySnap(sessionData, snappersManager, primitivesReaderWriterFactory, eventAggregator, newPrimitive);
+        }
+
         public void Snap()
         {
-            var selectedPolylines = sessionData.SelectedSketchObjects.OfType<Polyline>().ToArray();
-            var selectedPolygons = sessionData.SelectedSketchObjects.OfType<Polygon>().ToArray();
-            var selectedCylinder = sessionData.SelectedNewPrimitives.OfType<NewCylinder>().FirstOrDefault();
-            var selectedCone = sessionData.SelectedNewPrimitives.OfType<NewCone>().FirstOrDefault();
-
             if (sessionData.SelectedNewPrimitives.Count == 1)
             {
                 // initialize our snapped primitive
                 var newPrimitive = sessionData.SelectedNewPrimitives.First();
-                var selectedCurves = sessionData.SelectedSketchObjects.ToArray();
-                var snappedPrimitive = snappersManager.Create(selectedCurves, newPrimitive);
+                var snappedPrimitive = snappersManager.Create(newPrimitive);
                 snappedPrimitive.UpdateFeatureCurves();
 
                 //MessageBox.Show("So far so good");
