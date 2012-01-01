@@ -209,6 +209,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleSelector3D.cs" />
     <Compile Include="Services\AnnotationInference\AnnotationInferenceService.cs" />
+    <Compile Include="Services\AnnotationInference\ColinearCentersInferer.cs" />
     <Compile Include="Services\AnnotationInference\IInferrer.cs" />
     <Compile Include="Services\AnnotationInference\InferenceEngine.cs" />
     <Compile Include="Services\AnnotationInference\OrthogonalityInferrer.cs" />
@@ -240,6 +241,10 @@
     <Compile Include="Services\Snap\CylinderSnapper.cs" />
     <Compile Include="Services\Snap\CylindricalSnapper.cs" />
     <Compile Include="Services\Snap\IPrimitiveSnapper.cs" />
+    <Compile Include="Services\Snap\IPrimitivesReader.cs" />
+    <Compile Include="Services\Snap\IPrimitivesWriter.cs" />
+    <Compile Include="Services\Snap\PrimitivesReaderWriterFactory.cs" />
+    <Compile Include="Services\Snap\PrimitivesWriter.cs" />
     <Compile Include="Services\Snap\ReadWriteUtils.cs" />
     <Compile Include="Services\Snap\SgcSnapper.cs" />
     <Compile Include="Services\Snap\Snapper.cs" />

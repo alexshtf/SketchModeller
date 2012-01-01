@@ -31,6 +31,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly IEventAggregator eventAggregator;
         private readonly SnappersManager snappersManager;
         private readonly IAnnotationInference annotationInference;
+        private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
 
         [InjectionConstructor]
         public Snapper(
@@ -47,6 +48,8 @@ namespace SketchModeller.Modelling.Services.Snap
             this.container = container;
             this.eventAggregator = eventAggregator;
             this.annotationInference = annotationInference;
+
+            this.primitivesReaderWriterFactory = new PrimitivesReaderWriterFactory();
 
             snappersManager = new SnappersManager(uiState, sessionData);
             snappersManager.RegisterSnapper(new ConeSnapper());
@@ -105,48 +108,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void OptimizeAll()
         {
-            
-            #region Write all variables and their current values to a vector
-
-            //MessageBox.Show("Inside Optimize All");
-            var variablesWriter = new VariableVectorsWriter();
-            var startVectorWriter = new VectorsWriter();
-
-            // write cylinders
-            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
-            {
-                variablesWriter.Write(snappedCylinder);
-                startVectorWriter.Write(snappedCylinder);
-            }
-
-            // write cones
-            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
-            {
-                variablesWriter.Write(snappedCone);
-                startVectorWriter.Write(snappedCone);
-            }
-
-            // write spheres
-            foreach (var snappedSphere in sessionData.SnappedPrimitives.OfType<SnappedSphere>())
-            {
-                variablesWriter.Write(snappedSphere);
-                startVectorWriter.Write(snappedSphere);
-            }
-
-            foreach (var snappedSgc in sessionData.SnappedPrimitives.OfType<SnappedStraightGenCylinder>())
-            {
-                variablesWriter.Write(snappedSgc);
-                startVectorWriter.Write(snappedSgc);
-            }
-
-            foreach (var snappedBgc in sessionData.SnappedPrimitives.OfType<SnappedBendedGenCylinder>())
-            {
-                //MessageBox.Show("Writting Bgc");
-                variablesWriter.Write(snappedBgc);
-                startVectorWriter.Write(snappedBgc);
-            }
-
-            #endregion
+            var primitivesWriter = primitivesReaderWriterFactory.CreateWriter();
+            primitivesWriter.Write(sessionData.SnappedPrimitives);
 
             // all objective functions. Will be summed eventually to form one big objective.
             var objectives = new List<Term>();
@@ -195,8 +158,8 @@ namespace SketchModeller.Modelling.Services.Snap
             #region perform optimization
 
             var finalObjective = TermUtils.SafeSum(objectives);
-            var vars = variablesWriter.ToArray();
-            var vals = startVectorWriter.ToArray();
+            var vars = primitivesWriter.GetVariables();
+            var vals = primitivesWriter.GetValues();
 
             //var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10, tolerance:1E-5);
             var optimum = ALBFGSOptimizer.Minimize(
