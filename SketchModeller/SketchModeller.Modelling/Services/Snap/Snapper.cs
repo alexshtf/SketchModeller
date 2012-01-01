@@ -155,47 +155,19 @@ namespace SketchModeller.Modelling.Services.Snap
 
             #endregion
             //MessageBox.Show("Performing Optimization");
-            #region perform optimization
 
+            // perform the optimization.
             var finalObjective = TermUtils.SafeSum(objectives);
             var vars = primitivesWriter.GetVariables();
             var vals = primitivesWriter.GetValues();
 
-            //var optimum = Optimizer.MinAugmentedLagrangian(finalObjective, constraints.ToArray(), vars, vals, mu:10, tolerance:1E-5);
             var optimum = ALBFGSOptimizer.Minimize(
                 finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
-            //MessageBox.Show("Ended Optimization");
-            #endregion
 
-            #region read data back from the optimized vector
-
-            var resultReader = new VectorsReader(optimum);
-            foreach (var snappedCylinder in sessionData.SnappedPrimitives.OfType<SnappedCylinder>())
-                resultReader.Read(snappedCylinder);
-
-            foreach (var snappedCone in sessionData.SnappedPrimitives.OfType<SnappedCone>())
-                resultReader.Read(snappedCone);
-
-            foreach (var snappedSphere in sessionData.SnappedPrimitives.OfType<SnappedSphere>())
-                resultReader.Read(snappedSphere);
-
-            foreach (var snappedSgc in sessionData.SnappedPrimitives.OfType<SnappedStraightGenCylinder>())
-                resultReader.Read(snappedSgc);
-
-            foreach (var snappedBgc in sessionData.SnappedPrimitives.OfType<SnappedBendedGenCylinder>())
-            {
-                MessageBox.Show("Reading Variables....");
-                resultReader.Read(snappedBgc);
-                //MessageBox.Show("Done Reading Variables....");
-            }
-            #endregion
-
-            #region Update feature curves
-
+            // update primitives from the optimal values
+            primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);
             foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
                 snappedPrimitive.UpdateFeatureCurves();
-
-            #endregion
         }
 
         #region supporting code

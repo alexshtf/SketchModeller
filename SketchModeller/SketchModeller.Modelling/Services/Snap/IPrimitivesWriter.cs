@@ -21,7 +21,10 @@ namespace SketchModeller.Modelling.Services.Snap
     /// Variable[] variables = primitivesWriter.GetVariables();
     /// double[] values = primitivesWriter.GetValues();
     /// 
-    /// PerformOptimization(objectiveFunction, variables, values);
+    /// double[] optimum = PerformOptimization(objectiveFunction, variables, values);
+    /// 
+    /// var primitivesReader = GetPrimitivesReader();
+    /// primitivesReader.Read(optimum, snappedPrimitives);
     /// </code>
     /// </example>
     interface IPrimitivesWriter

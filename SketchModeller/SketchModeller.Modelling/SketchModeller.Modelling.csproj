@@ -243,6 +243,7 @@
     <Compile Include="Services\Snap\IPrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\IPrimitivesReader.cs" />
     <Compile Include="Services\Snap\IPrimitivesWriter.cs" />
+    <Compile Include="Services\Snap\PrimitivesReader.cs" />
     <Compile Include="Services\Snap\PrimitivesReaderWriterFactory.cs" />
     <Compile Include="Services\Snap\PrimitivesWriter.cs" />
     <Compile Include="Services\Snap\ReadWriteUtils.cs" />
