@@ -110,19 +110,44 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void OptimizeAll()
         {
+            var curvesToAnnotations = GetCurvesToAnnotationsMapping();
+
+            // get objectives and constraints for primitives
+            var constraints = new List<Term>();
+            var objectives = new List<Term>();
+            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
+            {
+                var objectiveAndConstraints = snappersManager.Reconstruct(snappedPrimitive, curvesToAnnotations);
+                objectives.Add(objectiveAndConstraints.Item1);
+                constraints.AddRange(objectiveAndConstraints.Item2);
+            }
+            
+            // add constraints extracted from the annotations
+            var annotationConstraints = from annotation in sessionData.Annotations
+                                        from constraint in annotationConstraintsExtractor.GetConstraints(annotation)
+                                        select constraint;
+            constraints.AddRange(annotationConstraints);
+
+            // perform the optimization.
             var primitivesWriter = primitivesReaderWriterFactory.CreateWriter();
             primitivesWriter.Write(sessionData.SnappedPrimitives);
 
-            // all objective functions. Will be summed eventually to form one big objective.
-            var objectives = new List<Term>();
+            var vars = primitivesWriter.GetVariables();
+            var vals = primitivesWriter.GetValues();
 
-            // all equality constraints.
-            var constraints = new List<Term>();
+            var finalObjective = TermUtils.SafeSum(objectives);
+            var optimum = ALBFGSOptimizer.Minimize(
+                finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
 
+            // update primitives from the optimal values
+            primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);
+            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
+                snappedPrimitive.UpdateFeatureCurves();
+        }
+
+        private Dictionary<FeatureCurve, ISet<Annotation>> GetCurvesToAnnotationsMapping()
+        {
             var curvesToAnnotations = new Dictionary<FeatureCurve, ISet<Annotation>>();
-
-            #region Get mapping of curves to annotations
-
             foreach (var fc in sessionData.FeatureCurves)
                 curvesToAnnotations[fc] = new HashSet<Annotation>();
 
@@ -133,37 +158,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 foreach (var fc in curves)
                     curvesToAnnotations[fc].Add(annotation);
             }
-
-            #endregion
-
-            #region get objectives and constraints for primitives
-
-            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
-            {
-                var objectiveAndConstraints = snappersManager.Reconstruct(snappedPrimitive, curvesToAnnotations);
-                objectives.Add(objectiveAndConstraints.Item1);
-                constraints.AddRange(objectiveAndConstraints.Item2);
-            }
-            
-            #endregion
-
-            var annotationConstraints = from annotation in sessionData.Annotations
-                                        from constraint in annotationConstraintsExtractor.GetConstraints(annotation)
-                                        select constraint;
-            constraints.AddRange(annotationConstraints);
-
-            // perform the optimization.
-            var finalObjective = TermUtils.SafeSum(objectives);
-            var vars = primitivesWriter.GetVariables();
-            var vals = primitivesWriter.GetValues();
-
-            var optimum = ALBFGSOptimizer.Minimize(
-                finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
-
-            // update primitives from the optimal values
-            primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);
-            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
-                snappedPrimitive.UpdateFeatureCurves();
+            return curvesToAnnotations;
         }
     }
 }
