@@ -9,7 +9,7 @@ namespace SketchModeller.Modelling.Services.Snap
     {
         public IPrimitivesReader CreateReader()
         {
-            throw new NotImplementedException();
+            return new PrimitivesReader();
         }
 
         public IPrimitivesWriter CreateWriter()
