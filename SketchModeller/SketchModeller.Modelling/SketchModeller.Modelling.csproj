@@ -235,11 +235,13 @@
     <Compile Include="Services\PrimitivesConverter\SnappedConverters\SnappedSphereConverter.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.cs" />
     <Compile Include="Services\Sketch\SketchCatalog.SvgLoader.cs" />
+    <Compile Include="Services\Snap\AnnotationConstraintsExtractor.cs" />
     <Compile Include="Services\Snap\BasePrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\BgcSnapper.cs" />
     <Compile Include="Services\Snap\ConeSnapper.cs" />
     <Compile Include="Services\Snap\CylinderSnapper.cs" />
     <Compile Include="Services\Snap\CylindricalSnapper.cs" />
+    <Compile Include="Services\Snap\IAnnotationConstraintsExtractor.cs" />
     <Compile Include="Services\Snap\IPrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\IPrimitivesReader.cs" />
     <Compile Include="Services\Snap\IPrimitivesWriter.cs" />

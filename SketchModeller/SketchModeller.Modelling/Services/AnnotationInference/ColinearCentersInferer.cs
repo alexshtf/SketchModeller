@@ -22,6 +22,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)
         {
+            return Enumerable.Empty<Annotation>();
             var toBeAnnotatedCurves = toBeAnnotated.FeatureCurves;
             var candidateTriples =
                 from i in Enumerable.Range(0, toBeAnnotatedCurves.Length)
