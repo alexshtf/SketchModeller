@@ -68,24 +68,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         private bool AreGoodCandidates(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
         {
             bool areAlmostColinear = AreAlmostColinear(firstNewCurve, secondNewCurve, existingCurve);
-            bool areCloseEnough = AreCloseEnough(firstNewCurve, secondNewCurve, existingCurve);
-            //bool areAlmostParallel = AreAlmostParallel(firstNewCurve, secondNewCurve, existingCurve);
-
-            return areAlmostColinear && areCloseEnough; // && areAlmostParallel;
+            return areAlmostColinear;
         }
-
-        /*
-        private bool AreAlmostParallel(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
-        {
-            var firstCrossLength = Vector3D.CrossProduct(firstNewCurve.NormalResult, secondNewCurve.NormalResult).Length;
-            var secondCrossLength = Vector3D.CrossProduct(firstNewCurve.NormalResult, existingCurve.NormalResult).Length;
-            var thirdCrossLength = Vector3D.CrossProduct(secondNewCurve.NormalResult, existingCurve.NormalResult).Length;
-
-            var maxCross = Math.Max(firstCrossLength, Math.Max(secondCrossLength, thirdCrossLength));
-            var angle = Math.Asin(maxCross);
-
-            return Math.Abs(angle) <= parallelismThreshold;
-        }*/
 
         private bool AreCloseEnough(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
         {
