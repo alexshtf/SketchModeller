@@ -9,11 +9,29 @@ using System.Windows;
 using Utils;
 
 using Enumerable = System.Linq.Enumerable;
+using System.IO;
 
 namespace SketchModeller.Utilities.Debugging
 {
     public static class ArrayImage
     {
+        public static void SaveScaledGray(double[,] data, string fileName)
+        {
+            var image = ScaledGray(data);
+            SavePNG(image, fileName);
+        }
+
+        public static void SavePNG(Image image, string fileName)
+        {
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image.Source as BitmapSource));
+
+            using (var stream = File.Create(fileName))
+            {
+                encoder.Save(stream);
+            }
+        }
+
         public static Image ScaledGray(double[,] data)
         {
             var height = data.GetLength(1);
