@@ -35,7 +35,8 @@ namespace SketchModeller.Modelling.Views
         private static readonly Cursor ADD_CURSOR;
         private static readonly Cursor REMOVE_CURSOR;
         private static bool AddedOnce;
-        
+        private static bool DragStarted;
+        private static Point prevpos2d;
         static SketchView()
         {
             AddedOnce = false;
@@ -258,13 +259,19 @@ namespace SketchModeller.Modelling.Views
                 logger.Log("Invalid event sender", Category.Exception, Priority.High);
             var dataObject = new DataObject(DataFormats.Serializable, primitiveKind);
             DragDrop.DoDragDrop((DependencyObject)sender, dataObject, DragDropEffects.Copy);
+            DragStarted = true;
         }
 
         private void vpRoot_DragOver(object sender, DragEventArgs e)
         {
             var mousePos2d = e.GetPosition(viewport3d);
             var pos3d = GetPosition3D(mousePos2d);
-            
+            if (DragStarted)
+            {
+                prevpos2d = pos3d.Pos2D;
+                DragStarted = false;
+            }
+
             if (pos3d.Ray3D != null)
             {
                 var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
@@ -288,9 +295,11 @@ namespace SketchModeller.Modelling.Views
                 }
                 else
                 {
-                    currentDragStrategy.OnMouseMove(pos3d);
+                    if (prevpos2d != pos3d.Pos2D)
+                        currentDragStrategy.OnMouseMove(pos3d);
                 }
             }
+            prevpos2d = pos3d.Pos2D;
         }
 
         private void vpRoot_Drop(object sender, DragEventArgs e)
