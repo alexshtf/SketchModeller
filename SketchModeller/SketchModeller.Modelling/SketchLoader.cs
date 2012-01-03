@@ -13,6 +13,7 @@ using SketchModeller.Infrastructure;
 using System.IO;
 using System.Xml.Serialization;
 using System.Reactive.Linq;
+using SketchModeller.Utilities.Debugging;
 
 namespace SketchModeller.Modelling
 {
@@ -72,6 +73,24 @@ namespace SketchModeller.Modelling
                 item.ColorCodingIndex = PointsSequence.INVALID_COLOR_CODING;
 
             sessionData.DistanceTransforms = sketchData.DistanceTransforms.ToArray();
+
+            //=====================================================================================
+            // the following code saves the distance transform to images. Uncomment for debugging
+            // and illustration purposes. Please edit the path before running.
+            //=====================================================================================
+            //for (int i = 0; i < sessionData.DistanceTransforms.Length; ++i)
+            //{
+            //    var dt = sessionData.DistanceTransforms[i];
+            //    var w = dt.GetLength(0);
+            //    var h = dt.GetLength(1);
+            //    var doubleDt = new double[h, w];
+            //    for(int x = 0; x < w; ++x)
+            //        for(int y = 0; y < h; ++y)
+            //            doubleDt[y, x] = dt[x, y];
+
+            //    ArrayImage.SaveScaledGray(doubleDt, "C:\\Users\\Alex\\Desktop\\dts\\dt" + i + ".png");
+            //}
+            //=====================================================================================
             
             uiState.SketchPlane = uiState.SketchPlanes[0];
             while (uiState.SketchPlanes.Count > 1)

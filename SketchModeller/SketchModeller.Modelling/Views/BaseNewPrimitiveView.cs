@@ -25,8 +25,8 @@ namespace SketchModeller.Modelling.Views
         private readonly NewPrimitiveViewModel viewModel;
         private readonly ILoggerFacade logger;
 
-        public static readonly Brush UNSELECTED_BRUSH = Brushes.White;
-        public static readonly Brush SELECTED_BRUSH = Brushes.LightBlue;
+        public static readonly Brush UNSELECTED_BRUSH = new SolidColorBrush { Color = Colors.White, Opacity = 0.5 };
+        public static readonly Brush SELECTED_BRUSH = new SolidColorBrush { Color = Colors.LightBlue, Opacity = 0.5 };
 
         protected readonly TranslateTransform3D translation;
         protected readonly ScaleTransform3D scale;
@@ -62,7 +62,7 @@ namespace SketchModeller.Modelling.Views
 
         protected static Material GetDefaultBackMaterial()
         {
-            var backMaterial = new DiffuseMaterial { Brush = Brushes.Red };
+            var backMaterial = new DiffuseMaterial { Brush = new SolidColorBrush { Color = Colors.Red, Opacity = 0.5 } };
             backMaterial.Freeze();
             return backMaterial;
         }
