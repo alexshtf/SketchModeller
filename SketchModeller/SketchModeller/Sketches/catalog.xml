@@ -30,4 +30,7 @@
   <sketch name="topless_jug"
           file="topless_jug.svg"
           modelFile="topless_jug.model" />
+  <sketch name="stacked_cylinders"
+          file="stacked_cylinders.svg"
+          modelFile="stacked_cylinders.model" />
 </catalog>
