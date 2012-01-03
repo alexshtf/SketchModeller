@@ -30,7 +30,7 @@ namespace SketchModeller.Infrastructure.Data
                 .Where(c => c != null)
                 .ToArray();
             int N = ActiveCurves.Length;
-            Debug.WriteLine("Number of Active Curves="+N);
+            //Debug.WriteLine("Number of Active Curves="+N);
             Point[][] EndPoints = new Point[N][];
             for (int count = 0; count < N; count++)
                 EndPoints[count] = new Point[2];
@@ -69,11 +69,11 @@ namespace SketchModeller.Infrastructure.Data
                     idx = counter;
                 }
             }
-            Debug.WriteLine("Curves in Component = " + Max);
-            /*foreach (int c in ConnectedComponents[idx]) bitRaised[c] = true;
+            //Debug.WriteLine("Curves in Component = " + Max);
+            foreach (int c in ConnectedComponents[idx]) bitRaised[c] = true;
             for (int counter = 0; counter < N; counter++)
                 if (!bitRaised[counter])
-                    ActiveCurves[counter].AssignedTo = null;*/
+                    ActiveCurves[counter].AssignedTo = null;
         }
 
         public static bool PointCompare(Point[] P1, Point[] P2)
