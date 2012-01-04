@@ -19,7 +19,7 @@
         </LinearGradientBrush>
     </UserControl.Resources>
     
-    <Grid x:Name="root" AllowDrop="True" Drop="vpRoot_Drop">
+    <Grid x:Name="root">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"  />
             <RowDefinition />
@@ -33,8 +33,7 @@
                 MouseLeftButtonUp="vpRoot_MouseLeftButtonUp"
                 MouseRightButtonDown="vpRoot_MouseRightButtonDown"
                 MouseRightButtonUp="vpRoot_MouseRightButtonUp"
-                MouseMove="vpRoot_MouseMove"
-                DragOver="vpRoot_DragOver">
+                MouseMove="vpRoot_MouseMove">
             <Viewport3D x:Name="viewport3d" IsHitTestVisible="False">
                 <Viewport3D.Camera>
                     <MatrixCamera x:Name="camera"
@@ -109,31 +108,32 @@
             <GroupBox Header="Basic primitives">
                 <UniformGrid VerticalAlignment="Top">
                     <UniformGrid.Resources>
-                        <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
-                            <EventSetter Event="DragStarted" Handler="OnThumbDragStarted" />
+                        <Style TargetType="ContentControl" BasedOn="{StaticResource {x:Type ContentControl}}">
+                            <EventSetter Event="MouseLeftButtonDown" Handler="primitivesPalette_MouseLeftButtonDown" />
+                            <EventSetter Event="MouseMove" Handler="primitivesPalette_MouseMove" />
+                            <EventSetter Event="MouseLeftButtonUp" Handler="primitivesPalette_MouseLeftButtonUp" />
                             <Setter Property="Margin" Value="0,5,0,0" />
                             <Setter Property="Width" Value="50" />
                             <Setter Property="Height" Value="20" />
                             <Setter Property="Template">
                                 <Setter.Value>
-                                    <ControlTemplate TargetType="Thumb">
+                                    <ControlTemplate TargetType="ContentControl">
                                         <Border Background="{StaticResource PrimitiveGradientBrush}"
                                                 BorderBrush="Black"
                                                 BorderThickness="1">
-                                            <TextBlock Text="{TemplateBinding Tag}" 
-                                                       VerticalAlignment="Center" 
-                                                       HorizontalAlignment="Center" />
+                                            <ContentPresenter VerticalAlignment="Center" 
+                                                              HorizontalAlignment="Center" />
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
                         </Style>
                     </UniformGrid.Resources>
-                    <Thumb x:Name="cylinderThumb" Tag="Cylinder" />
-                    <Thumb x:Name="coneThumb" Tag="Cone" />
-                    <Thumb x:Name="sphereThumb" Tag="Sphere"/>
-                    <Thumb x:Name="sgcThumb" Tag="SGC" />
-                    <Thumb x:Name="bgcThumb" Tag="BGC" />
+                    <ContentControl x:Name="cylinderThumb" Content="Cylinder" />
+                    <ContentControl x:Name="coneThumb" Content="Cone" />
+                    <ContentControl x:Name="sphereThumb" Content="Sphere"/>
+                    <ContentControl x:Name="sgcThumb" Content="SGC" />
+                    <ContentControl x:Name="bgcThumb" Content="BGC" />
                 </UniformGrid>
             </GroupBox>
             <GroupBox Header="Primive operations">
