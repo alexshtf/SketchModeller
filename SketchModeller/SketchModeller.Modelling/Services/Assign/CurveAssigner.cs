@@ -23,6 +23,9 @@ namespace SketchModeller.Modelling.Services.Assign
         {
             ComputeAssignments(primitive.FeatureCurves, CurveCategories.Feature);
             ComputeAssignments(primitive.SilhouetteCurves, CurveCategories.Silhouette);
+            //from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
+            for (int idx = 0; idx < sessionData.SketchObjects.Length; idx++)
+                sessionData.SketchObjects[idx].isdeselected = false;
         }
 
         private void ComputeAssignments(PrimitiveCurve[] curves, CurveCategories category)
@@ -36,6 +39,7 @@ namespace SketchModeller.Modelling.Services.Assign
             var distanceTransforms =
                 (from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
                  where sessionData.SketchObjects[idx].CurveCategory == category
+                 where sessionData.SketchObjects[idx].isdeselected == false
                  select new { Index = idx, DistanceTransform = sessionData.DistanceTransforms[idx] }
                 ).ToArray();
 

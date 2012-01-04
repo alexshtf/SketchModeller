@@ -6,6 +6,7 @@ using SketchModeller.Infrastructure.Data;
 using Utils;
 using System.Windows;
 using System.Diagnostics;
+using System.Collections;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -29,18 +30,28 @@ namespace SketchModeller.Infrastructure.Data
                 .Select(c => c)
                 .Where(c => c != null)
                 .ToArray();
-            int N = ActiveCurves.Length;
+            int N = 4;
             //Debug.WriteLine("Number of Active Curves="+N);
             Point[][] EndPoints = new Point[N][];
+            //Debug.WriteLine("Feature Curves Number : " + primitive.FeatureCurves.Length);
+            //Debug.WriteLine("Silhouette Curves Number : " + primitive.SilhouetteCurves.Length);
             for (int count = 0; count < N; count++)
                 EndPoints[count] = new Point[2];
             bool[] bitRaised = new bool[N];
             int i = 0;
-            foreach (PrimitiveCurve curve in ActiveCurves)
-            {
-                EndPoints[i][0] = curve.AssignedTo.Points[0];
-                EndPoints[i++][1] = curve.AssignedTo.Points.Last();
-            }
+            EndPoints[0][0] = primitive.SilhouetteCurves[0].AssignedTo.Points[0];
+            EndPoints[0][1] = primitive.SilhouetteCurves[0].AssignedTo.Points.Last();
+            EndPoints[1][0] = primitive.SilhouetteCurves[1].AssignedTo.Points[0];
+            EndPoints[1][1] = primitive.SilhouetteCurves[1].AssignedTo.Points.Last();
+            
+            var FeatureCurve1 = primitive.FeatureCurves[0].AssignedTo;
+            var FeatureCurve2 = primitive.FeatureCurves[1].AssignedTo;
+            
+            EndPoints[2][0] = FindClosestPoint(FeatureCurve1, EndPoints[0]);
+            EndPoints[2][1] = FindClosestPoint(FeatureCurve1, EndPoints[1]);
+            EndPoints[3][0] = FindClosestPoint(FeatureCurve2, EndPoints[0]);
+            EndPoints[3][1] = FindClosestPoint(FeatureCurve2, EndPoints[1]);
+
             List<int>[] ConnectedComponents = new List<int>[N];
             for (int count = 0; count < N; count++) ConnectedComponents[count] = new List<int>();
             for (int count = 0; count < N; count++ ) ConnectedComponents[count].Add(count);
@@ -69,11 +80,42 @@ namespace SketchModeller.Infrastructure.Data
                     idx = counter;
                 }
             }
+
+
             //Debug.WriteLine("Curves in Component = " + Max);
             foreach (int c in ConnectedComponents[idx]) bitRaised[c] = true;
             for (int counter = 0; counter < N; counter++)
                 if (!bitRaised[counter])
-                    ActiveCurves[counter].AssignedTo = null;
+                {
+                    if (counter < 2)
+                    {
+                        primitive.SilhouetteCurves[counter].AssignedTo.isdeselected = true;
+                        primitive.SilhouetteCurves[counter].AssignedTo = null;
+                    }
+                    else
+                    {
+                        primitive.FeatureCurves[counter - 2].AssignedTo.isdeselected = true;
+                        primitive.FeatureCurves[counter-2].AssignedTo = null;
+                    }
+                }
+        }
+
+        public static Point FindClosestPoint(PointsSequence FeatureCurve, Point[] EndPoints)
+        {
+            double Min = 10e10;
+            Point Pmin = new Point();
+            foreach (Point pnt in FeatureCurve.Points)
+            {
+                Vector v1 = new Vector(pnt.X - EndPoints[0].X, pnt.Y - EndPoints[0].Y);
+                Vector v2 = new Vector(pnt.X - EndPoints[1].X, pnt.Y - EndPoints[1].Y);
+                double vmin = v1.Length < v2.Length ? v1.Length : v2.Length;
+                if (Min > vmin)
+                {
+                    Pmin = pnt;
+                    Min = vmin;
+                }
+            }
+            return Pmin;
         }
 
         public static bool PointCompare(Point[] P1, Point[] P2)
@@ -88,7 +130,7 @@ namespace SketchModeller.Infrastructure.Data
             distances[2] = v3.Length;
             distances[3] = v4.Length;
             double min = distances.Min();
-            if (min < 0.01) return true;
+            if (min < 0.05) return true;
             else return false;
         }
 
