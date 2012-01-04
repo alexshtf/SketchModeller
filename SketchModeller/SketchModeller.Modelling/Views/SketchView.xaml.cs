@@ -180,11 +180,13 @@ namespace SketchModeller.Modelling.Views
 
         private void vpRoot_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (/*currentDragStrategy == newPrimitiveDragStrategy ||*/ currentDragStrategy == snappedDragStrategy)
+            if (currentDragStrategy != null)
             {
+                vpRoot.ReleaseMouseCapture();
+                
                 currentDragStrategy.OnMouseUp(GetPosition3D(e));
                 currentDragStrategy = null;
-                vpRoot.ReleaseMouseCapture();
+
                 viewModel.SnapPrimitive.Execute(null);
             }
         }
@@ -240,81 +242,86 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        #region Primitive drag & drop handling
+        #region primitives palette handling
 
-        private void OnThumbDragStarted(object sender, DragStartedEventArgs e)
+        private PrimitiveKinds palettePrimitiveKind;
+        private IInputElement paletteElement;
+
+        private void primitivesPalette_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            PrimitiveKinds primitiveKind = default(PrimitiveKinds);
+            paletteElement = sender as IInputElement;
+            logger.Log("Primitives palette left mouse down " + paletteElement, Category.Debug, Priority.None);
+
             if (sender == cylinderThumb)
-                primitiveKind = PrimitiveKinds.Cylinder;
+                palettePrimitiveKind = PrimitiveKinds.Cylinder;
             else if (sender == coneThumb)
-                primitiveKind = PrimitiveKinds.Cone;
+                palettePrimitiveKind = PrimitiveKinds.Cone;
             else if (sender == sphereThumb)
-                primitiveKind = PrimitiveKinds.Sphere;
+                palettePrimitiveKind = PrimitiveKinds.Sphere;
             else if (sender == sgcThumb)
-                primitiveKind = PrimitiveKinds.SGC;
+                palettePrimitiveKind = PrimitiveKinds.SGC;
             else if (sender == bgcThumb)
-                primitiveKind = PrimitiveKinds.BGC;
+                palettePrimitiveKind = PrimitiveKinds.BGC;
             else
                 logger.Log("Invalid event sender", Category.Exception, Priority.High);
-            var dataObject = new DataObject(DataFormats.Serializable, primitiveKind);
-            DragDrop.DoDragDrop((DependencyObject)sender, dataObject, DragDropEffects.Copy);
-            DragStarted = true;
+
+            bool captureSucceeded = paletteElement.CaptureMouse();
+            if (!captureSucceeded)
+                logger.Log("Unable to capture mouse by a palette element " + sender, Category.Exception, Priority.None);
         }
 
-        private void vpRoot_DragOver(object sender, DragEventArgs e)
+        private void primitivesPalette_MouseMove(object sender, MouseEventArgs e)
         {
-            var mousePos2d = e.GetPosition(viewport3d);
-            var pos3d = GetPosition3D(mousePos2d);
-            if (DragStarted)
+            if (paletteElement == null) // this means that the user has not started dragging an element from the palette
+                return;
+
+            var isMouseOverViewportRoot = IsMouseOverViewportRoot(e);
+
+            // we will add a primitive and transfer the "responsibility" to the primitive drag strategy
+            // so that from now on it handles mouse events
+            if (isMouseOverViewportRoot) 
             {
-                prevpos2d = pos3d.Pos2D;
-                DragStarted = false;
+                var pos3d = GetPosition3D(e);
+                if (pos3d.Ray3D == null)
+                    return;
+
+                // we add a new primitive and pick its visual so that we can later give it to the drag strategy
+                viewModel.AddNewPrimitive(palettePrimitiveKind, pos3d.Ray3D.Value);
+                var primitiveVisual = PrimitivesPickService.PickPrimitiveVisual(viewport3d, pos3d.Pos2D);
+                if (primitiveVisual == null)
+                    return;
+
+                var primitiveData = PrimitivesPickService.GetPrimitiveData(primitiveVisual);
+                viewModel.SelectPrimitive(primitiveData);
+
+                // we make the current mouse drag strategy to be the strategy for "new primitive" objects. This strategy
+                // will be used from now on until the primitive is snapped.
+                currentDragStrategy = newPrimitiveDragStrategy;
+                currentDragStrategy.OnMouseDown(GetPosition3D(e), Tuple.Create(primitiveVisual, primitiveData));
+
+                // we transfer the responsibility of capturing subsequent mouse events to the vpRoot
+                paletteElement.ReleaseMouseCapture();
+                vpRoot.CaptureMouse();
+                paletteElement = null; 
             }
-
-            if (pos3d.Ray3D != null)
-            {
-                var primitiveKind = (PrimitiveKinds)e.Data.GetData(DataFormats.Serializable, true);
-                if (!AddedOnce)
-                {
-                    viewModel.AddNewPrimitive(primitiveKind, pos3d.Ray3D.Value);
-                    var primitiveVisual = PrimitivesPickService.PickPrimitiveVisual(viewport3d, pos3d.Pos2D);
-                    if (primitiveVisual != null)
-                    {
-                        var primitiveData = PrimitivesPickService.GetPrimitiveData(primitiveVisual);
-                        viewModel.SelectPrimitive(primitiveData);
-
-                        primitiveData.MatchClass<NewPrimitive>(_ => currentDragStrategy = newPrimitiveDragStrategy);
-                        primitiveData.MatchClass<SnappedPrimitive>(_ => currentDragStrategy = snappedDragStrategy);
-                        Debug.Assert(currentDragStrategy != null);
-
-                        currentDragStrategy.OnMouseDown(GetPosition3D(e.GetPosition(viewport3d)), Tuple.Create(primitiveVisual, primitiveData));
-                        vpRoot.CaptureMouse();
-                    }
-                    AddedOnce = true;
-                }
-                else
-                {
-                    if (prevpos2d != pos3d.Pos2D)
-                        currentDragStrategy.OnMouseMove(pos3d);
-                }
-            }
-            prevpos2d = pos3d.Pos2D;
         }
 
-        private void vpRoot_Drop(object sender, DragEventArgs e)
+        private void primitivesPalette_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var mousePos2d = e.GetPosition(viewport3d);
-            var pos3d = GetPosition3D(mousePos2d);
-     
-            if (pos3d.Ray3D != null)
-            {
-                AddedOnce = false;
-                currentDragStrategy.OnMouseUp(pos3d);
-                currentDragStrategy = null;
-                vpRoot.ReleaseMouseCapture();
-                viewModel.SnapPrimitive.Execute(null);
-            }
+            if (paletteElement == null)
+                return;
+
+            logger.Log("Primitives palette left mouse up " + paletteElement, Category.Debug, Priority.None);
+            paletteElement.ReleaseMouseCapture();
+            paletteElement = null;
+        }
+
+        private bool IsMouseOverViewportRoot(MouseEventArgs e)
+        {
+            var position = e.GetPosition(vpRoot);
+            var rect = new Rect(0, 0, vpRoot.ActualWidth, vpRoot.ActualHeight);
+            var isInVpRoot = rect.Contains(position);
+            return isInVpRoot;
         }
 
         #endregion

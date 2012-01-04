@@ -12,11 +12,17 @@ using Controls;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using SketchModeller.Infrastructure.Shared;
+using Microsoft.Practices.Prism.Logging;
 
 namespace SketchModeller
 {
     class SketchModellerBootstrapper : UnityBootstrapper
     {
+        protected override ILoggerFacade CreateLogger()
+        {
+            return new TraceLogger();
+        }
+
         protected override void ConfigureContainer()
         {
             base.ConfigureContainer();
