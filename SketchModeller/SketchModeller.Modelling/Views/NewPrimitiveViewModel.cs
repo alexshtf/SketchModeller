@@ -124,7 +124,7 @@ namespace SketchModeller.Modelling.Views
                 Model.ClearColorCodingFromSketch();
 
             curveAssigner.ComputeAssignments(Model);
-            Model.GetLargestComponet();
+            //Model.GetLargestComponet();
 
             if (Model.IsSelected)
                 Model.SetColorCodingToSketch();

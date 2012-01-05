@@ -169,6 +169,16 @@
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="NewPrimitiveExtensions.cs" />
     <Compile Include="NumArrayUtils.cs" />
+    <Compile Include="Optimization\AugmentedLagrangianIterations.cs" />
+    <Compile Include="Optimization\AugmentedLagrangianSolver.cs" />
+    <Compile Include="Optimization\ConstraintsNormWithGradientNormConvergenceTest.cs" />
+    <Compile Include="Optimization\IAugmentedLagrangianIterations.cs" />
+    <Compile Include="Optimization\IConvergenceTest.cs" />
+    <Compile Include="Optimization\IFirstOrderUnconstrainedOptimizer.cs" />
+    <Compile Include="Optimization\ILagrangianCompiler.cs" />
+    <Compile Include="Optimization\AugmentedLagrangianIterationResult.cs" />
+    <Compile Include="Optimization\LagrangianCompiler.cs" />
+    <Compile Include="Optimization\LBFGSOptimizer.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
     <Compile Include="PointsToPolylineConverter.cs" />
