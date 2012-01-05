@@ -33,6 +33,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly IAnnotationInference annotationInference;
         private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
         private readonly IAnnotationConstraintsExtractor annotationConstraintsExtractor;
+        private readonly IConstrainedOptimizer constrainedOptimizer;
 
         [InjectionConstructor]
         public Snapper(
@@ -41,7 +42,8 @@ namespace SketchModeller.Modelling.Services.Snap
             ILoggerFacade logger,
             IUnityContainer container,
             IEventAggregator eventAggregator,
-            IAnnotationInference annotationInference)
+            IAnnotationInference annotationInference,
+            IConstrainedOptimizer constrainedOptimizer)
         {
             this.sessionData = sessionData;
             this.uiState = uiState;
@@ -49,6 +51,7 @@ namespace SketchModeller.Modelling.Services.Snap
             this.container = container;
             this.eventAggregator = eventAggregator;
             this.annotationInference = annotationInference;
+            this.constrainedOptimizer = constrainedOptimizer;
 
             this.primitivesReaderWriterFactory = new PrimitivesReaderWriterFactory();
             this.annotationConstraintsExtractor = new AnnotationConstraintsExtractor();
@@ -65,7 +68,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public ITemporarySnap TemporarySnap(NewPrimitive newPrimitive)
         {
-            return new TemporarySnap(sessionData, snappersManager, primitivesReaderWriterFactory, eventAggregator, newPrimitive);
+            return new TemporarySnap(sessionData, snappersManager, primitivesReaderWriterFactory, eventAggregator, newPrimitive, constrainedOptimizer);
         }
 
         public void Snap()
@@ -136,8 +139,8 @@ namespace SketchModeller.Modelling.Services.Snap
             var vals = primitivesWriter.GetValues();
 
             var finalObjective = TermUtils.SafeSum(objectives);
-            var optimum = ALBFGSOptimizer.Minimize(
-                finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
+            var optimum = constrainedOptimizer.Minimize(
+                finalObjective, constraints, vars, vals);
 
             // update primitives from the optimal values
             primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);

@@ -26,9 +26,10 @@ namespace SketchModeller.Modelling.Views
 
         public NewSphereViewModel(
             UiState uiState = null, 
-            ICurveAssigner curveAssigner = null, 
-            IEventAggregator eventAggregator = null)
-            : base(uiState, curveAssigner, eventAggregator)
+            ICurveAssigner curveAssigner = null,
+            IEventAggregator eventAggregator = null,
+            IConstrainedOptimizer optimizer = null)
+            : base(uiState, curveAssigner, eventAggregator, optimizer)
         {
             radius = 0.1;
             model = new NewSphere();

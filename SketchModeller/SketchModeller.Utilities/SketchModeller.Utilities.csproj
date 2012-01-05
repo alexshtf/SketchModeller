@@ -138,8 +138,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ALBFGSOptimizer.cs" />
-    <Compile Include="ALOptimizer.cs" />
     <Compile Include="AverageSmooth.cs" />
     <Compile Include="BendedCylinderComponentExtensions.cs" />
     <Compile Include="CircleFitter.cs" />

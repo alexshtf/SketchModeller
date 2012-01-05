@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoDiff;
+using System.Diagnostics;
 
 namespace SketchModeller.Utilities.Optimization
 {
@@ -11,15 +12,21 @@ namespace SketchModeller.Utilities.Optimization
         private readonly IFirstOrderUnconstrainedOptimizer unconstrainedOptimizer;
         private readonly ILagrangianCompiler lagrangianCompiler;
         private readonly double startConstraintsPenalty;
+        private readonly double constraintsPenaltyMax;
+        private readonly double maxConstraintsNormLowerBound;
 
         public AugmentedLagrangianIterations(
             IFirstOrderUnconstrainedOptimizer unconstrainedOptimizer, 
             ILagrangianCompiler lagrangianCompiler,
-            double startConstraintsPenalty)
+            double startConstraintsPenalty,
+            double constraintsPenaltyMax,
+            double maxConstraintsNormLowerBound)
         {
             this.unconstrainedOptimizer = unconstrainedOptimizer;
             this.lagrangianCompiler = lagrangianCompiler;
             this.startConstraintsPenalty = startConstraintsPenalty;
+            this.constraintsPenaltyMax = constraintsPenaltyMax;
+            this.maxConstraintsNormLowerBound = maxConstraintsNormLowerBound;
         }
 
         public IEnumerable<AugmentedLagrangianIterationResult> Start(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
@@ -60,12 +67,17 @@ namespace SketchModeller.Utilities.Optimization
                     // lambda <-- lambda + c / mu
                     for (int i = 0; i < multipliers.Length; ++i)
                         multipliers[i] = multipliers[i] + constraintValues[i] / constraintsPenalty;
+                    
                     maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, 0.9);
+                    maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
                 }
                 else
                 {
-                    constraintsPenalty = 100 * constraintsPenalty; // update current value of "mu"
+                    constraintsPenalty = 100 * constraintsPenalty; 
+                    constraintsPenalty = Math.Min(constraintsPenalty, constraintsPenaltyMax);
+                    
                     maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);
+                    maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
                 }
             }
         }

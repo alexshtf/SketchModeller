@@ -41,8 +41,9 @@ namespace SketchModeller.Modelling.Views
         public NewBGCViewModel(
             UiState uiState = null,
             ICurveAssigner curveAssigner = null,
-            IEventAggregator eventAggregator = null)
-            : base(uiState, curveAssigner, eventAggregator)
+            IEventAggregator eventAggregator = null,
+            IConstrainedOptimizer optimizer = null)
+            : base(uiState, curveAssigner, eventAggregator, optimizer)
         {
             model = new NewBendedGenCylinder();
             components = EMPTY_COMPONENTS;

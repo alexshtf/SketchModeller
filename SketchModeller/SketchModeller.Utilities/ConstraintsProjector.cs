@@ -6,15 +6,18 @@ using SketchModeller.Infrastructure.Data.EditConstraints;
 using System.Collections.ObjectModel;
 using AutoDiff;
 using System.Diagnostics.Contracts;
+using SketchModeller.Infrastructure.Services;
 
 namespace SketchModeller.Utilities
 {
     public class ConstraintsProjector
     {
+        private readonly IConstrainedOptimizer optimizer;
         private readonly ReadOnlyCollection<PrimitiveEditConstraint> constraints;
 
-        public ConstraintsProjector(IEnumerable<PrimitiveEditConstraint> constraints)
+        public ConstraintsProjector(IConstrainedOptimizer optimizer, IEnumerable<PrimitiveEditConstraint> constraints)
         {
+            this.optimizer = optimizer;
             this.constraints = Array.AsReadOnly(constraints.ToArray());
         }
 
@@ -44,14 +47,14 @@ namespace SketchModeller.Utilities
             }
         }
 
-        private static double[] SolveProgram(OptimizationProblem optimizationProgram)
+        private double[] SolveProgram(OptimizationProblem optimizationProgram)
         {
             // construct initial value for optimization to be the current value of the parameters
             var variables = optimizationProgram.Variables;
             var initial = GetCurrentValues(variables);
 
             // run the optimizer
-            var minimizer = ALBFGSOptimizer.Minimize(
+            var minimizer = optimizer.Minimize(
                 optimizationProgram.Objective, 
                 optimizationProgram.Constraints, 
                 optimizationProgram.Variables, 

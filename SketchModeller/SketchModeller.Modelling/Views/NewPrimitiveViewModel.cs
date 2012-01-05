@@ -26,13 +26,15 @@ namespace SketchModeller.Modelling.Views
     abstract public class NewPrimitiveViewModel : NotificationObject, IWeakEventListener, IEditable
     {
         private NewPrimitive model;
+        private readonly IConstrainedOptimizer optimizer;
         protected UiState uiState;
         protected IEventAggregator eventAggregator;
         protected ICurveAssigner curveAssigner;
 
-        public NewPrimitiveViewModel(UiState uiState, ICurveAssigner curveAssigner, IEventAggregator eventAggregator)
+        public NewPrimitiveViewModel(UiState uiState, ICurveAssigner curveAssigner, IEventAggregator eventAggregator, IConstrainedOptimizer optimizer)
         {
             ContextMenu = new ObservableCollection<MenuCommandData>();
+            this.optimizer = optimizer;
             this.uiState = uiState;
             this.curveAssigner = curveAssigner;
             this.eventAggregator = eventAggregator;
@@ -98,7 +100,7 @@ namespace SketchModeller.Modelling.Views
         {
             if (model.EditConstraints != null)
             {
-                var projector = new ConstraintsProjector(model.EditConstraints);
+                var projector = new ConstraintsProjector(optimizer, model.EditConstraints);
                 projector.Project();
             }
         }

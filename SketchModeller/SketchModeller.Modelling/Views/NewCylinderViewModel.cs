@@ -38,8 +38,9 @@ namespace SketchModeller.Modelling.Views
         private bool isUpdating;
 
         [InjectionConstructor]
-        public NewCylinderViewModel(UiState uiState = null, ICurveAssigner curveAssigner = null, IEventAggregator eventAggregator = null)
-            : base(uiState, curveAssigner, eventAggregator)
+        public NewCylinderViewModel(UiState uiState = null, ICurveAssigner curveAssigner = null, IEventAggregator eventAggregator = null,
+            IConstrainedOptimizer optimizer = null)
+            : base(uiState, curveAssigner, eventAggregator, optimizer)
         {
             // set default data
             diameter = 0.2;
