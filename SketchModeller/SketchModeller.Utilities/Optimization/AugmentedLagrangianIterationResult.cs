@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SketchModeller.Utilities.Optimization
 {
-    class AugmentedLagrangianIterationResult
+    public class AugmentedLagrangianIterationResult
     {
         public double[] Values { get; set; }
         public double ConstraintsNorm { get; set; }

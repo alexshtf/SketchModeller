@@ -9,7 +9,7 @@ namespace SketchModeller.Utilities.Optimization
     /// <summary>
     /// Represents the compiled form of the functions needed for the augmented lagrangian optimizer
     /// </summary>
-    interface ILagrangianCompilerResult
+    public interface ILagrangianCompilerResult
     {
         /// <summary>
         /// Evaluates the value and the gradient of the augmented lagrangian function.
@@ -36,7 +36,7 @@ namespace SketchModeller.Utilities.Optimization
     /// <summary>
     /// Compiles an augmented lagrangian function into an efficient implementation
     /// </summary>
-    interface ILagrangianCompiler
+    public interface ILagrangianCompiler
     {
         /// <summary>
         /// Performs compilation of an Augmented-Lagrangian function into an efficient implementation

@@ -6,7 +6,7 @@ using AutoDiff;
 
 namespace SketchModeller.Utilities.Optimization
 {
-    class AugmentedLagrangianIterations : IAugmentedLagrangianIterations
+    public class AugmentedLagrangianIterations : IAugmentedLagrangianIterations
     {
         private readonly IFirstOrderUnconstrainedOptimizer unconstrainedOptimizer;
         private readonly ILagrangianCompiler lagrangianCompiler;

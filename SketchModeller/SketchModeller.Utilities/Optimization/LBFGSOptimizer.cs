@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SketchModeller.Utilities.Optimization
 {
-    class LBFGSOptimizer : IFirstOrderUnconstrainedOptimizer
+    public class LBFGSOptimizer : IFirstOrderUnconstrainedOptimizer
     {
         public double[] Solve(Func<double[], Tuple<double[], double>> objectiveWithGradient, double[] initialValue)
         {

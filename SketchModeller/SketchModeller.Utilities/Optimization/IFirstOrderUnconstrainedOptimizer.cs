@@ -8,7 +8,7 @@ namespace SketchModeller.Utilities.Optimization
     /// <summary>
     /// An interface to a first-order unconstrained optimizer (requires only the gradient)
     /// </summary>
-    interface IFirstOrderUnconstrainedOptimizer
+    public interface IFirstOrderUnconstrainedOptimizer
     {
         /// <summary>
         /// Solves an optimization problem given the objective function and an initial value.

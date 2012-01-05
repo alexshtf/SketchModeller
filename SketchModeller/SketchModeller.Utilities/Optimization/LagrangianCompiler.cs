@@ -6,7 +6,7 @@ using AutoDiff;
 
 namespace SketchModeller.Utilities.Optimization
 {
-    class LagrangianCompiler : ILagrangianCompiler
+    public class LagrangianCompiler : ILagrangianCompiler
     {
         public ILagrangianCompilerResult Compile(Term objective, IEnumerable<Term> constraints, Variable[] variables)
         {
