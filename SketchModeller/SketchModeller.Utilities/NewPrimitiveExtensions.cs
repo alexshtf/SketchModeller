@@ -7,6 +7,7 @@ using Utils;
 using System.Windows;
 using System.Diagnostics;
 using System.Collections;
+using SketchModeller.Utilities;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -28,30 +29,65 @@ namespace SketchModeller.Infrastructure.Data
         {
             var ActiveCurves = primitive.AllCurves
                 .Select(c => c)
-                .Where(c => c != null)
+                .Where(c => c.AssignedTo != null)
                 .ToArray();
-            int N = 4;
+            int N = ActiveCurves.Length;
             //Debug.WriteLine("Number of Active Curves="+N);
             Point[][] EndPoints = new Point[N][];
             //Debug.WriteLine("Feature Curves Number : " + primitive.FeatureCurves.Length);
             //Debug.WriteLine("Silhouette Curves Number : " + primitive.SilhouetteCurves.Length);
+            bool[] ActiveFeatureCurve = { true, true };
             for (int count = 0; count < N; count++)
                 EndPoints[count] = new Point[2];
             bool[] bitRaised = new bool[N];
+            int SilhouettesCount = 0;
             int i = 0;
-            EndPoints[0][0] = primitive.SilhouetteCurves[0].AssignedTo.Points[0];
-            EndPoints[0][1] = primitive.SilhouetteCurves[0].AssignedTo.Points.Last();
-            EndPoints[1][0] = primitive.SilhouetteCurves[1].AssignedTo.Points[0];
-            EndPoints[1][1] = primitive.SilhouetteCurves[1].AssignedTo.Points.Last();
-            
-            var FeatureCurve1 = primitive.FeatureCurves[0].AssignedTo;
-            var FeatureCurve2 = primitive.FeatureCurves[1].AssignedTo;
-            
-            EndPoints[2][0] = FindClosestPoint(FeatureCurve1, EndPoints[0]);
-            EndPoints[2][1] = FindClosestPoint(FeatureCurve1, EndPoints[1]);
-            EndPoints[3][0] = FindClosestPoint(FeatureCurve2, EndPoints[0]);
-            EndPoints[3][1] = FindClosestPoint(FeatureCurve2, EndPoints[1]);
-
+            if (primitive.SilhouetteCurves.Length > 0)
+            {
+                EndPoints[i][0] = primitive.SilhouetteCurves[0].AssignedTo.Points[0];
+                EndPoints[i][1] = primitive.SilhouetteCurves[0].AssignedTo.Points.Last();
+                SilhouettesCount++;
+                i++;
+            }
+            if (primitive.SilhouetteCurves.Length > 1)
+            {
+                EndPoints[i][0] = primitive.SilhouetteCurves[1].AssignedTo.Points[0];
+                EndPoints[i][1] = primitive.SilhouetteCurves[1].AssignedTo.Points.Last();
+                SilhouettesCount++;
+                i++;
+            }
+            //PointsSequence FeatureCurve1 = new PointsSequence(); 
+            if (primitive.FeatureCurves.Length > 0)
+            {
+                var FeatureCurve1 = primitive.FeatureCurves[0].AssignedTo;
+                if (SilhouettesCount > 0) EndPoints[i][0] = FindClosestPoint(FeatureCurve1, EndPoints[0]);
+                if (SilhouettesCount > 1) EndPoints[i][1] = FindClosestPoint(FeatureCurve1, EndPoints[1]);
+                else if (SilhouettesCount > 0) EndPoints[i][1] = EndPoints[i][0];
+                if (SilhouettesCount > 0)
+                {
+                    var Ellipse = EllipseFitter.Fit(FeatureCurve1.Points);
+                    double maxperimeter = Ellipse.XRadius > Ellipse.YRadius ? 2 * Ellipse.XRadius : 2 * Ellipse.YRadius;
+                    Vector v = new Vector(EndPoints[i][0].X - EndPoints[i][1].X, EndPoints[i][0].Y - EndPoints[i][1].Y);
+                    if (Math.Min(maxperimeter,v.Length) / Math.Max(maxperimeter,v.Length) < 0.7) ActiveFeatureCurve[0] = false;
+                    i++;
+                }
+            }
+            if (primitive.FeatureCurves.Length > 1)
+            {
+                var FeatureCurve2 = primitive.FeatureCurves[1].AssignedTo;
+                if (SilhouettesCount > 0) EndPoints[i][0] = FindClosestPoint(FeatureCurve2, EndPoints[0]);
+                if (SilhouettesCount > 1) EndPoints[i][1] = FindClosestPoint(FeatureCurve2, EndPoints[1]);
+                else if (SilhouettesCount > 0) EndPoints[i][1] = EndPoints[i][0];
+                if (SilhouettesCount > 0)
+                {
+                    var Ellipse = EllipseFitter.Fit(FeatureCurve2.Points);
+                    double maxperimeter = Ellipse.XRadius > Ellipse.YRadius ? 2 * Ellipse.XRadius : 2 * Ellipse.YRadius;
+                    Vector v = new Vector(EndPoints[i][0].X - EndPoints[i][1].X, EndPoints[i][0].Y - EndPoints[i][1].Y);
+                    if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.7) ActiveFeatureCurve[1] = false;
+                    i++;
+                }
+            }
+  
             List<int>[] ConnectedComponents = new List<int>[N];
             for (int count = 0; count < N; count++) ConnectedComponents[count] = new List<int>();
             for (int count = 0; count < N; count++ ) ConnectedComponents[count].Add(count);
@@ -87,6 +123,8 @@ namespace SketchModeller.Infrastructure.Data
             for (int counter = 0; counter < N; counter++)
                 if (!bitRaised[counter])
                 {
+                    /*ActiveCurves[counter].AssignedTo.isdeselected = true;
+                    ActiveCurves[counter].AssignedTo = null;*/
                     if (counter < 2)
                     {
                         primitive.SilhouetteCurves[counter].AssignedTo.isdeselected = true;
@@ -96,6 +134,18 @@ namespace SketchModeller.Infrastructure.Data
                     {
                         primitive.FeatureCurves[counter - 2].AssignedTo.isdeselected = true;
                         primitive.FeatureCurves[counter-2].AssignedTo = null;
+                    }
+                }
+                else
+                {
+
+                    if (counter > 1)
+                    {
+                        if (!ActiveFeatureCurve[counter - 2])
+                        {
+                            primitive.FeatureCurves[counter - 2].AssignedTo.isdeselected = true;
+                            primitive.FeatureCurves[counter - 2].AssignedTo = null;
+                        }
                     }
                 }
         }

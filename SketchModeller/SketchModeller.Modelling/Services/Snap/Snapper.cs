@@ -137,7 +137,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var finalObjective = TermUtils.SafeSum(objectives);
             var optimum = ALBFGSOptimizer.Minimize(
-                finalObjective, constraints.ToArray(), vars, vals, mu: 10, tolerance: 1E-5);
+                finalObjective, constraints.ToArray(), vars, vals, mu: 100, tolerance: 1E-5);
 
             // update primitives from the optimal values
             primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);

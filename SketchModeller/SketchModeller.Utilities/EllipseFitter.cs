@@ -160,7 +160,7 @@ namespace SketchModeller.Utilities
 
             return new EllipseParams
             {
-                Center = new Point(t[0], -t[1]),
+                Center = new Point(t[0], t[1]),
                 XRadius = Math.Sqrt(-c_h / D[0]),
                 YRadius = Math.Sqrt(-c_h / D[1]),
                 Degrees = 180 * Math.Atan2(Q[0, 1], Q[0, 0]) / Math.PI,

@@ -16,9 +16,12 @@ namespace SketchModeller.Infrastructure.Data
         public NewPrimitive()
         {
             EditConstraints = new List<PrimitiveEditConstraint>();
+            CanSnap = false;
         }
 
         public List<PrimitiveEditConstraint> EditConstraints { get; private set; }
+
+        public bool CanSnap { get; set; }
 
         private PrimitiveCurve[] featureCurves;
         public PrimitiveCurve[] FeatureCurves

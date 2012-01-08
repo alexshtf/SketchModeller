@@ -125,14 +125,43 @@ namespace SketchModeller.Modelling.Views
 
             curveAssigner.ComputeAssignments(Model);
             //do{
-                Model.GetLargestComponet();
-                curveAssigner.ComputeAssignments(Model);
-                Model.GetLargestComponet();
+            Model.GetLargestComponet();
+            curveAssigner.ComputeAssignments(Model);
+            Model.GetLargestComponet();
+            Model.CanSnap = false;
+            Model.CanSnap = CheckIfPrimitiveCanSnap();
             //}while(Model.AllCurves.Length == 4); 
-
-
+            
             if (Model.IsSelected)
                 Model.SetColorCodingToSketch();
+        }
+
+        public bool CheckIfPrimitiveCanSnap()
+        {
+            bool ModelCanSnap = false;
+            if (Model.GetType() == typeof(NewSphere)) {
+                if (Model.SilhouetteCurves.Length > 0)
+                    ModelCanSnap = true;
+            }
+            if (Model.GetType() == typeof(NewCylinder))
+            {
+                if (Model.SilhouetteCurves.Length > 1)
+                    if (Model.SilhouetteCurves[0].AssignedTo != null && Model.SilhouetteCurves[1].AssignedTo != null) 
+                        ModelCanSnap = true;
+            }
+            if (Model.GetType() == typeof(NewCone))
+            {
+                if (Model.SilhouetteCurves.Length > 1)
+                    if (Model.SilhouetteCurves[0].AssignedTo != null && Model.SilhouetteCurves[1].AssignedTo != null)
+                        ModelCanSnap = true;
+            }
+            if (Model.GetType() == typeof(NewStraightGenCylinder))
+            {
+                if (Model.SilhouetteCurves.Length > 1)
+                    if (Model.SilhouetteCurves[0].AssignedTo != null && Model.SilhouetteCurves[1].AssignedTo != null)
+                        ModelCanSnap = false;
+            }
+            return ModelCanSnap;
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
