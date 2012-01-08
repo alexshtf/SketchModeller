@@ -20,7 +20,22 @@ namespace SketchModeller.Modelling.Services.Snap
             annotation.MatchClass<ColinearCenters>(colinearCenters => constraints = GetConcreteAnnotationTerm(colinearCenters));
             annotation.MatchClass<CoplanarCenters>(coplanarCenters => constraints = GetConcreteAnnotationTerm(coplanarCenters));
             annotation.MatchClass<OrthogonalAxis>(orthogonalAxes => constraints = GetConcreteAnnotationTerm(orthogonalAxes));
+            annotation.MatchClass<OnSphere>(onSphere => constraints = GetConcreteAnnotationTerm(onSphere));
             return constraints;
+        }
+
+        private Term[] GetConcreteAnnotationTerm(OnSphere onSphere)
+        {
+            var center = onSphere.SphereOwned.Center;
+            var radius = onSphere.SphereOwned.Radius;
+
+            var touchingPoint = onSphere.CenterTouchesSphere.Center;
+            var touchingNormal = onSphere.CenterTouchesSphere.Normal;
+
+            var radiusConstraint = (center - touchingPoint).NormSquared - TermBuilder.Power(radius, 2);
+            var normalConstraint = VectorParallelism(center - touchingPoint, touchingNormal);
+
+            return normalConstraint.Append(radiusConstraint).ToArray();
         }
 
         private Term[] GetConcreteAnnotationTerm(OrthogonalAxis orthoonalAxes)

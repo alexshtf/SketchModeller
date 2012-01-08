@@ -8,7 +8,7 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class OnSphere : Annotation
     {
-        public FeatureCurve SphereOwned { get; set; }
+        public CircleFeatureCurve SphereOwned { get; set; }
         public FeatureCurve CenterTouchesSphere { get; set; }
     }
 }

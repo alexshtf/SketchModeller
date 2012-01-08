@@ -135,7 +135,7 @@ namespace SketchModeller.Modelling.Views
                 return null;
 
             // one of the feature curves must belong to a sphere and the other one must not
-            FeatureCurve onSphere;
+            CircleFeatureCurve onSphere;
             FeatureCurve other;
             if (!TryFindSingleFeatureCurveOnSphere(selectedElements, out onSphere, out other))
                 return null;
@@ -148,9 +148,9 @@ namespace SketchModeller.Modelling.Views
             };
         }
 
-        private bool TryFindSingleFeatureCurveOnSphere(FeatureCurve[] selectedElements, out FeatureCurve onSphere, out FeatureCurve other)
+        private bool TryFindSingleFeatureCurveOnSphere(FeatureCurve[] selectedElements, out CircleFeatureCurve onSphere, out FeatureCurve other)
         {
-            onSphere = selectedElements.FirstOrDefault(IsOwnedBySphere);
+            onSphere = selectedElements.OfType<CircleFeatureCurve>().FirstOrDefault(IsOwnedBySphere);
             other = selectedElements.Where(x => !IsOwnedBySphere(x)).FirstOrDefault();
 
             return other != null && onSphere != null;
