@@ -153,6 +153,7 @@
     <Compile Include="Data\EditConstraints\PrimitiveEditConstraint.cs" />
     <Compile Include="Data\NewSphere.cs" />
     <Compile Include="Data\NewStraightGenCylinder.cs" />
+    <Compile Include="Data\OnSphere.cs" />
     <Compile Include="Data\OrthogonalAxis.cs" />
     <Compile Include="Data\PrimitiveCurve.cs" />
     <Compile Include="Data\SelectablePrimitive.cs" />
