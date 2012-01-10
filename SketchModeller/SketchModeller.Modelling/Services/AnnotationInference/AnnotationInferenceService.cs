@@ -21,7 +21,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
                 new OrthogonalityInferrer(sessionData),
                 new ColinearCentersInferer(sessionData),
                 new ParallelismInferer(sessionData),
-                new CoplanarityInferer(sessionData));
+                new CoplanarityInferer(sessionData),
+                new OnSphereInferrer(sessionData));
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)

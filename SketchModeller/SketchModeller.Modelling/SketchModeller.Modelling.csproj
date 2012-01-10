@@ -213,6 +213,7 @@
     <Compile Include="Services\AnnotationInference\CoplanarityInferer.cs" />
     <Compile Include="Services\AnnotationInference\IInferrer.cs" />
     <Compile Include="Services\AnnotationInference\InferenceEngine.cs" />
+    <Compile Include="Services\AnnotationInference\OnSphereInferrer.cs" />
     <Compile Include="Services\AnnotationInference\OrthogonalityInferrer.cs" />
     <Compile Include="Services\AnnotationInference\ParallelismInferer.cs" />
     <Compile Include="Services\Assign\CurveAssigner.cs" />
