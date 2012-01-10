@@ -91,9 +91,9 @@ namespace SketchModeller.Modelling.Views
             sketchImageView =
                 container.Resolve<SketchImageView>(
                     new DependencyOverride<SketchImageViewModel>(viewModel.SketchImageViewModel));
-            Grid.SetRow(sketchImageView, 1);
+            Grid.SetRow(sketchImageView, 2);
             sketchImageView.Margin = vpRoot.Margin;
-            root.Children.Insert(1, sketchImageView);
+            root.Children.Insert(2, sketchImageView);
 
             newPrimitiveDragStrategy = new PrimitiveDragStrategy(uiState, sketchModellingView, snapper);
             snappedDragStrategy = new SnappedDragStrategy(uiState, duplicateEditorFactory.Create(), eventAggregator);

@@ -22,12 +22,62 @@
     <Grid x:Name="root">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"  />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+                    <Setter Property="Margin" Value="5,2,0,2" />
+                </Style>
+            </StackPanel.Resources>
+            <GroupBox Header="Basic primitives">
+                <UniformGrid VerticalAlignment="Top">
+                    <UniformGrid.Resources>
+                        <DataTemplate x:Key="PrimitiveIconTemplate">
+                            <Image RenderOptions.BitmapScalingMode="Fant">
+                                <Image.Source>
+                                    <BitmapImage UriSource="{Binding}"  />
+                                </Image.Source>
+                            </Image>
+                        </DataTemplate>
+                        <Style TargetType="ContentControl" BasedOn="{StaticResource {x:Type ContentControl}}">
+                            <EventSetter Event="MouseLeftButtonDown" Handler="primitivesPalette_MouseLeftButtonDown" />
+                            <EventSetter Event="MouseMove" Handler="primitivesPalette_MouseMove" />
+                            <EventSetter Event="MouseLeftButtonUp" Handler="primitivesPalette_MouseLeftButtonUp" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource PrimitiveIconTemplate}" />
+                            <Setter Property="Margin" Value="0,5,0,0" />
+                            <Setter Property="Width" Value="50" />
+                            <Setter Property="Height" Value="20" />
+                        </Style>
+                    </UniformGrid.Resources>
+                    <ContentControl x:Name="cylinderThumb" Content="/SketchModeller.Modelling;component/Images/cylinder.png" />
+                    <ContentControl x:Name="coneThumb" Content="/SketchModeller.Modelling;component/Images/cone.png" />
+                    <ContentControl x:Name="sphereThumb" Content="/SketchModeller.Modelling;component/Images/sphere.png"/>
+                    <ContentControl x:Name="sgcThumb" Content="/SketchModeller.Modelling;component/Images/sgc.png" />
+                    <ContentControl x:Name="bgcThumb" Content="/SketchModeller.Modelling;component/Images/bgc.png" />
+                </UniformGrid>
+            </GroupBox>
+            <GroupBox Header="Primive operations">
+                <StackPanel Orientation="Vertical">
+                    <Button Margin="3" Command="{Binding DeletePrimitive}">Delete (T)</Button>
+                    <Button Margin="3" Command="{Binding SnapPrimitive}">Snap (P)</Button>
+                    <ToggleButton Margin="3" IsChecked="{Binding IsPreviewing}">Preview (R)</ToggleButton>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Curve types">
+                <StackPanel>
+                    <Button Margin="3" Command="{Binding MarkFeature}">Feature</Button>
+                    <Button Margin="3" Command="{Binding MarkSilhouette}">Silhouette</Button>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        
         <Border x:Name="vpRoot"
                 Margin="10"
                 Background="LightGray" 
-                Grid.Row="1"
+                Grid.Row="2"
                 Focusable="True"
                 MouseLeftButtonDown="vpRoot_MouseLeftButtonDown"
                 MouseLeftButtonUp="vpRoot_MouseLeftButtonUp"
@@ -57,7 +107,7 @@
         </Border>
 
         <ItemsControl x:Name="primitiveCurvesRoot"
-                      Grid.Row="1" 
+                      Grid.Row="2" 
                       ItemsSource="{Binding NewPrimitives}" 
                       Background="{x:Null}"
                       ClipToBounds="True"
@@ -75,7 +125,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
         
-        <Canvas Grid.Row="1"
+        <Canvas Grid.Row="2"
                 Margin="{Binding ElementName=vpRoot, Path=Margin}">
             <Border BorderBrush="Blue"
                     BorderThickness="2"
@@ -99,56 +149,5 @@
             </Border>
         </Canvas>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <StackPanel.Resources>
-                <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
-                    <Setter Property="Margin" Value="5,2,0,2" />    		
-                </Style>     	
-            </StackPanel.Resources>
-            <GroupBox Header="Basic primitives">
-                <UniformGrid VerticalAlignment="Top">
-                    <UniformGrid.Resources>
-                        <Style TargetType="ContentControl" BasedOn="{StaticResource {x:Type ContentControl}}">
-                            <EventSetter Event="MouseLeftButtonDown" Handler="primitivesPalette_MouseLeftButtonDown" />
-                            <EventSetter Event="MouseMove" Handler="primitivesPalette_MouseMove" />
-                            <EventSetter Event="MouseLeftButtonUp" Handler="primitivesPalette_MouseLeftButtonUp" />
-                            <Setter Property="Margin" Value="0,5,0,0" />
-                            <Setter Property="Width" Value="50" />
-                            <Setter Property="Height" Value="20" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ContentControl">
-                                        <Border Background="{StaticResource PrimitiveGradientBrush}"
-                                                BorderBrush="Black"
-                                                BorderThickness="1">
-                                            <ContentPresenter VerticalAlignment="Center" 
-                                                              HorizontalAlignment="Center" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </UniformGrid.Resources>
-                    <ContentControl x:Name="cylinderThumb" Content="Cylinder" />
-                    <ContentControl x:Name="coneThumb" Content="Cone" />
-                    <ContentControl x:Name="sphereThumb" Content="Sphere"/>
-                    <ContentControl x:Name="sgcThumb" Content="SGC" />
-                    <ContentControl x:Name="bgcThumb" Content="BGC" />
-                </UniformGrid>
-            </GroupBox>
-            <GroupBox Header="Primive operations">
-                <StackPanel Orientation="Vertical">
-                    <Button Margin="3" Command="{Binding DeletePrimitive}">Delete (T)</Button>
-                    <Button Margin="3" Command="{Binding SnapPrimitive}">Snap (P)</Button>
-                    <ToggleButton Margin="3" IsChecked="{Binding IsPreviewing}">Preview (R)</ToggleButton>
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Curve types">
-                <StackPanel>
-                    <Button Margin="3" Command="{Binding MarkFeature}">Feature</Button>
-                    <Button Margin="3" Command="{Binding MarkSilhouette}">Silhouette</Button>
-                </StackPanel>
-            </GroupBox>
-        </StackPanel>
     </Grid>
 </UserControl>
