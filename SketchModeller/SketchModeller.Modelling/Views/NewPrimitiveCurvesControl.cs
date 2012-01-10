@@ -137,7 +137,7 @@ namespace SketchModeller.Modelling.Views
                     // create perpendicular line towards the assigned curve
                     var fstPoint = curveInfo.Curve.ClosestPoint;
                     var sndPoint = fstPoint.ProjectionOnCurve(curveInfo.Curve.AssignedTo.Points).Item1;
-                    var line = CreatePolyline(new Point[] { fstPoint, sndPoint });
+                    var line = CreatePolyline(new Point[] { fstPoint, curveInfo.Curve.AssignedTo.Points[curveInfo.Curve.AssignedTo.Points.Length/2] });
                     line.Stroke = Constants.PRIMITIVE_CURVES_COLOR_CODING[curveInfo.Index];
 
                     line.Bind(Path.StrokeThicknessProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(

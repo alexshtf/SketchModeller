@@ -98,7 +98,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private Tuple<Term, Term[]> SingleFeatureTwoSilhouettes(SnappedStraightGenCylinder snappedPrimitive, HashSet<FeatureCurve> annotated)
         {
-            MessageBox.Show("Inside Two Silhouettes one Feature");
+            //MessageBox.Show("Inside Two Silhouettes one Feature");
 
             var leftPts = snappedPrimitive.LeftSilhouette.Points;
             var rightPts = snappedPrimitive.RightSilhouette.Points;
@@ -274,6 +274,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var terms =
                from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
+               where item != null
+               where item.SnappedTo != null
                from term in ProjectionFit.Compute(item)
                select term;
 

@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Windows.Media.Media3D;
 using Petzold.Media3D;
 using SketchModeller.Modelling.Editing;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -122,15 +123,31 @@ namespace SketchModeller.Modelling.Views
         {
             if (Model.IsSelected)
                 Model.ClearColorCodingFromSketch();
-
-            curveAssigner.ComputeAssignments(Model);
-            //do{
-            Model.GetLargestComponet();
-            curveAssigner.ComputeAssignments(Model);
-            Model.GetLargestComponet();
+            bool refresh = true;
+            //Compute at least one silhouette curve
+            curveAssigner.ComputeSilhouetteAssignments(Model);
+            //Debug.WriteLine("Active Silhouettes Before:" + ActiveSilhouettes);
+            //Pick the first silhouette Curve
+            Model.SilhouetteCurves[0].isDeselected = true;
+            Model.SilhouetteCurves[0].AssignedTo.isdeselected = true;
+            //Find all compatible feature curve
+            while (curveAssigner.ComputeFeatureAssignments(Model))
+                Model.CheckFeatureCurves();
+            var NumberOfActiveFeatureCurves = Model.FeatureCurves
+                .Select(c => c)
+                .Where(c => c.AssignedTo != null)
+                .ToArray().Length;
+            if (NumberOfActiveFeatureCurves > 0)
+                while (curveAssigner.ComputeSilhouetteAssignments(Model))
+                {
+                    if (NumberOfActiveFeatureCurves == 1) Model.CheckSilhoueteCurveWith1Feature();
+                    else Model.CheckSilhoueteCurveWith2Features();
+                }
+         
+         
+            curveAssigner.refresh(Model);
             Model.CanSnap = false;
-            Model.CanSnap = CheckIfPrimitiveCanSnap();
-            //}while(Model.AllCurves.Length == 4); 
+            Model.CanSnap = CheckIfPrimitiveCanSnap(); 
             
             if (Model.IsSelected)
                 Model.SetColorCodingToSketch();
@@ -159,7 +176,7 @@ namespace SketchModeller.Modelling.Views
             {
                 if (Model.SilhouetteCurves.Length > 1)
                     if (Model.SilhouetteCurves[0].AssignedTo != null && Model.SilhouetteCurves[1].AssignedTo != null)
-                        ModelCanSnap = false;
+                        ModelCanSnap = true;
             }
             return ModelCanSnap;
         }
