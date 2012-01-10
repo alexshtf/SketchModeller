@@ -8,6 +8,9 @@ namespace SketchModeller.Infrastructure.Services
 {
     public interface ICurveAssigner
     {
-        void ComputeAssignments(NewPrimitive primitive);
+        void ComputeAssignments(NewPrimitive primitive, bool refresh);
+        bool ComputeSilhouetteAssignments(NewPrimitive primitive);
+        bool ComputeFeatureAssignments(NewPrimitive primitive);
+        void refresh(NewPrimitive primitive);
     }
 }

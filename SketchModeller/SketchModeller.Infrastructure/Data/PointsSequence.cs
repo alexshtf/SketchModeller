@@ -23,7 +23,7 @@ namespace SketchModeller.Infrastructure.Data
         /// xml serialization support.
         /// </summary>
         public Point[] Points { get; set; }
-
+        public bool isdeselected = false; 
         public PointsSequence(IEnumerable<Point> points = null)
         {
             if (points != null)

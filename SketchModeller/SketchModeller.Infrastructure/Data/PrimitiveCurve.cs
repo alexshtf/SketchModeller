@@ -13,7 +13,7 @@ namespace SketchModeller.Infrastructure.Data
         private PointsSequence assignedTo;
         private Point closestPoint;
         private bool isUserAssignment;
-
+        public bool isDeselected = false;
         public Point[] Points
         {
             get { return points; }

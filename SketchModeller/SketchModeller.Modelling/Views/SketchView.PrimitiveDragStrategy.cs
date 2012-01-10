@@ -45,17 +45,23 @@ namespace SketchModeller.Modelling.Views
                 if (editor != null && position.Ray3D != null)
                 {
                     editor.Drag(position.Pos2D, position.Ray3D.Value);
-                    if (temporarySnap == null && draggedPrimitiveData != null)
+
+                    if (temporarySnap == null && draggedPrimitiveData != null && draggedPrimitiveData.CanSnap)
                         temporarySnap = snapper.TemporarySnap(draggedPrimitiveData);
-                    else
+                    else if (temporarySnap != null && draggedPrimitiveData.CanSnap) 
                         temporarySnap.Update();
+                    else if (temporarySnap != null)
+                    {
+                        temporarySnap.Dispose();
+                        temporarySnap = null;
+                    }
                 }
             }
 
             protected override void MouseUpCore(MousePosInfo3D position, Vector vec2d, Vector3D? vec3d)
             {
                 editor = null;
-                temporarySnap.Dispose();
+                if (temporarySnap != null) temporarySnap.Dispose();
                 temporarySnap = null;
             }
         }

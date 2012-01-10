@@ -73,6 +73,10 @@ namespace SketchModeller.Modelling
                 item.ColorCodingIndex = PointsSequence.INVALID_COLOR_CODING;
 
             sessionData.DistanceTransforms = sketchData.DistanceTransforms.ToArray();
+            //if (sketchData.ConnectivityGraph == null)
+            //    sessionData.ConnectivityGraph = ComputeConnectivityGraph(sessionData.SketchObjects);
+            //else
+            //    sessionData.ConnectivityGraph = sketchData.ConnectivityGraph;
 
             //=====================================================================================
             // the following code saves the distance transform to images. Uncomment for debugging
