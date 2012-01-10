@@ -82,6 +82,7 @@ namespace SketchModeller.Modelling.Views
         private void RemoveExecute()
         {
             Annotations.RemoveAt(SelectedAnnotationIndex);
+            snapper.Recalculate();
         }
 
         private bool RemoveCanExecute()
