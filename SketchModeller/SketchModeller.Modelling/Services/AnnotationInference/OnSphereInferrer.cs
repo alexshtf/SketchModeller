@@ -52,10 +52,44 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             var featureCurvesOnSphere = FindFeatureCurvesOnSphere(nonSphere, sphere);
             if (featureCurvesOnSphere.Any())
                 return FeatureCurvesOnSphereAnnotation(featureCurvesOnSphere, sphere);
-            else
-                return Enumerable.Empty<Annotation>();
+
+            var hasSilhouettesWithEndpointsOnSphere = HasSilhouettesWithEndpointsOnSphere(nonSphere, sphere);
+            if (hasSilhouettesWithEndpointsOnSphere)
+                return SilhouettesWithEndpointsOnSphereAnnotation(nonSphere, sphere);
+
+            return Enumerable.Empty<Annotation>();
         }
 
+        private bool HasSilhouettesWithEndpointsOnSphere(SnappedPrimitive nonSphere, SnappedSphere sphere)
+        {
+            var sketchSilhouettes = from pointsSequence in nonSphere.SnappedTo
+                                    where pointsSequence.CurveCategory == CurveCategories.Silhouette
+                                    where HasEndpointOnSphere(pointsSequence, sphere)
+                                    select pointsSequence;
+            return sketchSilhouettes.Any();
+        }
+
+        private IEnumerable<Annotation> SilhouettesWithEndpointsOnSphereAnnotation(SnappedPrimitive nonSphere, SnappedSphere sphere)
+        {
+            var unsnappedFeatureCurves = from featureCurve in nonSphere.FeatureCurves
+                                         where featureCurve.SnappedTo == null
+                                         select featureCurve;
+            var firstUnsnapped = unsnappedFeatureCurves.First();
+
+            yield return new OnSphere
+            {
+                CenterTouchesSphere = firstUnsnapped,
+                SphereOwned = sphere.ProjectionParallelCircle,
+                Elements = Utils.Enumerable.ArrayOf(firstUnsnapped, sphere.ProjectionParallelCircle),
+            };
+        }
+
+        private bool HasEndpointOnSphere(PointsSequence pointsSequence, SnappedSphere sphere)
+        {
+            var isStartInsideSphere = IsInsideSphere(pointsSequence.Points.First(), sphere);
+            var isEndInsideSphere = IsInsideSphere(pointsSequence.Points.Last(), sphere);
+            return isStartInsideSphere || isEndInsideSphere;
+        }
 
         private IEnumerable<Annotation> FeatureCurvesOnSphereAnnotation(IEnumerable<FeatureCurve> featureCurvesOnSphere, SnappedSphere toBeAnnotatedSphere)
         {
