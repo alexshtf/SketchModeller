@@ -30,25 +30,42 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private IEnumerable<Annotation> InferSphereAnnotations(SnappedSphere toBeAnnotatedSphere)
         {
-            var result = Enumerable.Empty<Annotation>();
-
             // we will take the list of all non-spheres, to test against the new sphere
             var snappedPrimitives = sessionData.SnappedPrimitives;
             var notSpheres = snappedPrimitives.Except(snappedPrimitives.OfType<SnappedSphere>());
 
-            foreach (var snappedPrimitive in notSpheres)
-            {
-                var featureCurvesOnSphere = FindFeatureCurvesOnSphere(snappedPrimitive, toBeAnnotatedSphere);
-                if (featureCurvesOnSphere.Any())
-                    result = result.Concat(FeatureCurvesOnSphereAnnotation(featureCurvesOnSphere, toBeAnnotatedSphere));
-            }
-
-            return result;
+            return from notSphere in notSpheres
+                   from constraint in GetConstraintsForSphereWithNonspherePair(notSphere, toBeAnnotatedSphere)
+                   select constraint;
         }
 
         private IEnumerable<Annotation> InferNonSphereAnnotations(SnappedPrimitive toBeAnnotated)
         {
-            return Enumerable.Empty<Annotation>(); // TODO
+            var spheres = sessionData.SnappedPrimitives.OfType<SnappedSphere>();
+            return from sphere in spheres
+                   from constraint in GetConstraintsForSphereWithNonspherePair(toBeAnnotated, sphere)
+                   select constraint;
+        }
+
+        private IEnumerable<Annotation> GetConstraintsForSphereWithNonspherePair(SnappedPrimitive nonSphere, SnappedSphere sphere)
+        {
+            var featureCurvesOnSphere = FindFeatureCurvesOnSphere(nonSphere, sphere);
+            if (featureCurvesOnSphere.Any())
+                return FeatureCurvesOnSphereAnnotation(featureCurvesOnSphere, sphere);
+            else
+                return Enumerable.Empty<Annotation>();
+        }
+
+
+        private IEnumerable<Annotation> FeatureCurvesOnSphereAnnotation(IEnumerable<FeatureCurve> featureCurvesOnSphere, SnappedSphere toBeAnnotatedSphere)
+        {
+            var farthestFeatureCurve = featureCurvesOnSphere.Minimizer(fc => -fc.CenterResult.Z); // maximal Z coordinate
+            yield return new OnSphere
+            {
+                CenterTouchesSphere = farthestFeatureCurve,
+                SphereOwned = toBeAnnotatedSphere.ProjectionParallelCircle,
+                Elements = new FeatureCurve[] { farthestFeatureCurve, toBeAnnotatedSphere.ProjectionParallelCircle }
+            };
         }
 
         private IEnumerable<FeatureCurve> FindFeatureCurvesOnSphere(SnappedPrimitive snappedPrimitive, SnappedSphere toBeAnnotatedSphere)
@@ -74,17 +91,6 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             var sphereCenter = new Point(toBeAnnotatedSphere.CenterResult.X, -toBeAnnotatedSphere.CenterResult.Y);
             var dist = (p - sphereCenter).Length;
             return dist < toBeAnnotatedSphere.RadiusResult;
-        }
-
-        private IEnumerable<Annotation> FeatureCurvesOnSphereAnnotation(IEnumerable<FeatureCurve> featureCurvesOnSphere, SnappedSphere toBeAnnotatedSphere)
-        {
-            var farthestFeatureCurve = featureCurvesOnSphere.Minimizer(fc => -fc.CenterResult.Z); // maximal Z coordinate
-            yield return new OnSphere
-            {
-                CenterTouchesSphere = farthestFeatureCurve,
-                SphereOwned = toBeAnnotatedSphere.ProjectionParallelCircle,
-                Elements = new FeatureCurve[] { farthestFeatureCurve, toBeAnnotatedSphere.ProjectionParallelCircle }
-            };
         }
 
     }
