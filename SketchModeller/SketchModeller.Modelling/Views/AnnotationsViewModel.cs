@@ -34,6 +34,7 @@ namespace SketchModeller.Modelling.Views
             ColinearCentersCommand = new DelegateCommand(ColinearCentersExecute);
             CoplanarCentersCommand = new DelegateCommand(CoplanarCentersExecute);
             OrthogonalAxesCommand = new DelegateCommand(OrthogonalAxesExecute);
+            OnSphereCommand = new DelegateCommand(OnSphereExecute);
             Annotations = new ObservableCollection<Annotation>();
         }
 
@@ -54,6 +55,7 @@ namespace SketchModeller.Modelling.Views
         public ICommand ColinearCentersCommand { get; private set; }
         public ICommand CoplanarCentersCommand { get; private set; }
         public ICommand OrthogonalAxesCommand { get; private set; }
+        public ICommand OnSphereCommand { get; private set; }
 
         public ObservableCollection<Annotation> Annotations { get; private set; }
 
@@ -80,6 +82,7 @@ namespace SketchModeller.Modelling.Views
         private void RemoveExecute()
         {
             Annotations.RemoveAt(SelectedAnnotationIndex);
+            snapper.Recalculate();
         }
 
         private bool RemoveCanExecute()
@@ -117,9 +120,52 @@ namespace SketchModeller.Modelling.Views
             AddAnnotation(selectedElements => new OrthogonalAxis { Elements = selectedElements });
         }
 
+        private void OnSphereExecute()
+        {
+            AddAnnotation(selectedElements => CreateOnSphereAnnotation(selectedElements));
+        }
+
         #endregion
 
         #region Helper methods
+
+        private Annotation CreateOnSphereAnnotation(FeatureCurve[] selectedElements)
+        {
+            // we can have only 2 feature curves (one of them belongs to a sphere)
+            if (selectedElements.Length != 2)
+                return null;
+
+            // one of the feature curves must belong to a sphere and the other one must not
+            CircleFeatureCurve onSphere;
+            FeatureCurve other;
+            if (!TryFindSingleFeatureCurveOnSphere(selectedElements, out onSphere, out other))
+                return null;
+
+            return new OnSphere 
+            { 
+                SphereOwned = onSphere, 
+                CenterTouchesSphere = other,
+                Elements = new FeatureCurve[] { onSphere, other },
+            };
+        }
+
+        private bool TryFindSingleFeatureCurveOnSphere(FeatureCurve[] selectedElements, out CircleFeatureCurve onSphere, out FeatureCurve other)
+        {
+            onSphere = selectedElements.OfType<CircleFeatureCurve>().FirstOrDefault(IsOwnedBySphere);
+            other = selectedElements.Where(x => !IsOwnedBySphere(x)).FirstOrDefault();
+
+            return other != null && onSphere != null;
+        }
+
+        private bool IsOwnedBySphere(FeatureCurve featureCurve)
+        {
+            var owningSpheresCount = 
+                sessionData.SnappedPrimitives
+                .OfType<SnappedSphere>()
+                .Count(sphere => sphere.FeatureCurves.Contains(featureCurve));
+
+            return owningSpheresCount != 0;
+        }
 
         private void SelectAnnotatedElements()
         {
@@ -145,9 +191,12 @@ namespace SketchModeller.Modelling.Views
             if (selectedElements.Length > 0)
             {
                 var annotation = factory(selectedElements);
-                Annotations.Add(annotation);
-                SelectedAnnotationIndex = Annotations.Count - 1;
-                snapper.Recalculate();
+                if (annotation != null) // null means that a valid annotation could not be created
+                {
+                    Annotations.Add(annotation);
+                    SelectedAnnotationIndex = Annotations.Count - 1;
+                    snapper.Recalculate();
+                }
             }
         }
 

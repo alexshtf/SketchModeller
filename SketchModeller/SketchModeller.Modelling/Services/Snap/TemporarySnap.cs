@@ -24,6 +24,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
         private readonly IEventAggregator eventAggregator;
         private readonly NewPrimitive newPrimitive;
+        private readonly IConstrainedOptimizer optimizer;
 
         private SnappedPrimitive oldSnappedPrimitive;
         private SnappedPrimitive snappedPrimitive;
@@ -35,13 +36,15 @@ namespace SketchModeller.Modelling.Services.Snap
                              SnappersManager snappersManager,
                              PrimitivesReaderWriterFactory primitivesReaderWriterFactory,
                              IEventAggregator eventAggregator,
-                             NewPrimitive newPrimitive)
+                             NewPrimitive newPrimitive,
+                             IConstrainedOptimizer optimizer)
         {
             this.sessionData = sessionData;
             this.snappersManager = snappersManager;
             this.primitivesReaderWriterFactory = primitivesReaderWriterFactory;
             this.eventAggregator = eventAggregator;
             this.newPrimitive = newPrimitive;
+            this.optimizer = optimizer;
         }
 
         public void Update()
@@ -77,7 +80,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var vals = primitivesWriter.GetValues();
 
             optimizationTask = Task.Factory.StartNew<double[]>(
-                _ => ALBFGSOptimizer.Minimize(objective, constraints, vars, vals, mu: 10, tolerance: 1E-5), TaskScheduler.Default)
+                _ => optimizer.Minimize(objective, constraints, vars, vals), TaskScheduler.Default)
                 .ContinueWith(task =>
                 {
                     if (disposed)

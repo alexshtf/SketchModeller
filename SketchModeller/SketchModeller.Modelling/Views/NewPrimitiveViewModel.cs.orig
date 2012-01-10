@@ -125,6 +125,7 @@ namespace SketchModeller.Modelling.Views
         {
             if (Model.IsSelected)
                 Model.ClearColorCodingFromSketch();
+<<<<<<< HEAD
             bool refresh = true;
             //Compute at least one silhouette curve
             curveAssigner.ComputeSilhouetteAssignments(Model);
@@ -151,6 +152,12 @@ namespace SketchModeller.Modelling.Views
             Model.CanSnap = false;
             Model.CanSnap = CheckIfPrimitiveCanSnap(); 
             
+=======
+
+            curveAssigner.ComputeAssignments(Model);
+            //Model.GetLargestComponet();
+
+>>>>>>> 1b22060aaaeb275ab63c84fc38d8737a4561f0ea
             if (Model.IsSelected)
                 Model.SetColorCodingToSketch();
         }

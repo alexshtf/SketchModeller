@@ -40,9 +40,10 @@ namespace SketchModeller.Modelling.Views
         [InjectionConstructor]
         public NewSGCViewModel(
             UiState uiState = null, 
-            ICurveAssigner curveAssigner = null, 
-            IEventAggregator eventAggregator = null)
-            : base(uiState, curveAssigner, eventAggregator)
+            ICurveAssigner curveAssigner = null,
+            IEventAggregator eventAggregator = null,
+            IConstrainedOptimizer optimizer = null)
+            : base(uiState, curveAssigner, eventAggregator, optimizer)
         {
             model = new NewStraightGenCylinder();
             components = EMPTY_COMPONENTS;

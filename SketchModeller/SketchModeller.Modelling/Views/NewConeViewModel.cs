@@ -34,8 +34,12 @@ namespace SketchModeller.Modelling.Views
         private bool initializing;
 
         [InjectionConstructor]
-        public NewConeViewModel(UiState uiState = null, ICurveAssigner curveAssigner = null, IEventAggregator eventAggregator = null)
-            : base(uiState, curveAssigner, eventAggregator)
+        public NewConeViewModel(
+            UiState uiState = null, 
+            ICurveAssigner curveAssigner = null, 
+            IEventAggregator eventAggregator = null,
+            IConstrainedOptimizer optimizer = null)
+            : base(uiState, curveAssigner, eventAggregator, optimizer)
         {
             topRadius = 0.2;
             bottomRadius = 0.2;

@@ -1,141 +1,79 @@
 ﻿<UserControl x:Class="SketchModeller.Modelling.Views.AnnotationsView"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:skm="http://SketchModeller"
-			 mc:Ignorable="d" 
-			 d:DesignHeight="300" d:DesignWidth="300">
-	<DockPanel LastChildFill="True">
-		<DockPanel.Resources>
-			<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-				<Setter Property="Margin" Value="5" />
-				<Setter Property="Padding" Value="5" />
-			</Style>
-		</DockPanel.Resources>
-		<StackPanel Orientation="Vertical" DockPanel.Dock="Bottom">
-			<Button Command="{Binding RemoveCommand}">Remove</Button>
-			<Button Command="{Binding CoplanarCommand}">Coplanar</Button>
-			<Button Command="{Binding ParallelCommand}">Parallel</Button>
-			<Button Command="{Binding CocentricCommand}">Cocentric</Button>
-			<Button Command="{Binding ColinearCentersCommand}" Content="Colinear centers"/>
-			<Button Command="{Binding CoplanarCentersCommand}" Content="Coplanar centers"/>
-			<Button Command="{Binding OrthogonalAxesCommand}" Content="Orthogonal axes" />
-		</StackPanel>
-		<ListBox ItemsSource="{Binding Annotations}" SelectedIndex="{Binding SelectedAnnotationIndex}">
-			<ListBox.Resources>
-				<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-				</Style>
-				<DataTemplate DataType="{x:Type skm:Coplanarity}">
-					<Border BorderBrush="Blue" BorderThickness="1" CornerRadius="3" Margin="3">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<TextBlock Grid.Row="0" Grid.Column="0">Type:</TextBlock>
-							<TextBlock Grid.Row="0" Grid.Column="1">Coplanarity</TextBlock>
-							<TextBlock Grid.Row="1" Grid.Column="0">Count:</TextBlock>
-							<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Elements.Count}" />
-						</Grid>
-					</Border>
-				</DataTemplate>
-				<DataTemplate DataType="{x:Type skm:Parallelism}" >
-					<Border BorderBrush="Orange" BorderThickness="1" CornerRadius="3" Margin="3">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<TextBlock Grid.Row="0" Grid.Column="0">Type:</TextBlock>
-							<TextBlock Grid.Row="0" Grid.Column="1">Parallelism</TextBlock>
-							<TextBlock Grid.Row="1" Grid.Column="0">Count:</TextBlock>
-							<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Elements.Count}" />
-						</Grid>
-					</Border>
-				</DataTemplate>
-				<DataTemplate DataType="{x:Type skm:Cocentrality}">
-					<Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="Cyan">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition/>
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition/>
-								<RowDefinition/>
-							</Grid.RowDefinitions>
-							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
-							<TextBlock TextWrapping="Wrap" Text="Cocentrality" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
-							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
-							<TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
-						</Grid>
-					</Border>
-				</DataTemplate>
-				<DataTemplate DataType="{x:Type skm:ColinearCenters}">
-					<Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="CornflowerBlue">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition/>
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition/>
-								<RowDefinition/>
-							</Grid.RowDefinitions>
-							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
-							<TextBlock TextWrapping="Wrap" Text="Colinear centers" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
-							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
-							<TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
-						</Grid>
-					</Border>
-				</DataTemplate>
-				<DataTemplate DataType="{x:Type skm:CoplanarCenters}">
-					<Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="Thistle">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition/>
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition/>
-								<RowDefinition/>
-							</Grid.RowDefinitions>
-							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
-							<TextBlock TextWrapping="Wrap" Text="Coplanar centers" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
-							<TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
-							<TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
-						</Grid>
-					</Border>
-				</DataTemplate>
-                <DataTemplate DataType="{x:Type skm:OrthogonalAxis}">
-                    <Border CornerRadius="3" Margin="3" BorderThickness="1" BorderBrush="BlueViolet">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Type:" d:LayoutOverrides="Width, Height"/>
-                            <TextBlock TextWrapping="Wrap" Text="Orthogonal axis" d:LayoutOverrides="Width, Height" Grid.Column="1"/>
-                            <TextBlock Grid.ColumnSpan="1" TextWrapping="Wrap" Text="Count:" d:LayoutOverrides="Width, Height" Grid.Row="1"/>
-                            <TextBlock TextWrapping="Wrap" Text="{Binding Elements.Count}" d:LayoutOverrides="Width, Height" Grid.Row="1" Grid.Column="1"/>
-                        </Grid>
-                    </Border>
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:skm="http://SketchModeller"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <DockPanel LastChildFill="True">
+        <DockPanel.Resources>
+            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Padding" Value="5" />
+            </Style>
+        </DockPanel.Resources>
+        <StackPanel Orientation="Vertical" DockPanel.Dock="Bottom">
+            <Button Command="{Binding RemoveCommand}">Remove</Button>
+            <Button Command="{Binding CoplanarCommand}">Coplanar</Button>
+            <Button Command="{Binding ParallelCommand}">Parallel</Button>
+            <Button Command="{Binding CocentricCommand}">Cocentric</Button>
+            <Button Command="{Binding ColinearCentersCommand}" Content="Colinear centers"/>
+            <Button Command="{Binding CoplanarCentersCommand}" Content="Coplanar centers"/>
+            <Button Command="{Binding OrthogonalAxesCommand}" Content="Orthogonal axes" />
+            <Button Command="{Binding OnSphereCommand}" Content="OnSphere" />
+        </StackPanel>
+        <ListBox ItemsSource="{Binding Annotations}" SelectedIndex="{Binding SelectedAnnotationIndex}">
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+                <Style TargetType="ContentControl" x:Key="AnnotationDisplay">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ContentControl">
+                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="3" Margin="3">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0">Type:</TextBlock>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{TemplateBinding Content}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0">Count:</TextBlock>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Elements.Count}" />
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <DataTemplate DataType="{x:Type skm:Coplanarity}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="Blue" Content="Coplanarity" />
                 </DataTemplate>
-			</ListBox.Resources>
-		</ListBox>
-	</DockPanel>
+                <DataTemplate DataType="{x:Type skm:Parallelism}" >
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="Orange" Content="Parallelism" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:Cocentrality}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="Cyan" Content="Cocentrality" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:ColinearCenters}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="CornflowerBlue" Content="Colinear centers" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:CoplanarCenters}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="Thistle" Content="Coplanar centers" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:OrthogonalAxis}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="BlueViolet" Content="Orthogonal axis" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:OnSphere}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="DarkOrchid" Content="On sphere" />
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+    </DockPanel>
 </UserControl>

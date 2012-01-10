@@ -17,6 +17,7 @@ using SketchModeller.Modelling.Services.Snap;
 using SketchModeller.Modelling.Services.PrimitivesConverter;
 using SketchModeller.Modelling.Services.Assign;
 using SketchModeller.Modelling.Services.AnnotationInference;
+using SketchModeller.Modelling.Services.ConstrainedOptimizer;
 
 namespace SketchModeller.Modelling
 {
@@ -34,6 +35,7 @@ namespace SketchModeller.Modelling
         public void Initialize()
         {
             // register services
+            container.RegisterType<IConstrainedOptimizer, ConstrainedOptimizerService>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISketchCatalog, SketchCatalog>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAnnotationInference, AnnotationInferenceService>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
