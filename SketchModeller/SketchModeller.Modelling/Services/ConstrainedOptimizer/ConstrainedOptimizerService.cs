@@ -25,12 +25,12 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
                 startConstraintsPenalty: 10,
                 constraintsPenaltyMax: 1E3,
                 maxConstraintsNormLowerBound: 1E-8,
-                lagrangianGradientNormLowerBound: 1E-6);
+                lagrangianGradientNormLowerBound: 4E-7);
 
             var convergenceTest = new ConstraintsNormWithGradientNormConvergenceTest(
                 constraintsNormMax: 1E-8,
                 lagrangianGradientNormMax: 2E-6,
-                maxIterations: 150);
+                maxIterations: 1000);
             augmentedLagrangianSolver = new AugmentedLagrangianSolver(convergenceTest, iterations);
         }
 

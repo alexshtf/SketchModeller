@@ -59,7 +59,7 @@ namespace SketchModeller.Utilities.Optimization
                 {
                     // compute the norm of the gradient of the lagrangian
                     var lagrangianGradient = compiledLagrangian.LagrangianWithGradient(currentPoint, multipliers, constraintsPenalty).Item1;
-                    var lagrangianGradientNorm = Math.Sqrt(lagrangianGradient.Select(x => x * x).Sum());
+                    var lagrangianGradientNorm = Math.Sqrt(lagrangianGradient.Sum(x => x * x));
 
                     // we now product iteration result
                     yield return new AugmentedLagrangianIterationResult 
