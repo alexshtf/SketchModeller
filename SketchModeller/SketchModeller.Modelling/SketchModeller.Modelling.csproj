@@ -278,6 +278,10 @@
       <DependentUpon>DisplayOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DisplayOptionsViewModel.cs" />
+    <Compile Include="Views\EditMenuView.xaml.cs">
+      <DependentUpon>EditMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditMenuViewModel.cs" />
     <Compile Include="Views\INewPrimitiveView.cs" />
     <Compile Include="Views\NewBGCView.cs" />
     <Compile Include="Views\NewBGCViewModel.cs" />
@@ -330,6 +334,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DisplayOptionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EditMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

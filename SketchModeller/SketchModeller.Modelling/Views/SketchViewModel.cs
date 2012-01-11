@@ -54,10 +54,8 @@ namespace SketchModeller.Modelling.Views
             SketchModellingViewModel = container.Resolve<SketchModellingViewModel>();
             SketchImageViewModel = container.Resolve<SketchImageViewModel>();
 
-            DeletePrimitive = new DelegateCommand(DeletePrimitiveExecute, DeletePrimitiveCanExecute);
-            SnapPrimitive = new DelegateCommand(SnapPrimitiveExecute, SnapPrimitiveCanExecute);
-            MarkFeature = new DelegateCommand(MarkFeatureExecute, MarkFeatureCanExecute);
-            MarkSilhouette = new DelegateCommand(MarkSilhouetteExecute, MarkSilhouetteCanExecute);
+            eventAggregator.GetEvent<MarkFeatureEvent>().Subscribe(MarkFeatureHandler);
+            eventAggregator.GetEvent<MarkSilhouetteEvent>().Subscribe(MarkSilhouetteHandler);
         }
 
         public ObservableCollection<NewPrimitive> NewPrimitives { get; set; }
@@ -65,11 +63,10 @@ namespace SketchModeller.Modelling.Views
 
         public SketchImageViewModel SketchImageViewModel { get; private set; }
 
-        public ICommand DeletePrimitive { get; private set; }
-        public ICommand SnapPrimitive { get; private set; }
-
-        public ICommand MarkFeature { get; private set; }
-        public ICommand MarkSilhouette { get; private set; }
+        public void SnapPrimitive()
+        {
+            snapper.Snap();
+        }
 
         #region SketchPlane property
 
@@ -222,7 +219,7 @@ namespace SketchModeller.Modelling.Views
                     }
                     sessionData.NewPrimitives.Last().UpdateCurvesGeometry();
                     SelectPrimitive(sessionData.NewPrimitives.Last());
-                    MarkFeatureExecute();
+                    MarkFeatureHandler(null);
                     //newPrimitiveDragStrategy = new SketchView.PrimitiveDragStrategy(uiState, SketchModellingViewModel);
                     //curveAssigner.ComputeAssignments(sessionData.NewPrimitives.Last());
                     //eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Publish(sessionData.NewPrimitives.Last());
@@ -256,46 +253,16 @@ namespace SketchModeller.Modelling.Views
 
         #endregion
 
-        #region Commands execute
+        #region Composite event handlers
 
-        private void DeletePrimitiveExecute()
-        {
-            DeleteNewPrimitives();
-        }
-
-        private bool DeletePrimitiveCanExecute()
-        {
-            return true;
-        }
-
-        private void SnapPrimitiveExecute()
-        {
-            snapper.Snap();
-        }
-
-        private bool SnapPrimitiveCanExecute()
-        {
-            return true;
-        }
-
-        private void MarkFeatureExecute()
+        private void MarkFeatureHandler(object dummy)
         {
             MarkAs(CurveCategories.Feature);
         }
 
-        private bool MarkFeatureCanExecute()
-        {
-            return true;
-        }
-
-        private void MarkSilhouetteExecute()
+        private void MarkSilhouetteHandler(object dummy)
         {
             MarkAs(CurveCategories.Silhouette);
-        }
-
-        private bool MarkSilhouetteCanExecute()
-        {
-            return true;
         }
 
         #endregion

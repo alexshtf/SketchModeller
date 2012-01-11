@@ -1,0 +1,11 @@
+﻿<MenuItem x:Class="SketchModeller.Modelling.Views.EditMenuView"
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+          mc:Ignorable="d"
+          Header="Edit"
+          Style="{DynamicResource {x:Type MenuItem}}">
+    <MenuItem Header="Mark as feature" Command="{Binding MarkFeature}" />
+    <MenuItem Header="Mark as silhouette" Command="{Binding MarkSilhouette}" />
+</MenuItem>

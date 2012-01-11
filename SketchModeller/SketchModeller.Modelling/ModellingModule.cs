@@ -50,6 +50,7 @@ namespace SketchModeller.Modelling
             // register views.
             regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchView));
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(OpenImageView));
+            regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(EditMenuView));
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, typeof(DisplayOptionsView));
             regionManager.RegisterViewWithRegion(RegionNames.Model, typeof(ModelViewerView));
 

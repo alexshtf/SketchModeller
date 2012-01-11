@@ -54,6 +54,7 @@ namespace SketchModeller.Modelling.Views
         }
 
         private readonly ILoggerFacade logger;
+        private readonly IEventAggregator eventAggregator;
         private readonly SketchViewModel viewModel;
         private readonly DuplicateEditorFactory duplicateEditorFactory;
         private readonly IDragStrategy newPrimitiveDragStrategy;
@@ -101,7 +102,6 @@ namespace SketchModeller.Modelling.Views
             assignDragStrategy = new AssignDragStrategy(uiState, primitiveCurvesRoot, sketchImageView, eventAggregator);
 
             eventAggregator.GetEvent<PrimitiveCurvesChangedEvent>().Subscribe(OnPrimitiveCurvesChanged);
-            eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
         }
 
         private void OnPrimitiveCurvesChanged(NewPrimitive primitive)
@@ -114,21 +114,6 @@ namespace SketchModeller.Modelling.Views
                 if (primitiveView != null)
                     primitiveView.Update();
             }
-        }
-
-        private void OnGlobalShortcut(KeyEventArgs e)
-        {
-            if (e.Key == Key.T)
-                if (viewModel.DeletePrimitive.CanExecute(null))
-                    viewModel.DeletePrimitive.Execute(null);
-
-            if (e.Key == Key.P)
-                if (viewModel.SnapPrimitive.CanExecute(null))
-                    viewModel.SnapPrimitive.Execute(null);
-
-            if (e.Key == Key.R)
-                viewModel.IsPreviewing = !viewModel.IsPreviewing;
-
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -187,7 +172,7 @@ namespace SketchModeller.Modelling.Views
                 currentDragStrategy.OnMouseUp(GetPosition3D(e));
                 currentDragStrategy = null;
 
-                viewModel.SnapPrimitive.Execute(null);
+                viewModel.SnapPrimitive();
             }
         }
 
