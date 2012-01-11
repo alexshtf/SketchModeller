@@ -16,6 +16,6 @@ namespace SketchModeller.Utilities.Optimization
         /// <param name="objectiveWithGradient">A function that computes the value and the gradient of the objective</param>
         /// <param name="initialValue">The initial guess for the optimal solution</param>
         /// <returns>The computed optimal solution</returns>
-        double[] Solve(Func<double[], Tuple<double[], double>> objectiveWithGradient, double[] initialValue);
+        double[] Solve(Func<double[], Tuple<double[], double>> objectiveWithGradient, double[] initialValue, double gradientNormThreshold);
     }
 }

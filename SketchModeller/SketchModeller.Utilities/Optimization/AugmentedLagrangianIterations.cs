@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using AutoDiff;
 using System.Diagnostics;
+using System.Threading;
 
 namespace SketchModeller.Utilities.Optimization
 {
@@ -14,19 +15,22 @@ namespace SketchModeller.Utilities.Optimization
         private readonly double startConstraintsPenalty;
         private readonly double constraintsPenaltyMax;
         private readonly double maxConstraintsNormLowerBound;
+        private readonly double lagrangianGradientNormLowerBound;
 
         public AugmentedLagrangianIterations(
             IFirstOrderUnconstrainedOptimizer unconstrainedOptimizer, 
             ILagrangianCompiler lagrangianCompiler,
             double startConstraintsPenalty,
             double constraintsPenaltyMax,
-            double maxConstraintsNormLowerBound)
+            double maxConstraintsNormLowerBound,
+            double lagrangianGradientNormLowerBound)
         {
             this.unconstrainedOptimizer = unconstrainedOptimizer;
             this.lagrangianCompiler = lagrangianCompiler;
             this.startConstraintsPenalty = startConstraintsPenalty;
             this.constraintsPenaltyMax = constraintsPenaltyMax;
             this.maxConstraintsNormLowerBound = maxConstraintsNormLowerBound;
+            this.lagrangianGradientNormLowerBound = lagrangianGradientNormLowerBound;
         }
 
         public IEnumerable<AugmentedLagrangianIterationResult> Start(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
@@ -37,14 +41,18 @@ namespace SketchModeller.Utilities.Optimization
             var currentPoint = startPoint;
 
             var constraintsPenalty = startConstraintsPenalty;
-            var maxConstraintsNorm = 1 / Math.Pow(startConstraintsPenalty, 0.1);
+            var maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);
+            var maxLagrangianGradientNorm = 1 / constraintsPenalty;
 
             while (true)
             {
+                Debug.WriteLine("" + Thread.CurrentThread.ManagedThreadId + "ALG: mu = " + constraintsPenalty + ", eta = " + maxConstraintsNorm + ", omega = " + maxLagrangianGradientNorm);
+
                 // we compute a new optimal point estimate
                 currentPoint = unconstrainedOptimizer.Solve(
                     objectiveWithGradient: x => compiledLagrangian.LagrangianWithGradient(x, multipliers, constraintsPenalty),
-                    initialValue: currentPoint);
+                    initialValue: currentPoint,
+                    gradientNormThreshold: maxLagrangianGradientNorm);
 
                 // compute the value of each constraint function. These are the constraint violations
                 var constraintValues = compiledLagrangian.EvaluateConstraints(currentPoint);
@@ -54,6 +62,8 @@ namespace SketchModeller.Utilities.Optimization
                     // compute the norm of the gradient of the lagrangian
                     var lagrangianGradient = compiledLagrangian.LagrangianWithGradient(currentPoint, multipliers, constraintsPenalty).Item1;
                     var lagrangianGradientNorm = Math.Sqrt(lagrangianGradient.Select(x => x * x).Sum());
+
+                    Debug.WriteLine("" + Thread.CurrentThread.ManagedThreadId + "ALG: ||Gradient|| = " + lagrangianGradientNorm);
 
                     // we now product iteration result
                     yield return new AugmentedLagrangianIterationResult 
@@ -70,14 +80,20 @@ namespace SketchModeller.Utilities.Optimization
                     
                     maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, 0.9);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
+
+                    maxLagrangianGradientNorm = maxLagrangianGradientNorm / constraintsPenalty;
+                    maxLagrangianGradientNorm = Math.Max(maxLagrangianGradientNorm, lagrangianGradientNormLowerBound);
                 }
                 else
                 {
-                    constraintsPenalty = 100 * constraintsPenalty; 
+                    constraintsPenalty = 10 * constraintsPenalty; 
                     constraintsPenalty = Math.Min(constraintsPenalty, constraintsPenaltyMax);
                     
                     maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
+
+                    maxLagrangianGradientNorm = 1 / constraintsPenalty;
+                    maxLagrangianGradientNorm = Math.Max(maxLagrangianGradientNorm, lagrangianGradientNormLowerBound);
                 }
             }
         }
