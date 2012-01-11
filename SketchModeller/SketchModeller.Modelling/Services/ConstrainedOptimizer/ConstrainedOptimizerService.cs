@@ -20,9 +20,9 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
                 unconstrainedOptimizer, 
                 lagrangianCompiler, 
                 startConstraintsPenalty: 10,
-                constraintsPenaltyMax: 1E12,
+                constraintsPenaltyMax: 1E8,
                 maxConstraintsNormLowerBound: 1E-8,
-                lagrangianGradientNormLowerBound: 1E-10);
+                lagrangianGradientNormLowerBound: 1E-8);
 
             var convergenceTest = new ConstraintsNormWithGradientNormConvergenceTest(
                 constraintsNormMax: 1E-6,

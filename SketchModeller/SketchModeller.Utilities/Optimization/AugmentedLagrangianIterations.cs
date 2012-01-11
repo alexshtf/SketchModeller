@@ -46,8 +46,6 @@ namespace SketchModeller.Utilities.Optimization
 
             while (true)
             {
-                Debug.WriteLine("" + Thread.CurrentThread.ManagedThreadId + "ALG: mu = " + constraintsPenalty + ", eta = " + maxConstraintsNorm + ", omega = " + maxLagrangianGradientNorm);
-
                 // we compute a new optimal point estimate
                 currentPoint = unconstrainedOptimizer.Solve(
                     objectiveWithGradient: x => compiledLagrangian.LagrangianWithGradient(x, multipliers, constraintsPenalty),
@@ -62,8 +60,6 @@ namespace SketchModeller.Utilities.Optimization
                     // compute the norm of the gradient of the lagrangian
                     var lagrangianGradient = compiledLagrangian.LagrangianWithGradient(currentPoint, multipliers, constraintsPenalty).Item1;
                     var lagrangianGradientNorm = Math.Sqrt(lagrangianGradient.Select(x => x * x).Sum());
-
-                    Debug.WriteLine("" + Thread.CurrentThread.ManagedThreadId + "ALG: ||Gradient|| = " + lagrangianGradientNorm);
 
                     // we now product iteration result
                     yield return new AugmentedLagrangianIterationResult 

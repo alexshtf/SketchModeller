@@ -13,8 +13,7 @@ namespace SketchModeller.Utilities.Optimization
         {
             alglib.minlbfgsstate state;
             alglib.minlbfgscreate(Math.Min(3, initialValue.Length), initialValue, out state);
-            const double xNormThreshold = 0.00000001;
-            alglib.minlbfgssetcond(state, gradientNormThreshold, 0, xNormThreshold, 1000);
+            alglib.minlbfgssetcond(state, gradientNormThreshold, 0, 0, 1000);
 
             alglib.minlbfgsoptimize(state,
                 (double[] arg, ref double func, double[] gradient, object obj) =>
@@ -27,8 +26,6 @@ namespace SketchModeller.Utilities.Optimization
             alglib.minlbfgsreport report;
             double[] result;
             alglib.minlbfgsresults(state, out result, out report);
-
-            Debug.WriteLine("" + Thread.CurrentThread.ManagedThreadId + "LBFGS: Converged after " + report.iterationscount + " iterations");
 
             return result;
         }
