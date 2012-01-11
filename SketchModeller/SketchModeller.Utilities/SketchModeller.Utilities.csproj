@@ -169,6 +169,7 @@
     <Compile Include="NumArrayUtils.cs" />
     <Compile Include="Optimization\AugmentedLagrangianIterations.cs" />
     <Compile Include="Optimization\AugmentedLagrangianSolver.cs" />
+    <Compile Include="Optimization\ConjugateGradientOptimizer.cs" />
     <Compile Include="Optimization\ConstraintsNormWithGradientNormConvergenceTest.cs" />
     <Compile Include="Optimization\IAugmentedLagrangianIterations.cs" />
     <Compile Include="Optimization\IConvergenceTest.cs" />
