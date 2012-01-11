@@ -26,8 +26,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
     /// </remarks>
     class CoplanarityInferer : IInferrer
     {
-        public const double DEFAULT_PARALLEL_ANGLE_THRESHOLD = 20 * Math.PI / 180; // 20 degrees
-        public const double DEFAULT_CENTER_DISTANCE_THRESHOLD = 0.1;
+        public const double DEFAULT_PARALLEL_ANGLE_THRESHOLD = 15 * Math.PI / 180; // 20 degrees
+        public const double DEFAULT_CENTER_DISTANCE_THRESHOLD = 0.05;
 
         private readonly SessionData sessionData;
         private readonly double parallelAngleThreshold; 
