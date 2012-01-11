@@ -177,6 +177,8 @@
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="Events\GlobalShortcutEvent.cs" />
     <Compile Include="Events\LoadSketchEvent.cs" />
+    <Compile Include="Events\MarkFeatureEvent.cs" />
+    <Compile Include="Events\MarkSilhouetteEvent.cs" />
     <Compile Include="Events\SaveSketchEvent.cs" />
     <Compile Include="Events\SnapCompleteEvent.cs" />
     <Compile Include="Events\StartWorkingEvent.cs" />
