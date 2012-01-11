@@ -14,8 +14,6 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
 
         public ConstrainedOptimizerService()
         {
-            const double convergenceConstraintNormMax = 1E-8;
-
             var lagrangianCompiler = new LagrangianCompiler();
             var unconstrainedOptimizer = new LBFGSOptimizer();
             var iterations = new AugmentedLagrangianIterations(
@@ -23,13 +21,13 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
                 lagrangianCompiler, 
                 startConstraintsPenalty: 10,
                 constraintsPenaltyMax: 1E12,
-                maxConstraintsNormLowerBound: convergenceConstraintNormMax,
+                maxConstraintsNormLowerBound: 1E-8,
                 lagrangianGradientNormLowerBound: 1E-10);
 
             var convergenceTest = new ConstraintsNormWithGradientNormConvergenceTest(
-                constraintsNormMax: convergenceConstraintNormMax,
+                constraintsNormMax: 1E-6,
                 lagrangianGradientNormMax: 1E-4,
-                maxIterations: 200);
+                maxIterations: 50);
             augmentedLagrangianSolver = new AugmentedLagrangianSolver(convergenceTest, iterations);
         }
 
