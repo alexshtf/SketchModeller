@@ -25,9 +25,9 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
                 lagrangianGradientNormLowerBound: 1E-8);
 
             var convergenceTest = new ConstraintsNormWithGradientNormConvergenceTest(
-                constraintsNormMax: 1E-6,
+                constraintsNormMax: 1E-7,
                 lagrangianGradientNormMax: 1E-4,
-                maxIterations: 50);
+                maxIterations: 150);
             augmentedLagrangianSolver = new AugmentedLagrangianSolver(convergenceTest, iterations);
         }
 
