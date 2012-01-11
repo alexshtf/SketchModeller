@@ -125,13 +125,14 @@ namespace SketchModeller.Modelling.Views
         {
             if (Model.IsSelected)
                 Model.ClearColorCodingFromSketch();
-            bool refresh = true;
             //Compute at least one silhouette curve
             curveAssigner.ComputeSilhouetteAssignments(Model);
-            //Debug.WriteLine("Active Silhouettes Before:" + ActiveSilhouettes);
-            //Pick the first silhouette Curve
+            //Pick the first available silhouette Curve
             Model.SilhouetteCurves[0].isDeselected = true;
             Model.SilhouetteCurves[0].AssignedTo.isdeselected = true;
+            //Unassing the second silhouette curve if it exists
+            if (Model.SilhouetteCurves.Length > 1 && Model.SilhouetteCurves[1].AssignedTo != null)
+                Model.SilhouetteCurves[1].AssignedTo = null;
             //Find all compatible feature curve
             while (curveAssigner.ComputeFeatureAssignments(Model))
                 Model.CheckFeatureCurves();
@@ -145,8 +146,7 @@ namespace SketchModeller.Modelling.Views
                     if (NumberOfActiveFeatureCurves == 1) Model.CheckSilhoueteCurveWith1Feature();
                     else Model.CheckSilhoueteCurveWith2Features();
                 }
-         
-         
+            //refresh all curves so that they can be selected again
             curveAssigner.refresh(Model);
             Model.CanSnap = false;
             Model.CanSnap = CheckIfPrimitiveCanSnap(); 

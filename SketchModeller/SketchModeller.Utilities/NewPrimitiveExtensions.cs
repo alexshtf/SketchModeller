@@ -43,6 +43,15 @@ namespace SketchModeller.Infrastructure.Data
                 EndPoints[1][0] = FindClosestPoint(FeatureCurve, EndPoints[0]);
                 EndPoints[1][1] = new Point(10e10, 10e10);
             }
+            else
+            {
+                if (primitive.FeatureCurves.Length > 0 && primitive.FeatureCurves[1].AssignedTo != null)
+                {
+                    var FeatureCurve = primitive.FeatureCurves[1].AssignedTo;
+                    EndPoints[1][0] = FindClosestPoint(FeatureCurve, EndPoints[0]);
+                    EndPoints[1][1] = new Point(10e10, 10e10);
+                }
+            }
             List<int>[] ConnectedComponents = new List<int>[N];
             for (int count = 0; count < N; count++) ConnectedComponents[count] = new List<int>();
             for (int count = 0; count < N; count++) ConnectedComponents[count].Add(count);
@@ -169,12 +178,23 @@ namespace SketchModeller.Infrastructure.Data
                 EndPoints[1][0] = FindClosestPoint(FeatureCurve, EndPoints[0]);
                 EndPoints[1][1] = new Point(10e10, 10e10);
             }
+            else
+            {
+                EndPoints[1][0] = new Point(10e5, 10e5);
+                EndPoints[1][1] = new Point(-10e5, -10e5);
+            }
             if (primitive.FeatureCurves.Length > 1 && primitive.FeatureCurves[1].AssignedTo != null)
             {
                 var FeatureCurve = primitive.FeatureCurves[1].AssignedTo;
                 EndPoints[2][0] = FindClosestPoint(FeatureCurve, EndPoints[0]);
                 EndPoints[2][1] = new Point(-10e10, -10e10);
             }
+            else
+            {
+                EndPoints[2][0] = new Point(10e2, 10e2);
+                EndPoints[2][1] = new Point(-10e2, -10e2);
+            }
+
             List<int>[] ConnectedComponents = new List<int>[N];
             for (int count = 0; count < N; count++) ConnectedComponents[count] = new List<int>();
             for (int count = 0; count < N; count++ ) ConnectedComponents[count].Add(count);
@@ -210,7 +230,8 @@ namespace SketchModeller.Infrastructure.Data
                 {
                     if (counter > 0)
                     {
-                        primitive.FeatureCurves[counter-1].AssignedTo.isdeselected = true;
+                        if (primitive.FeatureCurves[counter - 1].AssignedTo != null)
+                            primitive.FeatureCurves[counter-1].AssignedTo.isdeselected = true;
                         primitive.FeatureCurves[counter-1].AssignedTo = null;
                     }
                 }
