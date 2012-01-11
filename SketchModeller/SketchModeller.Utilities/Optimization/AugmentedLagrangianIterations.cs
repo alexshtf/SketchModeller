@@ -72,7 +72,7 @@ namespace SketchModeller.Utilities.Optimization
                     // update the current lagrange multipliers estimate according to the algorithm's update formula
                     // lambda <-- lambda + c / mu
                     for (int i = 0; i < multipliers.Length; ++i)
-                        multipliers[i] = multipliers[i] + constraintValues[i] / constraintsPenalty;
+                        multipliers[i] = multipliers[i] + constraintValues[i] * constraintsPenalty;
                     
                     maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, 0.9);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
@@ -82,7 +82,7 @@ namespace SketchModeller.Utilities.Optimization
                 }
                 else
                 {
-                    constraintsPenalty = 10 * constraintsPenalty; 
+                    constraintsPenalty = 2 * constraintsPenalty; 
                     constraintsPenalty = Math.Min(constraintsPenalty, constraintsPenaltyMax);
                     
                     maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);

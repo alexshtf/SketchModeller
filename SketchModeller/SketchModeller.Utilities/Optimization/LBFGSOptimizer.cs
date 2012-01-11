@@ -13,7 +13,7 @@ namespace SketchModeller.Utilities.Optimization
         {
             alglib.minlbfgsstate state;
             alglib.minlbfgscreate(Math.Min(3, initialValue.Length), initialValue, out state);
-            alglib.minlbfgssetcond(state, gradientNormThreshold, 0, 0, 1000);
+            alglib.minlbfgssetcond(state, gradientNormThreshold, 0, 0, 10000);
 
             alglib.minlbfgsoptimize(state,
                 (double[] arg, ref double func, double[] gradient, object obj) =>

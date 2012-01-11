@@ -23,13 +23,13 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
                 unconstrainedOptimizer, 
                 lagrangianCompiler, 
                 startConstraintsPenalty: 10,
-                constraintsPenaltyMax: 1E8,
+                constraintsPenaltyMax: 1E3,
                 maxConstraintsNormLowerBound: 1E-8,
-                lagrangianGradientNormLowerBound: 1E-8);
+                lagrangianGradientNormLowerBound: 1E-6);
 
             var convergenceTest = new ConstraintsNormWithGradientNormConvergenceTest(
-                constraintsNormMax: 1E-7,
-                lagrangianGradientNormMax: 1E-4,
+                constraintsNormMax: 1E-8,
+                lagrangianGradientNormMax: 2E-6,
                 maxIterations: 150);
             augmentedLagrangianSolver = new AugmentedLagrangianSolver(convergenceTest, iterations);
         }
