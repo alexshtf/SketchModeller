@@ -12,11 +12,15 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 {
     class OnSphereInferrer : IInferrer
     {
-        private readonly SessionData sessionData;
+        private const double DEFAULT_PROXIMITY_THRESHOLD_FRACTION = 0.1; // 10%
 
-        public OnSphereInferrer(SessionData sessionData)
+        private readonly SessionData sessionData;
+        private readonly double proximityThresholdFraction;
+
+        public OnSphereInferrer(SessionData sessionData, double proximityThresholdFraction = DEFAULT_PROXIMITY_THRESHOLD_FRACTION)
         {
             this.sessionData = sessionData;
+            this.proximityThresholdFraction = proximityThresholdFraction;
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)
@@ -124,7 +128,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         {
             var sphereCenter = new Point(toBeAnnotatedSphere.CenterResult.X, -toBeAnnotatedSphere.CenterResult.Y);
             var dist = (p - sphereCenter).Length;
-            return dist < toBeAnnotatedSphere.RadiusResult;
+            return dist < (1 + proximityThresholdFraction) * toBeAnnotatedSphere.RadiusResult;
         }
 
     }
