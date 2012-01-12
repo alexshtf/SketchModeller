@@ -24,9 +24,9 @@ namespace SketchModeller.Modelling.Views
         // general fields
         private readonly NewPrimitiveViewModel viewModel;
         private readonly ILoggerFacade logger;
-
-        public static readonly Brush UNSELECTED_BRUSH = new SolidColorBrush { Color = Colors.White, Opacity = 0.5 };
-        public static readonly Brush SELECTED_BRUSH = new SolidColorBrush { Color = Colors.LightBlue, Opacity = 0.5 };
+        
+        public static readonly Brush FRONT_BRUSH = new SolidColorBrush { Color = (Color)ColorConverter.ConvertFromString("#FFF4C8"), Opacity = 0.5 };
+        public static readonly Brush BACK_BRUSH = new SolidColorBrush { Color = (Color)ColorConverter.ConvertFromString("#FFE6C8"), Opacity = 0.5 };
 
         protected readonly TranslateTransform3D translation;
         protected readonly ScaleTransform3D scale;
@@ -62,7 +62,7 @@ namespace SketchModeller.Modelling.Views
 
         protected static Material GetDefaultBackMaterial()
         {
-            var backMaterial = new DiffuseMaterial { Brush = new SolidColorBrush { Color = Colors.Red, Opacity = 0.5 } };
+            var backMaterial = new DiffuseMaterial { Brush = BACK_BRUSH };
             backMaterial.Freeze();
             return backMaterial;
         }
@@ -70,18 +70,7 @@ namespace SketchModeller.Modelling.Views
         protected static Material GetDefaultFrontMaterial(NewPrimitiveViewModel viewModel)
         {
             var material = new DiffuseMaterial();
-            material.Bind(
-                DiffuseMaterial.BrushProperty,
-                "Model.IsSelected",
-                viewModel,
-                new DelegateConverter<bool>(
-                    isSelected =>
-                    {
-                        if (isSelected)
-                            return SELECTED_BRUSH;
-                        else
-                            return UNSELECTED_BRUSH;
-                    }));
+            material.Brush = FRONT_BRUSH;
             return material;
         }
 
