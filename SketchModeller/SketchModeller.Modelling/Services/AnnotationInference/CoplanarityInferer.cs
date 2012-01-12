@@ -28,10 +28,12 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
     {
         public const double DEFAULT_PARALLEL_ANGLE_THRESHOLD = 15 * Math.PI / 180; // 20 degrees
         public const double DEFAULT_CENTER_DISTANCE_THRESHOLD = 0.05;
+        public const double DEFAUTL_CENTER_DISTANCE_RELATIVE_THRESHOLD = 0.15; // 15%
 
         private readonly SessionData sessionData;
         private readonly double parallelAngleThreshold; 
         private readonly double centerDistanceThreshold;
+        private readonly double centerDistanceRelativeThreshold;
 
         /// <summary>
         /// Constructs a new instance of <see cref="CoplanarityInferer"/> class.
@@ -41,11 +43,13 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         /// <param name="centerDistanceThreshold">The distance threshold below which a point will be considered to lie on a plane.</param>
         public CoplanarityInferer(SessionData sessionData,
                                   double parallelAngleThreshold = DEFAULT_PARALLEL_ANGLE_THRESHOLD,
-                                  double centerDistanceThreshold = DEFAULT_CENTER_DISTANCE_THRESHOLD)
+                                  double centerDistanceThreshold = DEFAULT_CENTER_DISTANCE_THRESHOLD,
+                                  double centerDistanceRelativeThreshold = DEFAUTL_CENTER_DISTANCE_RELATIVE_THRESHOLD)
         {
             this.sessionData = sessionData;
             this.parallelAngleThreshold = parallelAngleThreshold;
             this.centerDistanceThreshold = centerDistanceThreshold;
+            this.centerDistanceRelativeThreshold = centerDistanceRelativeThreshold;
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)
@@ -76,26 +80,33 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool AreGoodCandidates(FeatureCurve firstCurve, FeatureCurve secondCurve)
         {
+            double radiiSum = 0;
+            if (firstCurve is CircleFeatureCurve && secondCurve is CircleFeatureCurve)
+                radiiSum = (firstCurve as CircleFeatureCurve).RadiusResult + (secondCurve as CircleFeatureCurve).RadiusResult;
+            var radiiThreshold = radiiSum * centerDistanceRelativeThreshold;
+
             bool areAlmostParallel = AreAlmostParallel(firstCurve.NormalResult, secondCurve.NormalResult);
 
-            bool isFirstAlmostOnSecondPlane = IsAlmostOnPlane(point:       firstCurve.CenterResult, 
-                                                              planePoint:  secondCurve.CenterResult, 
-                                                              planeNormal: secondCurve.NormalResult);
+            bool isFirstAlmostOnSecondPlane = IsAlmostOnPlane(point:             firstCurve.CenterResult, 
+                                                              planePoint:        secondCurve.CenterResult, 
+                                                              planeNormal:       secondCurve.NormalResult,
+                                                              relativeThreshold: radiiThreshold);
 
-            bool isSecondAlmostOnFirstPlane = IsAlmostOnPlane(point:       secondCurve.CenterResult, 
-                                                              planePoint:  firstCurve.CenterResult, 
-                                                              planeNormal: firstCurve.NormalResult);
+            bool isSecondAlmostOnFirstPlane = IsAlmostOnPlane(point:             secondCurve.CenterResult, 
+                                                              planePoint:        firstCurve.CenterResult, 
+                                                              planeNormal:       firstCurve.NormalResult,
+                                                              relativeThreshold: radiiThreshold);
 
             return areAlmostParallel 
                 && isFirstAlmostOnSecondPlane 
                 && isSecondAlmostOnFirstPlane;
         }
 
-        private bool IsAlmostOnPlane(Point3D point, Point3D planePoint, Vector3D planeNormal)
+        private bool IsAlmostOnPlane(Point3D point, Point3D planePoint, Vector3D planeNormal, double relativeThreshold)
         {
             var signedDistance = Vector3D.DotProduct(point - planePoint, planeNormal);
             var distance = Math.Abs(signedDistance);
-            return distance < centerDistanceThreshold;
+            return distance < centerDistanceThreshold || distance < relativeThreshold;
         }
 
         private bool AreAlmostParallel(Vector3D u, Vector3D v)
