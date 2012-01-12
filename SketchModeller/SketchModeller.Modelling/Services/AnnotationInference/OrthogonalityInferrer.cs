@@ -14,14 +14,14 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 {
     class OrthogonalityInferrer : IInferrer
     {
-        public const double THIRTY_DEGREES = 30 * Math.PI / 180;
+        public const double DEFAULT_ANGLE_THRESHOLD = 20 * Math.PI / 180;
         public const double DEFAULT_PROXIMITY_THRESHOLD = 0.4;
 
         private SessionData sessionData;
         private double angleThreshold;
         private double proximityThreshold;
 
-        public OrthogonalityInferrer(SessionData sessionData, double angleThreshold = THIRTY_DEGREES, double proximityThreshold = DEFAULT_PROXIMITY_THRESHOLD)
+        public OrthogonalityInferrer(SessionData sessionData, double angleThreshold = DEFAULT_ANGLE_THRESHOLD, double proximityThreshold = DEFAULT_PROXIMITY_THRESHOLD)
         {
             this.sessionData = sessionData;
             this.angleThreshold = angleThreshold;
@@ -82,7 +82,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         private bool AreGoodCandidates(FeatureCurve firstCurve, FeatureCurve secondCurve)
         {
             bool angleCondition = IsAngleBelowThreshold(firstCurve, secondCurve);
-            bool proximityCondition = IsProximityBelowThreshold(firstCurve, secondCurve);
+            //bool proximityCondition = IsProximityBelowThreshold(firstCurve, secondCurve);
+            bool proximityCondition = true;
             bool result = angleCondition && proximityCondition;
             return result;
         }
