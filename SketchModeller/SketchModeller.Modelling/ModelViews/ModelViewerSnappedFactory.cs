@@ -37,22 +37,18 @@ namespace SketchModeller.Modelling.ModelViews
 
         private static ModelVisual3D CreateVisual(MeshGeometry3D geometry, SnappedPrimitive snappedPrimitive)
         {
-            var frontMaterial = new DiffuseMaterial();
-            frontMaterial.Bind(
-                DiffuseMaterial.BrushProperty, 
-                () => snappedPrimitive.IsSelected, 
-                flag => flag ? FRONT_BRUSH_MARKED : FRONT_BRUSH);
+            var frontEmissivePart = CreateEmissiveMaterial(snappedPrimitive);
+            var frontDiffusePart = new DiffuseMaterial { Brush = FRONT_BRUSH };
+            var frontMaterial = new MaterialGroup { Children = { frontEmissivePart, frontDiffusePart } };
 
             // create wpf classes for displaying the geometry
             var model3d = new GeometryModel3D(
                 geometry,
                 frontMaterial);
 
-            var backMaterial = new DiffuseMaterial();
-            backMaterial.Bind(
-                DiffuseMaterial.BrushProperty,
-                () => snappedPrimitive.IsSelected,
-                flag => flag ? BACK_SELECTED_BRUSH : BACK_BRUSH);
+            var backEmissivePart = CreateEmissiveMaterial(snappedPrimitive);
+            var backDiffusePart = new DiffuseMaterial { Brush = BACK_BRUSH };
+            var backMaterial = new MaterialGroup { Children = { backEmissivePart, backDiffusePart } };
             model3d.BackMaterial = backMaterial;
 
             var visual = new ModelVisual3D();
@@ -60,6 +56,16 @@ namespace SketchModeller.Modelling.ModelViews
 
             CreateFeatureCurves(visual, snappedPrimitive.FeatureCurves);
             return visual;
+        }
+
+        private static EmissiveMaterial CreateEmissiveMaterial(SnappedPrimitive snappedPrimitive)
+        {
+            var frontEmissivePart = new EmissiveMaterial();
+            frontEmissivePart.Bind(
+                EmissiveMaterial.BrushProperty,
+                () => snappedPrimitive.IsSelected,
+                flag => flag ? Brushes.LightGray : Brushes.Gray);
+            return frontEmissivePart;
         }
 
         private static void CreateFeatureCurves(ModelVisual3D root, FeatureCurve[] featureCurves)

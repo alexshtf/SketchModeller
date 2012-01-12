@@ -34,10 +34,10 @@ namespace SketchModeller.Modelling.ModelViews
             emissiveMaterial.Bind(
                 EmissiveMaterial.BrushProperty,
                 () => featureCurve.IsSelected,
-                isSelected => isSelected ? Brushes.Orange : Brushes.Blue);
+                isSelected => isSelected ? Brushes.DarkOrange : Brushes.Black);
 
             var material = new MaterialGroup();
-            material.Children.Add(new DiffuseMaterial { Brush = Brushes.DarkGray });
+            material.Children.Add(new DiffuseMaterial { Brush = Brushes.Black });
             material.Children.Add(emissiveMaterial);
 
             model3d = new GeometryModel3D();
