@@ -26,7 +26,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <WrapPanel Height="90" Orientation="Horizontal" Grid.Row="0" Margin="10,10,10,0" Background="LightGray" SnapsToDevicePixels="True">
+        <WrapPanel Height="90" Orientation="Horizontal" Grid.Row="0" Margin="10,10,10,0" Background="WhiteSmoke" SnapsToDevicePixels="True">
             <WrapPanel.Resources>
                 <DataTemplate x:Key="PrimitiveIconTemplate">
                     <Image RenderOptions.BitmapScalingMode="Fant">
@@ -52,7 +52,7 @@
         
         <Border x:Name="vpRoot"
                 Margin="10,0,10,10"
-                Background="LightGray" 
+                Background="WhiteSmoke" 
                 Grid.Row="2"
                 Focusable="True"
                 MouseLeftButtonDown="vpRoot_MouseLeftButtonDown"

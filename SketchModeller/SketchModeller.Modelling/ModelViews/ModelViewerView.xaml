@@ -75,7 +75,7 @@
         <Border x:Name="modelViewerRoot"
                 BorderBrush="Black" 
                 BorderThickness="1"
-                Background="White"
+                Background="WhiteSmoke"
                 MouseDown="OnModelViewerMouseDown"
                 MouseUp="OnModelViewerMouseUp"
                 MouseMove="OnModelViewerMouseMove"
