@@ -16,9 +16,9 @@ namespace SketchModeller.Modelling.ModelViews
     partial class ModelViewerSnappedFactory : IVisual3DFactory
     {
         public static readonly ModelViewerSnappedFactory Instance = new ModelViewerSnappedFactory();
-        public static readonly Brush FRONT_BRUSH = Brushes.SkyBlue;
+        public static readonly Brush FRONT_BRUSH = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA6C1D0"));
         public static readonly Brush FRONT_BRUSH_MARKED = Brushes.LightSkyBlue;
-        public static readonly Brush BACK_BRUSH = Brushes.Red;
+        public static readonly Brush BACK_BRUSH = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFB5AFD8"));
         public static readonly Brush BACK_SELECTED_BRUSH = Brushes.Orange;
 
         public Visual3D Create(object item)
