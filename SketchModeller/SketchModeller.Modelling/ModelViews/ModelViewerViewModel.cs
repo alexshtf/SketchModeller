@@ -38,7 +38,6 @@ namespace SketchModeller.Modelling.ModelViews
             isFlightMode = true;
 
             ResetCamera();
-            Primitives = new ReadOnlyObservableCollection<NewPrimitive>(new ObservableCollection<NewPrimitive>());
             SnappedPrimitives = new ReadOnlyObservableCollection<SnappedPrimitive>(new ObservableCollection<SnappedPrimitive>());
         }
 
@@ -57,7 +56,6 @@ namespace SketchModeller.Modelling.ModelViews
             LookDown = new DelegateCommand(() => Look(MathUtils3D.UnitX, -1));
             LookLeft = new DelegateCommand(() => Look(MathUtils3D.UnitY, +1));
             LookRight = new DelegateCommand(() => Look(MathUtils3D.UnitY, -1));
-            Primitives = new ReadOnlyObservableCollection<NewPrimitive>(sessionData.NewPrimitives);
             SnappedPrimitives = new SnappedPrimitivesCollection(sessionData.SnappedPrimitives);
 
             eventAggregator.GetEvent<SnapCompleteEvent>().Subscribe(OnSnapComplete);
@@ -73,7 +71,6 @@ namespace SketchModeller.Modelling.ModelViews
         public ICommand LookLeft { get; private set; }
         public ICommand LookRight { get; private set; }
 
-        public ReadOnlyObservableCollection<NewPrimitive> Primitives { get; private set; }
         public ReadOnlyObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
 
         #region IsFlightMode property
