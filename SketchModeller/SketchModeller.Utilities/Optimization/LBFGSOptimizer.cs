@@ -9,10 +9,17 @@ namespace SketchModeller.Utilities.Optimization
 {
     public class LBFGSOptimizer : IFirstOrderUnconstrainedOptimizer
     {
+        private int approximationGradientsCount;
+
+        public LBFGSOptimizer(int approximationGradientsCount)
+        {
+            this.approximationGradientsCount = approximationGradientsCount;
+        }
+
         public double[] Solve(Func<double[], Tuple<double[], double>> objectiveWithGradient, double[] initialValue, double gradientNormThreshold)
         {
             alglib.minlbfgsstate state;
-            alglib.minlbfgscreate(Math.Min(3, initialValue.Length), initialValue, out state);
+            alglib.minlbfgscreate(Math.Min(approximationGradientsCount, initialValue.Length), initialValue, out state);
             alglib.minlbfgssetcond(state, gradientNormThreshold, 0, 0, 10000);
 
             alglib.minlbfgsoptimize(state,

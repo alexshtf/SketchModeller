@@ -17,7 +17,7 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
         public ConstrainedOptimizerService()
         {
             var lagrangianCompiler = new LagrangianCompiler();
-            var unconstrainedOptimizer = new LBFGSOptimizer();
+            var unconstrainedOptimizer = new LBFGSOptimizer(30);
             //var unconstrainedOptimizer = new ConjugateGradientOptimizer();
             var iterations = new AugmentedLagrangianIterations(
                 unconstrainedOptimizer, 
