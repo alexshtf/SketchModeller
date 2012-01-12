@@ -5,10 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:skm="http://SketchModeller"
              xmlns:local="clr-namespace:SketchModeller.Modelling.ModelViews"
+             xmlns:converters="clr-namespace:SketchModeller.Modelling.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="400">
     <DockPanel LastChildFill="True">
-        <Border BorderBrush="Black" BorderThickness="1" DockPanel.Dock="Top">
+        <Border BorderBrush="Black" BorderThickness="1" DockPanel.Dock="Top" 
+                Visibility="{Binding DisplayOptions.IsPaperMode, Converter={x:Static converters:BooleanTrueToCollapsedConverter.Instance}}">
             <Grid x:Name="controlPanel">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -73,8 +75,9 @@
             </Grid>
         </Border>
         <Border x:Name="modelViewerRoot"
+                Margin="5,10,10,10"
                 BorderBrush="Black" 
-                BorderThickness="1"
+                BorderThickness="0"
                 Background="WhiteSmoke"
                 MouseDown="OnModelViewerMouseDown"
                 MouseUp="OnModelViewerMouseUp"

@@ -42,11 +42,14 @@ namespace SketchModeller.Modelling.ModelViews
         }
 
         [InjectionConstructor]
-        public ModelViewerViewModel(UiState uiState, SessionData sessionData, IEventAggregator eventAggregator)
+        public ModelViewerViewModel(UiState uiState, SessionData sessionData, DisplayOptions displayOptions, IEventAggregator eventAggregator)
             : this()
         {
             this.uiState = uiState;
             this.sessionData = sessionData;
+            this.DisplayOptions = displayOptions;
+
+            IsTrackBallMode = true;
 
             MoveForward = new DelegateCommand(() => Move(MathUtils3D.UnitZ));
             MoveBack = new DelegateCommand(() => Move(-MathUtils3D.UnitZ));
@@ -70,6 +73,8 @@ namespace SketchModeller.Modelling.ModelViews
         public ICommand LookDown { get; private set; }
         public ICommand LookLeft { get; private set; }
         public ICommand LookRight { get; private set; }
+
+        public DisplayOptions DisplayOptions { get; private set; }
 
         public ReadOnlyObservableCollection<SnappedPrimitive> SnappedPrimitives { get; private set; }
 

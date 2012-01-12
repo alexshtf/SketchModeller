@@ -13,6 +13,7 @@ namespace SketchModeller.Infrastructure.Shared
             IsSketchShown = true;
             IsSnappedPrimitivesShown = true;
             IsTemporaryPrimitivesShown = true;
+            IsPaperMode = false;
         }
 
         #region IsSketchShown property
@@ -58,6 +59,22 @@ namespace SketchModeller.Infrastructure.Shared
             {
                 isTemporaryPrimitivesShown = value;
                 RaisePropertyChanged(() => IsTemporaryPrimitivesShown);
+            }
+        }
+
+        #endregion
+
+        #region IsPaperMode property
+
+        private bool isPaperMode;
+
+        public bool IsPaperMode
+        {
+            get { return isPaperMode; }
+            set
+            {
+                isPaperMode = value;
+                RaisePropertyChanged(() => IsPaperMode);
             }
         }
 

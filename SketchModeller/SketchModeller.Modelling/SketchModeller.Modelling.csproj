@@ -171,6 +171,7 @@
     <Compile Include="Computations\SgcComponents.cs" />
     <Compile Include="Computations\StraightSpine.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\BooleanTrueToCollapsedConverter.cs" />
     <Compile Include="Converters\ModelPointsToScatterConverter.cs" />
     <Compile Include="Converters\ModelPointsToWpfPointsConverter.cs" />
     <Compile Include="DistanceTransform.cs" />
