@@ -31,6 +31,7 @@ namespace SketchModeller
             Container.RegisterType<DisplayOptions, DisplayOptions>(new ContainerControlledLifetimeManager());
             Container.RegisterType<SessionData, SessionData>(new ContainerControlledLifetimeManager());
             Container.RegisterType<UiState, UiState>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<InferenceOptions, InferenceOptions>(new ContainerControlledLifetimeManager());
 
         }
 
