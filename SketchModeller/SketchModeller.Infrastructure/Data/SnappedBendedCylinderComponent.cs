@@ -9,15 +9,21 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class SnappedBendedCylinderComponent : SnappedCyliderComponent
     {
-        private readonly TVec pntOnSpine;
-        public SnappedBendedCylinderComponent(Variable radius, double progress, TVec pntOnSpine)
+        private readonly Variable vs;
+        private readonly Variable vt;
+        public SnappedBendedCylinderComponent(Variable radius, double progress, Variable vs, Variable vt)
             : base(radius, progress)
         {
-            this.pntOnSpine = pntOnSpine;
+            this.vs = vs;
+            this.vt = vt;
         }
-        public TVec PntOnSpine
+        public Variable vS
         {
-            get { return pntOnSpine; }
+            get { return vs; }
+        }
+        public Variable vT
+        {
+            get { return vt; }
         }
     }
 }

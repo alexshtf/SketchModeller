@@ -33,7 +33,7 @@ namespace SketchModeller.Utilities
 
             var resultQuery =
                 from component in components
-                select new BendedCylinderComponent(component.Radius, component.Progress, component.Pnt3D, component.Pnt2D);
+                select new BendedCylinderComponent(component.Radius, component.Progress, component.S, component.T);
 
             return resultQuery.ToArray();
         }

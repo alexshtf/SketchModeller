@@ -15,29 +15,25 @@ namespace SketchModeller.Infrastructure.Data
     [Serializable]
     public class BendedCylinderComponent : CylinderComponent    
     {
-        private Point3D pnt3D;
-        private readonly Point pnt2D;
+        private double s;
+        private double t;
         /// <summary>
         /// Initializes a new instance of the <see cref="BendedCylinderComponent"/> class.
         /// </summary>
         /// <param name="radius">The radius of the circle</param>
         /// <param name="progress">The progress, on the cylinder's spine, of this circle (between 0 and 1)</param>
-        public BendedCylinderComponent(double radius, double progress, Point3D pnt3D, Point pnt2D) : base(radius, progress)
+        public BendedCylinderComponent(double radius, double progress, double s, double t) : base(radius, progress)
         {
-            Contract.Ensures(Pnt3D == pnt3D);
-            Contract.Ensures(Pnt2D == pnt2D);
-            this.pnt2D = pnt2D;
-            this.pnt3D = pnt3D;
+            Contract.Ensures(S == s);
+            Contract.Ensures(T == t);
+            this.s = s;
+            this.t = t;
         }
 
         /// <summary>
         /// Gets the Spine's 3D point
         /// </summary>
-        public Point3D Pnt3D { get { return pnt3D; } set { pnt3D = value; } }
-
-        /// <summary>
-        /// Gets the Spine's 3D point
-        /// </summary>
-        public Point Pnt2D { get { return pnt2D; } }
+        public double S { get { return s; } set { s = value; } }
+        public double T { get { return t; } set { t = value; } }
     }
 }

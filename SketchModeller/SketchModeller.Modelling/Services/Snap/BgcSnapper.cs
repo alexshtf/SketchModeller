@@ -47,14 +47,20 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var result = new SnappedBendedGenCylinder
             {
-                Axis = SnapperHelper.GenerateVarVector(),
+                //TopCenter = SnapperHelper.GenerateVarVector(),
                 BottomCenter = SnapperHelper.GenerateVarVector(),
-                Length = new Variable(),
-                Components = GenerateComponents(newPrimitive.Components),
+                NPtop = new TVec(new Variable(), new Variable()), 
+                NPbot = new TVec(new Variable(), new Variable()),
+                U = SnapperHelper.GenerateVarVector(),
+                V = SnapperHelper.GenerateVarVector(),
+                Components = GenerateComponents(newPrimitive.Components), 
 
-                AxisResult = newPrimitive.Axis.Value.Normalized(),
+                Uresult = newPrimitive.Uview,
+                Vresult = newPrimitive.Vview,
+                NPtopResult = new Vector(0, 1),
+                NPbotResult = new Vector(0, 1),
+                TopCenterResult = newPrimitive.Top,
                 BottomCenterResult = newPrimitive.Bottom,
-                LengthResult = newPrimitive.Length,
                 ComponentResults = newPrimitive.Components.CloneArray(),
             };
 
@@ -66,7 +72,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var n = cylinderComponents.Length;
             var result = new SnappedBendedCylinderComponent[n];
             for (int i = 0; i < n; ++i)
-                result[i] = new SnappedBendedCylinderComponent(new Variable(), cylinderComponents[i].Progress, new TVec(new Variable(), new Variable()));
+                result[i] = new SnappedBendedCylinderComponent(new Variable(), cylinderComponents[i].Progress, new Variable(), new Variable());
             return result;
         }
 
@@ -81,7 +87,6 @@ namespace SketchModeller.Modelling.Services.Snap
             // get annotated feature curves of this primitive.
             var annotated = new HashSet<FeatureCurve>(curvesToAnnotations.Keys.Where(key => curvesToAnnotations[key].Count > 0));
             annotated.Intersect(snappedPrimitive.FeatureCurves);
-            //MessageBox.Show("Inside Optimization");
             Tuple<Term, Term[]> result = null;
 
             if (silhouettesCount == 2 && featuresCount == 2)
@@ -113,36 +118,26 @@ namespace SketchModeller.Modelling.Services.Snap
             // for the axis orientation
             var botEllipse = EllipseFitter.Fit(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points);
             var topEllipse = EllipseFitter.Fit(snappedPrimitive.TopFeatureCurve.SnappedTo.Points);
-            var botPoints = EllipseFitter.Sample(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points, botEllipse, 500);
-            var topPoints = EllipseFitter.Sample(snappedPrimitive.TopFeatureCurve.SnappedTo.Points, topEllipse, 500);
-
-            snappedPrimitive.pntseq = botPoints;
-            //var approxOrientation = GetOrientation(topEllipse, botEllipse, snappedPrimitive.AxisResult);
-
-            // compute the spine of the primitive
-            //MessageBox.Show("Computing Bended Spine");
             var spine = BendedSpine.Compute(leftPts, rightPts, pointsProgress);
-            //MessageBox.Show("Ended Computing Bended Spine");
             var radii = spine.Item2;
-            var medial_axis = spine.Item1;
-            //snappedPrimitive.pntseq = medial_axis;
-            bool Reverse = false;
-            //var approxOrientation = GetOrientation(botEllipse, medial_axis, ref Reverse);
-            var approxOrientation = NewGetOrientation(topPoints, botPoints, topEllipse, botEllipse, medial_axis, ref Reverse);
-            if (Reverse)
+            var medialAxis = spine.Item1;
+            bool reverse = false;
+            Vector vnormal = new Vector(botEllipse.Center.X - medialAxis[0].X, -botEllipse.Center.Y + medialAxis[0].Y);
+            Vector vreverse = new Vector(botEllipse.Center.X - medialAxis[medialAxis.Length - 1].X, -botEllipse.Center.Y + medialAxis[medialAxis.Length - 1].Y);
+            if (vnormal.Length > vreverse.Length) reverse = true;
+            if (reverse)
             {
                 int left = 0;
-                int right = medial_axis.Length - 1;
+                int right = medialAxis.Length - 1;
                 while (left < right)
                 {
                     swap(ref radii[left], ref radii[right]);
-                    swap(ref medial_axis[left], ref medial_axis[right]);
+                    swap(ref medialAxis[left], ref medialAxis[right]);
                     left++;
                     right--;
                 }
             }
-            //MessageBox.Show("Generating Optimization Terms");
-            return CreateBGCTerms(snappedPrimitive, approxOrientation, radii, medial_axis);
+            return CreateBGCTerms(snappedPrimitive, radii, medialAxis);
         }
 
         private static void swap<T>(ref T a, ref T b)
@@ -152,14 +147,16 @@ namespace SketchModeller.Modelling.Services.Snap
             b = temp;
         }
 
-        private static Tuple<Term, Term[]> CreateBGCTerms(SnappedBendedGenCylinder snappedPrimitive, Vector3D approxOrientation, double[] radii, Point[] medial_axis)
+        private static Tuple<Term, Term[]> CreateBGCTerms(SnappedBendedGenCylinder snappedPrimitive, double[] radii, Point[] medial_axis)
         {
-            var orientationTerm =
-                TermBuilder.Power(approxOrientation.X - snappedPrimitive.Axis.X, 2) +
-                TermBuilder.Power(approxOrientation.Y - snappedPrimitive.Axis.Y, 2) +
-                TermBuilder.Power(approxOrientation.Z - snappedPrimitive.Axis.Z, 2);
+            var terms =
+               from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
+               where item != null
+               where item.SnappedTo != null
+               from term in ProjectionFit.Compute(item)
+               select term;
+            var orientationTerm = TermUtils.SafeAvg(terms);
 
-            // the difference between the primitive's radii and the computed radii is minimized
             var radiiApproxTerm = TermUtils.SafeAvg(
                 from i in Enumerable.Range(0, snappedPrimitive.Components.Length)
                 let component = snappedPrimitive.Components[i]
@@ -173,44 +170,52 @@ namespace SketchModeller.Modelling.Services.Snap
                 let r2 = pair.Item2.Radius
                 let r3 = pair.Item3.Radius
                 select TermBuilder.Power(r2 - 0.5 * (r1 + r3), 2)); // how far is r2 from the avg of r1 and r3
-
+   
             Term[] TermArray = new Term[medial_axis.Length];
             for (int i = 0; i < medial_axis.Length; i++)
-                TermArray[i] = TermBuilder.Power(snappedPrimitive.Components[i].PntOnSpine.X - medial_axis[i].X, 2) +
-                               TermBuilder.Power(snappedPrimitive.Components[i].PntOnSpine.Y + medial_axis[i].Y, 2);
-
+            {
+                TVec PointOnSpine = snappedPrimitive.BottomCenter + snappedPrimitive.Components[i].vS * snappedPrimitive.U + snappedPrimitive.Components[i].vT * snappedPrimitive.V; 
+                TermArray[i] = TermBuilder.Power(PointOnSpine.X - medial_axis[i].X, 2) +
+                               TermBuilder.Power(PointOnSpine.Y + medial_axis[i].Y, 2);
+            }
             var spinePointTerm = TermUtils.SafeAvg(TermArray);
-
+ 
             // start/end points should be as close as possible to the bottom/top centers
-            var startTerm = 0.5 * (
-                TermBuilder.Power(snappedPrimitive.BottomCenter.X - medial_axis[0].X, 2) +
-                TermBuilder.Power(snappedPrimitive.BottomCenter.Y + medial_axis[0].Y, 2));
+            //var startTerm = 1 * (
+            //    TermBuilder.Power(snappedPrimitive.BottomCenter.X - medial_axis[0].X, 2) +
+            //    TermBuilder.Power(snappedPrimitive.BottomCenter.Y + medial_axis[0].Y, 2));
 
-            var topCenter = new TVec(medial_axis[0].X + approxOrientation.X * snappedPrimitive.Length,
-                                     -medial_axis[0].Y + approxOrientation.Y * snappedPrimitive.Length,
-                                     approxOrientation.Z * snappedPrimitive.Length);
-            var endTerm = 0.5 * (
-                TermBuilder.Power(topCenter.X - medial_axis[medial_axis.Length - 1].X, 2) +
-                TermBuilder.Power(topCenter.Y + medial_axis[medial_axis.Length - 1].Y, 2));
+            //var endTerm = 1 * (
+            //    TermBuilder.Power(snappedPrimitive.TopCenter.X - medial_axis[medial_axis.Length - 1].X, 2) +
+            //    TermBuilder.Power(snappedPrimitive.TopCenter.X + medial_axis[medial_axis.Length - 1].Y, 2));
 
             // we specifically wish to give higher weight to first and last radii, so we have
             // an additional first/last radii term.
             var endpointsRadiiTerm =
-                TermBuilder.Power(radii[0] - snappedPrimitive.ComponentResults[0].Radius, 2) +
+                TermBuilder.Power(radii[0] - snappedPrimitive.Components.First().Radius, 2) +
                 TermBuilder.Power(radii.Last() - snappedPrimitive.Components.Last().Radius, 2);
 
             // objective - weighed average of all terms
             var objective =
+                0.1 * orientationTerm +
                 radiiApproxTerm +
                 radiiSmoothTerm +
-                startTerm +
-                orientationTerm +
-                endpointsRadiiTerm +
-                endTerm +
-                spinePointTerm;
+                spinePointTerm +
+                //startTerm +
+                //endTerm +
+                endpointsRadiiTerm;
 
-            var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
-            //MessageBox.Show("Finished Generating Optimization");
+            var constraint1 = snappedPrimitive.NPtop.NormSquared - 1;
+            var constraint2 = snappedPrimitive.NPbot.NormSquared - 1;
+            //var constraint1 = snappedPrimitive.BottomFeatureCurve.Normal.NormSquared - 1;
+            //var constraint2 = snappedPrimitive.TopFeatureCurve.Normal.NormSquared - 1;
+            var constraint3 = snappedPrimitive.U.NormSquared - 1;
+            var constraint4 = snappedPrimitive.V.NormSquared - 1;
+            var constraint5 = TVec.InnerProduct(snappedPrimitive.U, snappedPrimitive.V);
+            var constraint6 = snappedPrimitive.Components[0].vS;
+            var constraint7 = snappedPrimitive.Components[0].vT;
+            var constraints = new Term[] { constraint1, constraint2, constraint3, constraint4, constraint5, constraint6, constraint7 };
+
             return Tuple.Create(objective, constraints);
         }
 
@@ -319,7 +324,7 @@ namespace SketchModeller.Modelling.Services.Snap
             Vector ApproxOrientationBotProj = new Vector(ApproxOrientationBot.X, ApproxOrientationBot.Y);
             if (ApproxOrientationBotProj * botAxis < 0) ApproxOrientationBot = -ApproxOrientationBot;
             //MessageBox.Show(String.Format("Top Vector:{0}, {1}", botAxis.X, botAxis.Y));
-            MessageBox.Show(String.Format("Bottom Vector Estimation :{0}, {1}, {2}, {3}", ApproxOrientationBot.X, ApproxOrientationBot.Y, ApproxOrientationBot.Z, ApproxOrientationBot.Length));
+            //MessageBox.Show(String.Format("Bottom Vector Estimation :{0}, {1}, {2}, {3}", ApproxOrientationBot.X, ApproxOrientationBot.Y, ApproxOrientationBot.Z, ApproxOrientationBot.Length));
             Vector3D ApproxOrientation = 0.5 * (ApproxOrientationTop.Normalized() + ApproxOrientationBot.Normalized());
             //return ApproxOrientation;
             /*if (Reverse)

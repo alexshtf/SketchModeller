@@ -64,6 +64,8 @@ namespace SketchModeller.Modelling.Views
                 Center = model.Center;
                 Axis = model.Axis;
                 Length = model.Length;
+                U = model.Uview;
+                V = model.Vview;
                 Components = GenerateComponentViewModels(model.Components);
             }
             finally
@@ -103,6 +105,42 @@ namespace SketchModeller.Modelling.Views
                 RaisePropertyChanged(() => Axis);
                 if (!isUpdating)
                     model.Axis.Value = value;
+            }
+        }
+
+        #endregion
+
+        #region U property
+
+        private Vector3D u;
+
+        public Vector3D U
+        {
+            get { return u; }
+            set
+            {
+                u = value;
+                RaisePropertyChanged(() => U);
+                if (!isUpdating)
+                    model.Uview = value;
+            }
+        }
+
+        #endregion
+
+        #region V property
+
+        private Vector3D v;
+
+        public Vector3D V
+        {
+            get { return v; }
+            set
+            {
+                v = value;
+                RaisePropertyChanged(() => V);
+                if (!isUpdating)
+                    model.Vview = value;
             }
         }
 
@@ -150,7 +188,7 @@ namespace SketchModeller.Modelling.Views
         {
             var resultQuery =
                 from cvm in cvms
-                select new BendedCylinderComponent(cvm.Radius, cvm.Progress, cvm.Pnt3D, cvm.Pnt2D);
+                select new BendedCylinderComponent(cvm.Radius, cvm.Progress, cvm.S, cvm.T);
 
             return resultQuery.ToArray();
         }
@@ -159,7 +197,7 @@ namespace SketchModeller.Modelling.Views
         {
             var resultQuery =
                 from cc in ccs
-                select new ComponentViewModel(cc.Radius, cc.Progress, cc.Pnt2D, cc.Pnt3D);
+                select new ComponentViewModel(cc.Radius, cc.Progress, cc.S, cc.T);
 
             return Array.AsReadOnly(resultQuery.ToArray());
         }
@@ -172,15 +210,15 @@ namespace SketchModeller.Modelling.Views
         {
             private readonly double radius;
             private readonly double progress;
-            private readonly Point pnt2D;
-            private readonly Point3D pnt3D;
+            private readonly double s;
+            private readonly double t;
 
-            public ComponentViewModel(double radius, double progress, Point pnt2D, Point3D pnt3D)
+            public ComponentViewModel(double radius, double progress, double s, double t)
             {
                 this.radius = radius;
                 this.progress = progress;
-                this.pnt2D = pnt2D;
-                this.pnt3D = pnt3D;
+                this.s = s;
+                this.t = t;
             }
 
             public double Radius
@@ -192,13 +230,13 @@ namespace SketchModeller.Modelling.Views
             {
                 get { return progress; }
             }
-            public Point Pnt2D
+            public double S
             {
-                get { return pnt2D; }
+                get { return s; }
             }
-            public Point3D Pnt3D
+            public double T
             {
-                get { return pnt3D; }
+                get { return t; }
             }
         }
 
@@ -231,11 +269,6 @@ namespace SketchModeller.Modelling.Views
                 if (Keyboard.Modifiers == ModifierKeys.None)
                 {
                     viewModel.Center = viewModel.Center + vector3D;
-                    var newComponents =
-                        from comp in viewModel.Components
-                        select new ComponentViewModel(comp.Radius, comp.Progress, new Point(comp.Pnt2D.X + dragVector2d.X, comp.Pnt2D.Y + dragVector2d.Y),
-                                                      new Point3D(comp.Pnt3D.X + vector3D.X, comp.Pnt3D.Y + vector3D.Y, comp.Pnt3D.Z + vector3D.Z));
-                    viewModel.Components = Array.AsReadOnly(newComponents.ToArray());
                 }
                 else if (Keyboard.Modifiers == AXIS_MOVE_MODIFIER)
                     viewModel.Center = viewModel.Center + axisDragVector;
@@ -243,7 +276,9 @@ namespace SketchModeller.Modelling.Views
                 {
                     //MessageBox.Show("InsidePerformDragCore");
                     viewModel.Axis = viewModel.TrackballRotate(viewModel.Axis, dragVector2d);
-                }
+                    viewModel.U = (viewModel.TrackballRotate(viewModel.U, dragVector2d)).Normalized();
+                    viewModel.V = (viewModel.TrackballRotate(viewModel.V, dragVector2d)).Normalized(); 
+                }                
                 else if (Keyboard.Modifiers == DIAMETER_MODIFIER)
                 {
                     var axis = Vector3D.CrossProduct(viewModel.Axis, viewModel.SketchPlane.Normal);

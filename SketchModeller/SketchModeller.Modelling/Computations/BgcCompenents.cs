@@ -31,7 +31,9 @@ namespace SketchModeller.Modelling.Computations
                 let Start = Center - 0.5*Length*Axis 
                 let End = Center + 0.5*Length*Axis
                 let Pt = (1-t)*(new Vector3D(Start.X, Start.Y, Start.Z)) + t*(new Vector3D(End.X, End.Y, End.Z))
-                select new BendedCylinderComponent(r, t, new Point3D(Pt.X, Pt.Y, Pt.Z), new Point(Pt.X, Pt.Y));
+                let Vt = new Vector3D(Pt.X - Start.X, Pt.Y - Start.Y, Pt.Z - Start.Z)
+                let T = Vt.Length
+                select new BendedCylinderComponent(r, t, 0, T);
 
             return resultQuery.ToArray();
         }

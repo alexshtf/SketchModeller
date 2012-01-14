@@ -116,12 +116,17 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             writer = writer
                 .Write(bgc.BottomCenterResult)
-                .Write(bgc.AxisResult)
-                .Write(bgc.LengthResult);
+                //.Write(bgc.TopCenterResult)
+                .Write(bgc.NPtopResult)
+                .Write(bgc.NPbotResult)
+                .Write(bgc.Uresult)
+                .Write(bgc.Vresult);
+
             foreach (var component in bgc.ComponentResults)
                 writer = writer
                     .Write(component.Radius)
-                    .Write(component.Pnt2D);
+                    .Write(component.S)
+                    .Write(component.T);
 
             return writer;
         }
@@ -144,13 +149,16 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             writer = writer
                 .Write(bgc.BottomCenter)
-                .Write(bgc.Axis)
-                .Write(bgc.Length);
+                .Write(bgc.NPtop)
+                .Write(bgc.NPbot)
+                .Write(bgc.U)
+                .Write(bgc.V);
 
             foreach (var component in bgc.Components)
                 writer = writer
                     .Write(component.Radius)
-                    .Write(component.PntOnSpine);
+                    .Write(component.vS)
+                    .Write(component.vT);
 
             return writer;
         }
@@ -168,52 +176,16 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public static void Read(this VectorsReader reader, SnappedBendedGenCylinder bgc)
         {
-            bgc.BottomCenterResult = reader.ReadPoint3D();
-            bgc.AxisResult = reader.ReadVector3D();
-            bgc.LengthResult = reader.ReadValue();
-            var Axis = bgc.AxisResult;
-            Axis.Normalize();
-            //Axis = new Vector3D(0.0, 1.0, 0.0);
-            //bgc.AxisResult = Axis;
-            MessageBox.Show(String.Format("{0},{1},{2}", Axis.X, Axis.Y, Axis.Z));
+            bgc.BottomCenterResult = reader.ReadPoint3D(); 
+            //bgc.TopCenterResult = reader.ReadPoint3D();
+            bgc.NPtopResult = reader.ReadVector();
+            bgc.NPbotResult= reader.ReadVector();
+            bgc.Uresult = reader.ReadVector3D();
+            bgc.Vresult = reader.ReadVector3D();
+
             foreach (var i in Enumerable.Range(0, bgc.ComponentResults.Length))
-            {   
-                var radius = reader.ReadValue();
-                var pnt2D = reader.ReadPoint();
                 bgc.ComponentResults[i] =
-                    new BendedCylinderComponent(radius, bgc.ComponentResults[i].Progress, new Point3D(bgc.BottomCenterResult.X + bgc.LengthResult * bgc.ComponentResults[i].Progress*Axis.X,
-                                                                                                      bgc.BottomCenterResult.Y + bgc.LengthResult * bgc.ComponentResults[i].Progress * Axis.Y,
-                                                                                                      bgc.BottomCenterResult.Z + bgc.LengthResult * bgc.ComponentResults[i].Progress * Axis.Z), pnt2D);
-            }
-            bgc.ComponentResults[0].Pnt3D = bgc.BottomCenterResult;
-            
-            Vector3D ProjXZ = new Vector3D(Axis.X, 0, Axis.Z);
-            double d = ProjXZ.Length;
-            double anglexz = 0;
-            if (d > 0) anglexz = 180 * Math.Acos(Axis.X / d) / Math.PI;
-            var rotationxz = Matrix3D.Identity;
-            rotationxz.Rotate(new Quaternion(new Vector3D(0.0, 1.0, 0.0), anglexz));
-
-            Vector3D ProjYZ = new Vector3D(0.0, Axis.Y, Axis.Z);
-            d = Math.Sqrt(Math.Pow(ProjYZ.Y, 2) + Math.Pow(ProjYZ.Z, 2));
-            double angleyz = 0.0;
-            if (d > 0) angleyz = 180 * Math.Acos(Axis.Y / d) / Math.PI;
-            var rotationyz = Matrix3D.Identity;
-            rotationyz.Rotate(new Quaternion(new Vector3D(1.0, 0.0, 0.0), angleyz));
-
-            foreach (var i in Enumerable.Range(1, bgc.ComponentResults.Length-1))
-            {
-                Vector vspine = new Vector(bgc.ComponentResults[i].Pnt2D.X - bgc.ComponentResults[i - 1].Pnt2D.X, bgc.ComponentResults[i].Pnt2D.Y - bgc.ComponentResults[i - 1].Pnt2D.Y);
-                    
-                var XZspine = rotationxz.Transform(new Vector3D(vspine.X, 0.0, 0.0));
-                var YZspine = rotationyz.Transform(new Vector3D(0.0, vspine.Y, 0.0));
-                Vector3D Test = new Vector3D(XZspine.X, YZspine.Y, XZspine.Z  + YZspine.Z);
-                MessageBox.Show(String.Format("Actual Length={0}, Computed Length={1}, ", vspine.Length, Test.Length));
-           
-                bgc.ComponentResults[i].Pnt3D = new Point3D(bgc.ComponentResults[i - 1].Pnt3D.X + XZspine.X, 
-                                                            bgc.ComponentResults[i - 1].Pnt3D.Y + YZspine.Y, 
-                                                            bgc.ComponentResults[i - 1].Pnt3D.Z + XZspine.Z  + YZspine.Z);
-            }
+                     new BendedCylinderComponent(reader.ReadValue(), bgc.ComponentResults[i].Progress, reader.ReadValue(), reader.ReadValue());
         }
 
         #endregion
