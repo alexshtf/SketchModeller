@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Microsoft.Practices.Prism.Commands;
 using SketchModeller.Infrastructure.Events;
 using Microsoft.Practices.Unity;
+using SketchModeller.Infrastructure.Shared;
 
 namespace SketchModeller.Modelling.Views
 {
@@ -19,17 +20,23 @@ namespace SketchModeller.Modelling.Views
         {
             MarkFeature = new DelegateCommand(MarkFeatureExecute);
             MarkSilhouette = new DelegateCommand(MarkSilhouetteExecute);
+            EnableInference = new DelegateCommand(EnableInferenceExecute);
+            DisableInference = new DelegateCommand(DisableInferenceExecute);
         }
 
         [InjectionConstructor]
-        public EditMenuViewModel(IEventAggregator eventAggregator)
+        public EditMenuViewModel(InferenceOptions inferenceOptions, IEventAggregator eventAggregator)
             : this()
         {
             this.eventAggregator = eventAggregator;
+            this.InferenceOptions = inferenceOptions;
         }
 
         public ICommand MarkFeature { get; private set; }
         public ICommand MarkSilhouette { get; private set; }
+        public ICommand EnableInference { get; private set; }
+        public ICommand DisableInference { get; private set; }
+        public InferenceOptions InferenceOptions { get; private set; }
 
         private void MarkFeatureExecute()
         {
@@ -39,6 +46,28 @@ namespace SketchModeller.Modelling.Views
         private void MarkSilhouetteExecute()
         {
             eventAggregator.GetEvent<MarkSilhouetteEvent>().Publish(null);
+        }
+
+        private void DisableInferenceExecute()
+        {
+            InferenceOptions.Cocentrality = false;
+            InferenceOptions.CollinearCenters = false;
+            InferenceOptions.CoplanarCenters = false;
+            InferenceOptions.Coplanarity = false;
+            InferenceOptions.OnSphere = false;
+            InferenceOptions.OrthogonalAxes = false;
+            InferenceOptions.Parallelism = false;
+        }
+
+        private void EnableInferenceExecute()
+        {
+            InferenceOptions.Cocentrality = true;
+            InferenceOptions.CollinearCenters = true;
+            InferenceOptions.CoplanarCenters = true;
+            InferenceOptions.Coplanarity = true;
+            InferenceOptions.OnSphere = true;
+            InferenceOptions.OrthogonalAxes = true;
+            InferenceOptions.Parallelism = true;
         }
     }
 }

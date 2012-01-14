@@ -8,4 +8,15 @@
           Style="{DynamicResource {x:Type MenuItem}}">
     <MenuItem Header="Mark as feature" Command="{Binding MarkFeature}" />
     <MenuItem Header="Mark as silhouette" Command="{Binding MarkSilhouette}" />
+    <MenuItem Header="Constraints inference">
+        <MenuItem Header="Disable all" Command="{Binding DisableInference}" />
+        <MenuItem Header="Enable all" Command="{Binding EnableInference}" />
+        <MenuItem Header="Coplanar" IsCheckable="True" IsChecked="{Binding InferenceOptions.Coplanarity}" />
+        <MenuItem Header="Cocentric" IsCheckable="True" IsChecked="{Binding InferenceOptions.Cocentrality}" />
+        <MenuItem Header="Coplanar centers" IsCheckable="True" IsChecked="{Binding InferenceOptions.CoplanarCenters}" />
+        <MenuItem Header="Collinear centers" IsCheckable="True" IsChecked="{Binding InferenceOptions.CollinearCenters}" />
+        <MenuItem Header="Orthogonal axes" IsCheckable="True" IsChecked="{Binding InferenceOptions.OrthogonalAxes}" />
+        <MenuItem Header="Parallel" IsCheckable="True" IsChecked="{Binding InferenceOptions.Parallelism}" />
+        <MenuItem Header="On sphere" IsCheckable="True" IsChecked="{Binding InferenceOptions.OnSphere}" />
+    </MenuItem>
 </MenuItem>
