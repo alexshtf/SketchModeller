@@ -63,18 +63,22 @@ namespace SketchModeller.Infrastructure.Data
             // update variables
             BottomFeatureCurve.Center = BottomCenter + Components.First().vS * U + Components.First().vT * V;
             TopFeatureCurve.Center = TopCenter = BottomCenter + Components.Last().vS * U + Components.Last().vT * V;
+
             BottomFeatureCurve.Normal = NPbot.X * U + NPbot.Y * V;
             TopFeatureCurve.Normal = NPtop.X * U + NPtop.Y * V;
-            TopFeatureCurve.Radius = Components.Last().Radius;
+            
             BottomFeatureCurve.Radius = Components.First().Radius;
+            TopFeatureCurve.Radius = Components.Last().Radius;
 
             // update results
             BottomFeatureCurve.CenterResult = BottomCenterResult = BottomCenterResult + ComponentResults.First().S * Uresult + ComponentResults.First().T * Vresult;
-            TopFeatureCurve.CenterResult = TopCenterResult = TopCenterResult + ComponentResults.Last().S * Uresult + ComponentResults.Last().T * Vresult;
-            BottomFeatureCurve.NormalResult = NPtopResult.X * Uresult + NPbotResult.Y * Vresult;
+            TopFeatureCurve.CenterResult = TopCenterResult = BottomCenterResult + ComponentResults.Last().S * Uresult + ComponentResults.Last().T * Vresult;
+
+            BottomFeatureCurve.NormalResult = NPbotResult.X * Uresult + NPbotResult.Y * Vresult;
             TopFeatureCurve.NormalResult = NPtopResult.X * Uresult + NPtopResult.Y * Vresult;
-            TopFeatureCurve.RadiusResult = ComponentResults.Last().Radius;
+            
             BottomFeatureCurve.RadiusResult = ComponentResults.First().Radius;
+            TopFeatureCurve.RadiusResult = ComponentResults.Last().Radius;
         }
 
     }
