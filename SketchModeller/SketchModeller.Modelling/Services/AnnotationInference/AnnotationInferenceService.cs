@@ -15,14 +15,14 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
     {
         private readonly InferenceEngine inferenceEngine;
 
-        public AnnotationInferenceService(SessionData sessionData)
+        public AnnotationInferenceService(SessionData sessionData, InferenceOptions inferenceOptions)
         {
             this.inferenceEngine = new InferenceEngine(
-                new OrthogonalityInferrer(sessionData),
-                new ColinearCentersInferer(sessionData),
-                new ParallelismInferer(sessionData),
-                new CoplanarityInferer(sessionData),
-                new OnSphereInferrer(sessionData));
+                new InferrerEntry { Inferrer = new OrthogonalityInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.OrthogonalAxes },
+                new InferrerEntry { Inferrer = new ColinearCentersInferer(sessionData), IsEnabledPredicate = () => inferenceOptions.CollinearCenters },
+                new InferrerEntry { Inferrer = new ParallelismInferer(sessionData), IsEnabledPredicate = () => inferenceOptions.Parallelism },
+                new InferrerEntry { Inferrer = new CoplanarityInferer(sessionData), IsEnabledPredicate = () => inferenceOptions.Coplanarity },
+                new InferrerEntry { Inferrer = new OnSphereInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.OnSphere } );
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)
