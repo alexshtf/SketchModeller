@@ -15,20 +15,15 @@ namespace SketchModeller.Modelling.ModelViews
     {
         private Visual3D CreateBgcView(SnappedBendedGenCylinder bgc)
         {
-            var model = new GeometryModel3D
-            {
-                Material = new DiffuseMaterial { Brush = Brushes.White },
-            };
-            model.Bind(GeometryModel3D.GeometryProperty,
-                () => bgc.BottomCenterResult,
-                () => bgc.Uresult,
-                () => bgc.Vresult,
-                () => bgc.ComponentResults,
-                (bottomCenter, U, V, components) => CreateBGCGeometry(bottomCenter, U, V, components));
-            return new ModelVisual3D
-            {
-                Content = model
-            };
+            return CreateVisual(bgc, model =>
+                {
+                    model.Bind(GeometryModel3D.GeometryProperty,
+                        () => bgc.BottomCenterResult,
+                        () => bgc.Uresult,
+                        () => bgc.Vresult,
+                        () => bgc.ComponentResults,
+                        (bottomCenter, U, V, components) => CreateBGCGeometry(bottomCenter, U, V, components));
+                });
         }
 
         private static MeshGeometry3D CreateBGCGeometry(

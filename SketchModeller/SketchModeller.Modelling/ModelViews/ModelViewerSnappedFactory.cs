@@ -35,6 +35,30 @@ namespace SketchModeller.Modelling.ModelViews
             return result;
         }
 
+        private static ModelVisual3D CreateVisual(SnappedPrimitive snappedPrimitive, Action<GeometryModel3D> geometryModelAction)
+        {
+            var frontEmissivePart = CreateEmissiveMaterial(snappedPrimitive);
+            var frontDiffusePart = new DiffuseMaterial { Brush = FRONT_BRUSH };
+            var frontMaterial = new MaterialGroup { Children = { frontEmissivePart, frontDiffusePart } };
+
+            // create wpf classes for displaying the geometry
+            var model3d = new GeometryModel3D();
+            model3d.Material = frontMaterial;
+
+            var backEmissivePart = CreateEmissiveMaterial(snappedPrimitive);
+            var backDiffusePart = new DiffuseMaterial { Brush = BACK_BRUSH };
+            var backMaterial = new MaterialGroup { Children = { backEmissivePart, backDiffusePart } };
+            model3d.BackMaterial = backMaterial;
+
+            var visual = new ModelVisual3D();
+            visual.Content = model3d;
+
+            geometryModelAction(model3d);
+
+            CreateFeatureCurves(visual, snappedPrimitive.FeatureCurves);
+            return visual;
+        }
+
         private static ModelVisual3D CreateVisual(MeshGeometry3D geometry, SnappedPrimitive snappedPrimitive)
         {
             var frontEmissivePart = CreateEmissiveMaterial(snappedPrimitive);

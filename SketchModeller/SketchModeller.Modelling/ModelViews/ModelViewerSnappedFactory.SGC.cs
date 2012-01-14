@@ -15,21 +15,15 @@ namespace SketchModeller.Modelling.ModelViews
     {
         private Visual3D CreateSgcView(SnappedStraightGenCylinder sgc)
         {
-            //MessageBox.Show("Snapped Factory");
-            var model = new GeometryModel3D
+            return CreateVisual(sgc, model =>
             {
-                Material = new DiffuseMaterial { Brush = Brushes.White },
-            };
-            model.Bind(GeometryModel3D.GeometryProperty,
-                () => sgc.AxisResult,
-                () => sgc.LengthResult,
-                () => sgc.BottomCenterResult,
-                () => sgc.ComponentResults,
-                (axis, length, bottomCenter, components) => CreateSGCGeometry(axis, length, bottomCenter, components));
-            return new ModelVisual3D
-            {
-                Content = model
-            };
+                model.Bind(GeometryModel3D.GeometryProperty,
+                    () => sgc.AxisResult,
+                    () => sgc.LengthResult,
+                    () => sgc.BottomCenterResult,
+                    () => sgc.ComponentResults,
+                    (axis, length, bottomCenter, components) => CreateSGCGeometry(axis, length, bottomCenter, components));
+            });
         }
 
         private static MeshGeometry3D CreateSGCGeometry(
