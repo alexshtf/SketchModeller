@@ -187,15 +187,6 @@ namespace SketchModeller.Modelling.Services.Snap
                                TermBuilder.Power(PointOnSpine.Y + medial_axis[i].Y, 2);
             }
             var spinePointTerm = TermUtils.SafeAvg(TermArray);
- 
-            // start/end points should be as close as possible to the bottom/top centers
-            //var startTerm = 1 * (
-            //    TermBuilder.Power(snappedPrimitive.BottomCenter.X - medial_axis[0].X, 2) +
-            //    TermBuilder.Power(snappedPrimitive.BottomCenter.Y + medial_axis[0].Y, 2));
-
-            //var endTerm = 1 * (
-            //    TermBuilder.Power(snappedPrimitive.TopCenter.X - medial_axis[medial_axis.Length - 1].X, 2) +
-            //    TermBuilder.Power(snappedPrimitive.TopCenter.X + medial_axis[medial_axis.Length - 1].Y, 2));
 
             // we specifically wish to give higher weight to first and last radii, so we have
             // an additional first/last radii term.
@@ -210,8 +201,6 @@ namespace SketchModeller.Modelling.Services.Snap
                 radiiSmoothTerm +
                 positionSmoothnessTerm +
                 spinePointTerm +
-                //startTerm +
-                //endTerm +
                 endpointsRadiiTerm;
 
             var sB = snappedPrimitive.NPbot.X;
