@@ -65,7 +65,7 @@ namespace SketchModeller.Modelling.Views
 
         public void SnapPrimitive()
         {
-            snapper.Snap();
+            Work.Execute(eventAggregator, () => snapper.SnapAsync());
         }
 
         #region SketchPlane property

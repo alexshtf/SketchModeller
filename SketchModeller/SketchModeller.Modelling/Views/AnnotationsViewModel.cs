@@ -13,11 +13,14 @@ using Microsoft.Practices.Prism.Commands;
 using Utils;
 using System.Diagnostics.Contracts;
 using SketchModeller.Infrastructure.Services;
+using SketchModeller.Infrastructure;
+using Microsoft.Practices.Prism.Events;
 
 namespace SketchModeller.Modelling.Views
 {
     public class AnnotationsViewModel : NotificationObject
     {
+        private readonly IEventAggregator eventAggregator;
         private readonly SessionData sessionData;
         private readonly ILoggerFacade logger;
         private readonly ISnapper snapper;
@@ -39,9 +42,10 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public AnnotationsViewModel(SessionData sessionData, ILoggerFacade logger, ISnapper snapper)
+        public AnnotationsViewModel(IEventAggregator eventAggregator, SessionData sessionData, ILoggerFacade logger, ISnapper snapper)
             : this()
         {
+            this.eventAggregator = eventAggregator;
             this.sessionData = sessionData;
             this.logger = logger;
             this.snapper = snapper;
@@ -82,7 +86,7 @@ namespace SketchModeller.Modelling.Views
         private void RemoveExecute()
         {
             Annotations.RemoveAt(SelectedAnnotationIndex);
-            snapper.Recalculate();
+            Work.Execute(eventAggregator, () => snapper.RecalculateAsync());
         }
 
         private bool RemoveCanExecute()
@@ -195,7 +199,7 @@ namespace SketchModeller.Modelling.Views
                 {
                     Annotations.Add(annotation);
                     SelectedAnnotationIndex = Annotations.Count - 1;
-                    snapper.Recalculate();
+                    Work.Execute(eventAggregator, () => snapper.RecalculateAsync());
                 }
             }
         }

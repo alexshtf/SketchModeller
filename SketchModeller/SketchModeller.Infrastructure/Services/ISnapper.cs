@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SketchModeller.Infrastructure.Data;
+using System.Reactive;
 
 namespace SketchModeller.Infrastructure.Services
 {
@@ -14,7 +15,7 @@ namespace SketchModeller.Infrastructure.Services
     public interface ISnapper
     {
         ITemporarySnap TemporarySnap(NewPrimitive primitive);
-        void Snap();
-        void Recalculate();
+        IObservable<Unit> SnapAsync();
+        IObservable<Unit> RecalculateAsync();
     }
 }

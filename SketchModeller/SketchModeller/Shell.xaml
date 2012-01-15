@@ -7,16 +7,17 @@
         xmlns:local="clr-namespace:SketchModeller"
         Height="720" 
         Width="1280"
-        IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}"
         Title="{Binding Title}"
         Background="{DynamicResource WindowBackgroundBrush}">
     <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Bottom" Click="OnDebugClick">Debug</Button>
         <Menu cal:RegionManager.RegionName="{x:Static skm:RegionNames.MainMenu}"
-              DockPanel.Dock="Top"/>
+              DockPanel.Dock="Top"
+              IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}"/>
         <TabControl cal:RegionManager.RegionName="{x:Static skm:RegionNames.SideBar}"
                     DockPanel.Dock="Left"
-                    Width="200">
+                    Width="200"
+                    IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}">
             <TabControl.Resources>
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Header" Value="{Binding ViewName}" />
@@ -31,7 +32,8 @@
             <DockPanel LastChildFill="True"
                        Grid.Column="0"
                        skm:RoutedEvents.ContextMenuCommands="OnContextMenuCommands"
-                       ContextMenuOpening="DockPanel_ContextMenuOpening">
+                       ContextMenuOpening="DockPanel_ContextMenuOpening"
+                       IsEnabled="{Binding IsWorking, Converter={x:Static utils:InvertBooleanConverter.Instance}}">
                 <DockPanel.ContextMenu>
                     <ContextMenu x:Name="sketchContextMenu"
                                  Closed="OnContextMenuClosed"
