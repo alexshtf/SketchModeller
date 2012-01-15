@@ -172,6 +172,7 @@
     <Compile Include="Optimization\ConjugateGradientOptimizer.cs" />
     <Compile Include="Optimization\ConstraintsNormWithGradientNormConvergenceTest.cs" />
     <Compile Include="Optimization\IAugmentedLagrangianIterations.cs" />
+    <Compile Include="Optimization\IConstrainedSolver.cs" />
     <Compile Include="Optimization\IConvergenceTest.cs" />
     <Compile Include="Optimization\IFirstOrderUnconstrainedOptimizer.cs" />
     <Compile Include="Optimization\ILagrangianCompiler.cs" />

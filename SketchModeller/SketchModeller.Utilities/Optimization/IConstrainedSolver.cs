@@ -20,6 +20,6 @@ namespace SketchModeller.Utilities.Optimization
         /// <param name="startPoint">The initial guess for the minimizer.</param>
         /// <returns>A sequence of approximations for the optimal values of the algorithm. The sequence terminates when 
         /// the solver decided it has converged.</returns>
-        IEnumerable<double[]> Solve(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
+        IEnumerable<double[]> Solve(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint);
     }
 }
