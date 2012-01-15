@@ -18,7 +18,8 @@ namespace SketchModeller.Infrastructure.Services
         /// <param name="constraints">The constraint terms.</param>
         /// <param name="vars">The variables used in the objective and in the constraints.</param>
         /// <param name="startPoint">The initial guess for the optimal value.</param>
-        /// <returns>The minimizer of <paramref name="objective"/> subject to <paramref name="constraints"/>.</returns>
-        double[] Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint);
+        /// <returns>A sequence of approximate minimizers of <paramref name="objective"/> subject to <paramref name="constraints"/>. The
+        /// sequence terminates when the optimizer service determined that it converged.</returns>
+        IEnumerable<double[]> Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint);
     }
 }

@@ -58,7 +58,7 @@ namespace SketchModeller.Utilities
                 optimizationProgram.Objective, 
                 optimizationProgram.Constraints, 
                 optimizationProgram.Variables, 
-                initial);
+                initial).Last();
 
             return minimizer;
         }

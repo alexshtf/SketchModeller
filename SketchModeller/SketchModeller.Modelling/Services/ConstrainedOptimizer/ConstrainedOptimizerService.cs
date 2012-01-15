@@ -12,7 +12,7 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
 {
     class ConstrainedOptimizerService : IConstrainedOptimizer
     {
-        private readonly AugmentedLagrangianSolver augmentedLagrangianSolver;
+        private readonly IConstrainedSolver solver;
 
         public ConstrainedOptimizerService()
         {
@@ -31,13 +31,13 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
                 constraintsNormMax: 1E-8,
                 lagrangianGradientNormMax: 2E-6,
                 maxIterations: 1000);
-            augmentedLagrangianSolver = new AugmentedLagrangianSolver(convergenceTest, iterations);
+            solver = new AugmentedLagrangianSolver(convergenceTest, iterations);
         }
 
-        public double[] Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
+        public IEnumerable<double[]> Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
         {
             //DebugSave(objective, constraints, vars, startPoint);
-            return augmentedLagrangianSolver.Solve(objective, constraints, vars, startPoint);
+            return solver.Solve(objective, constraints, vars, startPoint);
         }
 
         /*

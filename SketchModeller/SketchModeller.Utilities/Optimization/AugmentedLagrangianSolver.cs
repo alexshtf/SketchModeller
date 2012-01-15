@@ -9,7 +9,7 @@ namespace SketchModeller.Utilities.Optimization
     /// <summary>
     /// Solves a constraint optimization problem using the AugmentedLagrangian algorithm.
     /// </summary>
-    public class AugmentedLagrangianSolver
+    public class AugmentedLagrangianSolver : IConstrainedSolver
     {
         private readonly IConvergenceTest convergenceTest;
         private readonly IAugmentedLagrangianIterations iterations;
@@ -32,15 +32,16 @@ namespace SketchModeller.Utilities.Optimization
         /// <param name="constraints">The constraints</param>
         /// <param name="variables">The variables</param>
         /// <param name="startPoint">The initial guess for the minimizer.</param>
-        /// <returns>The optimal value computed for this optimization problem.</returns>
-        public double[] Solve(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
+        /// <returns>A sequence of approximations for the optimal values of the algorithm. The sequence terminates when 
+        /// the solver decided it has converged.</returns>
+        public IEnumerable<double[]> Solve(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
         {
             convergenceTest.Reset();
             foreach (var iterationResult in iterations.Start(objective, constraints, variables, startPoint))
             {
                 convergenceTest.Update(iterationResult);
                 if (convergenceTest.HasConverged)
-                    return iterationResult.Values;
+                    yield return iterationResult.Values;
             }
             throw new InvalidOperationException("Iterations should run indefinately until convergence. We should not reach this point.");
         }

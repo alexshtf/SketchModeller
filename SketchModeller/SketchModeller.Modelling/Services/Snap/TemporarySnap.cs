@@ -80,7 +80,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var vals = primitivesWriter.GetValues();
 
             optimizationTask = Task.Factory.StartNew<double[]>(
-                _ => optimizer.Minimize(objective, constraints, vars, vals), TaskScheduler.Default)
+                _ => optimizer.Minimize(objective, constraints, vars, vals).Last(), TaskScheduler.Default)
                 .ContinueWith(task =>
                 {
                     if (disposed)

@@ -140,7 +140,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var finalObjective = TermUtils.SafeSum(objectives);
             var optimum = constrainedOptimizer.Minimize(
-                finalObjective, constraints, vars, vals);
+                finalObjective, constraints, vars, vals).Last();
 
             // update primitives from the optimal values
             primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);
