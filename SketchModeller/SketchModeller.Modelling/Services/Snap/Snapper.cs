@@ -41,6 +41,8 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly IAnnotationConstraintsExtractor annotationConstraintsExtractor;
         private readonly IConstrainedOptimizer constrainedOptimizer;
 
+        private int stopOptimization;
+
         [InjectionConstructor]
         public Snapper(
             SessionData sessionData,
@@ -101,6 +103,8 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private void OnGlobalShortcut(KeyEventArgs e)
         {
+            if (e.Key == Key.C && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                Interlocked.Exchange(ref stopOptimization, 1);
         }
 
         private IObservable<Unit> OptimizeWithAnnotationsAsync(DispatcherScheduler scheduler, IEnumerable<Annotation> annotations)
@@ -155,8 +159,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private IObservable<Unit> IterativelySolveAsync(OptimizationProblem problem, DispatcherScheduler scheduler)
         {
-            var optimizationSequence = constrainedOptimizer.Minimize(
-                problem.Objective, problem.Constraints, problem.Variables, problem.InitialValue);
+            var optimizationSequence = Minimize(problem);
 
             var optimumObservations =
                 optimizationSequence.ToObservable(Scheduler.ThreadPool);
@@ -168,6 +171,18 @@ namespace SketchModeller.Modelling.Services.Snap
                                    select unit;
 
             return solutionSequence.TakeLast(1);
+        }
+
+        private IEnumerable<double[]> Minimize(OptimizationProblem problem)
+        {
+            foreach (var optimum in constrainedOptimizer.Minimize(problem.Objective, problem.Constraints, problem.Variables, problem.InitialValue))
+            {
+                yield return optimum;
+             
+                var shouldStop = Interlocked.CompareExchange(ref stopOptimization, 0, 1);
+                if (shouldStop == 1)
+                    yield break;
+            }
         }
 
         private OptimizationProblem GetOptimizationProblem()
