@@ -16,7 +16,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
     class ColinearCentersInferer : IInferrer
     {
         private const double DEFAULT_PROXIMITY_THRESHOLD = 0.6;
-        private const double DEFAULT_COLINEARITY_THRESHOLD = 160 * Math.PI / 180; // 10 degrees angle to be considered "colinear"
+        private const double DEFAULT_COLINEARITY_THRESHOLD = 170 * Math.PI / 180; // 10 degrees angle to be considered "colinear"
         private const double DEFAULT_PARALLELISM_THRSHOLD = 5 * Math.PI / 180; // 5 degrees angle between vectors to be considered "parallel"
 
         private SessionData sessionData;
