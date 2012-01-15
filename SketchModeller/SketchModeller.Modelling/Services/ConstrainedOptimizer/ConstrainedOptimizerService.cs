@@ -12,31 +12,17 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
 {
     class ConstrainedOptimizerService : IConstrainedOptimizer
     {
-        private readonly IConstrainedSolver solver;
+        private readonly Func<IConstrainedSolver> solverFactory;
 
         public ConstrainedOptimizerService()
         {
-            var lagrangianCompiler = new LagrangianCompiler();
-            var unconstrainedOptimizer = new LBFGSOptimizer(30);
-            //var unconstrainedOptimizer = new ConjugateGradientOptimizer();
-            var iterations = new AugmentedLagrangianIterations(
-                unconstrainedOptimizer, 
-                lagrangianCompiler, 
-                startConstraintsPenalty: 10,
-                constraintsPenaltyMax: 1E3,
-                maxConstraintsNormLowerBound: 1E-8,
-                lagrangianGradientNormLowerBound: 4E-7);
-
-            var convergenceTest = new ConstraintsNormWithGradientNormConvergenceTest(
-                constraintsNormMax: 1E-8,
-                lagrangianGradientNormMax: 2E-6,
-                maxIterations: 1000);
-            solver = new AugmentedLagrangianSolver(convergenceTest, iterations);
+            solverFactory = new AugmentedLagrangianSolverFactory().Create;
         }
 
         public IEnumerable<double[]> Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
         {
             //DebugSave(objective, constraints, vars, startPoint);
+            var solver = solverFactory();
             return solver.Solve(objective, constraints, vars, startPoint);
         }
 

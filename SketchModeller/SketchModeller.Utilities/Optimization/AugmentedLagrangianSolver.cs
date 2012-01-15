@@ -40,8 +40,9 @@ namespace SketchModeller.Utilities.Optimization
             foreach (var iterationResult in iterations.Start(objective, constraints, variables, startPoint))
             {
                 convergenceTest.Update(iterationResult);
+                yield return iterationResult.Values;
                 if (convergenceTest.HasConverged)
-                    yield return iterationResult.Values;
+                    yield break;
             }
             throw new InvalidOperationException("Iterations should run indefinately until convergence. We should not reach this point.");
         }
