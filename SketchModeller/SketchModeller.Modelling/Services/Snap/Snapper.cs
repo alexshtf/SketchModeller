@@ -87,13 +87,14 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
                 var scheduler = new DispatcherScheduler(dispatcher);
+                var optimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
                 return from tuple in Observable.Start<Tuple<NewPrimitive, SnappedPrimitive>>(ConvertToSnapped, scheduler)
                        let newPrimitive = tuple.Item1
                        let snappedPrimitive = tuple.Item2
-                       from unit1 in OptimizeAllAsync(scheduler)
+                       from unit1 in OptimizeAsync(scheduler, optimizationModel)
                        let annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive)
-                       from unit2 in annotations.Any() ? OptimizeWithAnnotationsAsync(scheduler, annotations) 
+                       from unit2 in annotations.Any() ? OptimizeWithAnnotationsAsync(scheduler, annotations, optimizationModel)
                                                        : Observable.Empty<Unit>()
                        select unit2;
             }
@@ -107,10 +108,10 @@ namespace SketchModeller.Modelling.Services.Snap
                 Interlocked.Exchange(ref stopOptimization, 1);
         }
 
-        private IObservable<Unit> OptimizeWithAnnotationsAsync(DispatcherScheduler scheduler, IEnumerable<Annotation> annotations)
+        private IObservable<Unit> OptimizeWithAnnotationsAsync(DispatcherScheduler scheduler, IEnumerable<Annotation> annotations, IOptimizationModel optimizationModel)
         {
             return from unit1 in Observable.Start(() => sessionData.Annotations.AddRange(annotations), scheduler)
-                   from unit2 in OptimizeAllAsync(scheduler)
+                   from unit2 in OptimizeAsync(scheduler, optimizationModel)
                    select unit2;
         }
 
@@ -133,8 +134,9 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
             var scheduler = new DispatcherScheduler(dispatcher);
+            var optimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
-            return from unit1 in OptimizeAllAsync(scheduler)
+            return from unit1 in OptimizeAsync(scheduler, optimizationModel)
                    from unit2 in NotifySnapCompleteAsync(scheduler)
                    select unit2;
         }
@@ -149,15 +151,15 @@ namespace SketchModeller.Modelling.Services.Snap
             eventAggregator.GetEvent<SnapCompleteEvent>().Publish(null);
         }
 
-        private IObservable<Unit> OptimizeAllAsync(DispatcherScheduler scheduler)
+        private IObservable<Unit> OptimizeAsync(DispatcherScheduler scheduler, IOptimizationModel optimizationModel)
         {
             return
-                from optimizationProblem in Observable.Start<OptimizationProblem>(GetOptimizationProblem, scheduler)
-                from unit in IterativelySolveAsync(optimizationProblem, scheduler)
+                from optimizationProblem in Observable.Start<OptimizationProblem>(optimizationModel.CreateProblem, scheduler)
+                from unit in IterativelySolveAndUpdateAsync(optimizationProblem, optimizationModel, scheduler)
                 select unit;
         }
 
-        private IObservable<Unit> IterativelySolveAsync(OptimizationProblem problem, DispatcherScheduler scheduler)
+        private IObservable<Unit> IterativelySolveAndUpdateAsync(OptimizationProblem problem, IOptimizationModel optimizationModel, DispatcherScheduler scheduler)
         {
             var optimizationSequence = Minimize(problem);
 
@@ -167,7 +169,11 @@ namespace SketchModeller.Modelling.Services.Snap
             var solutionSequence = from optimumBuffer in optimumObservations.Buffer(TimeSpan.FromSeconds(1)) // take optimization result every 1 second
                                    where optimumBuffer.Any()
                                    let optimum = optimumBuffer.Last()
-                                   from unit in Observable.Start(() => UpdateSolution(optimum), scheduler)
+                                   from unit in Observable.Start(() =>
+                                       {
+                                           optimizationModel.UpdateSolution(optimum);
+                                           NotifySnapComplete();
+                                       }, scheduler)
                                    select unit;
 
             return solutionSequence.TakeLast(1);
@@ -183,76 +189,6 @@ namespace SketchModeller.Modelling.Services.Snap
                 if (shouldStop == 1)
                     yield break;
             }
-        }
-
-        private OptimizationProblem GetOptimizationProblem()
-        {
-            var curvesToAnnotations = GetCurvesToAnnotationsMapping();
-
-            // get objectives and constraints for primitives
-            var constraints = new List<Term>();
-            var objectives = new List<Term>();
-            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
-            {
-                var objectiveAndConstraints = snappersManager.Reconstruct(snappedPrimitive, curvesToAnnotations);
-                objectives.Add(objectiveAndConstraints.Item1);
-                constraints.AddRange(objectiveAndConstraints.Item2);
-            }
-
-            // add constraints extracted from the annotations
-            var annotationConstraints = from annotation in sessionData.Annotations
-                                        from constraint in annotationConstraintsExtractor.GetConstraints(annotation)
-                                        select constraint;
-            constraints.AddRange(annotationConstraints);
-
-            // perform the optimization.
-            var primitivesWriter = primitivesReaderWriterFactory.CreateWriter();
-            primitivesWriter.Write(sessionData.SnappedPrimitives);
-
-            var variables = primitivesWriter.GetVariables();
-            var values = primitivesWriter.GetValues();
-
-            var finalObjective = TermUtils.SafeSum(objectives);
-
-            return new OptimizationProblem
-            {
-                Objective = finalObjective,
-                Constraints = constraints.ToArray(),
-                Variables = variables,
-                InitialValue = values,
-            };
-        }
-
-        private void UpdateSolution(double[] optimum)
-        {
-            primitivesReaderWriterFactory.CreateReader().Read(optimum, sessionData.SnappedPrimitives);
-            foreach (var snappedPrimitive in sessionData.SnappedPrimitives)
-                snappedPrimitive.UpdateFeatureCurves();
-            NotifySnapComplete();
-        }
-
-        private Dictionary<FeatureCurve, ISet<Annotation>> GetCurvesToAnnotationsMapping()
-        {
-            var curvesToAnnotations = new Dictionary<FeatureCurve, ISet<Annotation>>();
-            foreach (var fc in sessionData.FeatureCurves)
-                curvesToAnnotations[fc] = new HashSet<Annotation>();
-
-            foreach (var annotation in sessionData.Annotations)
-            {
-                IEnumerable<FeatureCurve> curves = annotation.Elements;
-                Debug.Assert(curves != null);
-                foreach (var fc in curves)
-                    curvesToAnnotations[fc].Add(annotation);
-            }
-            return curvesToAnnotations;
-        }
-
-        class OptimizationProblem
-        {
-            public Term Objective { get; set; }
-            public Term[] Constraints { get; set; }
-            public double[] InitialValue { get; set; }
-            public Variable[] Variables { get; set; }
         }
     }
 }
