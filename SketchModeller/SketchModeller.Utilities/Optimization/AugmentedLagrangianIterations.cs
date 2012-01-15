@@ -37,12 +37,18 @@ namespace SketchModeller.Utilities.Optimization
         {
             var compiledLagrangian = lagrangianCompiler.Compile(objective, constraints, variables);
 
+            const double CONSTRAINT_NORM_EXPONENT_INIT = 0.5;
+            const double CONSTRAINT_NORM_EXPONENT_REDUCE = 0.5;
+
+            const double GRADIENT_NORM_EXPONENT_INIT = 0.5;
+            const double GRADIENT_NORM_EXPONENT_REDUCE = 0.5;
+
             var multipliers = new double[compiledLagrangian.ConstraintsCount];
             var currentPoint = startPoint;
 
             var constraintsPenalty = startConstraintsPenalty;
-            var maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);
-            var maxLagrangianGradientNorm = 1 / constraintsPenalty;
+            var maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, CONSTRAINT_NORM_EXPONENT_INIT);
+            var maxLagrangianGradientNorm = 1 / Math.Pow(constraintsPenalty, GRADIENT_NORM_EXPONENT_INIT);
 
             while (true)
             {
@@ -73,22 +79,22 @@ namespace SketchModeller.Utilities.Optimization
                     // lambda <-- lambda + c / mu
                     for (int i = 0; i < multipliers.Length; ++i)
                         multipliers[i] = multipliers[i] + constraintValues[i] * constraintsPenalty;
-                    
-                    maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, 0.5);
+
+                    maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, CONSTRAINT_NORM_EXPONENT_REDUCE);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
 
-                    maxLagrangianGradientNorm = maxLagrangianGradientNorm / constraintsPenalty;
+                    maxLagrangianGradientNorm = maxLagrangianGradientNorm / Math.Pow(constraintsPenalty, GRADIENT_NORM_EXPONENT_REDUCE);
                     maxLagrangianGradientNorm = Math.Max(maxLagrangianGradientNorm, lagrangianGradientNormLowerBound);
                 }
                 else
                 {
                     constraintsPenalty = 2 * constraintsPenalty; 
                     constraintsPenalty = Math.Min(constraintsPenalty, constraintsPenaltyMax);
-                    
-                    maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.5);
+
+                    maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, CONSTRAINT_NORM_EXPONENT_INIT);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
 
-                    maxLagrangianGradientNorm = 1 / constraintsPenalty;
+                    maxLagrangianGradientNorm = 1 / Math.Pow(constraintsPenalty, GRADIENT_NORM_EXPONENT_INIT);
                     maxLagrangianGradientNorm = Math.Max(maxLagrangianGradientNorm, lagrangianGradientNormLowerBound);
                 }
             }
