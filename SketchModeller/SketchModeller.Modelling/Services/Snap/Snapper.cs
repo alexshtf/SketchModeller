@@ -93,8 +93,7 @@ namespace SketchModeller.Modelling.Services.Snap
                        let annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive)
                        from unit2 in annotations.Any() ? OptimizeWithAnnotationsAsync(scheduler, annotations) 
                                                        : Observable.Empty<Unit>()
-                       from unit3 in NotifySnapCompleteAsync(scheduler)
-                       select unit3;
+                       select unit2;
             }
             else
                 return RecalculateAsync();
@@ -162,7 +161,8 @@ namespace SketchModeller.Modelling.Services.Snap
             var optimumObservations =
                 optimizationSequence.ToObservable(Scheduler.ThreadPool);
 
-            var solutionSequence = from optimumBuffer in optimumObservations.Buffer(TimeSpan.FromSeconds(1))
+            var solutionSequence = from optimumBuffer in optimumObservations.Buffer(TimeSpan.FromSeconds(1)) // take optimization result every 1 second
+                                   where optimumBuffer.Any()
                                    let optimum = optimumBuffer.Last()
                                    from unit in Observable.Start(() => UpdateSolution(optimum), scheduler)
                                    select unit;
@@ -194,8 +194,8 @@ namespace SketchModeller.Modelling.Services.Snap
             var primitivesWriter = primitivesReaderWriterFactory.CreateWriter();
             primitivesWriter.Write(sessionData.SnappedPrimitives);
 
-            var vars = primitivesWriter.GetVariables();
-            var vals = primitivesWriter.GetValues();
+            var variables = primitivesWriter.GetVariables();
+            var values = primitivesWriter.GetValues();
 
             var finalObjective = TermUtils.SafeSum(objectives);
 
@@ -203,8 +203,8 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 Objective = finalObjective,
                 Constraints = constraints.ToArray(),
-                Variables = vars,
-                InitialValue = vals,
+                Variables = variables,
+                InitialValue = values,
             };
         }
 
