@@ -13,7 +13,7 @@ namespace SketchModeller.Infrastructure.Shared
             IsSketchShown = true;
             IsSnappedPrimitivesShown = true;
             IsTemporaryPrimitivesShown = true;
-            IsPaperMode = false;
+            IsPaperMode = true;
         }
 
         #region IsSketchShown property
