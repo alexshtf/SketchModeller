@@ -74,7 +74,7 @@ namespace SketchModeller.Utilities.Optimization
                     for (int i = 0; i < multipliers.Length; ++i)
                         multipliers[i] = multipliers[i] + constraintValues[i] * constraintsPenalty;
                     
-                    maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, 0.9);
+                    maxConstraintsNorm = maxConstraintsNorm / Math.Pow(constraintsPenalty, 0.5);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
 
                     maxLagrangianGradientNorm = maxLagrangianGradientNorm / constraintsPenalty;
@@ -82,10 +82,10 @@ namespace SketchModeller.Utilities.Optimization
                 }
                 else
                 {
-                    constraintsPenalty = 1.5 * constraintsPenalty; 
+                    constraintsPenalty = 2 * constraintsPenalty; 
                     constraintsPenalty = Math.Min(constraintsPenalty, constraintsPenaltyMax);
                     
-                    maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);
+                    maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.5);
                     maxConstraintsNorm = Math.Max(maxConstraintsNorm, maxConstraintsNormLowerBound);
 
                     maxLagrangianGradientNorm = 1 / constraintsPenalty;
