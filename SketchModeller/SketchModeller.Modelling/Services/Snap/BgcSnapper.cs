@@ -57,7 +57,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
                 Uresult = newPrimitive.Uview,
                 Vresult = newPrimitive.Vview,
-                NPtopResult = new Vector(0, 1),
+                NPtopResult = new Vector(1, 0),
                 NPbotResult = new Vector(0, 1),
                 TopCenterResult = newPrimitive.Top,
                 BottomCenterResult = newPrimitive.Bottom,

@@ -24,6 +24,7 @@ using System.Reactive.Linq;
 using System.Reactive.Concurrency;
 using System.Windows.Threading;
 using System.Threading;
+using System.Windows.Input;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -68,6 +69,8 @@ namespace SketchModeller.Modelling.Services.Snap
             snappersManager.RegisterSnapper(new SgcSnapper());
             snappersManager.RegisterSnapper(new BgcSnapper());
 
+            eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
+
             logger.Log("NewSnapper created", Category.Debug, Priority.None);
         }
 
@@ -95,6 +98,10 @@ namespace SketchModeller.Modelling.Services.Snap
             }
             else
                 return RecalculateAsync();
+        }
+
+        private void OnGlobalShortcut(KeyEventArgs e)
+        {
         }
 
         private IObservable<Unit> OptimizeWithAnnotationsAsync(DispatcherScheduler scheduler, IEnumerable<Annotation> annotations)
@@ -155,7 +162,8 @@ namespace SketchModeller.Modelling.Services.Snap
             var optimumObservations =
                 optimizationSequence.ToObservable(Scheduler.ThreadPool);
 
-            var solutionSequence = from optimum in optimumObservations
+            var solutionSequence = from optimumBuffer in optimumObservations.Buffer(TimeSpan.FromSeconds(1))
+                                   let optimum = optimumBuffer.Last()
                                    from unit in Observable.Start(() => UpdateSolution(optimum), scheduler)
                                    select unit;
 

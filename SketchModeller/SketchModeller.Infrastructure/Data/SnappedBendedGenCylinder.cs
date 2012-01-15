@@ -71,7 +71,7 @@ namespace SketchModeller.Infrastructure.Data
             TopFeatureCurve.Radius = Components.Last().Radius;
 
             // update results
-            BottomFeatureCurve.CenterResult = BottomCenterResult = BottomCenterResult + ComponentResults.First().S * Uresult + ComponentResults.First().T * Vresult;
+            BottomFeatureCurve.CenterResult = BottomCenterResult + ComponentResults.First().S * Uresult + ComponentResults.First().T * Vresult;
             TopFeatureCurve.CenterResult = TopCenterResult = BottomCenterResult + ComponentResults.Last().S * Uresult + ComponentResults.Last().T * Vresult;
 
             BottomFeatureCurve.NormalResult = NPbotResult.X * Uresult + NPbotResult.Y * Vresult;

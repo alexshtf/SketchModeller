@@ -43,11 +43,10 @@ namespace SketchModeller
             DataContext = viewModel;
         }
 
-        protected override void OnKeyDown(KeyEventArgs e)
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (!viewModel.IsWorking)
-                eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
+            eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
         }
 
         private void OnDebugClick(object sender, RoutedEventArgs e)
