@@ -28,7 +28,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
     {
         public const double DEFAULT_PARALLEL_ANGLE_THRESHOLD = 15 * Math.PI / 180; // 20 degrees
         public const double DEFAULT_CENTER_DISTANCE_THRESHOLD = 0.05;
-        public const double DEFAUTL_CENTER_DISTANCE_RELATIVE_THRESHOLD = 0.15; // 15%
+        public const double DEFAUTL_CENTER_DISTANCE_RELATIVE_THRESHOLD = 0.10; // 12%
 
         private readonly SessionData sessionData;
         private readonly double parallelAngleThreshold; 

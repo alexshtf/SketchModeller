@@ -22,7 +22,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
                 new InferrerEntry { Inferrer = new ColinearCentersInferer(sessionData), IsEnabledPredicate = () => inferenceOptions.CollinearCenters },
                 new InferrerEntry { Inferrer = new ParallelismInferer(sessionData), IsEnabledPredicate = () => inferenceOptions.Parallelism },
                 new InferrerEntry { Inferrer = new CoplanarityInferer(sessionData), IsEnabledPredicate = () => inferenceOptions.Coplanarity },
-                new InferrerEntry { Inferrer = new OnSphereInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.OnSphere } );
+                new InferrerEntry { Inferrer = new OnSphereInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.OnSphere },
+                new InferrerEntry { Inferrer = new CocentralityInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.Cocentrality });
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)

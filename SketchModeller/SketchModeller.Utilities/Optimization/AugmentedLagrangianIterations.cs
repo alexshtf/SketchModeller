@@ -82,7 +82,7 @@ namespace SketchModeller.Utilities.Optimization
                 }
                 else
                 {
-                    constraintsPenalty = 2 * constraintsPenalty; 
+                    constraintsPenalty = 1.5 * constraintsPenalty; 
                     constraintsPenalty = Math.Min(constraintsPenalty, constraintsPenaltyMax);
                     
                     maxConstraintsNorm = 1 / Math.Pow(constraintsPenalty, 0.1);
