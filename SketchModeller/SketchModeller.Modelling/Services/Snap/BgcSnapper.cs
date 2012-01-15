@@ -170,6 +170,14 @@ namespace SketchModeller.Modelling.Services.Snap
                 let r2 = pair.Item2.Radius
                 let r3 = pair.Item3.Radius
                 select TermBuilder.Power(r2 - 0.5 * (r1 + r3), 2)); // how far is r2 from the avg of r1 and r3
+
+            var positionSmoothnessTerm = TermUtils.SafeAvg(
+                from triple in snappedPrimitive.Components.SeqTripples()
+                let p1 = new TVec(triple.Item1.vS, triple.Item1.vT)
+                let p2 = new TVec(triple.Item2.vS, triple.Item2.vT)
+                let p3 = new TVec(triple.Item3.vS, triple.Item3.vT)
+                let laplacian = p2 - 0.5 * (p1 + p3)
+                select laplacian.NormSquared);
    
             Term[] TermArray = new Term[medial_axis.Length];
             for (int i = 0; i < medial_axis.Length; i++)
@@ -200,21 +208,48 @@ namespace SketchModeller.Modelling.Services.Snap
                 0.1 * orientationTerm +
                 radiiApproxTerm +
                 radiiSmoothTerm +
+                positionSmoothnessTerm +
                 spinePointTerm +
                 //startTerm +
                 //endTerm +
                 endpointsRadiiTerm;
 
-            var constraint1 = snappedPrimitive.NPtop.NormSquared - 1;
-            var constraint2 = snappedPrimitive.NPbot.NormSquared - 1;
-            //var constraint1 = snappedPrimitive.BottomFeatureCurve.Normal.NormSquared - 1;
-            //var constraint2 = snappedPrimitive.TopFeatureCurve.Normal.NormSquared - 1;
-            var constraint3 = snappedPrimitive.U.NormSquared - 1;
-            var constraint4 = snappedPrimitive.V.NormSquared - 1;
-            var constraint5 = TVec.InnerProduct(snappedPrimitive.U, snappedPrimitive.V);
-            var constraint6 = snappedPrimitive.Components[0].vS;
-            var constraint7 = snappedPrimitive.Components[0].vT;
-            var constraints = new Term[] { constraint1, constraint2, constraint3, constraint4, constraint5, constraint6, constraint7 };
+            var sB = snappedPrimitive.NPbot.X;
+            var tB = snappedPrimitive.NPbot.Y;
+
+            var s0 = snappedPrimitive.Components[0].vS;
+            var t0 = snappedPrimitive.Components[0].vT;
+            var s1 = snappedPrimitive.Components[1].vS;
+            var t1 = snappedPrimitive.Components[1].vT;
+            var botNormalParallelism = tB * (s1 - s0) - sB * (t1 - t0);
+
+            var sT = snappedPrimitive.NPtop.X;
+            var tT = snappedPrimitive.NPtop.Y;
+            var sLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 1].vS;
+            var tLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 1].vT;
+            var sBeforeLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 2].vS;
+            var tBeforeLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 2].vT;
+            var topNormalParallelism = tT * (sLast - sBeforeLast) * sT * (tLast - tBeforeLast);
+
+            var topNormalized = snappedPrimitive.NPtop.NormSquared - 1;
+            var botNormalized = snappedPrimitive.NPbot.NormSquared - 1;
+            var uNormalized = snappedPrimitive.U.NormSquared - 1;
+            var vNormalized = snappedPrimitive.V.NormSquared - 1;
+            var uvOrthogonal = TVec.InnerProduct(snappedPrimitive.U, snappedPrimitive.V);
+            var firstComponentBottomS = snappedPrimitive.Components[0].vS;
+            var firstComponentBottomT = snappedPrimitive.Components[0].vT;
+            var constraints = new Term[] 
+            { 
+                topNormalized, 
+                botNormalized, 
+                uNormalized, 
+                vNormalized, 
+                uvOrthogonal, 
+                firstComponentBottomS, 
+                firstComponentBottomT,
+                botNormalParallelism,
+                topNormalParallelism
+            };
 
             return Tuple.Create(objective, constraints);
         }
