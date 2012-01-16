@@ -18,5 +18,6 @@
         <MenuItem Header="Orthogonal axes" IsCheckable="True" IsChecked="{Binding InferenceOptions.OrthogonalAxes}" />
         <MenuItem Header="Parallel" IsCheckable="True" IsChecked="{Binding InferenceOptions.Parallelism}" />
         <MenuItem Header="On sphere" IsCheckable="True" IsChecked="{Binding InferenceOptions.OnSphere}" />
+        <MenuItem Header="Same radius" IsCheckable="True" IsChecked="{Binding InferenceOptions.SameRadius}" />
     </MenuItem>
 </MenuItem>

@@ -57,6 +57,7 @@ namespace SketchModeller.Modelling.Views
             InferenceOptions.OnSphere = false;
             InferenceOptions.OrthogonalAxes = false;
             InferenceOptions.Parallelism = false;
+            InferenceOptions.SameRadius = false;
         }
 
         private void EnableInferenceExecute()
@@ -68,6 +69,7 @@ namespace SketchModeller.Modelling.Views
             InferenceOptions.OnSphere = true;
             InferenceOptions.OrthogonalAxes = true;
             InferenceOptions.Parallelism = true;
+            InferenceOptions.SameRadius = true;
         }
     }
 }
