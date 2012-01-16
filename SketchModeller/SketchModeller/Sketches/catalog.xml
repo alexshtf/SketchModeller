@@ -45,4 +45,7 @@
   <sketch name="wall lamp"
           file="walllamp.svg"
           modelFile="walllamp.model" />
+  <sketch name="Phone handset"
+        file="handset.svg"
+        modelFile="handset.model" />
 </catalog>
