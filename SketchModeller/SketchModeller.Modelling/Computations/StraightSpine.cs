@@ -200,14 +200,25 @@ namespace SketchModeller.Modelling.Computations
 
         private static void EnsureFiniteRadii(double[] result)
         {
-            var n = result.Length;
-            var firstFiniteIdx = Enumerable.Range(0, n).First(i => !double.IsInfinity(result[i]));
-            var lastFiniteIdx = Enumerable.Range(0, n).Last(i => !double.IsInfinity(result[i]));
+            var containsFiniteRadius = result.Any(r => !double.IsInfinity(r));
 
-            for (int i = 0; i < firstFiniteIdx; ++i)
-                result[i] = result[firstFiniteIdx];
-            for (int i = lastFiniteIdx + 1; i < n; ++i)
-                result[i] = result[lastFiniteIdx];
+            if (containsFiniteRadius)
+            {
+                var n = result.Length;
+                var firstFiniteIdx = Enumerable.Range(0, n).First(i => !double.IsInfinity(result[i]));
+                var lastFiniteIdx = Enumerable.Range(0, n).Last(i => !double.IsInfinity(result[i]));
+
+                for (int i = 0; i < firstFiniteIdx; ++i)
+                    result[i] = result[firstFiniteIdx];
+                for (int i = lastFiniteIdx + 1; i < n; ++i)
+                    result[i] = result[lastFiniteIdx];
+            }
+            else
+            {
+                // we make all radii be a small value (0.01) if no finite radius has been found
+                for (int i = 0; i < result.Length; i++)
+                    result[i] = 0.01;
+            }
         }
 
         private static IEnumerable<double> ComputeProgressProjections(double[] progress, IEnumerable<double> spineProjections)

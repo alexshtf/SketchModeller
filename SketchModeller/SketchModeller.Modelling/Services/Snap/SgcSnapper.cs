@@ -84,7 +84,8 @@ namespace SketchModeller.Modelling.Services.Snap
             var annotated = new HashSet<FeatureCurve>(curvesToAnnotations.Keys.Where(key => curvesToAnnotations[key].Count > 0));
             annotated.Intersect(snappedPrimitive.FeatureCurves);
 
-            Tuple<Term, Term[]> result = null;
+            // default objective function and no constraints.. if we can't match a case, we don't optimize.
+            Tuple<Term, Term[]> result = Tuple.Create(TermBuilder.Constant(0), new Term[0]);
 
             if (silhouettesCount == 2 && featuresCount == 2)
                 result = FullInfo(snappedPrimitive);
