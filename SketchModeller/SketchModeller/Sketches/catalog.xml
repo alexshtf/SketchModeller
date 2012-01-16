@@ -36,4 +36,10 @@
   <sketch name="sphere-tubes"
           file="sphere-tubes.svg"
           modelFile="sphere-tubes.model" />
+  <sketch name="goblet1"
+          file="goblet1.svg"
+          modelFile="goblet1.model" />
+  <sketch name="goblet2"
+        file="goblet2.svg"
+        modelFile="goblet2.model" />
 </catalog>

@@ -17,6 +17,7 @@ namespace SketchModeller.Infrastructure.Shared
             orthogonalAxes = true;
             parallelism = true;
             onSphere = true;
+            sameRadius = true;
         }
 
         #region Coplanarity property
@@ -126,6 +127,22 @@ namespace SketchModeller.Infrastructure.Shared
             {
                 onSphere = value;
                 RaisePropertyChanged(() => OnSphere);
+            }
+        }
+
+        #endregion
+
+        #region SameRadius property
+
+        private bool sameRadius;
+
+        public bool SameRadius
+        {
+            get { return sameRadius; }
+            set
+            {
+                sameRadius = value;
+                RaisePropertyChanged(() => SameRadius);
             }
         }
 

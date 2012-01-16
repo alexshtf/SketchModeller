@@ -21,7 +21,18 @@ namespace SketchModeller.Modelling.Services.Snap
             annotation.MatchClass<CoplanarCenters>(coplanarCenters => constraints = GetConcreteAnnotationTerm(coplanarCenters));
             annotation.MatchClass<OrthogonalAxis>(orthogonalAxes => constraints = GetConcreteAnnotationTerm(orthogonalAxes));
             annotation.MatchClass<OnSphere>(onSphere => constraints = GetConcreteAnnotationTerm(onSphere));
+            annotation.MatchClass<SameRadius>(sameRadius => constraints = GetConcreteAnnotationTerm(sameRadius));
             return constraints;
+        }
+
+        private Term[] GetConcreteAnnotationTerm(SameRadius sameRadius)
+        {
+            var elements = sameRadius.Elements.OfType<CircleFeatureCurve>();
+            var result = from pair in elements.SeqPairs()
+                         let r1 = pair.Item1.Radius
+                         let r2 = pair.Item2.Radius
+                         select r1 - r2;
+            return result.ToArray();
         }
 
         private Term[] GetConcreteAnnotationTerm(OnSphere onSphere)

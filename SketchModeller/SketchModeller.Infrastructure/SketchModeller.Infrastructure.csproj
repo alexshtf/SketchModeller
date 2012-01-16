@@ -156,6 +156,7 @@
     <Compile Include="Data\OnSphere.cs" />
     <Compile Include="Data\OrthogonalAxis.cs" />
     <Compile Include="Data\PrimitiveCurve.cs" />
+    <Compile Include="Data\SameRadius.cs" />
     <Compile Include="Data\SelectablePrimitive.cs" />
     <Compile Include="Data\SnappedBendedCylinderComponent.cs" />
     <Compile Include="Data\SnappedCyliderComponent.cs" />

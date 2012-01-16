@@ -50,20 +50,11 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
                 group Tuple.Create(firstCurve, secondCurve) by firstCurve;
 
             return from candidatesGroup in candidates
-                   let bestCandidate = candidatesGroup.Minimizer(pair => DistanceBetweenCenters(pair.Item1, pair.Item2))
+                   let bestCandidate = candidatesGroup.Minimizer(pair => CurveDistance(pair.Item1, pair.Item2))
                    select new Cocentrality
                    {
                        Elements = new FeatureCurve[] { bestCandidate.Item1, bestCandidate.Item2 }
                    };
-        }
-
-        private double DistanceBetweenCenters(FeatureCurve curve1, FeatureCurve curve2)
-        {
-            var diff = curve1.CenterResult - curve2.CenterResult;
-            var dist3d = diff.Length;
-            var dist2d = new Vector(diff.X, diff.Y).Length;
-
-            return Math.Min(dist3d, dist2d);
         }
 
         private bool AreGoodCandidates(FeatureCurve firstCurve, FeatureCurve secondCurve)
@@ -75,7 +66,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool AreAbsoluteClose(FeatureCurve firstCurve, FeatureCurve secondCurve)
         {
-            var dist = DistanceBetweenCenters(firstCurve, secondCurve);
+            var dist = CurveDistance(firstCurve, secondCurve);
             return dist < absoluteThreshold;
         }
 
@@ -88,12 +79,29 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
                 return false;
 
             var radiiSum = firstCircle.RadiusResult + secondCircle.RadiusResult;
-            var dist = DistanceBetweenCenters(firstCurve, secondCurve);
+            var dist = CurveDistance(firstCurve, secondCurve);
 
             if (radiiSum == 0)
                 return false;
             else
                 return (dist / radiiSum) <= relativeThreshold;
+        }
+
+        private double CurveDistance(FeatureCurve curve1, FeatureCurve curve2)
+        {
+            if (curve1.SnappedTo != null && curve2.SnappedTo != null && curve1.SnappedTo == curve2.SnappedTo)
+                return 0;
+            else
+                return DistanceBetweenCenters(curve1, curve2);
+        }
+
+        private double DistanceBetweenCenters(FeatureCurve curve1, FeatureCurve curve2)
+        {
+            var diff = curve1.CenterResult - curve2.CenterResult;
+            var dist3d = diff.Length;
+            var dist2d = new Vector(diff.X, diff.Y).Length;
+
+            return Math.Min(dist3d, dist2d);
         }
 
         private IEnumerable<FeatureCurve> GetSphereFeatureCurves()

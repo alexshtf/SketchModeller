@@ -73,6 +73,9 @@
                 <DataTemplate DataType="{x:Type skm:OnSphere}">
                     <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="DarkOrchid" Content="On sphere" />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type skm:SameRadius}">
+                    <ContentControl Style="{StaticResource AnnotationDisplay}" BorderBrush="Chocolate" Content="Same radius" />
+                </DataTemplate>
             </ListBox.Resources>
         </ListBox>
     </DockPanel>
