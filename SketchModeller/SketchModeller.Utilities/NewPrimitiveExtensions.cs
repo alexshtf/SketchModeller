@@ -160,6 +160,56 @@ namespace SketchModeller.Infrastructure.Data
             }
         }
 
+        public static void ValidateFeatureCurves(this NewPrimitive primitive)
+        {
+            int N = 2;
+            Point[][] EndPoints = new Point[N][];
+            for (int count = 0; count < N; count++)
+                EndPoints[count] = new Point[2];
+            bool[] bitRaised = new bool[N];
+            int SilhouettesCount = 0;
+            int i = 0;
+            if (primitive.SilhouetteCurves.Length > 0 && primitive.SilhouetteCurves[0].AssignedTo != null)
+            {
+                EndPoints[i][0] = primitive.SilhouetteCurves[0].AssignedTo.Points[0];
+                EndPoints[i][1] = primitive.SilhouetteCurves[0].AssignedTo.Points.Last();
+                SilhouettesCount++;
+                i++;
+            }
+            if (primitive.SilhouetteCurves.Length > 1 && primitive.SilhouetteCurves[1].AssignedTo != null)
+            {
+                EndPoints[i][0] = primitive.SilhouetteCurves[1].AssignedTo.Points[0];
+                EndPoints[i][1] = primitive.SilhouetteCurves[1].AssignedTo.Points.Last();
+                SilhouettesCount++;
+                i++;
+            }
+        
+            if (primitive.FeatureCurves.Length > 0 && primitive.FeatureCurves[0].AssignedTo != null)
+            {
+                var FeatureCurve1 = primitive.FeatureCurves[0].AssignedTo;
+                Point[] EndFeaturePoints = new Point[2];
+                EndFeaturePoints[0] = FindClosestPoint(FeatureCurve1, EndPoints[0]);
+                EndFeaturePoints[1] = FindClosestPoint(FeatureCurve1, EndPoints[1]);
+               var Ellipse = EllipseFitter.Fit(FeatureCurve1.Points);
+               double maxperimeter = Ellipse.XRadius > Ellipse.YRadius ? 2 * Ellipse.XRadius : 2 * Ellipse.YRadius;
+               Vector v = new Vector(EndFeaturePoints[0].X - EndFeaturePoints[1].X, EndFeaturePoints[0].Y - EndFeaturePoints[1].Y);
+               if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.7)
+                   primitive.FeatureCurves[0].AssignedTo = null;
+            }
+            if (primitive.FeatureCurves.Length > 0 && primitive.FeatureCurves[1].AssignedTo != null)
+            {
+                var FeatureCurve1 = primitive.FeatureCurves[1].AssignedTo;
+                Point[] EndFeaturePoints = new Point[2];
+                EndFeaturePoints[0] = FindClosestPoint(FeatureCurve1, EndPoints[0]);
+                EndFeaturePoints[1] = FindClosestPoint(FeatureCurve1, EndPoints[1]);
+                var Ellipse = EllipseFitter.Fit(FeatureCurve1.Points);
+                double maxperimeter = Ellipse.XRadius > Ellipse.YRadius ? 2 * Ellipse.XRadius : 2 * Ellipse.YRadius;
+                Vector v = new Vector(EndFeaturePoints[0].X - EndFeaturePoints[1].X, EndFeaturePoints[0].Y - EndFeaturePoints[1].Y);
+                if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.7)
+                    primitive.FeatureCurves[1].AssignedTo = null;
+            }
+        }
+
         //We assume that there is one Feature Curve
         public static void CheckFeatureCurves(this NewPrimitive primitive)
         {

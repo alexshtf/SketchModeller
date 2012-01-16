@@ -146,6 +146,13 @@ namespace SketchModeller.Modelling.Views
                     if (NumberOfActiveFeatureCurves == 1) Model.CheckSilhoueteCurveWith1Feature();
                     else Model.CheckSilhoueteCurveWith2Features();
                 }
+            var NumberOfActiveSilhouettes= Model.SilhouetteCurves
+                .Select(c => c)
+                .Where(c => c.AssignedTo != null)
+                .ToArray().Length;
+            if (NumberOfActiveSilhouettes > 1)
+                if (NumberOfActiveFeatureCurves > 0)
+                    Model.ValidateFeatureCurves();
             //refresh all curves so that they can be selected again
             curveAssigner.refresh(Model);
             Model.CanSnap = false;
