@@ -42,4 +42,7 @@
   <sketch name="goblet2"
         file="goblet2.svg"
         modelFile="goblet2.model" />
+  <sketch name="wall lamp"
+          file="walllamp.svg"
+          modelFile="walllamp.model" />
 </catalog>
