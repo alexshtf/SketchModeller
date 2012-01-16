@@ -35,11 +35,11 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly ILoggerFacade logger;
         private readonly IUnityContainer container;
         private readonly IEventAggregator eventAggregator;
-        private readonly SnappersManager snappersManager;
         private readonly IAnnotationInference annotationInference;
         private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
-        private readonly IAnnotationConstraintsExtractor annotationConstraintsExtractor;
         private readonly IConstrainedOptimizer constrainedOptimizer;
+        private readonly SnappersManager snappersManager;
+        private readonly IOptimizationModel wholeShapeOptimizationModel;
 
         private int stopOptimization;
 
@@ -62,7 +62,7 @@ namespace SketchModeller.Modelling.Services.Snap
             this.constrainedOptimizer = constrainedOptimizer;
 
             this.primitivesReaderWriterFactory = new PrimitivesReaderWriterFactory();
-            this.annotationConstraintsExtractor = new AnnotationConstraintsExtractor();
+            var annotationConstraintsExtractor = new AnnotationConstraintsExtractor();
 
             snappersManager = new SnappersManager(uiState, sessionData);
             snappersManager.RegisterSnapper(new ConeSnapper());
@@ -70,6 +70,8 @@ namespace SketchModeller.Modelling.Services.Snap
             snappersManager.RegisterSnapper(new SphereSnapper());
             snappersManager.RegisterSnapper(new SgcSnapper());
             snappersManager.RegisterSnapper(new BgcSnapper());
+            
+            this.wholeShapeOptimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
             eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
 
@@ -87,11 +89,12 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
                 var scheduler = new DispatcherScheduler(dispatcher);
-                var optimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
                 return from tuple in Observable.Start<Tuple<NewPrimitive, SnappedPrimitive>>(ConvertToSnapped, scheduler)
                        let newPrimitive = tuple.Item1
                        let snappedPrimitive = tuple.Item2
+                       //let optimizationModel = new SinglePrimitiveOptimizationModel(wholeShapeOptimizationModel, primitivesReaderWriterFactory, snappedPrimitive)
+                       let optimizationModel = wholeShapeOptimizationModel
                        from unit1 in OptimizeAsync(scheduler, optimizationModel)
                        let annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive)
                        from unit2 in annotations.Any() ? OptimizeWithAnnotationsAsync(scheduler, annotations, optimizationModel)
@@ -134,9 +137,8 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
             var scheduler = new DispatcherScheduler(dispatcher);
-            var optimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
-            return from unit1 in OptimizeAsync(scheduler, optimizationModel)
+            return from unit1 in OptimizeAsync(scheduler, wholeShapeOptimizationModel)
                    from unit2 in NotifySnapCompleteAsync(scheduler)
                    select unit2;
         }

@@ -249,6 +249,7 @@
     <Compile Include="Services\Snap\CylinderSnapper.cs" />
     <Compile Include="Services\Snap\CylindricalSnapper.cs" />
     <Compile Include="Services\Snap\IAnnotationConstraintsExtractor.cs" />
+    <Compile Include="Services\Snap\IOptimizationModel.cs" />
     <Compile Include="Services\Snap\IPrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\IPrimitivesReader.cs" />
     <Compile Include="Services\Snap\IPrimitivesWriter.cs" />
@@ -257,12 +258,14 @@
     <Compile Include="Services\Snap\PrimitivesWriter.cs" />
     <Compile Include="Services\Snap\ReadWriteUtils.cs" />
     <Compile Include="Services\Snap\SgcSnapper.cs" />
+    <Compile Include="Services\Snap\SinglePrimitiveOptimizationModel.cs" />
     <Compile Include="Services\Snap\Snapper.cs" />
     <Compile Include="Services\Snap\SnapperHelper.cs" />
     <Compile Include="Services\Snap\SnappersManager.cs" />
     <Compile Include="Services\Snap\SphereSnapper.cs" />
     <Compile Include="Computations\TwoLinesMedialAxis.cs" />
     <Compile Include="Services\Snap\TemporarySnap.cs" />
+    <Compile Include="Services\Snap\WholeShapeOptimizationModel.cs" />
     <Compile Include="SketchCreator\SketchCreatorView.xaml.cs">
       <DependentUpon>SketchCreatorView.xaml</DependentUpon>
     </Compile>

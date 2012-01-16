@@ -6,9 +6,9 @@ using AutoDiff;
 
 namespace SketchModeller.Utilities.Optimization
 {
-    static class VariableSubstitution
+    public static class VariableSubstitution
     {
-        public static Term Substitude(this Term term, Variable[] variables, double[] values)
+        public static Term Substitute(this Term term, Variable[] variables, double[] values)
         {
             var dictionary = Enumerable.Range(0, variables.Length).ToDictionary(i => variables[i], i => values[i]);
             var result = term.Substitute(dictionary);
