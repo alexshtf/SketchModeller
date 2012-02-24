@@ -12,18 +12,19 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
 {
     class ConstrainedOptimizerService : IConstrainedOptimizer
     {
-        private readonly Func<IConstrainedSolver> solverFactory;
-
-        public ConstrainedOptimizerService()
-        {
-            solverFactory = new AugmentedLagrangianSolverFactory().Create;
-        }
-
         public IEnumerable<double[]> Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
         {
             //DebugSave(objective, constraints, vars, startPoint);
-            var solver = solverFactory();
+            var solver = CreateSolver();
             return solver.Solve(objective, constraints, vars, startPoint);
+        }
+
+        private IConstrainedSolver CreateSolver()
+        {
+            var penaltySolver = new PenaltySolverFactory().Create(10, 1E-4);
+            var augmentedLagrangianSolver = new AugmentedLagrangianSolverFactory().Create();
+            var multistageSolver = new MultistageConstrainedOptimizer(penaltySolver, augmentedLagrangianSolver);
+            return multistageSolver;
         }
 
         /*

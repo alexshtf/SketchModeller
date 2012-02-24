@@ -6,7 +6,7 @@ using AutoDiff;
 
 namespace SketchModeller.Utilities.Optimization
 {
-    class MultistageConstrainedOptimizer : IConstrainedSolver
+    public class MultistageConstrainedOptimizer : IConstrainedSolver
     {
         private readonly IConstrainedSolver[] stages;
 

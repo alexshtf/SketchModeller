@@ -21,7 +21,8 @@ namespace SketchModeller.Utilities.Optimization
 
         public IEnumerable<double[]> Solve(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
         {
-            var penalizedObjective = objective + penaltyWeight * TermUtils.SafeSum(constraints);
+            var constraintSquares = constraints.Select(c => TermBuilder.Power(c, 2));
+            var penalizedObjective = objective + penaltyWeight * TermUtils.SafeSum(constraintSquares);
             var compiledPenalizedObjective = penalizedObjective.Compile(variables);
             var solution = unconstrainedOptimizer.Solve(x => compiledPenalizedObjective.Differentiate(x), startPoint, gradientNormThreshold);
             yield return solution;
