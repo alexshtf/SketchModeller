@@ -179,6 +179,7 @@
     <Compile Include="Optimization\AugmentedLagrangianIterationResult.cs" />
     <Compile Include="Optimization\LagrangianCompiler.cs" />
     <Compile Include="Optimization\LBFGSOptimizer.cs" />
+    <Compile Include="Optimization\ConstantPenaltySolver.cs" />
     <Compile Include="Optimization\VariableSubstitution.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
