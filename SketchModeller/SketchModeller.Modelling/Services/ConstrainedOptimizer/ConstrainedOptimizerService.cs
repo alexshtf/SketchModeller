@@ -23,8 +23,9 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
         {
             var penaltySolver = new PenaltySolverFactory().Create(10, 1E-8);
             var augmentedLagrangianSolver = new AugmentedLagrangianSolverFactory().Create();
-            var multistageSolver = new MultistageConstrainedOptimizer(penaltySolver, augmentedLagrangianSolver);
-            return multistageSolver;
+            return augmentedLagrangianSolver;
+            //var multistageSolver = new MultistageConstrainedOptimizer(penaltySolver, augmentedLagrangianSolver);
+            //return multistageSolver;
             //return new DebugSaveSolver(multistageSolver);
         }
 
