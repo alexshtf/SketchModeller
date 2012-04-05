@@ -25,19 +25,34 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
             var augmentedLagrangianSolver = new AugmentedLagrangianSolverFactory().Create();
             var multistageSolver = new MultistageConstrainedOptimizer(penaltySolver, augmentedLagrangianSolver);
             return multistageSolver;
+            //return new DebugSaveSolver(multistageSolver);
         }
 
-        /*
-        private void DebugSave(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
+        private class DebugSaveSolver : IConstrainedSolver
         {
-            var time = DateTime.Now;
-            string fileName = "aaaopt" + time.Ticks + ".opt";
-            using (var stream = File.Create(fileName))
+            private readonly IConstrainedSolver wrappedOptimizer;
+
+            public DebugSaveSolver(IConstrainedSolver wrappedOptimizer)
             {
-                var formatter = new BinaryFormatter();
-                var tuple = Tuple.Create(objective, constraints.ToArray(), vars, startPoint);
-                formatter.Serialize(stream, tuple);
+                this.wrappedOptimizer = wrappedOptimizer;
             }
-        }*/
+
+            public IEnumerable<double[]> Solve(Term objective, IEnumerable<Term> constraints, Variable[] variables, double[] startPoint)
+            {
+                DebugSave(objective, constraints, variables, startPoint);
+                return wrappedOptimizer.Solve(objective, constraints, variables, startPoint);
+            }
+            private void DebugSave(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
+            {
+                var time = DateTime.Now;
+                string fileName = "aaaopt" + time.Ticks + ".opt";
+                using (var stream = File.Create(fileName))
+                {
+                    var formatter = new BinaryFormatter();
+                    var tuple = Tuple.Create(objective, constraints.ToArray(), vars, startPoint);
+                    formatter.Serialize(stream, tuple);
+                }
+            }
+        }
     }
 }

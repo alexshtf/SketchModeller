@@ -93,9 +93,9 @@
     <Reference Include="AForge.Math">
       <HintPath>..\libs\AForge.Math.dll</HintPath>
     </Reference>
-    <Reference Include="AutoDiff, Version=0.5.4321.2401, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="AutoDiff, Version=1.0.4478.4273, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AutoDiff.0.5.4321.2402\lib\net40\AutoDiff.dll</HintPath>
+      <HintPath>..\packages\AutoDiff.1.0\lib\net40\AutoDiff.dll</HintPath>
     </Reference>
     <Reference Include="HelixToolkit, Version=2011.6.4187.20095, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

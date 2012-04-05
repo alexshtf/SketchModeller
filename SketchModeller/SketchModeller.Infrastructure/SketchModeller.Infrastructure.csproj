@@ -77,9 +77,9 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoDiff, Version=0.5.4321.2401, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="AutoDiff, Version=1.0.4478.4273, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AutoDiff.0.5.4321.2402\lib\net40\AutoDiff.dll</HintPath>
+      <HintPath>..\packages\AutoDiff.1.0\lib\net40\AutoDiff.dll</HintPath>
     </Reference>
     <Reference Include="ContinuousLinq">
       <HintPath>..\libs\ContinuousLinq.dll</HintPath>
