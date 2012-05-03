@@ -1,5 +1,5 @@
 bin/
 obj/
-*.csproj.user
+*.user
 *.csproj.vs10x
 *.csproj.vspscc
