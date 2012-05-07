@@ -25,6 +25,8 @@ namespace SketchModeller.Infrastructure
             Brushes.Peru,
             Brushes.Lime,
             Brushes.Firebrick,
+            Brushes.AliceBlue,
+            Brushes.DarkMagenta,            
         };
     }
 }

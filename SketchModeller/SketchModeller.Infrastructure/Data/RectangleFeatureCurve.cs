@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoDiff;
+using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -20,6 +21,11 @@ namespace SketchModeller.Infrastructure.Data
         public Term Height { get; set; }
 
         /// <summary>
+        /// A term vector for the rectangle's width vector
+        /// </summary>
+        public TVec WidthVector { get; set; }
+
+        /// <summary>
         /// The optimized rectangle width
         /// </summary>
         public double WidthResult { get; set; }
@@ -28,6 +34,11 @@ namespace SketchModeller.Infrastructure.Data
         /// The optimized rectangle height
         /// </summary>
         public double HeightResult { get; set; }
+
+        /// <summary>
+        /// The optimized rectangle width vector
+        /// </summary>
+        public Vector3D WidthVectorResult { get; set; }
 
         /// <summary>
         /// The sketch curves this feature curve is snapped to

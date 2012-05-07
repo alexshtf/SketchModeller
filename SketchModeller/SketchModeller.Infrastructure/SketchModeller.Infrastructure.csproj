@@ -160,6 +160,7 @@
     <Compile Include="Data\SameRadius.cs" />
     <Compile Include="Data\SelectablePrimitive.cs" />
     <Compile Include="Data\SnappedBendedCylinderComponent.cs" />
+    <Compile Include="Data\SnappedCuboid.cs" />
     <Compile Include="Data\SnappedCyliderComponent.cs" />
     <Compile Include="Data\SnappedCylindricalPrimitive.cs" />
     <Compile Include="Data\NewCone.cs" />
