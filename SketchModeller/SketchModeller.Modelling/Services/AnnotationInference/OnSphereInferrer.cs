@@ -7,6 +7,7 @@ using SketchModeller.Infrastructure.Shared;
 using System.Windows;
 using Utils;
 using Enumerable = System.Linq.Enumerable;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
@@ -76,7 +77,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         private IEnumerable<Annotation> SilhouettesWithEndpointsOnSphereAnnotation(SnappedPrimitive nonSphere, SnappedSphere sphere)
         {
             var unsnappedFeatureCurves = from featureCurve in nonSphere.FeatureCurves
-                                         where featureCurve.SnappedTo == null
+                                         where featureCurve.IsFree()
                                          select featureCurve;
             var firstUnsnapped = unsnappedFeatureCurves.First();
 
@@ -109,7 +110,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
         private IEnumerable<FeatureCurve> FindFeatureCurvesOnSphere(SnappedPrimitive snappedPrimitive, SnappedSphere toBeAnnotatedSphere)
         {
             var snappedFeatureCurvesInsideSphere = from curve in snappedPrimitive.FeatureCurves
-                                                   where curve.SnappedTo != null
+                                                   where curve.IsSnapped()
                                                    where IsInsideSphere(curve, toBeAnnotatedSphere)
                                                    select curve;
             return snappedFeatureCurvesInsideSphere.ToArray();
@@ -117,8 +118,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool IsInsideSphere(FeatureCurve curve, SnappedSphere toBeAnnotatedSphere)
         {
-            var insideSpherePointsCount = curve.SnappedTo.Points.Count(p => IsInsideSphere(p, toBeAnnotatedSphere));
-            if (insideSpherePointsCount > 0.5 * curve.SnappedTo.Points.Length) // at-least half of the points are inside the sphere
+            var snappedPoints = GetSnappedPoints(curve);
+            var insideSpherePointsCount = snappedPoints.Count(p => IsInsideSphere(p, toBeAnnotatedSphere));
+            if (insideSpherePointsCount > 0.5 * snappedPoints.Length) // at-least half of the points are inside the sphere
                 return true;
             else
                 return false;
@@ -131,5 +133,16 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             return dist < (1 + proximityThresholdFraction) * toBeAnnotatedSphere.RadiusResult;
         }
 
+        private Point[] GetSnappedPoints(FeatureCurve curve)
+        {
+            Contract.Requires(curve != null);
+            Contract.Requires(curve is CircleFeatureCurve);
+
+            var circle = curve as CircleFeatureCurve;
+            if (circle.SnappedTo != null)
+                return circle.SnappedTo.Points;
+            else
+                return new Point[0];
+        }
     }
 }

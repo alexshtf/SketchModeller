@@ -89,7 +89,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private double CurveDistance(FeatureCurve curve1, FeatureCurve curve2)
         {
-            if (curve1.SnappedTo != null && curve2.SnappedTo != null && curve1.SnappedTo == curve2.SnappedTo)
+            if (curve1.IsSameObjectCurve(curve2))
                 return 0;
             else
                 return DistanceBetweenCenters(curve1, curve2);

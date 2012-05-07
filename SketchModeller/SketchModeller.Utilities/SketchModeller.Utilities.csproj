@@ -156,6 +156,7 @@
     <Compile Include="DelegateComparer.cs" />
     <Compile Include="EllipseFitter.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="FeatureCurveExtensions.cs" />
     <Compile Include="FloatUtils.cs" />
     <Compile Include="GeometricTests.cs" />
     <Compile Include="Graphs\Dijkstra.cs" />

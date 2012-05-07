@@ -28,5 +28,10 @@ namespace SketchModeller.Infrastructure.Data
         /// The optimized rectangle height
         /// </summary>
         public double HeightResult { get; set; }
+
+        public override bool IsSnapped()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using AutoDiff;
 using Microsoft.Practices.Prism.ViewModel;
 using System.Windows.Media.Media3D;
+using System.Windows;
 
 namespace SketchModeller.Infrastructure.Data
 {
@@ -13,7 +14,7 @@ namespace SketchModeller.Infrastructure.Data
     /// primitives.
     /// </summary>
     [Serializable]
-    public class FeatureCurve : NotificationObject
+    public abstract class FeatureCurve : NotificationObject
     {
         /// <summary>
         /// The center of mass term for this feature curve. Must not be <c>null</c>.
@@ -54,5 +55,13 @@ namespace SketchModeller.Infrastructure.Data
         }
 
         #endregion
+
+        /// <summary>
+        /// Checks if this feature curve is snapped to the sketch, or is "free"
+        /// </summary>
+        /// <returns><c>true</c> if and only if this feature curve is snapped to the sketch</returns>
+        public abstract bool IsSnapped();
     }
+
+
 }
