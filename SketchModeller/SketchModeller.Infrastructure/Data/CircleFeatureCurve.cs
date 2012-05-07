@@ -21,5 +21,10 @@ namespace SketchModeller.Infrastructure.Data
         /// The result of the last radius computation
         /// </summary>
         public double RadiusResult { get; set; }
+
+        /// <summary>
+        /// The sketch curve that this feature curve is snapped to.
+        /// </summary>
+        public PointsSequence SnappedTo { get; set; }
     }
 }

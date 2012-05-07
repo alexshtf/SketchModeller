@@ -82,7 +82,9 @@ namespace SketchModeller.Modelling.Services.Snap
                 (new PointsSequence[] { snappedPrimitive.LeftSilhouette, snappedPrimitive.RightSilhouette })
                 .Count(curve => curve != null);
 
-            var featuresCount = snappedPrimitive.FeatureCurves.Count(curve => curve.SnappedTo != null);
+            var featuresCount = snappedPrimitive.FeatureCurves
+                .Cast<CircleFeatureCurve>()
+                .Count(curve => curve.SnappedTo != null);
 
             // get annotated feature curves of this primitive.
             var annotated = new HashSet<FeatureCurve>(curvesToAnnotations.Keys.Where(key => curvesToAnnotations[key].Count > 0));
