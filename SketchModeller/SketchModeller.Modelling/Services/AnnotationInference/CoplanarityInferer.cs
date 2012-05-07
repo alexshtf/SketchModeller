@@ -8,6 +8,7 @@ using Utils;
 using Enumerable = System.Linq.Enumerable;
 using UtilsEnumerable = Utils.Enumerable;
 using System.Windows.Media.Media3D;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
@@ -80,6 +81,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool AreGoodCandidates(FeatureCurve firstCurve, FeatureCurve secondCurve)
         {
+            Contract.Requires(firstCurve is CircleFeatureCurve);
+            Contract.Requires(secondCurve is CircleFeatureCurve);
+
             double radiiSum = 0;
             if (firstCurve is CircleFeatureCurve && secondCurve is CircleFeatureCurve)
                 radiiSum = (firstCurve as CircleFeatureCurve).RadiusResult + (secondCurve as CircleFeatureCurve).RadiusResult;

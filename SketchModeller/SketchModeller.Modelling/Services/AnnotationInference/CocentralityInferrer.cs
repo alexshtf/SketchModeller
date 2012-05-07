@@ -8,6 +8,7 @@ using Utils;
 
 using Enumerable = System.Linq.Enumerable;
 using System.Windows;
+using System.Diagnostics.Contracts;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
@@ -72,6 +73,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool AreRelativeClose(FeatureCurve firstCurve, FeatureCurve secondCurve)
         {
+            Contract.Requires(firstCurve is CircleFeatureCurve);
+            Contract.Requires(secondCurve is CircleFeatureCurve);
+
             var firstCircle = firstCurve as CircleFeatureCurve;
             var secondCircle = secondCurve as CircleFeatureCurve;
 

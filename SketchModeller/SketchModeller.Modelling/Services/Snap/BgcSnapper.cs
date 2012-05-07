@@ -153,7 +153,6 @@ namespace SketchModeller.Modelling.Services.Snap
         {
             var terms =
                from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
-               where item != null
                where item.SnappedTo != null
                from term in ProjectionFit.Compute(item)
                select term;
