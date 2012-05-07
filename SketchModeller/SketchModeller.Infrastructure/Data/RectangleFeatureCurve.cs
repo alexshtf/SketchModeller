@@ -29,9 +29,14 @@ namespace SketchModeller.Infrastructure.Data
         /// </summary>
         public double HeightResult { get; set; }
 
+        /// <summary>
+        /// The sketch curves this feature curve is snapped to
+        /// </summary>
+        public PointsSequence[] SnappedTo { get; set; }
+
         public override bool IsSnapped()
         {
-            throw new NotImplementedException();
+            return SnappedTo != null && SnappedTo.Length > 0;
         }
     }
 }
