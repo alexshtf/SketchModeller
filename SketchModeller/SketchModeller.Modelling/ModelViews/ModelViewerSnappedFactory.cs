@@ -29,6 +29,7 @@ namespace SketchModeller.Modelling.ModelViews
             item.MatchClass<SnappedSphere>(sphereData => result = CreateSphereView(sphereData));
             item.MatchClass<SnappedStraightGenCylinder>(sgc => result = CreateSgcView(sgc));
             item.MatchClass<SnappedBendedGenCylinder>(bgc => result = CreateBgcView(bgc));
+            item.MatchClass<SnappedCuboid>(cuboidData => result = CreateCuboidView(cuboidData));
 
             Contract.Assume(result != null);
             PrimitivesPickService.SetPrimitiveData(result, item as SnappedPrimitive);
@@ -59,7 +60,7 @@ namespace SketchModeller.Modelling.ModelViews
             return visual;
         }
 
-        private static ModelVisual3D CreateVisual(MeshGeometry3D geometry, SnappedPrimitive snappedPrimitive)
+        private static ModelVisual3D CreateVisual(MeshGeometry3D geometry, SnappedPrimitive snappedPrimitive, bool createFeatureCurves = true)
         {
             var frontEmissivePart = CreateEmissiveMaterial(snappedPrimitive);
             var frontDiffusePart = new DiffuseMaterial { Brush = FRONT_BRUSH };
@@ -77,8 +78,30 @@ namespace SketchModeller.Modelling.ModelViews
 
             var visual = new ModelVisual3D();
             visual.Content = model3d;
+            if (createFeatureCurves) 
+                CreateFeatureCurves(visual, snappedPrimitive.FeatureCurves);
+            
+            return visual;
+        }
 
-            CreateFeatureCurves(visual, snappedPrimitive.FeatureCurves);
+        private static ModelVisual3D CreateVisual(MeshGeometry3D geometry, Brush brush)
+        {
+            var frontEmissivePart = new EmissiveMaterial { Brush = brush };//CreateEmissiveMaterial(snappedPrimitive);
+            var frontDiffusePart = new DiffuseMaterial { Brush = brush };
+            var frontMaterial = new MaterialGroup { Children = { frontEmissivePart, frontDiffusePart } };
+
+            // create wpf classes for displaying the geometry
+            var model3d = new GeometryModel3D(
+                geometry,
+                frontMaterial);
+            //model3d.
+            var backEmissivePart = new EmissiveMaterial { Brush = brush }; //CreateEmissiveMaterial(snappedPrimitive);
+            var backDiffusePart = new DiffuseMaterial { Brush = brush };
+            var backMaterial = new MaterialGroup { Children = { backEmissivePart, backDiffusePart } };
+            model3d.BackMaterial = backMaterial;
+
+            var visual = new ModelVisual3D();
+            visual.Content = model3d;
             return visual;
         }
 
@@ -135,6 +158,53 @@ namespace SketchModeller.Modelling.ModelViews
             }
 
             return CreateVisual(geometry, snappedPrimitive);
+        }
+
+        private static Visual3D CreateCuboidView(Point3D Center, double Width, double Height, double Depth,
+                                                 Vector3D W, Vector3D H, Vector3D D, SnappedPrimitive snappedPrimitive)
+        {
+            Point3D[] Pnts = new Point3D[8];
+            Pnts[0] = new Point3D(Height / 2, -Width / 2, Depth / 2);
+            Pnts[1] = new Point3D(Height / 2, Width / 2, Depth / 2);
+            Pnts[2] = new Point3D(-Height / 2, Width / 2, Depth / 2);
+            Pnts[3] = new Point3D(-Height / 2, -Width / 2, Depth / 2);
+            Pnts[4] = new Point3D(Height / 2, -Width / 2, -Depth / 2);
+            Pnts[5] = new Point3D(Height / 2, Width / 2, -Depth / 2);
+            Pnts[6] = new Point3D(-Height / 2, Width / 2, -Depth / 2);
+            Pnts[7] = new Point3D(-Height / 2, -Width / 2, -Depth / 2);
+            TransformPoints(Pnts, Center, H, W, -D);
+
+            Int32Collection Idx = new Int32Collection();
+            Idx.AddMany(2, 0, 1);
+            Idx.AddMany(0, 3, 2);
+            Idx.AddMany(5, 6, 2);
+            Idx.AddMany(5, 2, 1);
+            Idx.AddMany(4, 5, 6);
+            Idx.AddMany(4, 6, 7);
+            Idx.AddMany(4, 3, 7);
+            Idx.AddMany(4, 0, 3);
+            Idx.AddMany(5, 4, 0);
+            Idx.AddMany(5, 0, 1);
+            Idx.AddMany(7, 3, 6);
+            Idx.AddMany(2, 3, 6);
+
+            var geometry = new MeshGeometry3D();
+            geometry.Positions = new Point3DCollection(Pnts);
+            geometry.TriangleIndices = Idx;
+
+            return CreateVisual(geometry, snappedPrimitive, false);
+        }
+
+        public static void TransformPoints(Point3D[] points, Point3D Center, Vector3D W, Vector3D H, Vector3D D)
+        {
+            for (int i = 0; i < points.Length; i++)
+            {
+                Point3D Pt = new Point3D();
+                Pt.X = points[i].X * W.X + points[i].Y * W.Y + points[i].Z * W.Z + Center.X;
+                Pt.Y = points[i].X * H.X + points[i].Y * H.Y + points[i].Z * H.Z + Center.Y;
+                Pt.Z = points[i].X * D.X + points[i].Y * D.Y + points[i].Z * D.Z + Center.Z;
+                points[i] = new Point3D(Pt.X, Pt.Y, Pt.Z);
+            }
         }
     }
 }

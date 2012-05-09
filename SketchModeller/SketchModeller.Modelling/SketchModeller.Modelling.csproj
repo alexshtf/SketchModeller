@@ -197,6 +197,7 @@
     <Compile Include="ModelViews\ModelViewerSnappedFactory.BGC.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cone.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.cs" />
+    <Compile Include="ModelViews\ModelViewerSnappedFactory.Cuboid.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Cylinder.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.SGC.cs" />
     <Compile Include="ModelViews\ModelViewerSnappedFactory.Sphere.cs" />
