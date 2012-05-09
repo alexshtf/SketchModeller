@@ -23,7 +23,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public static VariableVectorsWriter Write(this VariableVectorsWriter writer, SnappedCylinder cylinder)
         {
-            return writer  
+            return writer
                 .Write(cylinder.BottomCenter)
                 .Write(cylinder.Axis)
                 .Write(cylinder.Length)
@@ -37,7 +37,7 @@ namespace SketchModeller.Modelling.Services.Snap
             cylinder.LengthResult = reader.ReadValue();
             cylinder.RadiusResult = Math.Abs(reader.ReadValue());
         }
-        
+
         #endregion
 
         #region SnappedCone methods
@@ -70,7 +70,46 @@ namespace SketchModeller.Modelling.Services.Snap
             cone.TopRadiusResult = Math.Abs(reader.ReadValue());
             cone.BottomRadiusResult = Math.Abs(reader.ReadValue());
         }
-        
+
+        #endregion
+
+        #region SnappedCuboid methods
+
+        public static VectorsWriter Write(this VectorsWriter writer, SnappedCuboid cuboid)
+        {
+            return writer
+                .Write(cuboid.CenterResult)
+                .Write(cuboid.WidthResult)
+                .Write(cuboid.HeightResult)
+                .Write(cuboid.DepthResult)
+                .Write(cuboid.Wresult)
+                .Write(cuboid.Hresult)
+                .Write(cuboid.Dresult);
+        }
+
+        public static VariableVectorsWriter Write(this VariableVectorsWriter writer, SnappedCuboid cuboid)
+        {
+            return writer
+                .Write(cuboid.Center)
+                .Write(cuboid.Width)
+                .Write(cuboid.Height)
+                .Write(cuboid.Depth)
+                .Write(cuboid.Wv)
+                .Write(cuboid.Hv)
+                .Write(cuboid.Dv);
+        }
+
+        public static void Read(this VectorsReader reader, SnappedCuboid cuboid)
+        {
+            cuboid.CenterResult = reader.ReadPoint3D();
+            cuboid.WidthResult = reader.ReadValue();
+            cuboid.HeightResult = reader.ReadValue();
+            cuboid.DepthResult = reader.ReadValue();
+            cuboid.Wresult = reader.ReadVector3D();
+            cuboid.Hresult = reader.ReadVector3D();
+            cuboid.Dresult = reader.ReadVector3D();
+        }
+
         #endregion
 
         #region SnappedSphere methods
@@ -170,16 +209,16 @@ namespace SketchModeller.Modelling.Services.Snap
             sgc.LengthResult = reader.ReadValue();
 
             foreach (var i in Enumerable.Range(0, sgc.ComponentResults.Length))
-                sgc.ComponentResults[i] = 
+                sgc.ComponentResults[i] =
                     new CylinderComponent(reader.ReadValue(), sgc.ComponentResults[i].Progress);
         }
 
         public static void Read(this VectorsReader reader, SnappedBendedGenCylinder bgc)
         {
-            bgc.BottomCenterResult = reader.ReadPoint3D(); 
+            bgc.BottomCenterResult = reader.ReadPoint3D();
             //bgc.TopCenterResult = reader.ReadPoint3D();
             bgc.NPtopResult = reader.ReadVector();
-            bgc.NPbotResult= reader.ReadVector();
+            bgc.NPbotResult = reader.ReadVector();
             bgc.Uresult = reader.ReadVector3D();
             bgc.Vresult = reader.ReadVector3D();
 

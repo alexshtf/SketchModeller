@@ -63,6 +63,12 @@ namespace SketchModeller.Modelling.Services.Snap
                 valuesWriter.Write(snappedSgc);
             }
 
+            foreach (var snappedCuboid in primitives.OfType<SnappedCuboid>())
+            {
+                variablesWriter.Write(snappedCuboid);
+                valuesWriter.Write(snappedCuboid);
+            }
+
             foreach (var snappedBgc in primitives.OfType<SnappedBendedGenCylinder>())
             {
                 //MessageBox.Show("Writting Bgc");

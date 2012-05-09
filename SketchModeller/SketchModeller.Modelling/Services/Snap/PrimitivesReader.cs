@@ -28,6 +28,11 @@ namespace SketchModeller.Modelling.Services.Snap
             {
                 resultReader.Read(snappedBgc);
             }
+
+            foreach (var snappedCuboid in primitives.OfType<SnappedCuboid>())
+            {
+                resultReader.Read(snappedCuboid);
+            }
         }
 
         public void Read(double[] values, params SnappedPrimitive[] primitives)
