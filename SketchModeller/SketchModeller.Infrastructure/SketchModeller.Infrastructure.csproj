@@ -134,6 +134,7 @@
     <Compile Include="Data\Annotation.cs" />
     <Compile Include="Data\BendedCylinderCompoent.cs" />
     <Compile Include="Data\CircleFeatureCurve.cs" />
+    <Compile Include="Data\EnhancedPrimitiveCurve.cs" />
     <Compile Include="Data\NewBendedGenCylinder.cs" />
     <Compile Include="Data\Cocentrality.cs" />
     <Compile Include="Data\ColinearCenters.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Data\EditConstraints\ValueParameter.cs" />
     <Compile Include="Data\EditConstraints\VectorParameter.cs" />
     <Compile Include="Data\FeatureCurve.cs" />
+    <Compile Include="Data\NewCuboid.cs" />
     <Compile Include="Data\NewCylindricalPrimitive.cs" />
     <Compile Include="Data\EditConstraints\PrimitiveEditConstraint.cs" />
     <Compile Include="Data\NewSphere.cs" />
