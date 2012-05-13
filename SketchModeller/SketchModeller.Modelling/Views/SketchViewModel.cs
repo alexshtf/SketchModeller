@@ -21,6 +21,7 @@ using SketchModeller.Infrastructure.Services;
 using System.Collections.ObjectModel;
 using SketchModeller.Modelling.Computations;
 using SketchModeller.Modelling.Events;
+using System.Windows.Media.Media3D;
 //namespace SketchModeller.Modelling.Views
 
 namespace SketchModeller.Modelling.Views
@@ -147,6 +148,20 @@ namespace SketchModeller.Modelling.Views
                         newBGC.Length.Value = 0.6;
                         newBGC.Components = BgcComponents.Create(20, 0.2, 0.6, newBGC.Center.Value, newBGC.Axis.Value, newBGC.Length.Value);
                         sessionData.NewPrimitives.Add(newBGC);
+                        break;
+                    case PrimitiveKinds.Cuboid:
+                        var newCuboid = new NewCuboid();
+                        Vector3D H = new Vector3D(0, 1, 0);
+                        Vector3D W = new Vector3D(1, 0, 0);
+                        Vector3D D = new Vector3D(0, 0, -1);
+                        newCuboid.Center.Value = pos3d.Value;
+                        newCuboid.H.Value = H;
+                        newCuboid.W.Value = W;
+                        newCuboid.D.Value = D;
+                        newCuboid.Width.Value = 0.4;
+                        newCuboid.Height.Value = 0.4;
+                        newCuboid.Depth.Value = 0.4;
+                        sessionData.NewPrimitives.Add(newCuboid);
                         break;
                     default:
                         Trace.Fail("Invalid primitive kind");

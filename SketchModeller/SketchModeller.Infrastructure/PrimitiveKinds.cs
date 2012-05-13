@@ -12,5 +12,6 @@ namespace SketchModeller.Infrastructure
         Sphere,
         SGC,
         BGC,
+        Cuboid,
     }
 }

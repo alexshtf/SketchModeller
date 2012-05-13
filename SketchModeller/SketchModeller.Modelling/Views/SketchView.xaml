@@ -48,6 +48,7 @@
             <ContentControl x:Name="sphereThumb" Content="/SketchModeller.Modelling;component/Images/sphere.png"/>
             <ContentControl x:Name="sgcThumb" Content="/SketchModeller.Modelling;component/Images/sgc.png" />
             <ContentControl x:Name="bgcThumb" Content="/SketchModeller.Modelling;component/Images/bgc.png" />
+            <ContentControl x:Name="cubeThumb" Content="/SketchModeller.Modelling;component/Images/cube.png" />
         </WrapPanel>
         
         <Border x:Name="vpRoot"

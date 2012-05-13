@@ -247,6 +247,8 @@ namespace SketchModeller.Modelling.Views
                 palettePrimitiveKind = PrimitiveKinds.SGC;
             else if (sender == bgcThumb)
                 palettePrimitiveKind = PrimitiveKinds.BGC;
+            else if (sender == cubeThumb)
+                palettePrimitiveKind = PrimitiveKinds.Cuboid;
             else
                 logger.Log("Invalid event sender", Category.Exception, Priority.High);
 

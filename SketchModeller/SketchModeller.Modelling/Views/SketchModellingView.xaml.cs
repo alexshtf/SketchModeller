@@ -81,6 +81,8 @@ namespace SketchModeller.Modelling.Views
                     viewModel => result = new NewSGCView(viewModel, logger));
                 item.MatchClass<NewBGCViewModel>(
                     viewModel => result = new NewBGCView(viewModel, logger));
+                item.MatchClass<NewCuboidViewModel>(
+                    viewModel => result = new NewCuboidView(viewModel, logger));
                 Contract.Assume(result != null);
                 return result;
             }
