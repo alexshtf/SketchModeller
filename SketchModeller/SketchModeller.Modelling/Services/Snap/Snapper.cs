@@ -70,6 +70,7 @@ namespace SketchModeller.Modelling.Services.Snap
             snappersManager.RegisterSnapper(new SphereSnapper());
             snappersManager.RegisterSnapper(new SgcSnapper());
             snappersManager.RegisterSnapper(new BgcSnapper());
+            snappersManager.RegisterSnapper(new CuboidSnapper());
             
             this.wholeShapeOptimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
