@@ -48,4 +48,10 @@
   <sketch name="Phone handset"
         file="handset.svg"
         modelFile="handset.model" />
+  <sketch name="Cube"
+        file="cube.svg"
+        modelFile="cube.model" />
+  <sketch name="Cube1"
+        file="cube1.svg"
+        modelFile="cube1.model" />  
 </catalog>

@@ -164,7 +164,7 @@ namespace SketchModeller.Modelling.Views
                 {
                     while (curveAssigner.ComputeFeatureAssignments(cuboid.ArrayOfCorners[i]))
                     {
-                        Model.CheckCubicCorner(i);
+                        cuboid.CheckCubicCorner(i);
 
                         int NumberOfAssignedFeatures = (from curve in cuboid.ArrayOfCorners[i]
                                                         where curve.AssignedTo != null
@@ -194,7 +194,7 @@ namespace SketchModeller.Modelling.Views
                 }
                 while (curveAssigner.ComputeFeatureAssignments(cuboid.ArrayOfCorners[cuboid.ActiveCubicCorner]))
                 {
-                    Model.CheckCubicCorner(cuboid.ActiveCubicCorner);
+                    cuboid.CheckCubicCorner(cuboid.ActiveCubicCorner);
                 }
             }
             //refresh all curves so that they can be selected again

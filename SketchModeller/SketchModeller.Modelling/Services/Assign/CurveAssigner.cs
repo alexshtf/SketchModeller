@@ -44,6 +44,20 @@ namespace SketchModeller.Modelling.Services.Assign
             else return true;
         }
 
+        public bool ComputeFeatureAssignments(PrimitiveCurve[] Features)
+        {
+            ComputeAssignments(Features, CurveCategories.Feature);
+            int toDoFeatureCurves = Features.Where(curve => !curve.isDeselected).ToArray().Length;
+            if (toDoFeatureCurves == 0) return false;
+            int toDoFeaturesOnSketch =
+                (from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
+                 where sessionData.SketchObjects[idx].CurveCategory == CurveCategories.Feature
+                 where sessionData.SketchObjects[idx].isdeselected == false
+                 select idx).ToArray().Length;
+            if (toDoFeaturesOnSketch == 0) return false;
+            else return true;
+        }
+
         public bool ComputeFeatureAssignments(NewPrimitive primitive)
         {
             ComputeAssignments(primitive.FeatureCurves, CurveCategories.Feature);
@@ -82,9 +96,9 @@ namespace SketchModeller.Modelling.Services.Assign
                  where sessionData.SketchObjects[idx].isdeselected == false
                  select new { Index = idx, DistanceTransform = sessionData.DistanceTransforms[idx] }
                 ).ToArray();
-            
+
             //System.Diagnostics.Debug.WriteLine("Number:" + distanceTransforms.Length);
-            
+
             // compute matching costs using distance transform integral
             if (distanceTransforms.Length > 0)
             {

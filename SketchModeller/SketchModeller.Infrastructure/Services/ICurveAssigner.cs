@@ -11,6 +11,7 @@ namespace SketchModeller.Infrastructure.Services
         void ComputeAssignments(NewPrimitive primitive, bool refresh);
         bool ComputeSilhouetteAssignments(NewPrimitive primitive);
         bool ComputeFeatureAssignments(NewPrimitive primitive);
+        bool ComputeFeatureAssignments(PrimitiveCurve[] Features);
         void refresh(NewPrimitive primitive);
     }
 }
