@@ -296,6 +296,8 @@
     <Compile Include="Views\NewBGCViewModel.cs" />
     <Compile Include="Views\NewConeView.cs" />
     <Compile Include="Views\NewConeViewModel.cs" />
+    <Compile Include="Views\NewCuboidView.cs" />
+    <Compile Include="Views\NewCuboidViewModel.cs" />
     <Compile Include="Views\NewCylinderView.cs" />
     <Compile Include="Views\NewCylinderViewModel.cs" />
     <Compile Include="Views\NewPrimitiveCurvesControl.cs" />

@@ -140,6 +140,7 @@
   <ItemGroup>
     <Compile Include="AverageSmooth.cs" />
     <Compile Include="BendedCylinderComponentExtensions.cs" />
+    <Compile Include="ChangeBasisTransform.cs" />
     <Compile Include="CircleFitter.cs" />
     <Compile Include="ConstraintsProjector.cs" />
     <Compile Include="ContractExtensions.cs" />
