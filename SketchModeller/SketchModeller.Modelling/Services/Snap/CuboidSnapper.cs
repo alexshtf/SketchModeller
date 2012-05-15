@@ -72,7 +72,7 @@ namespace SketchModeller.Modelling.Services.Snap
             Point3D Bp = NewPrimitiveExtensions.FindEnd3DPoint(ec.Points3D, Op);
             ec = (EnhancedPrimitiveCurve)snappedPrimitive.CubicCorner[2];
             Point3D Cp = NewPrimitiveExtensions.FindEnd3DPoint(ec.Points3D, Op);
-
+            
             O.Y = -O.Y;
             A.Y = -A.Y;
             B.Y = -B.Y;
@@ -84,7 +84,7 @@ namespace SketchModeller.Modelling.Services.Snap
             Debug.WriteLine("A=({0},{1})", A.X, A.Y);
             Debug.WriteLine("B=({0},{1})", B.X, B.Y);
             Debug.WriteLine("C=({0},{1})", C.X, C.Y);
-
+            
             Vector OAn = OA.Normalized();
             Vector OBn = OB.Normalized();
             Vector OCn = OC.Normalized();
@@ -123,7 +123,7 @@ namespace SketchModeller.Modelling.Services.Snap
             OBn = vecArr[1].Normalized();
             OCn = vecArr[2].Normalized();*/
             Debug.WriteLine("Cubic Corner Index:{0}", snappedPrimitive.CubicCornerIdx);
-
+            
             double pn, qn, rn;
             int signp = 0, signq = 0, signr = 0;
             if (dotABn < 0 && dotACn < 0 && dotBCn < 0)
@@ -148,10 +148,10 @@ namespace SketchModeller.Modelling.Services.Snap
                     signq = 1;
                 }
             }
-
-            pn = signp * Math.Sqrt(-dotACn * dotABn / dotBCn);
-            qn = signq * Math.Sqrt(-dotABn * dotBCn / dotACn);
-            rn = signr * Math.Sqrt(-dotACn * dotBCn / dotABn);
+            
+            pn = signp*Math.Sqrt(-dotACn * dotABn / dotBCn);
+            qn = signq*Math.Sqrt(-dotABn * dotBCn / dotACn);
+            rn = signr*Math.Sqrt(-dotACn * dotBCn / dotABn);
 
             Debug.WriteLine("p*q={0}, OA*OB={1}", pn * qn, dotABn);
             Debug.WriteLine("p*r={0}, OA*OC={1}", pn * rn, dotACn);
@@ -161,50 +161,56 @@ namespace SketchModeller.Modelling.Services.Snap
             Vector3D OB3Dn = new Vector3D(OBn.X, OBn.Y, qn);
             Vector3D OC3Dn = new Vector3D(OCn.X, OCn.Y, rn);
 
+            OA3Dn = OA3Dn.Normalized();
+            OB3Dn = OB3Dn.Normalized();
+            OC3Dn = OC3Dn.Normalized();
+            Vector3D pOA = (Ap - Op).Normalized();
+            Vector3D pOB = (Bp - Op).Normalized();
+            Vector3D pOC = (Cp - Op).Normalized();
             Vector3D approxW = new Vector3D();// = OA3Dn.Normalized();
             Vector3D approxH = new Vector3D();// = -OB3Dn.Normalized();
             Vector3D approxD = new Vector3D();// = OC3Dn.Normalized();
-
+            
             switch (snappedPrimitive.CubicCornerIdx)
             {
                 case 0:
-                    approxW = OA3Dn.Normalized();
-                    approxH = -OB3Dn.Normalized();
-                    approxD = OC3Dn.Normalized();
+                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? OA3Dn : -OA3Dn;
+                    approxH = Vector3D.DotProduct(pOB, OB3Dn) < 0 ? OB3Dn : -OB3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 1:
-                    approxW = -OA3Dn.Normalized();
-                    approxH = -OB3Dn.Normalized();
-                    approxD = OC3Dn.Normalized();
+                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? OA3Dn : -OA3Dn;
+                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : -OB3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 2:
-                    approxW = OA3Dn.Normalized();
-                    approxH = -OB3Dn.Normalized();
-                    approxD = -OC3Dn.Normalized();
+                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? OA3Dn : -OA3Dn;
+                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : -OB3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 3:
                     approxW = -OA3Dn.Normalized();
-                    approxH = -OB3Dn.Normalized();
+                    approxH = -OB3Dn.Normalized();                    
                     approxD = -OC3Dn.Normalized();
                     break;
                 case 4:
                     approxW = OA3Dn.Normalized();
-                    approxH = OB3Dn.Normalized();
+                    approxH = OB3Dn.Normalized();                    
                     approxD = OC3Dn.Normalized();
                     break;
                 case 5:
-                    approxW = -OA3Dn.Normalized();
-                    approxH = OB3Dn.Normalized();
-                    approxD = OC3Dn.Normalized();
+                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? -OA3Dn : OA3Dn;
+                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : OB3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 6:
                     approxW = OA3Dn.Normalized();
-                    approxH = OB3Dn.Normalized();
+                    approxH = OB3Dn.Normalized();                    
                     approxD = -OC3Dn.Normalized();
                     break;
                 case 7:
                     approxW = -OA3Dn.Normalized();
-                    approxH = OB3Dn.Normalized();
+                    approxH = OB3Dn.Normalized();                    
                     approxD = -OC3Dn.Normalized();
                     break;
             }
@@ -221,7 +227,7 @@ namespace SketchModeller.Modelling.Services.Snap
             double lOB = OB.Length;
             double lOC = OC.Length;
             Debug.WriteLine("(lOA, lOB, lOC)=({0},{1},{2})", lOA, lOB, lOC);*/
-
+            
             //a = Math.Acos(OAn * OBn);
             //b = Math.Acos(OAn * OCn);
             //c = Math.Acos(OBn * OCn);
@@ -253,11 +259,11 @@ namespace SketchModeller.Modelling.Services.Snap
             Vector3D cuboidOC = ec.Points3D[1] - ec.Points3D[0];
             double zAp = p;
             double zAn = -zAp;
-            double zBp = q;
+            double zBp = q; 
             double zBn = -zBp;
             double zCp = r;
             double zCn = -zCp;
-
+            
             Point3D O3D = new Point3D(O.X, O.Y, 0);
             snappedPrimitive.Origin = O3D;
             Point3D A3Dp = new Point3D(A.X, A.Y, zAp);
@@ -272,7 +278,7 @@ namespace SketchModeller.Modelling.Services.Snap
             Vector3D OB3Dp = B3Dp - O3D;
             //Point3D B3D = (Vector3D.DotProduct(cuboidOB, OB3Dp) > 0) ? B3Dp : B3Dn;
             Point3D B3D = B3Dp; //(Vector3D.DotProduct(cuboidOB, OB3Dp) > 0) ? B3Dp : B3Dn;
-
+            
             Point3D C3Dp = new Point3D(C.X, C.Y, zCp);
             Point3D C3Dn = new Point3D(C.X, C.Y, -zCp);
             Vector3D OC3Dp = C3Dp - O3D;
@@ -281,7 +287,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             Debug.WriteLine("OA3D=({0},{1},{2})", OA3Dp.X, OA3Dp.Y, OA3Dp.Z);
             Debug.WriteLine("OB3D=({0},{1},{2})", OB3Dp.X, OB3Dp.Y, OB3Dp.Z);
-
+            
             Debug.WriteLine("W*H={0}", Vector3D.DotProduct(approxH, approxW));
             Debug.WriteLine("W*D={0}", Vector3D.DotProduct(approxD, approxW));
             Debug.WriteLine("D*H={0}", Vector3D.DotProduct(approxH, approxD));
@@ -317,27 +323,27 @@ namespace SketchModeller.Modelling.Services.Snap
                     approxCenter = O3D - 0.5 * approxWidth * approxW + 0.5 * approxHeight * approxH - 0.5 * approxDepth * approxD;
                     break;
             }
-            var CenterTerm =
+            var CenterTerm = 
                 TermBuilder.Power(snappedPrimitive.Center.X - approxCenter.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Center.Y - approxCenter.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Center.Z - approxCenter.Z, 2);
-
+            
             var LengthTerm =
                 TermBuilder.Power(snappedPrimitive.Width - approxWidth, 2) +
                 TermBuilder.Power(snappedPrimitive.Height - approxHeight, 2) +
                 TermBuilder.Power(snappedPrimitive.Depth - approxDepth, 2);
 
-            var WidthVectorTerm = 10 *
+            var WidthVectorTerm = 10*
                 TermBuilder.Power(snappedPrimitive.Wv.X - approxW.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Wv.Y - approxW.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Wv.Z - approxW.Z, 2);
 
-            var HeightVectorTerm = 10 *
+            var HeightVectorTerm = 10*
                 TermBuilder.Power(snappedPrimitive.Hv.X - approxH.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Hv.Y - approxH.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Hv.Z - approxH.Z, 2);
 
-            var DepthVectorTerm = 10 *
+            var DepthVectorTerm = 10*
                 TermBuilder.Power(snappedPrimitive.Dv.X - approxD.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Dv.Y - approxD.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Dv.Z - approxD.Z, 2);
@@ -352,11 +358,9 @@ namespace SketchModeller.Modelling.Services.Snap
             var ABorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Hv);
             var ACorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Dv);
             var BCorthogonal = TVec.InnerProduct(snappedPrimitive.Hv, snappedPrimitive.Wv);
-            var constraints = new Term[] { snappedPrimitive.Wv.NormSquared - 1, snappedPrimitive.Hv.NormSquared - 1, snappedPrimitive.Dv.NormSquared - 1, ABorthogonal, ACorthogonal, BCorthogonal };
+            var constraints = new Term[] { snappedPrimitive.Wv.NormSquared - 1, snappedPrimitive.Hv.NormSquared - 1, snappedPrimitive.Dv.NormSquared - 1 , ABorthogonal, ACorthogonal, BCorthogonal };
 
             return Tuple.Create(objective, constraints);
         }
-
-
     }
 }

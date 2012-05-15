@@ -53,58 +53,132 @@ namespace SketchModeller.Infrastructure.Data
         public ValueParameter Width { get; set; }
         public ValueParameter Depth { get; set; }
 
-        public override void UpdateCurvesGeometry()
+         public override void UpdateCurvesGeometry()
         {
-            Func<double, double, double, Point3D> createPointInBasis = (w, h, d) =>
-                Center.Value + w * W.Value + h * H.Value + d * D.Value;
-
             //Now comes the tedious job to draw the feature curves of the cuboid
             //Define the vertices of the cube centered at the center of the coordinate system 
-            Point3D vA = createPointInBasis(-0.5 * Width, 0.5 * Height, 0.5 * Depth);
-            Point3D vB = createPointInBasis(0.5 * Width, 0.5 * Height, 0.5 * Depth);
-            Point3D vC = createPointInBasis(0.5 * Width, -0.5 * Height, 0.5 * Depth);
-            Point3D vD = createPointInBasis(-0.5 * Width, -0.5 * Height, 0.5 * Depth);
-            Point3D vE = createPointInBasis(-0.5 * Width, 0.5 * Height, -0.5 * Depth);
-            Point3D vF = createPointInBasis(0.5 * Width, 0.5 * Height, -0.5 * Depth);
-            Point3D vG = createPointInBasis(0.5 * Width, -0.5 * Height, -0.5 * Depth);
-            Point3D vH = createPointInBasis(-0.5 * Width, -0.5 * Height, -0.5 * Depth);
+            Point3D A = new Point3D(-0.5 * Width, 0.5 * Height, 0.5 * Depth);
+            Point3D B = new Point3D(0.5 * Width, 0.5 * Height, 0.5 * Depth);
+            Point3D C = new Point3D(0.5 * Width, -0.5 * Height, 0.5 * Depth);
+            Point3D Dc = new Point3D(-0.5 * Width, -0.5 * Height, 0.5 * Depth);
+            Point3D E = new Point3D(-0.5 * Width, 0.5 * Height, -0.5 * Depth);
+            Point3D F = new Point3D(0.5 * Width, 0.5 * Height, -0.5 * Depth);
+            Point3D G = new Point3D(0.5 * Width, -0.5 * Height, -0.5 * Depth);
+            Point3D Hc = new Point3D(-0.5 * Width, -0.5 * Height, -0.5 * Depth);
+            Point3D[] Pnts = new Point3D[] { A, B, C, Dc, E, F, G, Hc };
+            double[][] P = FindTransformationMatrix(W, H, D);
+            TransformPoints(Pnts, Center, P);
 
-            FeatureCurves[0].Points = ShapeHelper.ProjectCurve(vA, vE);
-            FeatureCurves[1].Points = ShapeHelper.ProjectCurve(vA, vB);
-            FeatureCurves[2].Points = ShapeHelper.ProjectCurve(vB, vF);
-            FeatureCurves[3].Points = ShapeHelper.ProjectCurve(vE, vF);
-            FeatureCurves[4].Points = ShapeHelper.ProjectCurve(vD, vH);
-            FeatureCurves[5].Points = ShapeHelper.ProjectCurve(vC, vD);
-            FeatureCurves[6].Points = ShapeHelper.ProjectCurve(vC, vG);
-            FeatureCurves[7].Points = ShapeHelper.ProjectCurve(vG, vH);
-            FeatureCurves[8].Points = ShapeHelper.ProjectCurve(vA, vD);
-            FeatureCurves[9].Points = ShapeHelper.ProjectCurve(vB, vC);
-            FeatureCurves[10].Points = ShapeHelper.ProjectCurve(vF, vG);
-            FeatureCurves[11].Points = ShapeHelper.ProjectCurve(vE, vH);
+            A = Pnts[0];
+            B = Pnts[1];
+            C = Pnts[2];
+            Dc = Pnts[3];
+            E = Pnts[4];
+            F = Pnts[5];
+            G = Pnts[6];
+            Hc = Pnts[7];
+
+            FeatureCurves[0].Points = ShapeHelper.ProjectCurve(A, E);
+            FeatureCurves[1].Points = ShapeHelper.ProjectCurve(A, B);
+            FeatureCurves[2].Points = ShapeHelper.ProjectCurve(B, F);
+            FeatureCurves[3].Points = ShapeHelper.ProjectCurve(E, F);
+            FeatureCurves[4].Points = ShapeHelper.ProjectCurve(Dc, Hc);
+            FeatureCurves[5].Points = ShapeHelper.ProjectCurve(C, Dc);
+            FeatureCurves[6].Points = ShapeHelper.ProjectCurve(C, G);
+            FeatureCurves[7].Points = ShapeHelper.ProjectCurve(G, Hc);
+            FeatureCurves[8].Points = ShapeHelper.ProjectCurve(A, Dc);
+            FeatureCurves[9].Points = ShapeHelper.ProjectCurve(B, C);
+            FeatureCurves[10].Points = ShapeHelper.ProjectCurve(F, G);
+            FeatureCurves[11].Points = ShapeHelper.ProjectCurve(E, Hc);
             EnhancedPrimitiveCurve ec = (EnhancedPrimitiveCurve)FeatureCurves[0];
-            ec.Points3D = new Point3D[] { vA, vE };
+            ec.Points3D = new Point3D[] { A, E };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[1];
-            ec.Points3D = new Point3D[] { vA, vB };
+            ec.Points3D = new Point3D[] { A, B };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[2];
-            ec.Points3D = new Point3D[] { vB, vF };
+            ec.Points3D = new Point3D[] { B, F };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[3];
-            ec.Points3D = new Point3D[] { vE, vF };
+            ec.Points3D = new Point3D[] { E, F };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[4];
-            ec.Points3D = new Point3D[] { vD, vH };
+            ec.Points3D = new Point3D[] { Dc, Hc };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[5];
-            ec.Points3D = new Point3D[] { vC, vD };
+            ec.Points3D = new Point3D[] { C, Dc };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[6];
-            ec.Points3D = new Point3D[] { vC, vG };
+            ec.Points3D = new Point3D[] { C, G };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[7];
-            ec.Points3D = new Point3D[] { vG, vH };
+            ec.Points3D = new Point3D[] { G, Hc };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[8];
-            ec.Points3D = new Point3D[] { vA, vD };
+            ec.Points3D = new Point3D[] { A, Dc };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[9];
-            ec.Points3D = new Point3D[] { vB, vC };
+            ec.Points3D = new Point3D[] { B, C };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[10];
-            ec.Points3D = new Point3D[] { vF, vG };
+            ec.Points3D = new Point3D[] { F, G };
             ec = (EnhancedPrimitiveCurve)FeatureCurves[11];
-            ec.Points3D = new Point3D[] { vE, vH };
+            ec.Points3D = new Point3D[] { E, Hc };
+        }
+        
+        public static void TransformPoints(Point3D[] points, Point3D Center, double[][] P)
+        {
+            for (int i = 0; i < points.Length; i++)
+            {
+                Point3D Pt = new Point3D();
+                Pt.X = points[i].X * P[0][0] + points[i].Y * P[1][0] + points[i].Z * P[2][0] + Center.X;
+                Pt.Y = points[i].X * P[0][1] + points[i].Y * P[1][1] + points[i].Z * P[2][1] + Center.Y;
+                Pt.Z = points[i].X * P[0][2] + points[i].Y * P[1][2] + points[i].Z * P[2][2] + Center.Z;
+                points[i] = new Point3D(Pt.X, Pt.Y, Pt.Z);
+            }
+        }
+        public static double[][] FindTransformationMatrix(Vector3D W, Vector3D H, Vector3D D)
+        {
+            double[][] G = new double[3][];
+            for (int i = 0; i < 3; i++) G[i] = new double[6];
+            G[0][0] = W.X; G[0][1] = H.X; G[0][2] = D.X; G[0][3] = 1; G[0][4] = 0; G[0][5] = 0;
+            G[1][0] = W.Y; G[1][1] = H.Y; G[1][2] = D.Y; G[1][3] = 0; G[1][4] = 1; G[1][5] = 0;
+            G[2][0] = W.Z; G[2][1] = H.Z; G[2][2] = D.Z; G[2][3] = 0; G[2][4] = 0; G[2][5] = 1;
+            for (int j = 0; j < 3; j++)
+            {
+                int temp = j;
+
+                /* finding maximum coefficient of Xj in last (noofequations-j) equations */
+
+                for (int i = j + 1; i < 3; i++)
+                    if (G[i][j] > G[temp][j])
+                        temp = i;
+
+
+                /* swapping row which has maximum coefficient of Xj */
+
+                if (temp != j)
+                {
+                    for (int k = 0; k < 6; k++)
+                    {
+                        var temporary = G[j][k];
+                        G[j][k] = G[temp][k];
+                        G[temp][k] = temporary;
+                    }
+                }
+
+                /* performing row operations to form required diagonal matrix */
+
+                for (int i = 0; i < 3; i++)
+                    if (i != j)
+                    {
+                        var r = G[i][j];
+                        for (int k = 0; k < 6; k++)
+                            G[i][k] -= (G[j][k] / G[j][j]) * r;
+                    }
+            }
+            for (int j = 0; j < 3; j++)
+            {
+                var pivot = G[j][j];
+                for (int i = 0; i < 6; i++)
+                    G[j][i] /= pivot;
+            }
+            double[][] P = new double[3][];
+            for (int i = 0; i < 3; i++) P[i] = new double[3];
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                    P[i][j] = G[i][j + 3];
+            return P;
         }
 
         #region corner properties - each corner is the set of feature curves that intersect there
