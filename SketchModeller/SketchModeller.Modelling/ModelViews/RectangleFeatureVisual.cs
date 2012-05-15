@@ -67,6 +67,9 @@ namespace SketchModeller.Modelling.ModelViews
 
         private Geometry3D GenerateMeshGeometry(Point3D center, double width, double height, Vector3D widthVector, Vector3D heightVector)
         {
+            width = 0.5 * width;
+            height = 0.5 * height;
+
             var tl = center - width * widthVector + height * heightVector;
             var tr = center + width * widthVector + height * heightVector;
             var br = center + width * widthVector - height * heightVector;

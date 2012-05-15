@@ -75,74 +75,74 @@ namespace SketchModeller.Infrastructure.Data
         public override void UpdateFeatureCurves()
         {
             // update variables
-            TopPlane.Center = Center + Hv * Height;
+            TopPlane.Center = Center + 0.5 * Hv * Height;
             TopPlane.Normal = Hv;
             TopPlane.WidthVector = Dv;
             TopPlane.Widgth = Depth;
             TopPlane.Height = Width;
 
-            BotPlane.Center = Center - Hv * Height;
+            BotPlane.Center = Center - 0.5 * Hv * Height;
             BotPlane.Normal = -Hv;
             BotPlane.WidthVector = Dv;
             BotPlane.Widgth = Depth;
             BotPlane.Height = Width;
-            
-            LftPlane.Center = Center - Wv * Width;
+
+            LftPlane.Center = Center - 0.5 * Wv * Width;
             LftPlane.Normal = -Wv;
             LftPlane.WidthVector = Hv;
             LftPlane.Widgth = Height;
             LftPlane.Height = Depth;
-            
-            RgtPlane.Center = Center + Wv * Width;
+
+            RgtPlane.Center = Center + 0.5 * Wv * Width;
             RgtPlane.Normal = Wv;
             RgtPlane.WidthVector = Hv;
             RgtPlane.Widgth = Height;
             RgtPlane.Height = Depth;
-            
-            FrnPlane.Center = Center + Dv * Depth;
+
+            FrnPlane.Center = Center + 0.5 * Dv * Depth;
             FrnPlane.Normal = Dv;
             FrnPlane.WidthVector = Wv;
             FrnPlane.Widgth = Width;
             FrnPlane.Height = Height;
-            
-            BakPlane.Center = Center - Dv * Depth;
+
+            BakPlane.Center = Center - 0.5 * Dv * Depth;
             BakPlane.Normal = -Dv;
             BakPlane.WidthVector = Wv;
             BakPlane.Widgth = Width;
             BakPlane.Height = Height;
 
             // update results
-            TopPlane.CenterResult = CenterResult + Hresult * HeightResult;
+            TopPlane.CenterResult = CenterResult + 0.5 * Hresult * HeightResult;
             TopPlane.NormalResult = Hresult;
             TopPlane.WidthVectorResult = Dresult;
             TopPlane.WidthResult = DepthResult;
             TopPlane.HeightResult = WidthResult;
 
-            BotPlane.CenterResult = CenterResult - Hresult * HeightResult;
+            BotPlane.CenterResult = CenterResult - 0.5 * Hresult * HeightResult;
             BotPlane.NormalResult = -Hresult;
             BotPlane.WidthVectorResult = Dresult;
             BotPlane.WidthResult = DepthResult;
             BotPlane.HeightResult = WidthResult;
 
-            LftPlane.CenterResult = CenterResult - Wresult * WidthResult;
+            LftPlane.CenterResult = CenterResult - 0.5 * Wresult * WidthResult;
             LftPlane.NormalResult = -Wresult;
             LftPlane.WidthVectorResult = Hresult;
             LftPlane.WidthResult = HeightResult;
             LftPlane.HeightResult = DepthResult;
 
-            RgtPlane.CenterResult = CenterResult + Wresult * WidthResult;
+            RgtPlane.CenterResult = CenterResult + 0.5 * Wresult * WidthResult;
             RgtPlane.NormalResult = Wresult;
             RgtPlane.WidthVectorResult = Hresult;
             RgtPlane.WidthResult = HeightResult;
             RgtPlane.HeightResult = DepthResult;
 
-            FrnPlane.CenterResult = CenterResult + Dresult * DepthResult;
+            FrnPlane.CenterResult = CenterResult + 0.5 * Dresult * DepthResult;
             FrnPlane.NormalResult = Dresult;
             FrnPlane.WidthVectorResult = Wresult;
             FrnPlane.WidthResult = WidthResult;
             FrnPlane.HeightResult = HeightResult;
 
-            BakPlane.CenterResult = CenterResult - Dresult * DepthResult;
+            BakPlane.CenterResult = CenterResult - 0.5 * Dresult * DepthResult;
             BakPlane.NormalResult = -Dresult;
             BakPlane.WidthVectorResult = Wresult;
             BakPlane.WidthResult = WidthResult;

@@ -194,7 +194,7 @@ namespace SketchModeller.Modelling.ModelViews
             geometry.Positions = new Point3DCollection(Pnts);
             geometry.TriangleIndices = Idx;
 
-            return CreateVisual(geometry, snappedPrimitive, false);
+            return CreateVisual(geometry, snappedPrimitive);
         }
 
         public static double[][] FindTransformationMatrix(Vector3D W, Vector3D H, Vector3D D)
