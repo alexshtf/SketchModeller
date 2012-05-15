@@ -121,6 +121,7 @@ namespace SketchModeller.Modelling.ModelViews
             {
                 ModelVisual3D featureCurveVisual = null;
                 item.MatchClass<CircleFeatureCurve>(cfc => featureCurveVisual = new CircleFeatureVisual(cfc));
+                item.MatchClass<RectangleFeatureCurve>(rfc => featureCurveVisual = new RectangleFeatureVisual(rfc));
                 Debug.Assert(featureCurveVisual != null, "Unknown feature curve type");
 
                 root.Children.Add(featureCurveVisual);

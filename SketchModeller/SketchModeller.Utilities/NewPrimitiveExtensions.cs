@@ -221,9 +221,9 @@ namespace SketchModeller.Infrastructure.Data
                     primitive.FeatureCurves[1].AssignedTo = null;
             }
         }
-        public static void CheckCubicCorner(this NewCuboid primitive, int i)
+
+        public static void CheckCubicCorner(this NewCuboid cuboid, int i)
         {
-            NewCuboid cuboid = (NewCuboid)primitive;
             var features = cuboid.ArrayOfCorners[i];
             int N = 3;
             Point[][] endPoints = new Point[N][];
@@ -270,13 +270,13 @@ namespace SketchModeller.Infrastructure.Data
                     stride++;
                 }
             }
-            int Max = connectedComponents[0].idxs.Count;
+            int max = connectedComponents[0].idxs.Count;
             int idx = 0;
             for (int counter = 1; counter < N; counter++)
             {
-                if (connectedComponents[counter].idxs.Count > Max)
+                if (connectedComponents[counter].idxs.Count > max)
                 {
-                    Max = connectedComponents[counter].idxs.Count;
+                    max = connectedComponents[counter].idxs.Count;
                     idx = counter;
                 }
             }
@@ -585,7 +585,7 @@ namespace SketchModeller.Infrastructure.Data
         /// </summary>
         /// <param name="threshold">The comparison threshold for the closest distance</param>
         /// <returns></returns>
-        public static Point? PointCompareReturn(Point[] P1, Point[] P2, double threshold = 0.05)
+        public static Point? PointCompareReturn(Point[] P1, Point[] P2, double threshold = 0.15)
         {
             var p1WithDistances = from pointIdx in P1.ZipIndex()
                                   let pointOnP1 = pointIdx.Value

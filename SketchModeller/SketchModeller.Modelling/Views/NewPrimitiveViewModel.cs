@@ -166,10 +166,10 @@ namespace SketchModeller.Modelling.Views
                     {
                         cuboid.CheckCubicCorner(i);
 
-                        int NumberOfAssignedFeatures = (from curve in cuboid.ArrayOfCorners[i]
+                        int numberOfAssignedFeatures = (from curve in cuboid.ArrayOfCorners[i]
                                                         where curve.AssignedTo != null
                                                         select curve).Count();
-                        if (NumberOfAssignedFeatures == 3)
+                        if (numberOfAssignedFeatures == 3)
                         {
                             Point CP = NewPrimitiveExtensions.FindCoincidentPoint(cuboid.ArrayOfCorners[i]);
                             Point CPprimitive = NewPrimitiveExtensions.FindCoincidentPoint(cuboid.ArrayOfCorners[i], false);
@@ -199,7 +199,6 @@ namespace SketchModeller.Modelling.Views
             }
             //refresh all curves so that they can be selected again
             curveAssigner.refresh(Model);
-            Model.CanSnap = false;
             Model.CanSnap = CheckIfPrimitiveCanSnap();
 
             if (Model.IsSelected)

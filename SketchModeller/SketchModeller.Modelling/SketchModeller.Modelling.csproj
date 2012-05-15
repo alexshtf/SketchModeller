@@ -206,6 +206,7 @@
     </Compile>
     <Compile Include="ModelViews\ModelViewerViewModel.cs" />
     <Compile Include="ModelViews\NavigationRectangleFillConverter.cs" />
+    <Compile Include="ModelViews\RectangleFeatureVisual.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PrimitivesPickService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
