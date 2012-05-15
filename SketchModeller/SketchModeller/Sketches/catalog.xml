@@ -55,6 +55,9 @@
         file="cube1.svg"
         modelFile="cube1.model" />
   <sketch name="SquarePipes"
-          file="squarepipes.svg"
-          modelFile="squarepipes.model" />
+        file="squarepipes.svg"
+        modelFile="squarepipes.model" />
+  <sketch name="cuboidSketch"
+        file="cuboidSketch.svg"
+        modelFile="cuboidSketch.model" />
 </catalog>
