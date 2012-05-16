@@ -60,4 +60,7 @@
   <sketch name="cuboidSketch"
         file="cuboidSketch.svg"
         modelFile="cuboidSketch.model" />
+  <sketch name="legobrick"
+          file="legobrick.svg"
+          modelFile="legobrick.model" />
 </catalog>
