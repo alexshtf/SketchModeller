@@ -144,8 +144,8 @@ namespace SketchModeller.Modelling.Services.Snap
                 }
                 else
                 {
-                    signp = signr = -1;
-                    signq = 1;
+                    signp = signr = 1;
+                    signq = -1;
                 }
             }
             
@@ -170,7 +170,20 @@ namespace SketchModeller.Modelling.Services.Snap
             Vector3D approxW = new Vector3D();// = OA3Dn.Normalized();
             Vector3D approxH = new Vector3D();// = -OB3Dn.Normalized();
             Vector3D approxD = new Vector3D();// = OC3Dn.Normalized();
+            /*if (pOA.X * OA3Dn.X < 0) OA3Dn.X = -OA3Dn.X;
+            if (pOA.Y * OA3Dn.Y < 0) OA3Dn.Y = -OA3Dn.Y;
+            if (pOA.Z * OA3Dn.Z < 0) OA3Dn.Z = -OA3Dn.Z;
             
+            if (pOB.X * OB3Dn.X < 0) OB3Dn.X = -OB3Dn.X;
+            if (pOB.Y * OB3Dn.Y < 0) OB3Dn.Y = -OB3Dn.Y;
+            if (pOB.Z * OB3Dn.Z < 0) OB3Dn.Z = -OB3Dn.Z;
+
+            if (pOC.X * OC3Dn.X < 0) OC3Dn.X = -OC3Dn.X;
+            if (pOC.Y * OC3Dn.Y < 0) OC3Dn.Y = -OC3Dn.Y;
+            if (pOC.Z * OC3Dn.Z < 0) OC3Dn.Z = -OC3Dn.Z;*/
+            
+            
+
             switch (snappedPrimitive.CubicCornerIdx)
             {
                 case 0:
@@ -179,12 +192,12 @@ namespace SketchModeller.Modelling.Services.Snap
                     approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 1:
-                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? OA3Dn : -OA3Dn;
-                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : -OB3Dn;
-                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
+                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? -OA3Dn : OA3Dn;
+                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? -OB3Dn : OB3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) > 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 2:
-                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? OA3Dn : -OA3Dn;
+                    approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? -OA3Dn : OA3Dn;
                     approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : -OB3Dn;
                     approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
                     break;
@@ -199,9 +212,13 @@ namespace SketchModeller.Modelling.Services.Snap
                     approxD = OC3Dn.Normalized();
                     break;
                 case 5:
+                    //if (pOA.X * OA3Dn.X < 0) OA3Dn.X = -OA3Dn.X;
+                    //if (pOA.X * OA3Dn.X < 0) OA3Dn.X = -OA3Dn.X;
                     approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? -OA3Dn : OA3Dn;
-                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : OB3Dn;
-                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
+                    approxH = Vector3D.DotProduct(pOB, OB3Dn) > 0 ? OB3Dn : -OB3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) > 0 ? OC3Dn : -OC3Dn;
+                    //Debug.WriteLine();
+                    
                     break;
                 case 6:
                     approxW = OA3Dn.Normalized();

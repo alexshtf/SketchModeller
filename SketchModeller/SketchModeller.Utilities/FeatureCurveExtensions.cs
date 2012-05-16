@@ -31,15 +31,20 @@ namespace SketchModeller.Infrastructure.Data
         {
             Contract.Requires(left != null);
             Contract.Requires(right != null);
-            Contract.Requires(left is CircleFeatureCurve);
-            Contract.Requires(right is CircleFeatureCurve);
+            Contract.Requires(left is CircleFeatureCurve || left is RectangleFeatureCurve);
+            Contract.Requires(right is CircleFeatureCurve || right is RectangleFeatureCurve);
 
             var leftCircle = left as CircleFeatureCurve;
             var rightCircle = right as CircleFeatureCurve;
 
-            return leftCircle.SnappedTo != null 
-                && rightCircle.SnappedTo != null 
-                && leftCircle.SnappedTo == rightCircle.SnappedTo;
+            if (leftCircle != null && rightCircle != null)
+            {
+                return leftCircle.SnappedTo != null
+                    && rightCircle.SnappedTo != null
+                    && leftCircle.SnappedTo == rightCircle.SnappedTo;
+            }
+
+            return false; // TODO: Check this for rectangles too.
         }
     }
 }
