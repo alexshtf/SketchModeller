@@ -8,6 +8,7 @@ using System.Diagnostics.Contracts;
 using System.Windows.Media;
 using Utils;
 using HelixToolkit;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -37,6 +38,9 @@ namespace SketchModeller.Modelling.ModelViews
             meshBuilder.AddArrow(cuboidData.Origin, cuboidData.Origin + 0.5 * cuboidData.Dresult, 0.05);
             geometry = meshBuilder.ToMesh();
             visual.Children.Add(CreateVisual(geometry, Brushes.Blue));
+            Debug.WriteLine(string.Format("After : W*H={0}", Vector3D.DotProduct(cuboidData.Wresult, cuboidData.Hresult)));
+            Debug.WriteLine(string.Format("After : W*D={0}", Vector3D.DotProduct(cuboidData.Wresult, cuboidData.Dresult)));
+            Debug.WriteLine(string.Format("After : D*H={0}", Vector3D.DotProduct(cuboidData.Dresult, cuboidData.Hresult)));
 
             //meshBuilder = new MeshBuilder(true, true);
             //Point3D[] points = geometry.Positions.ToArray();

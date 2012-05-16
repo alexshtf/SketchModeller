@@ -350,20 +350,20 @@ namespace SketchModeller.Modelling.Services.Snap
                 TermBuilder.Power(snappedPrimitive.Height - approxHeight, 2) +
                 TermBuilder.Power(snappedPrimitive.Depth - approxDepth, 2);
 
-            var WidthVectorTerm = 10*
+            var WidthVectorTerm = 10 * (
                 TermBuilder.Power(snappedPrimitive.Wv.X - approxW.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Wv.Y - approxW.Y, 2) +
-                TermBuilder.Power(snappedPrimitive.Wv.Z - approxW.Z, 2);
+                TermBuilder.Power(snappedPrimitive.Wv.Z - approxW.Z, 2));
 
-            var HeightVectorTerm = 10*
+            var HeightVectorTerm = 10 * (
                 TermBuilder.Power(snappedPrimitive.Hv.X - approxH.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Hv.Y - approxH.Y, 2) +
-                TermBuilder.Power(snappedPrimitive.Hv.Z - approxH.Z, 2);
+                TermBuilder.Power(snappedPrimitive.Hv.Z - approxH.Z, 2));
 
-            var DepthVectorTerm = 10*
+            var DepthVectorTerm = 10 * (
                 TermBuilder.Power(snappedPrimitive.Dv.X - approxD.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Dv.Y - approxD.Y, 2) +
-                TermBuilder.Power(snappedPrimitive.Dv.Z - approxD.Z, 2);
+                TermBuilder.Power(snappedPrimitive.Dv.Z - approxD.Z, 2));
 
             var objective =
                 CenterTerm +
@@ -374,7 +374,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             var ABorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Hv);
             var ACorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Dv);
-            var BCorthogonal = TVec.InnerProduct(snappedPrimitive.Hv, snappedPrimitive.Wv);
+            var BCorthogonal = TVec.InnerProduct(snappedPrimitive.Hv, snappedPrimitive.Dv);
             var constraints = new Term[] { snappedPrimitive.Wv.NormSquared - 1, snappedPrimitive.Hv.NormSquared - 1, snappedPrimitive.Dv.NormSquared - 1 , ABorthogonal, ACorthogonal, BCorthogonal };
 
             return Tuple.Create(objective, constraints);
