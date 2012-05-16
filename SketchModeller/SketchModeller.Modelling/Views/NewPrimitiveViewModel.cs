@@ -192,6 +192,7 @@ namespace SketchModeller.Modelling.Views
                         minDistance = v.Length;
                     }
                 }
+                if (cuboid.ActiveCubicCorner >= 0)
                 while (curveAssigner.ComputeFeatureAssignments(cuboid.ArrayOfCorners[cuboid.ActiveCubicCorner]))
                 {
                     cuboid.CheckCubicCorner(cuboid.ActiveCubicCorner);
