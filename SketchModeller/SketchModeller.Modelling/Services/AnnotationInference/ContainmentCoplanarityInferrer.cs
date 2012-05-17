@@ -8,6 +8,10 @@ using System.Diagnostics.Contracts;
 using System.Windows.Media;
 using SketchModeller.Infrastructure;
 using System.Windows.Media.Media3D;
+using System.Collections;
+using Utils;
+
+using Enumerable = System.Linq.Enumerable;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
@@ -37,39 +41,81 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             return result;
         }
 
-        private IEnumerable<Annotation> InferCoplanarity(SnappedPrimitive left, SnappedPrimitive right)
+        private IEnumerable<Annotation> InferCoplanarity(SnappedPrimitive existing, SnappedPrimitive fresh)
         {
-            var leftCurves = left.FeatureCurves;
-            var rightCurves = right.FeatureCurves;
-
-            var candidates = from leftCurve in left.FeatureCurves
-                             from rightCurve in right.FeatureCurves
-                             where AreContained(leftCurve, rightCurve)
-                             select Tuple.Create(leftCurve, rightCurve);
-
-            if (candidates.Any())
-                return SelectBestCandidates(candidates);
-            else
+            // spheres do not particiate here
+            if (existing is SnappedSphere || fresh is SnappedSphere)
                 return Enumerable.Empty<Annotation>();
+
+            var candidates = GetCandidates(existing.FeatureCurves, fresh.FeatureCurves);
+            return SelectBestCandidates(candidates);
         }
 
         #region candidate selection
 
-        private IEnumerable<Annotation> SelectBestCandidates(IEnumerable<Tuple<FeatureCurve, FeatureCurve>> candidates)
+        private IEnumerable<Annotation> SelectBestCandidates(IEnumerable<CandidatePair> candidates)
         {
-            // TODO
-            return Enumerable.Empty<Annotation>();
+            // eliminate containers that are not visible because their normal faces away from the viewer
+            // (positive Z coordinate).
+            var withVisibleContainers = from pair in candidates
+                                        where pair.Container.NormalResult.Z < 0
+                                        select pair;
+
+            if (withVisibleContainers.Any())
+            {
+                // choose the pair such that the projection of the containee's center on the container's normal 
+                // has the lowest value
+                var bestCandidate = candidates.Minimizer(ContainedCenterOnContainerAxisProjection);
+
+                // construct the coplanarity annotation and return a singleton enumerable containing it.
+                var annotation = new Coplanarity { Elements = new FeatureCurve[] { bestCandidate.Container, bestCandidate.Contained } };
+                return Utils.Enumerable.Singleton(annotation);
+            }
+            else
+                return Enumerable.Empty<Annotation>();
+        }
+
+        private double ContainedCenterOnContainerAxisProjection(CandidatePair pair)
+        {
+            var containedCenter = pair.Contained.CenterResult;
+            var containerAxis = pair.Container.NormalResult;
+            var containerCenter = pair.Container.CenterResult;
+
+            // this is t such that the projected point is (containerCenter + t * containerAxis);
+            var projectionParameter = MathUtils3D.ProjectOnLine(containedCenter, containerCenter, containerAxis).Item1;
+
+            return projectionParameter;
         }
 
         #endregion
 
-        #region containment checking
+        #region Candidates list construction
 
-        private bool AreContained(FeatureCurve leftCurve, FeatureCurve rightCurve)
+        private IEnumerable<CandidatePair> GetCandidates(FeatureCurve[] existingCurves, FeatureCurve[] freshCurves)
         {
-            return IsContainedIn(leftCurve, rightCurve) ||
-                   IsContainedIn(rightCurve, leftCurve);
+            var existingGeometries = existingCurves.Select(curve => GetGeometry(curve)).ToArray();
+            var freshGeometries = freshCurves.Select(curve => GetGeometry(curve)).ToArray();
+            var allGeometries = existingGeometries.Concat(freshGeometries).ToArray();
+
+            var candidates1 = from existingCurve in existingCurves
+                              from freshCurve in freshCurves
+                              where IsContainedIn(existingCurve, freshCurve)
+                              select new CandidatePair { Contained = existingCurve, Container = freshCurve };
+
+            var candidates2 = from existingCurve in existingCurves
+                              from freshCurve in freshCurves
+                              where IsContainedIn(freshCurve, existingCurve)
+                              select new CandidatePair { Contained = freshCurve, Container = existingCurve };
+            var candidates = candidates1.Union(candidates2);
+
+            candidates = candidates.ToArray();
+            return candidates;
         }
+
+
+        #endregion
+
+        #region containment checking
 
         private bool IsContainedIn(FeatureCurve containee, FeatureCurve container)
         {
@@ -97,9 +143,6 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private Geometry GetGeometry(CircleFeatureCurve circle)
         {
-            if (circle.IsFree())
-                return Geometry.Empty;
-
             var circlePoints = ShapeHelper.GenerateCircle(circle.CenterResult, 
                                                           circle.NormalResult, 
                                                           circle.RadiusResult, 
@@ -109,9 +152,6 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private Geometry GetGeometry(RectangleFeatureCurve rect)
         {
-            if (rect.IsFree())
-                return Geometry.Empty;
-
             var rectPoints = ShapeHelper.GenerateRectangle(rect.CenterResult,
                                                            rect.NormalResult,
                                                            rect.WidthVectorResult,
@@ -133,6 +173,16 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             }
 
             return geometry;
+        }
+
+        #endregion
+
+        #region CandidatePair class
+
+        private struct CandidatePair
+        {
+            public FeatureCurve Container { get; set; }
+            public FeatureCurve Contained { get; set; }
         }
 
         #endregion

@@ -178,6 +178,21 @@ namespace Utils
         }
 
         /// <summary>
+        /// Projects a point on a line
+        /// </summary>
+        /// <param name="projectWhat">The point to project</param>
+        /// <param name="linePoint">A point on the line to project on</param>
+        /// <param name="lineAxis">The axis vector of the line to project on.</param>
+        /// <returns>A tuple, such that the first value is the parameter of the projected point on the line's parametric
+        /// representation and the second value is the point itself (lazily initialized).</returns>
+        public static Tuple<double, Lazy<Point3D>> ProjectOnLine(Point3D projectWhat, Point3D linePoint, Vector3D lineAxis)
+        {
+            var t = Vector3D.DotProduct(projectWhat - linePoint, lineAxis) / lineAxis.LengthSquared;
+            var point = new Lazy<Point3D>(() => linePoint + t * lineAxis);
+            return Tuple.Create(t, point);
+        }
+
+        /// <summary>
         /// Projects a point on a segment.
         /// </summary>
         /// <param name="pnt">The point to project</param>

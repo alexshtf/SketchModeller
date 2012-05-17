@@ -151,6 +151,8 @@
     <Compile Include="Debugging\ArrayPlot.cs" />
     <Compile Include="Debugging\CloudPlotter.cs" />
     <Compile Include="Debugging\FWElementHelper.cs" />
+    <Compile Include="Debugging\GeometriesPlotter.cs" />
+    <Compile Include="Debugging\GeometryPlot.cs" />
     <Compile Include="Debugging\LinesPlotter.cs" />
     <Compile Include="Debugging\PointsPlotter.cs" />
     <Compile Include="DebugPrint.cs" />
