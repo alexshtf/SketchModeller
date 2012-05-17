@@ -63,4 +63,14 @@
   <sketch name="legobrick"
           file="legobrick.svg"
           modelFile="legobrick.model" />
+  <sketch name="gramophone"
+          file="gramophone.svg"
+          modelFile="gramophone.model" />
+  <sketch name="handset_simple"
+          file="handset_simple.svg"
+          modelFile="handset_simple.model" />
+  <sketch name="plug"
+          file="plug.svg"
+          modelFile="plug.model" />
+          
 </catalog>
