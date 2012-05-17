@@ -33,6 +33,19 @@ namespace SketchModeller.Infrastructure
         }
 
         /// <summary>
+        /// Generates the points of a rectangle given its parameters.
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="normal"></param>
+        /// <param name="widthVector"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public static Point3D[] GenerateRectangle(Point3D center, Vector3D normal, Vector3D widthVector, double width, double height)
+        {
+        }
+
+        /// <summary>
         /// Generates an approximation of a circle given its center, a normal vector for the plane, and its radius.
         /// </summary>
         /// <param name="center">The circle's center</param>

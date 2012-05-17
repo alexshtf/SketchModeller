@@ -25,7 +25,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
                 new InferrerEntry { Inferrer = new OnSphereInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.OnSphere },
                 new InferrerEntry { Inferrer = new CocentralityInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.Cocentrality },
                 new InferrerEntry { Inferrer = new SameRadiusInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.SameRadius },
-                new InferrerEntry { Inferrer = new ContainmentCoplanarityInferrer(), IsEnabledPredicate = () => inferenceOptions.Coplanarity });
+                new InferrerEntry { Inferrer = new ContainmentCoplanarityInferrer(sessionData), IsEnabledPredicate = () => inferenceOptions.Coplanarity });
         }
 
         public IEnumerable<Annotation> InferAnnotations(NewPrimitive toBeSnapped, SnappedPrimitive toBeAnnotated)

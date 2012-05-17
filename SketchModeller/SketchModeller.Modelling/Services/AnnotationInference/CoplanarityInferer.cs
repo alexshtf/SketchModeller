@@ -13,7 +13,7 @@ using System.Diagnostics.Contracts;
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
     /// <summary>
-    /// Infers coplanarity constraints based on a simple heuristic.
+    /// Infers coplanarity constraints based on a simple heuristic of "almost coplanarity".
     /// </summary>
     /// <remarks>
     /// <para>
