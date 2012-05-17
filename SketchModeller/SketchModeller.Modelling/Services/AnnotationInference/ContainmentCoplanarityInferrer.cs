@@ -65,7 +65,7 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             {
                 // choose the pair such that the projection of the containee's center on the container's normal 
                 // has the lowest value
-                var bestCandidate = candidates.Minimizer(ContainedCenterOnContainerAxisProjection);
+                var bestCandidate = withVisibleContainers.Minimizer(ContainedCenterOnContainerAxisProjection);
 
                 // construct the coplanarity annotation and return a singleton enumerable containing it.
                 var annotation = new Coplanarity { Elements = new FeatureCurve[] { bestCandidate.Container, bestCandidate.Contained } };
