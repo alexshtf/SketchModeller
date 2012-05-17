@@ -33,7 +33,7 @@ namespace SketchModeller.Infrastructure
         }
 
         /// <summary>
-        /// Generates the points of a rectangle given its parameters.
+        /// Generates the points of a 3D rectangle given its parameters.
         /// </summary>
         /// <param name="center"></param>
         /// <param name="normal"></param>
@@ -43,6 +43,19 @@ namespace SketchModeller.Infrastructure
         /// <returns></returns>
         public static Point3D[] GenerateRectangle(Point3D center, Vector3D normal, Vector3D widthVector, double width, double height)
         {
+            Contract.Ensures(Contract.Result<Point3D[]>() != null);
+            Contract.Ensures(Contract.Result<Point[]>().Length == 4);
+
+            var heightVector = Vector3D.CrossProduct(normal, widthVector);
+            widthVector.Normalize();
+            heightVector.Normalize();
+
+            var tl = center - 0.5 * width * widthVector + 0.5 * height * heightVector;
+            var tr = center + 0.5 * width * widthVector + 0.5 * height * heightVector;
+            var br = center + 0.5 * width * widthVector - 0.5 * height * heightVector;
+            var bl = center - 0.5 * width * widthVector - 0.5 * height * heightVector;
+
+            return new Point3D[] { tl, tr, br, bl };
         }
 
         /// <summary>

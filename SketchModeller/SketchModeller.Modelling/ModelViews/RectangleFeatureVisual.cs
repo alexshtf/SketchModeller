@@ -8,6 +8,7 @@ using System.Diagnostics.Contracts;
 using Utils;
 using System.Windows.Media;
 using HelixToolkit;
+using SketchModeller.Infrastructure;
 
 namespace SketchModeller.Modelling.ModelViews
 {
@@ -50,33 +51,17 @@ namespace SketchModeller.Modelling.ModelViews
 
         public void Update()
         {
-            var normal = featureCurve.NormalResult;
-            var center = featureCurve.CenterResult;
-            
-            var width = featureCurve.WidthResult;
-            var height = featureCurve.HeightResult;
-
-            var widthVector = featureCurve.WidthVectorResult;
-            var heightVector = Vector3D.CrossProduct(normal, widthVector);
-
-            widthVector.Normalize();
-            heightVector.Normalize();
-
-            model3d.Geometry = GenerateMeshGeometry(center, width, height, widthVector, heightVector);
+            model3d.Geometry = GenerateMeshGeometry(featureCurve.CenterResult, 
+                                                    featureCurve.NormalResult, 
+                                                    featureCurve.WidthVectorResult, 
+                                                    featureCurve.WidthResult - 0.03, 
+                                                    featureCurve.HeightResult - 0.03);
         }
 
-        private Geometry3D GenerateMeshGeometry(Point3D center, double width, double height, Vector3D widthVector, Vector3D heightVector)
+        private Geometry3D GenerateMeshGeometry(Point3D center, Vector3D normal, Vector3D widthVector, double width, double height)
         {
-            width = 0.5 * width;
-            height = 0.5 * height;
-
-            var tl = center - width * widthVector + height * heightVector;
-            var tr = center + width * widthVector + height * heightVector;
-            var br = center + width * widthVector - height * heightVector;
-            var bl = center - width * widthVector - height * heightVector;
-
+            var points = ShapeHelper.GenerateRectangle(center, normal, widthVector, width, height);
             MeshBuilder builder = new MeshBuilder();
-            var points = new Point3D[] { tl, tr, br, bl };
             builder.AddTube(points, thickness, 10, isTubeClosed: true);
             return builder.ToMesh();
         }
