@@ -44,7 +44,7 @@ namespace SketchModeller.Infrastructure
         public static Point3D[] GenerateRectangle(Point3D center, Vector3D normal, Vector3D widthVector, double width, double height)
         {
             Contract.Ensures(Contract.Result<Point3D[]>() != null);
-            Contract.Ensures(Contract.Result<Point[]>().Length == 4);
+            Contract.Ensures(Contract.Result<Point3D[]>().Length == 4);
 
             var heightVector = Vector3D.CrossProduct(normal, widthVector);
             widthVector.Normalize();
