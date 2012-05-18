@@ -139,8 +139,8 @@ namespace SketchModeller.Modelling.Services.Snap
                 }
                 else if (dotBCn < 0)
                 {
-                    signq = signr = -1;
-                    signp = 1;
+                    signq = signr = 1;
+                    signp = -1;
                 }
                 else
                 {
@@ -189,7 +189,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 case 0:
                     approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? OA3Dn : -OA3Dn;
                     approxH = Vector3D.DotProduct(pOB, OB3Dn) < 0 ? OB3Dn : -OB3Dn;
-                    approxD = Vector3D.DotProduct(pOC, OC3Dn) < 0 ? OC3Dn : -OC3Dn;
+                    approxD = Vector3D.DotProduct(pOC, OC3Dn) > 0 ? OC3Dn : -OC3Dn;
                     break;
                 case 1:
                     approxW = Vector3D.DotProduct(pOA, OA3Dn) > 0 ? -OA3Dn : OA3Dn;
