@@ -350,17 +350,23 @@ namespace SketchModeller.Modelling.Services.Snap
                 TermBuilder.Power(snappedPrimitive.Height - approxHeight, 2) +
                 TermBuilder.Power(snappedPrimitive.Depth - approxDepth, 2);
 
-            var WidthVectorTerm = 10 * (
+            double widthVectorArea = approxHeight * approxDepth; // area of the face orthogonal to width vector
+            double heightVectorArea = approxWidth * approxDepth; // area of the face orthogonal to height vector
+            double depthVectorArea = approxWidth * approxHeight; // area of the face orthogonal to depth vector
+
+            Debug.WriteLine("WVA = {0}, HVA = {1}, DVA = {2}", widthVectorArea, heightVectorArea, depthVectorArea);
+
+            var WidthVectorTerm = Math.Pow(widthVectorArea, 2) * (
                 TermBuilder.Power(snappedPrimitive.Wv.X - approxW.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Wv.Y - approxW.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Wv.Z - approxW.Z, 2));
 
-            var HeightVectorTerm = 10 * (
+            var HeightVectorTerm = Math.Pow(heightVectorArea, 2) * (
                 TermBuilder.Power(snappedPrimitive.Hv.X - approxH.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Hv.Y - approxH.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Hv.Z - approxH.Z, 2));
 
-            var DepthVectorTerm = 10 * (
+            var DepthVectorTerm = Math.Pow(depthVectorArea, 2) * (
                 TermBuilder.Power(snappedPrimitive.Dv.X - approxD.X, 2) +
                 TermBuilder.Power(snappedPrimitive.Dv.Y - approxD.Y, 2) +
                 TermBuilder.Power(snappedPrimitive.Dv.Z - approxD.Z, 2));
@@ -368,9 +374,9 @@ namespace SketchModeller.Modelling.Services.Snap
             var objective =
                 CenterTerm +
                 LengthTerm +
-                WidthVectorTerm +
-                HeightVectorTerm +
-                DepthVectorTerm;
+                0.1 * (WidthVectorTerm +
+                       HeightVectorTerm +
+                       DepthVectorTerm);
 
             var ABorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Hv);
             var ACorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Dv);
