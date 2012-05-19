@@ -122,7 +122,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var spineStart = spine.Item2;
             var spineEnd = spine.Item3;
 
-            return CreateSGCTerms(snappedPrimitive, approxOrientation, radii, spineStart, spineEnd);
+            return CreateSGCTerms(snappedPrimitive, radii, spineStart, spineEnd);
         }
 
         private Tuple<Term, Term[]> SingleSilhouetteTwoFeatures(SnappedStraightGenCylinder snappedPrimitive, HashSet<FeatureCurve> annotated)
@@ -148,7 +148,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var spineStart = spine.Item2;
             var spineEnd = spine.Item3;
 
-            return CreateSGCTerms(snappedPrimitive, approxOrientation, radii, spineStart, spineEnd);
+            return CreateSGCTerms(snappedPrimitive, radii, spineStart, spineEnd);
         }
 
         private Tuple<Term, Term[]> FullInfo(SnappedStraightGenCylinder snappedPrimitive)
@@ -175,7 +175,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var spineStart = spine.Item2;
             var spineEnd = spine.Item3;
 
-            return CreateSGCTerms(snappedPrimitive, approxOrientation, radii, spineStart, spineEnd);
+            return CreateSGCTerms(snappedPrimitive, radii, spineStart, spineEnd);
         }
 
         private Vector3D NewGetOrientation(
@@ -263,18 +263,8 @@ namespace SketchModeller.Modelling.Services.Snap
         }
 
 
-        private static Tuple<Term, Term[]> CreateSGCTerms(SnappedStraightGenCylinder snappedPrimitive, Vector3D approxOrientation, double[] radii, Point spineStart, Point spineEnd)
+        private static Tuple<Term, Term[]> CreateSGCTerms(SnappedStraightGenCylinder snappedPrimitive, double[] radii, Point spineStart, Point spineEnd)
         {
-            /*var orientationTerm =
-                TermBuilder.Power(approxOrientation.X - snappedPrimitive.Axis.X, 2) +
-                TermBuilder.Power(approxOrientation.Y - snappedPrimitive.Axis.Y, 2) +
-                TermBuilder.Power(-approxOrientation.Z - snappedPrimitive.Axis.Z, 2);*/
-
-            var orientationTerm =
-                TermBuilder.Power(snappedPrimitive.AxisResult.X - snappedPrimitive.Axis.X, 2) +
-                TermBuilder.Power(snappedPrimitive.AxisResult.Y - snappedPrimitive.Axis.Y, 2) +
-                TermBuilder.Power(snappedPrimitive.AxisResult.Z - snappedPrimitive.Axis.Z, 2);
-
             var terms =
                from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
                where item != null
@@ -282,7 +272,7 @@ namespace SketchModeller.Modelling.Services.Snap
                from term in ProjectionFit.Compute(item)
                select term;
 
-            var orientationTerm1 = 0.1 * TermUtils.SafeAvg(terms);
+            var featureCurvesTerm = 0.1 * TermUtils.SafeAvg(terms);
 
             // the difference between the primitive's radii and the computed radii is minimized
             var radiiApproxTerm = TermUtils.SafeAvg(
@@ -322,7 +312,7 @@ namespace SketchModeller.Modelling.Services.Snap
                 //startTerm +
                 //endTerm +
                 //orientationTerm +
-                orientationTerm1 +
+                featureCurvesTerm +
                 endpointsRadiiTerm;
 
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
