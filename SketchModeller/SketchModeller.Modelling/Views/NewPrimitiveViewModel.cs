@@ -244,15 +244,18 @@ namespace SketchModeller.Modelling.Views
             if (Model.GetType() == typeof(NewCuboid))
             {
                 NewCuboid CuboidModel = (NewCuboid)Model;
-                int TotalMatched =
-                    (from curve in CuboidModel.ArrayOfCorners[CuboidModel.ActiveCubicCorner]
-                    where (curve.AssignedTo != null)
-                    select curve
-                    ).ToArray().Length;
+                if (CuboidModel.ActiveCubicCorner >= 0)
+                {
+                    int TotalMatched =
+                        (from curve in CuboidModel.ArrayOfCorners[CuboidModel.ActiveCubicCorner]
+                         where (curve.AssignedTo != null)
+                         select curve
+                        ).ToArray().Length;
 
-                if (TotalMatched == 3) ModelCanSnap = true;
-                /*if (CuboidModel.ActiveCubicCorner >= 0)
-                    ModelCanSnap = true;*/
+                    if (TotalMatched == 3) ModelCanSnap = true;
+                    /*if (CuboidModel.ActiveCubicCorner >= 0)
+                        ModelCanSnap = true;*/
+                }
                 Debug.WriteLine("Can Snap:{0}", ModelCanSnap);
             }
 

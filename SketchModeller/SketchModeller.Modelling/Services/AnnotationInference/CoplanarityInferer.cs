@@ -61,8 +61,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
             var curvesToSkip = toBeAnnotated.FeatureCurves.Concat(GetSphereFeatureCurves()).ToArray();
 
-            var candidates = from firstCurve in toBeAnnotated.FeatureCurves
-                             from secondCurve in sessionData.FeatureCurves.Except(curvesToSkip)
+            var candidates = from firstCurve in toBeAnnotated.FeatureCurves.OfType<CircleFeatureCurve>()
+                             from secondCurve in sessionData.FeatureCurves.Except(curvesToSkip).OfType<CircleFeatureCurve>()
                              where AreGoodCandidates(firstCurve, secondCurve)
                              select Tuple.Create(firstCurve, secondCurve);
 
