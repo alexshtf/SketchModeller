@@ -374,7 +374,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var objective =
                 CenterTerm +
                 LengthTerm +
-                100 * (WidthVectorTerm +
+                1 * (WidthVectorTerm +
                        HeightVectorTerm +
                        DepthVectorTerm);
 

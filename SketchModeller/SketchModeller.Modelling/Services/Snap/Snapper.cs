@@ -94,10 +94,10 @@ namespace SketchModeller.Modelling.Services.Snap
                 return from tuple in Observable.Start<Tuple<NewPrimitive, SnappedPrimitive>>(ConvertToSnapped, scheduler)
                        let newPrimitive = tuple.Item1
                        let snappedPrimitive = tuple.Item2
-                       //let optimizationModel = new SinglePrimitiveOptimizationModel(wholeShapeOptimizationModel, primitivesReaderWriterFactory, snappedPrimitive)
-                       let optimizationModel = wholeShapeOptimizationModel
-                       from unit1 in OptimizeAsync(scheduler, optimizationModel)
+                       let initialSnapOptimizationModel = new InitialSnapOptimizationModel(sessionData, snappedPrimitive, snappersManager, primitivesReaderWriterFactory)
+                       from unit1 in OptimizeAsync(scheduler, initialSnapOptimizationModel)
                        let annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive)
+                       let optimizationModel = wholeShapeOptimizationModel
                        from unit2 in annotations.Any() ? OptimizeWithAnnotationsAsync(scheduler, annotations, optimizationModel)
                                                        : Observable.Empty<Unit>()
                        select unit2;
