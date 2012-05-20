@@ -24,7 +24,7 @@ namespace SketchModeller.Modelling.ModelViews
             var meshBuilder = new MeshBuilder(true, true);
             //meshBuilder.AddBox(cuboidData.CenterResult, cuboidData.WidthResult, cuboidData.HeightResult, cuboidData.DepthResult);
             //meshBuilder.AddBox(new Point3D(0,0,0), cuboidData.WidthResult, cuboidData.HeightResult, cuboidData.DepthResult);
-
+            /*
             meshBuilder.AddArrow(cuboidData.Origin, cuboidData.Origin + 0.5 * cuboidData.Wresult, 0.05);
             var geometry = meshBuilder.ToMesh();
             visual.Children.Add(CreateVisual(geometry, Brushes.Green));
@@ -37,7 +37,7 @@ namespace SketchModeller.Modelling.ModelViews
             meshBuilder = new MeshBuilder(true, true);
             meshBuilder.AddArrow(cuboidData.Origin, cuboidData.Origin + 0.5 * cuboidData.Dresult, 0.05);
             geometry = meshBuilder.ToMesh();
-            visual.Children.Add(CreateVisual(geometry, Brushes.Blue));
+            visual.Children.Add(CreateVisual(geometry, Brushes.Blue));*/
             Debug.WriteLine(string.Format("After : W*H={0}", Vector3D.DotProduct(cuboidData.Wresult, cuboidData.Hresult)));
             Debug.WriteLine(string.Format("After : W*D={0}", Vector3D.DotProduct(cuboidData.Wresult, cuboidData.Dresult)));
             Debug.WriteLine(string.Format("After : D*H={0}", Vector3D.DotProduct(cuboidData.Dresult, cuboidData.Hresult)));
