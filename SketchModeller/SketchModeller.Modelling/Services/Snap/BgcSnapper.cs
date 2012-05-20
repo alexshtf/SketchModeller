@@ -156,7 +156,7 @@ namespace SketchModeller.Modelling.Services.Snap
                where item.SnappedTo != null
                from term in ProjectionFit.Compute(item)
                select term;
-            var orientationTerm = TermUtils.SafeAvg(terms);
+            var featureCurvesTerm = TermUtils.SafeAvg(terms);
 
             var radiiApproxTerm = TermUtils.SafeAvg(
                 from i in Enumerable.Range(0, snappedPrimitive.Components.Length)
@@ -197,7 +197,7 @@ namespace SketchModeller.Modelling.Services.Snap
 
             // objective - weighed average of all terms
             var objective =
-                0.1 * orientationTerm +
+                0.1 * featureCurvesTerm +
                 radiiApproxTerm +
                 radiiSmoothTerm +
                 positionSmoothnessTerm +
@@ -219,7 +219,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var tLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 1].vT;
             var sBeforeLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 2].vS;
             var tBeforeLast = snappedPrimitive.Components[snappedPrimitive.Components.Length - 2].vT;
-            var topNormalParallelism = tT * (sLast - sBeforeLast) * sT * (tLast - tBeforeLast);
+            var topNormalParallelism = tT * (sLast - sBeforeLast) - sT * (tLast - tBeforeLast);
 
             var topNormalized = snappedPrimitive.NPtop.NormSquared - 1;
             var botNormalized = snappedPrimitive.NPbot.NormSquared - 1;
