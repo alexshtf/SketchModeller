@@ -24,14 +24,14 @@ namespace SketchModeller.Modelling.Services.Snap
             foreach (var snappedSgc in primitives.OfType<SnappedStraightGenCylinder>())
                 resultReader.Read(snappedSgc);
 
-            foreach (var snappedBgc in primitives.OfType<SnappedBendedGenCylinder>())
-            {
-                resultReader.Read(snappedBgc);
-            }
-
             foreach (var snappedCuboid in primitives.OfType<SnappedCuboid>())
             {
                 resultReader.Read(snappedCuboid);
+            }
+
+            foreach (var snappedBgc in primitives.OfType<SnappedBendedGenCylinder>())
+            {
+                resultReader.Read(snappedBgc);
             }
         }
 
