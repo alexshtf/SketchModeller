@@ -255,6 +255,7 @@
     <Compile Include="Services\Snap\CylinderSnapper.cs" />
     <Compile Include="Services\Snap\CylindricalSnapper.cs" />
     <Compile Include="Services\Snap\IAnnotationConstraintsExtractor.cs" />
+    <Compile Include="Services\Snap\InitialSnapOptimizationModel.cs" />
     <Compile Include="Services\Snap\IOptimizationModel.cs" />
     <Compile Include="Services\Snap\IPrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\IPrimitivesReader.cs" />
