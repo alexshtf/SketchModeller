@@ -12,6 +12,33 @@ namespace SketchModeller.Modelling.Computations
         public const double MIN_COMPONENTS_DISTANCE = 0.02;
         public const double MAX_COMPONENTS_DISTANCE = 0.05;
 
+        public static CylinderComponent[] CreateNonLinear(int count, double r1, double r2, double r3)
+        {
+            Contract.Requires(count >= 2);
+            Contract.Requires(r1 > 0);
+            Contract.Requires(r2 > 0);
+            Contract.Requires(r3 > 0);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>() != null);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>().Length == count);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>()[0].Radius == r1);
+            Contract.Ensures(Contract.Result<CylinderComponent[]>().Last().Radius == r3);
+
+            // coefficients of a quadratic function r(t) = a + bt + ct² such that
+            // r(0) = r1, r(0.5) = r2, r(1) = r3.
+            var a = r1;
+            var b = -r3 + 4 * r2 - 3 * r1;
+            var c = 2 * r3 - 4 * r2 + 2 * r1;
+
+            // create a set of radii according to the above function.
+            var resultQuery =
+                from i in Enumerable.Range(0, count)
+                let t = i / (double)(count - 1)
+                let r = a + b * t + c * t * t
+                select new CylinderComponent(r, t);
+
+            return resultQuery.ToArray();
+        }
+
         public static CylinderComponent[] Create(int count, double r1, double r2)
         {
             Contract.Requires(count >= 2);

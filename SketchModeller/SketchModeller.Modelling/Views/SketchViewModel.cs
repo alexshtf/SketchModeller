@@ -114,17 +114,17 @@ namespace SketchModeller.Modelling.Views
                         var newCylinder = new NewCylinder();
                         newCylinder.Center.Value = pos3d.Value;
                         newCylinder.Axis.Value = sketchPlane.YAxis;
-                        newCylinder.Diameter.Value = 0.4;
-                        newCylinder.Length.Value = 0.6;
+                        newCylinder.Diameter.Value = 0.2;
+                        newCylinder.Length.Value = 0.3;
                         sessionData.NewPrimitives.Add(newCylinder);
                         break;
                     case PrimitiveKinds.Cone:
                         var newCone = new NewCone();
                         newCone.Center.Value = pos3d.Value;
                         newCone.Axis.Value = sketchPlane.YAxis;
+                        newCone.TopRadius.Value = 0.1;
                         newCone.BottomRadius.Value = 0.2;
-                        newCone.TopRadius.Value = 0.2;
-                        newCone.Length.Value = 0.6;
+                        newCone.Length.Value = 0.3;
                         sessionData.NewPrimitives.Add(newCone);
                         break;
                     case PrimitiveKinds.Sphere:
@@ -137,16 +137,16 @@ namespace SketchModeller.Modelling.Views
                         var newSGC = new NewStraightGenCylinder();
                         newSGC.Center.Value = pos3d.Value;
                         newSGC.Axis.Value = sketchPlane.YAxis;
-                        newSGC.Length.Value = 0.6;
-                        newSGC.Components = SgcComponents.Create(20, 0.2, 0.6);
+                        newSGC.Length.Value = 0.3;
+                        newSGC.Components = SgcComponents.CreateNonLinear(20, 0.075, 0.05, 0.1);
                         sessionData.NewPrimitives.Add(newSGC);
                         break;
                     case PrimitiveKinds.BGC:
                         var newBGC = new NewBendedGenCylinder();
                         newBGC.Center.Value = pos3d.Value;
                         newBGC.Axis.Value = sketchPlane.YAxis;
-                        newBGC.Length.Value = 0.6;
-                        newBGC.Components = BgcComponents.Create(20, 0.2, 0.6, newBGC.Center.Value, newBGC.Axis.Value, newBGC.Length.Value);
+                        newBGC.Length.Value = 0.3;
+                        newBGC.Components = BgcComponents.Create(20, 0.075, 0.15, newBGC.Center.Value, newBGC.Axis.Value, newBGC.Length.Value);
                         sessionData.NewPrimitives.Add(newBGC);
                         break;
                     case PrimitiveKinds.Cuboid:
@@ -158,9 +158,9 @@ namespace SketchModeller.Modelling.Views
                         newCuboid.H.Value = H;
                         newCuboid.W.Value = W;
                         newCuboid.D.Value = D;
-                        newCuboid.Width.Value = 0.4;
-                        newCuboid.Height.Value = 0.4;
-                        newCuboid.Depth.Value = 0.4;
+                        newCuboid.Width.Value = 0.3;
+                        newCuboid.Height.Value = 0.3;
+                        newCuboid.Depth.Value = 0.3;
                         sessionData.NewPrimitives.Add(newCuboid);
                         break;
                     default:
