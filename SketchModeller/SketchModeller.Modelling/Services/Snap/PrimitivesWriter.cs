@@ -71,8 +71,6 @@ namespace SketchModeller.Modelling.Services.Snap
 
             foreach (var snappedBgc in primitives.OfType<SnappedBendedGenCylinder>())
             {
-                //MessageBox.Show("Writting Bgc");
-                Debug.WriteLine("Inside Writting BGC");
                 variablesWriter.Write(snappedBgc);
                 valuesWriter.Write(snappedBgc);
             }

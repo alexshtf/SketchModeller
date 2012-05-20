@@ -151,25 +151,6 @@ namespace SketchModeller.Modelling.Services.Snap
             return writer;
         }
 
-        public static VectorsWriter Write(this VectorsWriter writer, SnappedBendedGenCylinder bgc)
-        {
-            writer = writer
-                .Write(bgc.BottomCenterResult)
-                //.Write(bgc.TopCenterResult)
-                .Write(bgc.NPtopResult)
-                .Write(bgc.NPbotResult)
-                .Write(bgc.Uresult)
-                .Write(bgc.Vresult);
-
-            foreach (var component in bgc.ComponentResults)
-                writer = writer
-                    .Write(component.Radius)
-                    .Write(component.S)
-                    .Write(component.T);
-
-            return writer;
-        }
-
         public static VariableVectorsWriter Write(this VariableVectorsWriter writer, SnappedStraightGenCylinder sgc)
         {
             writer = writer
@@ -180,6 +161,39 @@ namespace SketchModeller.Modelling.Services.Snap
             foreach (var component in sgc.Components)
                 writer = writer
                     .Write(component.Radius);
+
+            return writer;
+        }
+
+        public static void Read(this VectorsReader reader, SnappedStraightGenCylinder sgc)
+        {
+            sgc.BottomCenterResult = reader.ReadPoint3D();
+            sgc.AxisResult = reader.ReadVector3D();
+            sgc.LengthResult = reader.ReadValue();
+
+            foreach (var i in Enumerable.Range(0, sgc.ComponentResults.Length))
+                sgc.ComponentResults[i] =
+                    new CylinderComponent(reader.ReadValue(), sgc.ComponentResults[i].Progress);
+        }
+
+        #endregion
+
+        #region SnappedBendedGenCylinder methods
+
+        public static VectorsWriter Write(this VectorsWriter writer, SnappedBendedGenCylinder bgc)
+        {
+            writer = writer
+                .Write(bgc.BottomCenterResult)
+                .Write(bgc.NPtopResult)
+                .Write(bgc.NPbotResult)
+                .Write(bgc.Uresult)
+                .Write(bgc.Vresult);
+
+            foreach (var component in bgc.ComponentResults)
+                writer = writer
+                    .Write(component.Radius)
+                    .Write(component.S)
+                    .Write(component.T);
 
             return writer;
         }
@@ -202,21 +216,9 @@ namespace SketchModeller.Modelling.Services.Snap
             return writer;
         }
 
-        public static void Read(this VectorsReader reader, SnappedStraightGenCylinder sgc)
-        {
-            sgc.BottomCenterResult = reader.ReadPoint3D();
-            sgc.AxisResult = reader.ReadVector3D();
-            sgc.LengthResult = reader.ReadValue();
-
-            foreach (var i in Enumerable.Range(0, sgc.ComponentResults.Length))
-                sgc.ComponentResults[i] =
-                    new CylinderComponent(reader.ReadValue(), sgc.ComponentResults[i].Progress);
-        }
-
         public static void Read(this VectorsReader reader, SnappedBendedGenCylinder bgc)
         {
             bgc.BottomCenterResult = reader.ReadPoint3D();
-            //bgc.TopCenterResult = reader.ReadPoint3D();
             bgc.NPtopResult = reader.ReadVector();
             bgc.NPbotResult = reader.ReadVector();
             bgc.Uresult = reader.ReadVector3D();
