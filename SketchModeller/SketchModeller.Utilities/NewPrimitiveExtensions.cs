@@ -205,7 +205,7 @@ namespace SketchModeller.Infrastructure.Data
                 var Ellipse = EllipseFitter.Fit(FeatureCurve1.Points);
                 double maxperimeter = Ellipse.XRadius > Ellipse.YRadius ? 2 * Ellipse.XRadius : 2 * Ellipse.YRadius;
                 Vector v = new Vector(EndFeaturePoints[0].X - EndFeaturePoints[1].X, EndFeaturePoints[0].Y - EndFeaturePoints[1].Y);
-                if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.7)
+                if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.65)
                     primitive.FeatureCurves[0].AssignedTo = null;
             }
             if (primitive.FeatureCurves.Length > 0 && primitive.FeatureCurves[1].AssignedTo != null)
@@ -217,7 +217,7 @@ namespace SketchModeller.Infrastructure.Data
                 var Ellipse = EllipseFitter.Fit(FeatureCurve1.Points);
                 double maxperimeter = Ellipse.XRadius > Ellipse.YRadius ? 2 * Ellipse.XRadius : 2 * Ellipse.YRadius;
                 Vector v = new Vector(EndFeaturePoints[0].X - EndFeaturePoints[1].X, EndFeaturePoints[0].Y - EndFeaturePoints[1].Y);
-                if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.7)
+                if (Math.Min(maxperimeter, v.Length) / Math.Max(maxperimeter, v.Length) < 0.65)
                     primitive.FeatureCurves[1].AssignedTo = null;
             }
         }
