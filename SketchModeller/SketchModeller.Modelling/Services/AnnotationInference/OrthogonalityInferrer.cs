@@ -52,12 +52,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
                 { 
                     Elements = new FeatureCurve[] { newFeatureCurve, existingFeatureCurve } 
                 };
-                Annotation coplanarCenters = new CoplanarCenters
-                {
-                    Elements = AllCurvesOnPrimitiveOf(existingFeatureCurve).Append(newFeatureCurve).ToArray()
-                };
 
-                return UtilsEnumerable.ArrayOf(curveOrthogonality, coplanarCenters);
+                return UtilsEnumerable.ArrayOf(curveOrthogonality);
             }
             else
                 return Enumerable.Empty<Annotation>();
