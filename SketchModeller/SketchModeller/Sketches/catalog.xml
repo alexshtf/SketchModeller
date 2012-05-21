@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <catalog>
+  <sketch name="Menorah"
+          file="menorah.svg"
+          modelFile="menorah.model" />
   <sketch name="Street lamp"
           file="street_lamp.svg"
           modelFile="street_lamp.model" />
