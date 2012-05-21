@@ -10,6 +10,7 @@ using Enumerable = System.Linq.Enumerable;
 using UtilsEnumerable = Utils.Enumerable;
 using System.Windows.Media.Media3D;
 using System.Diagnostics;
+using System.Windows;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
@@ -89,14 +90,14 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private double GetAngle(FeatureCurve firstNewCurve, FeatureCurve secondNewCurve, FeatureCurve existingCurve)
         {
-            var c1 = firstNewCurve.CenterResult;
-            var c2 = secondNewCurve.CenterResult;
-            var c3 = existingCurve.CenterResult;
+            var c1 = new Point(firstNewCurve.CenterResult.X, -firstNewCurve.CenterResult.Y);
+            var c2 = new Point(secondNewCurve.CenterResult.X, -secondNewCurve.CenterResult.Y);
+            var c3 = new Point(existingCurve.CenterResult.X, -existingCurve.CenterResult.Y);
 
             var u = c1 - c2;
             var v = c3 - c1;
 
-            var cos = Vector3D.DotProduct(u, v) / (u.Length * v.Length);
+            var cos = (u * v) / (u.Length * v.Length);
             var angle = Math.Acos(cos);
 
             return angle;

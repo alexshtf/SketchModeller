@@ -374,16 +374,16 @@ namespace SketchModeller.Modelling.Services.Snap
             var objective =
                 CenterTerm +
                 LengthTerm +
-                1 * (WidthVectorTerm +
-                       HeightVectorTerm +
-                       DepthVectorTerm);
+                100* (WidthVectorTerm +
+                      HeightVectorTerm +
+                      DepthVectorTerm);
 
             var ABorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Hv);
             var ACorthogonal = TVec.InnerProduct(snappedPrimitive.Wv, snappedPrimitive.Dv);
             var BCorthogonal = TVec.InnerProduct(snappedPrimitive.Hv, snappedPrimitive.Dv);
             var constraints = new Term[] { snappedPrimitive.Wv.NormSquared - 1, snappedPrimitive.Hv.NormSquared - 1, snappedPrimitive.Dv.NormSquared - 1 , ABorthogonal, ACorthogonal, BCorthogonal };
 
-            return Tuple.Create(objective, constraints);
+            return Tuple.Create(10 * objective, constraints);
         }
     }
 }

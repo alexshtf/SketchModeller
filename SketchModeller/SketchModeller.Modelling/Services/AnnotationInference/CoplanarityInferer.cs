@@ -27,9 +27,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
     /// </remarks>
     class CoplanarityInferer : IInferrer
     {
-        public const double DEFAULT_PARALLEL_ANGLE_THRESHOLD = 15 * Math.PI / 180; // 20 degrees
+        public const double DEFAULT_PARALLEL_ANGLE_THRESHOLD = 15 * Math.PI / 180; // 15 degrees
         public const double DEFAULT_CENTER_DISTANCE_THRESHOLD = 0.05;
-        public const double DEFAUTL_CENTER_DISTANCE_RELATIVE_THRESHOLD = 0.10; // 12%
+        public const double DEFAUTL_CENTER_DISTANCE_RELATIVE_THRESHOLD = 0.05; // 10%
 
         private readonly SessionData sessionData;
         private readonly double parallelAngleThreshold; 
@@ -84,6 +84,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
             Contract.Requires(firstCurve is CircleFeatureCurve);
             Contract.Requires(secondCurve is CircleFeatureCurve);
 
+            if (firstCurve.IsSameObjectCurve(secondCurve))
+                return true; // two curves that are snapped to the same sketch curves are considered coplanar.
+
             double radiiSum = 0;
             if (firstCurve is CircleFeatureCurve && secondCurve is CircleFeatureCurve)
                 radiiSum = (firstCurve as CircleFeatureCurve).RadiusResult + (secondCurve as CircleFeatureCurve).RadiusResult;
@@ -115,7 +118,9 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool AreAlmostParallel(Vector3D u, Vector3D v)
         {
-            var crossLength = Vector3D.CrossProduct(u, v).Length;
+            var uProj = new Vector3D(u.X, -u.Y, 0);
+            var vProj = new Vector3D(v.X, -v.Y, 0); 
+            var crossLength = Vector3D.CrossProduct(uProj, vProj).Length;
             var angle = Math.Asin(crossLength);
             return angle < DEFAULT_PARALLEL_ANGLE_THRESHOLD;
         }

@@ -12,6 +12,7 @@ using System.Windows;
 using Enumerable = System.Linq.Enumerable;
 using TermUtils = SketchModeller.Utilities.TermUtils;
 using System.Windows.Media.Media3D;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
@@ -228,7 +229,7 @@ namespace SketchModeller.Modelling.Services.Snap
             var uvOrthogonal = TVec.InnerProduct(snappedPrimitive.U, snappedPrimitive.V);
             var firstComponentBottomS = snappedPrimitive.Components[0].vS;
             var firstComponentBottomT = snappedPrimitive.Components[0].vT;
-            var constraints = new Term[] 
+            var constraints = new List<Term> 
             { 
                 topNormalized, 
                 botNormalized, 
@@ -241,7 +242,20 @@ namespace SketchModeller.Modelling.Services.Snap
                 topNormalParallelism
             };
 
-            return Tuple.Create(objective, constraints);
+            var meanRadius = radii.Sum() / radii.Length;
+            var stdDevRadius = Math.Sqrt(radii.Select(r => r * r).Sum() / radii.Length - meanRadius * meanRadius);
+            Debug.WriteLine("ALEXALEX Mean radius is {0}, stddev is {1}", meanRadius, stdDevRadius);
+            if (stdDevRadius <= 0.3 * meanRadius)
+            {
+                foreach (var pair in snappedPrimitive.Components.SeqPairs())
+                {
+                    var ra = pair.Item1.Radius;
+                    var rb = pair.Item2.Radius;
+                    constraints.Add(ra - rb);
+                }
+            }
+
+            return Tuple.Create(objective, constraints.ToArray());
         }
 
         private Vector3D NewGetOrientation(
