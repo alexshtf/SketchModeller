@@ -54,10 +54,11 @@ namespace SketchModeller.Modelling.Computations
             List<double> ListRadii = new List<double>();
             for (int i = 0; i < medial_axis.Length; i++)
             {
-                Vector v1 = new Vector(medial_axis[i].X, medial_axis[i].Y);
-                double min = 10e10;
-                double Radius = 0.0;
-                for (int j = 0; j < Q1.Length; j++)
+                var pt = new Point(medial_axis[i].X, medial_axis[i].Y);
+                //double min = 10e10;
+                double radius = 0.0;
+                radius = pt.ProjectionOnCurve(Q1).Item2;
+/*                for (int j = 0; j < Q1.Length; j++)
                 {
                     Vector v2 = new Vector(Q1[j].X, Q1[j].Y);
                     Vector vm = v1 - v2;
@@ -72,8 +73,8 @@ namespace SketchModeller.Modelling.Computations
                         min = product;
                         Radius = vm.Length;
                     }
-                }
-                ListRadii.Add(Radius);
+                }*/
+                ListRadii.Add(radius);
             }
             return Tuple.Create(medial_axis, ListRadii.ToArray());
         }
