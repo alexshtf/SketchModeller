@@ -18,7 +18,7 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
 
     class Node
     {
-        public readonly GeometricClass GeometricClass;
+        public GeometricClass GeometricClass;
         public readonly PointsSequence Curve;
         public readonly HashSet<Node> Neighbors;
 

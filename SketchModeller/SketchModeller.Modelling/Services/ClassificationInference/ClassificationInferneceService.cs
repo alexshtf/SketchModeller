@@ -20,7 +20,7 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
             this.sessionData = sessionData;
 
             var geometricClassifier = new GeometricClassifier(pcaFractionThreshold: 0.1);
-            var neighborhoodChecker = new NeighborhoodChecker();
+            var neighborhoodChecker = new NeighborhoodChecker(relativeThreshold: 0.05);
 
             this.graphConstructor = new GraphConstructor(geometricClassifier, neighborhoodChecker);
             this.inferenceEngine = new InferenceEngine();
