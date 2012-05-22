@@ -55,13 +55,16 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
 
                 // circle + silhouette ==> all neighboring lines are silhouettes
                 if (currClass == GeometricClass.Ellipse && currCategory == CurveCategories.Silhouette)
-                    foreach(var neighbor in neighborsToVisit)
+                    foreach (var neighbor in neighborsToVisit)
+                    {
                         if (neighbor.GeometricClass == GeometricClass.Line)
-                        {
                             neighbor.Curve.CurveCategory = CurveCategories.Silhouette;
-                            bfsQueue.Enqueue(neighbor);
-                            visitedNodes.Add(neighbor);
-                        }
+                        else
+                            neighbor.Curve.CurveCategory = CurveCategories.Feature;
+
+                        bfsQueue.Enqueue(neighbor);
+                        visitedNodes.Add(neighbor);
+                    }
 
                 // circle + feature ==> all neighboring lines are silhouettes
                 if (currClass == GeometricClass.Ellipse && currCategory == CurveCategories.Feature)

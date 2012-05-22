@@ -18,7 +18,7 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
         public bool AreNeighbors(Node first, Node second)
         {
             if (first.GeometricClass == GeometricClass.Ellipse && second.GeometricClass == GeometricClass.Ellipse)
-                return false;
+                return AreNeighborsTwoEllipses(first, second);
 
             if (first.GeometricClass == GeometricClass.Ellipse && second.GeometricClass == GeometricClass.Line)
                 return AreNeighborsEllipseLine(ellipse: first, line: second);
@@ -30,6 +30,15 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
                 return AreNeighborsTwoLines(first, second);
 
             throw new InvalidOperationException();
+        }
+
+        private bool AreNeighborsTwoEllipses(Node first, Node second)
+        {
+            // two ellipses are neighbors if we treat one of them as a line and the other
+            // as a neighbor, and consider ellipse-line connectivity. This is useful
+            // in case one of the lines is classified as an ellipse by mistake.
+            return AreNeighborsEllipseLine(first, second) ||
+                   AreNeighborsEllipseLine(second, first);
         }
 
         private bool AreNeighborsTwoLines(Node firstLine, Node secondLine)
