@@ -21,14 +21,20 @@ namespace SketchModeller.Modelling
     {
         private IEventAggregator eventAggregator;
         private ISketchCatalog sketchCatalog;
+        private IClassificationInference classificationInference;
         private SessionData sessionData;
         private UiState uiState;
 
         [InjectionConstructor]
-        public SketchLoader(IEventAggregator eventAggregator, ISketchCatalog sketchCatalog, SessionData sessionData, UiState uiState)
+        public SketchLoader(IEventAggregator eventAggregator,
+                            ISketchCatalog sketchCatalog, 
+                            IClassificationInference classificationInference,
+                            SessionData sessionData, 
+                            UiState uiState)
         {
             this.eventAggregator = eventAggregator;
             this.sketchCatalog = sketchCatalog;
+            this.classificationInference = classificationInference;
             this.sessionData = sessionData;
             this.uiState = uiState;
 
@@ -73,6 +79,7 @@ namespace SketchModeller.Modelling
                 item.ColorCodingIndex = PointsSequence.INVALID_COLOR_CODING;
 
             sessionData.DistanceTransforms = sketchData.DistanceTransforms.ToArray();
+            classificationInference.PreAnalyze();
             //if (sketchData.ConnectivityGraph == null)
             //    sessionData.ConnectivityGraph = ComputeConnectivityGraph(sessionData.SketchObjects);
             //else

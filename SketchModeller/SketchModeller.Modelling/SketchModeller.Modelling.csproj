@@ -223,6 +223,13 @@
     <Compile Include="Services\AnnotationInference\ParallelismInferer.cs" />
     <Compile Include="Services\AnnotationInference\SameRadiusInferrer.cs" />
     <Compile Include="Services\Assign\CurveAssigner.cs" />
+    <Compile Include="Services\ClassificationInference\ClassificationInferneceService.cs" />
+    <Compile Include="Services\ClassificationInference\GeometricClass.cs" />
+    <Compile Include="Services\ClassificationInference\GeometricClassifier.cs" />
+    <Compile Include="Services\ClassificationInference\Graph.cs" />
+    <Compile Include="Services\ClassificationInference\GraphConstructor.cs" />
+    <Compile Include="Services\ClassificationInference\InferenceEngine.cs" />
+    <Compile Include="Services\ClassificationInference\NeighborhoodChecker.cs" />
     <Compile Include="Services\ConstrainedOptimizer\ConstrainedOptimizerService.cs" />
     <Compile Include="Services\ConstrainedOptimizer\AugmentedLagrangianSolverFactory.cs" />
     <Compile Include="Services\ConstrainedOptimizer\PenaltySolverFactory.cs" />
@@ -415,6 +422,7 @@
   <ItemGroup>
     <Resource Include="Images\cube.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

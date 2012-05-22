@@ -197,6 +197,7 @@
     <Compile Include="PropertyChangedEventManagerHelper.cs" />
     <Compile Include="RoutedEvents.cs" />
     <Compile Include="Services\IAnnotationInference.cs" />
+    <Compile Include="Services\IClassificationInference.cs" />
     <Compile Include="Services\IConstrainedOptimizer.cs" />
     <Compile Include="Services\ICurveAssigner.cs" />
     <Compile Include="Services\IPrimitivesConverter.cs" />

@@ -33,6 +33,7 @@ namespace SketchModeller.Modelling.Views
         private readonly SessionData sessionData;
         private readonly ISnapper snapper;
         protected ICurveAssigner curveAssigner;
+        private IClassificationInference classificationInference;
 
         [InjectionConstructor]
         public SketchViewModel(
@@ -40,12 +41,14 @@ namespace SketchModeller.Modelling.Views
             IEventAggregator eventAggregator, 
             UiState uiState, 
             SessionData sessionData,
-            ISnapper snapper)
+            ISnapper snapper,
+            IClassificationInference classificationInference)
         {
             this.uiState = uiState;
             this.sessionData = sessionData;
             this.eventAggregator = eventAggregator;
             this.snapper = snapper;
+            this.classificationInference = classificationInference;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
             sessionData.AddListener(this, () => sessionData.SketchName);
@@ -217,6 +220,7 @@ namespace SketchModeller.Modelling.Views
         {
             foreach (var curve in sessionData.SelectedSketchObjects)
                 curve.CurveCategory = newCategory;
+            classificationInference.Infer();
         }
 
         bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

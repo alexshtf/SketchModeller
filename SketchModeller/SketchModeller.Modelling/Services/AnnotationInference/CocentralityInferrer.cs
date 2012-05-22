@@ -9,6 +9,7 @@ using Utils;
 using Enumerable = System.Linq.Enumerable;
 using System.Windows;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.AnnotationInference
 {
@@ -45,8 +46,8 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
             var curvesToSkip = toBeAnnotated.FeatureCurves.Concat(GetSphereFeatureCurves()).ToArray();
             var candidates =
-                from firstCurve in toBeAnnotated.FeatureCurves.OfType<CircleFeatureCurve>()
-                from secondCurve in sessionData.FeatureCurves.Except(curvesToSkip).OfType<CircleFeatureCurve>()
+                from firstCurve in toBeAnnotated.FeatureCurves
+                from secondCurve in sessionData.FeatureCurves.Except(curvesToSkip)
                 where AreGoodCandidates(firstCurve, secondCurve)
                 group Tuple.Create(firstCurve, secondCurve) by firstCurve;
 
@@ -73,22 +74,30 @@ namespace SketchModeller.Modelling.Services.AnnotationInference
 
         private bool AreRelativeClose(FeatureCurve firstCurve, FeatureCurve secondCurve)
         {
-            Contract.Requires(firstCurve is CircleFeatureCurve);
-            Contract.Requires(secondCurve is CircleFeatureCurve);
+            Contract.Requires(firstCurve is CircleFeatureCurve || firstCurve is RectangleFeatureCurve);
+            Contract.Requires(secondCurve is CircleFeatureCurve || firstCurve is RectangleFeatureCurve);
 
-            var firstCircle = firstCurve as CircleFeatureCurve;
-            var secondCircle = secondCurve as CircleFeatureCurve;
+            var firstSize = GetCurveSize(firstCurve);
+            var secondSize = GetCurveSize(secondCurve);
 
-            if (firstCircle == null || secondCircle == null)
-                return false;
-
-            var radiiSum = firstCircle.RadiusResult + secondCircle.RadiusResult;
+            var sizesSum = firstSize + secondSize;
             var dist = CurveDistance(firstCurve, secondCurve);
 
-            if (radiiSum == 0)
+            if (sizesSum == 0)
                 return false;
             else
-                return (dist / radiiSum) <= relativeThreshold;
+                return (dist / sizesSum) <= relativeThreshold;
+        }
+
+        private static double GetCurveSize(FeatureCurve featureCurve)
+        {
+            var circle = featureCurve as CircleFeatureCurve;
+            var rect = featureCurve as RectangleFeatureCurve;
+
+            var firstSize = circle != null 
+                          ? circle.RadiusResult 
+                          : 0.75 * (rect.WidthResult + rect.HeightResult);
+            return firstSize;
         }
 
         private double CurveDistance(FeatureCurve curve1, FeatureCurve curve2)

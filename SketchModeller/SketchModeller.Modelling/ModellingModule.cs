@@ -18,6 +18,7 @@ using SketchModeller.Modelling.Services.PrimitivesConverter;
 using SketchModeller.Modelling.Services.Assign;
 using SketchModeller.Modelling.Services.AnnotationInference;
 using SketchModeller.Modelling.Services.ConstrainedOptimizer;
+using SketchModeller.Modelling.Services.ClassificationInference;
 
 namespace SketchModeller.Modelling
 {
@@ -41,6 +42,7 @@ namespace SketchModeller.Modelling
             container.RegisterType<ISnapper, Snapper>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPrimitivesConverter, PrimitivesConverter>(new ContainerControlledLifetimeManager());
             container.RegisterType<ICurveAssigner, CurveAssigner>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IClassificationInference, ClassificationInferneceService>(new ContainerControlledLifetimeManager());
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());
