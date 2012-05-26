@@ -5,22 +5,34 @@
 
 % short intro to the problem space and the opportunity
 
-Highly acurate operations in the image domain are considered a form of art. From observation we learn that computer graphics artists use simple tools, usually in a local manner, to achieve a desired global change in the image. Such precise work, depending on scale, may take hours until a pleasing result appears. 
-This is a motivator for many works in academia, to find methods for automation of some of the manual work. Such is the case of identity transfer in images, where the artist must replace one person's distinctive visual features: Face and Body form, with that of another person's. The method involves many canonical problems in image-domain processing, such as Seamless Copying, Positioning, Color Normalization across images and Re-Forming of objects. Each problem on its own poses a difficult task to perform manually, as it requires prior experience and accuracy. However, all of them involve a highly mechanical aspect that poses an opportunity for developing automatic numerical solutions.
+Modeling 3D objects from sketches is a process that requires several challenging problems including segmentation, 
+recognition and reconstruction. Some of these tasks are harder for humans and some are harder for the machine. 
+At the core of the problem lies the need for semantic understanding of the shape’s geometry from the sketch.  
 
 % our approach
 
-We present an approach for transferring the identity of a given subject to a target image for try-on experiences of clothes. Instead of fitting the garment to the user's model, we transplant the user's identity into an image of a catalogue model wearing the desired garment. This process involves replacing the head and hair style, adjusting the skin color, and modifying the body dimensions. The head is cloned by automatically segmenting it from the user image and transplanting it into the catalogue model's image. Differences in skin color are corrected using statistical methods, and the body measurements of the model are changed to approximate those of the user by modifying a silhouette model.
+We present a semi-automatic approach for modelling man-made objects from a sketch by seperating tasks that are
+difficult for a human from those that are difficult for a machine. The user assits recognition and segmentation
+by choosing and placing specific primitives in approximate locations on the sketch. The machine first snaps
+the primitive to the sketch by fitting its projection to the sketch lines. Then it globally optimizes
+the model by inferring geosemantic relationships the link the different parts and globally optimizing the model
+to fit the sketch subject to constraints that mathematically describe those relationships.
 
-% segmentation
+% primitives fitting
 
-Due to the high sensitivity of humans to the appearence of faces and heads, we present an accurate segmentation procedure that separates three semantic parts: face, hair, and background. Roughly, each part has consistent features in terms of color and texture, therefore we use a tri-kernel statistical model based on textons to describe each part. A Markov-Random-Field is defined over the pixels of images, and a minimal energy iterative graph-cut gives the final segmentation. 
+3D modelling is an interactive process and therefore the system should respond in real-time. However, non-convex constrained
+numeric optimization is, potentially, a computationally expensive task. To close this gap we build a user interface
+around providing good starting points for the optimizaton procedure, allowing it to converge quickly and efficiently. We
+use a two-stage approach where a primitive is first fit to the sketch without any constraints, and then its relationships
+are inferred and a global-optimization procedure takes place.
 
-% merging
+% constraints
 
-Accurate positioning of the transplanted head is key in a believable result. We achieve this by finding the base of the neck using an active contours method based on energy minimization. The skin color is adjusted according to a color statistical model by using a Gaussian Mixture Model (GMM). The colors of exposed skin parts of both the model and users images are matched, by aligning the GMMs. The body dimensions are warped to fit the user's dimensions using a parametric 3D human model that is applied to the model image. The body parameters of the user are used to manipulate the 3D model, and the bodies are matched.
+Seperately fitting primimitves to the sketch does not ensure consistent look of the 3D model. To achieve this objective
+we optimize the sketch fitting criterion subject to consistency constraints that specify the relationships
+between the primitives, such as coplanarity and orthogonality. 
 
-%conclusion
-
-Working with native, high resolution images of both user and catalogue model, we create a high quality composite image imitating the identity of the user in the desired garment. We demonstrate a number of examples of highly realistic results, and present a study that supports the naturalness of our results.
+% conclusion
+In conclusion, we have created a sketch-based modelling software framework and provided a user interface that is both intuitive
+for the user, and uses the framework in an efficient manner. It allows the user to create 3D models quickly and rapidly. 
 
