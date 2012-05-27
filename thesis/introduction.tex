@@ -1,0 +1,25 @@
+%--------------------------------------------------------------------------
+%% Abstract section.
+\chapter*{Introduction\markboth{Introduction}{Introduction}}
+\label{sec:introduction}
+
+Sketching in two-dimensions remains easier than 3D modeling for professional 3D modelers and novices alike.  Professional 3D modelers nearly always begin the modeling process by sketching, either on paper or in a 2D sketching application. Sketching allows artists to focus on creativity rather than technical issues in the early, exploratory stages design.  At the same time, novices are capable of sketching, but are unfamiliar with 3D modeling tools.
+Although 2D sketches are expressive, 3D models allow better understanding of the shape's structure and proportions. It would be nice if simple 3D models could be created easily from 2D sketches for quick previews and as a starting point for further editing and creation of more complex models. This would facilitate the advantages of both techniques for both experts and novices.
+
+Creating a 3D model from a sketch is in general an ill-defined problem it is highly non-linear and non-convex.
+The challenge can be separated into two orthogonal tasks: Semantic and Geometric.  Modeling from a sketch requires interpreting and understanding the semantics of the sketch including the segmentation and recognition of its parts. This includes both understanding individual strokes and their combinations representing 3D structures and parts. Second, modeling involves the complex task of fitting and reconstructing the geometry that matches the intended shape and its semantics. The need to interpret the sketch before reconstructing the geometry requires a high-level cognitive endeavor that machines are still weak at compared to humans. On the other hand, reconstructing a geometry that admits external and internal constraints is a meticulous task that is hard and tedious for humans, and better fits the type of computations machines are designed for.
+
+In this work we present an algorithm for reconstructing 3D models from a sketch 
+
+
+% --------------------- Old introduction text
+
+In this paper we present a semi-automatic interactive system for modeling {\em simple} 3D models from a sketch, that is carefully designed to minimize user efforts. We do not intend to replace precise tools for editing and modeling 3D geometry; rather, we offer a way to create a 3D preview where the user can rotate the ``sketch'' and quickly grasp its 3D properties. Our approach is based on identification and decoupling of the semantic and geometric tasks, and converting semantic relations to constraints that are {\em geosemantic}. We believe that a large number of these can be implied automatically using a simple set of rules. This allows the user to \emph{explicitly} perform only the minimal semantic tasks that the machine is weak at or that cannot be implied.
+These rules automatically bridge the gap between what the user explicitly provides and what is actually needed to solve the fitting problem and preserve internal structural relations.
+
+The basic interactive modeling operation in our system is an easy-to-use `drag-and-drop' operations, where primitive shapes are selected and dragged over the sketch to their approximate intended position. The user first loads a sketch, such as one created in illustrator or even a pencil-and-paper scan (see Figure~\ref{fig:teaser}).
+The user then identifies and chooses appropriate 3D primitives that compose the shape, such as cylinders and cones, and drags them to approximate locations on the sketch, while roughly orienting them. Throughout the drag, the system automatically matches curves on the primitive to lines in the sketch and snaps the primitive in real-time for preview.
+
+After dropping the primitive, the system performs the final snapping by fitting the primitive to the sketch while adhering to geosemantic relations with other 3D parts that have already been modeled. For instance, it can detect and impose almost-relations to be precise-relations such as parallelism, collinearity, perpendicularity, and more.
+Using this procedure the user assists the recognition and segmentation by explicitly defining only {\em what} approximately goes {\em where}, while the rest is performed by an automatic, computational process.
+Despite the non-linearity and non-convexity of the problem, both the preview and the final snapping are performed by a very fast optimization technique using an augmented Lagrangian method.
