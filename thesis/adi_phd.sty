@@ -1,0 +1,88 @@
+%
+%  Macros for writing the PHD thesis.
+%
+%  Adi Levin
+%
+%  Started : 21/2/99
+%
+
+% Different formats
+\newcommand{\ifsubmissionformat}[1]{\ifthenelse{\equal{\myformat}{submission}}{#1}{}}
+\newcommand{\ifbookformat}[1]{\ifthenelse{\equal{\myformat}{book}}{#1}{}}
+
+% Vertical spaces
+\def\titlespace{\vspace{7mm}}
+\def\spacebeforetitle{\vspace*{7mm}}
+
+% The 3D setting
+\def\d3{geometric}
+
+% Holder classes
+\def\Hnu{H^\nu}
+\def\Hnum{H^\nu_m}
+\def\Hnumloc{H^\nu_{m,\mathrm{loc}}}
+\def\Hetanum{H^{\min(\nu,\eta)}_m}
+\def\Hetam{H^\eta_m}
+\def\Hetar{H^\eta_r}
+
+% Space of polynomials up to given degree
+\newcommand{\pol}[1]{\pi_{#1}}
+
+% Quasi-uniform schemes
+\def\QU{\mathcal{T}}
+\newcommand{\Qmat}[2]{\QU_{[#1,#2]}}
+
+% Uniform H\"older constants
+\newcommand{\unihld}[4]{C^{#3}_{#1,#2}\left({#4}\right)}
+\newcommand{\unihldB}{\unihld{B}{m}{\nu}{\ZZ^s}}
+
+% Restrictions of functions
+\newcommand{\rest}[2]{\left. #1 \right|_{#2}}
+
+% The real and integer numbers
+\def\RR{\mathbb{R}}
+\def\ZZ{\mathbb{Z}}
+
+% Taylor expansion
+\def\TT{\mathbb{T}}
+
+% Misc symbols
+\def\Omeg{\Omega^\circ}
+\def\hlf{\tfrac{1}{2}}
+\def\R{\mathcal{E}}
+\def\PP{\mathbb{P}}
+\def\BB{\mathbb{B}}
+\def\PolyGen{\Pi}
+\def\minij{\min(\vert i\vert ,\vert j\vert)}
+\def\Bigone{\mathbf{1}}
+
+% Theorem-like environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+%\newtheorem{remark}{Remark}
+\newtheorem{newrule}{Subdivision rule}[section]
+
+% Other evironments
+\newenvironment{notation}{\vskip 1mm \noindent \textbf{Notation.}}{}
+\newenvironment{summary}{\vskip 3mm \begin{quote} \em}
+{\end{quote} \vskip 3mm }
+\newenvironment{remark}{\vskip 1mm \noindent \textbf{Remark.}}{}
+
+
+% Inclusion of figures
+\newcommand{\figurefullwidth}[1]{\resizebox{\linewidth}{!}{\includegraphics{#1}}}
+\newcommand{\figureasis}[1]{\includegraphics{#1}}
+\newcommand{\figurewidth}[2]{\resizebox{#2}{!}{\includegraphics{#1}}}
+
+
+% Distance operator
+\DeclareMathOperator{\dist}{dist}
+% Housdorff distance operator
+\DeclareMathOperator{\hdist}{dist_H}
+% Variation operator
+\DeclareMathOperator{\Var}{Var}
