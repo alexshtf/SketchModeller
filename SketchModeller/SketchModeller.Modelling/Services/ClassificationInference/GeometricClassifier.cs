@@ -6,16 +6,20 @@ using SketchModeller.Infrastructure.Data;
 using SketchModeller.Modelling.Computations;
 using System.Windows;
 using Meta.Numerics.Statistics;
+using SketchModeller.Utilities;
+using System.Diagnostics;
 
 namespace SketchModeller.Modelling.Services.ClassificationInference
 {
     class GeometricClassifier
     {
         private readonly double pcaFractionThreshold;
+        private readonly double ellipseFitThreshold;
 
-        public GeometricClassifier(double pcaFractionThreshold)
+        public GeometricClassifier(double pcaFractionThreshold, double ellipseFitThreshold)
         {
             this.pcaFractionThreshold = pcaFractionThreshold;
+            this.ellipseFitThreshold = ellipseFitThreshold;
         }
 
         public GeometricClass Classify(PointsSequence p)
@@ -41,7 +45,20 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
             if (fraction < pcaFractionThreshold)
                 return GeometricClass.Line;
             else
-                return GeometricClass.Ellipse;
+            {
+                var conicEllipse = EllipseFitter.ConicFit(p.Points);
+                var parametricEllipse = EllipseFitter.Fit(p.Points);
+
+                var deviations =
+                    from pnt in p.Points
+                    select EllipseFitter.ComputeDeviation(conicEllipse, parametricEllipse, pnt);
+                var avgDeviation = deviations.Average();
+
+                if (avgDeviation < ellipseFitThreshold)
+                    return GeometricClass.Ellipse;
+                else
+                    return GeometricClass.Line;
+            }
         }
     }
 }

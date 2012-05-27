@@ -91,6 +91,36 @@ namespace SketchModeller.Utilities
             Contract.Ensures(Contract.Result<EllipseParams>().XRadius >= 0);
             Contract.Ensures(Contract.Result<EllipseParams>().YRadius >= 0);
 
+            var conic = ConicFit(points);
+            var ellipseParams = Conic2Parametric(conic);
+            return ellipseParams;
+        }
+
+        public static double ComputeDeviation(double[] conic, EllipseParams parametric, Point point)
+        {
+            double x = point.X;
+            double y = point.Y;
+
+            var a = conic[0];
+            var b = conic[1];
+            var c = conic[2];
+            var d = conic[3];
+            var e = conic[4];
+            var f = conic[5];
+
+            var deviation = a * x * x + b * x * y + c * y * y + d * x + e * y + f;
+            var size = Math.Min(parametric.XRadius, parametric.YRadius);
+
+            return Math.Abs(deviation) / size;
+        }
+
+        public static double[] ConicFit(IList<Point> points)
+        {
+            Contract.Requires(points != null);
+            Contract.Requires(points.Count >= 6);
+            Contract.Ensures(Contract.Result<EllipseParams>().XRadius >= 0);
+            Contract.Ensures(Contract.Result<EllipseParams>().YRadius >= 0);
+
             // construct the design matrix parts
             var d1 = new RectangularMatrix(points.Count, 3);
             var d2 = new RectangularMatrix(points.Count, 3);
@@ -130,8 +160,7 @@ namespace SketchModeller.Utilities
             var a2 = -s3.Inverse() * s2.Transpose() * a1;
 
             var conic = a1.Concat(a2).ToArray();
-            var ellipseParams = Conic2Parametric(conic);
-            return ellipseParams;
+            return conic;
         }
 
         /// <summary>
