@@ -18,6 +18,7 @@ namespace SketchModeller.Modelling.Views
 
         public EditMenuViewModel()
         {
+            Undo = new DelegateCommand(UndoExecute);
             MarkFeature = new DelegateCommand(MarkFeatureExecute);
             MarkSilhouette = new DelegateCommand(MarkSilhouetteExecute);
             EnableInference = new DelegateCommand(EnableInferenceExecute);
@@ -32,11 +33,17 @@ namespace SketchModeller.Modelling.Views
             this.InferenceOptions = inferenceOptions;
         }
 
+        public ICommand Undo { get; private set; }
         public ICommand MarkFeature { get; private set; }
         public ICommand MarkSilhouette { get; private set; }
         public ICommand EnableInference { get; private set; }
         public ICommand DisableInference { get; private set; }
         public InferenceOptions InferenceOptions { get; private set; }
+
+        private  void UndoExecute()
+        {
+            eventAggregator.GetEvent<UndoEvent>().Publish(null);
+        }
 
         private void MarkFeatureExecute()
         {

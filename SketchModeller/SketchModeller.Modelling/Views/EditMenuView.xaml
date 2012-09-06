@@ -6,6 +6,7 @@
           mc:Ignorable="d"
           Header="Edit"
           Style="{DynamicResource {x:Type MenuItem}}">
+    <MenuItem Header="Undo" Command="{Binding Undo}" InputGestureText="Ctrl+Z" />
     <MenuItem Header="Mark as feature" Command="{Binding MarkFeature}" />
     <MenuItem Header="Mark as silhouette" Command="{Binding MarkSilhouette}" />
     <MenuItem Header="Constraints inference">

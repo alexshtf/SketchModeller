@@ -118,8 +118,7 @@ namespace SketchModeller.Utilities
         {
             Contract.Requires(points != null);
             Contract.Requires(points.Count >= 6);
-            Contract.Ensures(Contract.Result<EllipseParams>().XRadius >= 0);
-            Contract.Ensures(Contract.Result<EllipseParams>().YRadius >= 0);
+            Contract.Ensures(Contract.Result<double[]>() != null);
 
             // construct the design matrix parts
             var d1 = new RectangularMatrix(points.Count, 3);
@@ -166,7 +165,7 @@ namespace SketchModeller.Utilities
         /// <summary>
         /// Converts conic representation of an ellipse (given the coefficients vector) to the parametric representation.
         /// </summary>
-        /// <param name="coefficients">The implicit equation coefficients</param>
+        /// <param name="conic">The implicit equation coefficients</param>
         /// <returns>Parametric representation</returns>
         private static EllipseParams Conic2Parametric(double[] conic)
         {

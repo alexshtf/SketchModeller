@@ -188,6 +188,7 @@
     <Compile Include="Events\SnapCompleteEvent.cs" />
     <Compile Include="Events\StartWorkingEvent.cs" />
     <Compile Include="Events\StopWorkingEvent.cs" />
+    <Compile Include="Events\UndoEvent.cs" />
     <Compile Include="GlobalShortcuts.cs" />
     <Compile Include="IHeaderedView.cs" />
     <Compile Include="MenuCommandData.cs" />
