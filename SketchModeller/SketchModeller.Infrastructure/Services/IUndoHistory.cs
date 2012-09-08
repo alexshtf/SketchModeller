@@ -10,5 +10,6 @@ namespace SketchModeller.Infrastructure.Services
     {
         void Push();
         void Pop();
+        void Clear();
     }
 }

@@ -19,6 +19,7 @@ using SketchModeller.Modelling.Services.Assign;
 using SketchModeller.Modelling.Services.AnnotationInference;
 using SketchModeller.Modelling.Services.ConstrainedOptimizer;
 using SketchModeller.Modelling.Services.ClassificationInference;
+using SketchModeller.Modelling.Services.UndoHistory;
 
 namespace SketchModeller.Modelling
 {
@@ -43,11 +44,13 @@ namespace SketchModeller.Modelling
             container.RegisterType<IPrimitivesConverter, PrimitivesConverter>(new ContainerControlledLifetimeManager());
             container.RegisterType<ICurveAssigner, CurveAssigner>(new ContainerControlledLifetimeManager());
             container.RegisterType<IClassificationInference, ClassificationInferneceService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IUndoHistory, UndoHistoryService>(new ContainerControlledLifetimeManager());
 
             // register global objects objects
             container.RegisterInstance(container.Resolve<SketchLoader>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(container.Resolve<SketchSaver>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(container.Resolve<TestCaseCreator>(), new ContainerControlledLifetimeManager());
+            container.RegisterInstance(container.Resolve<UndoPerformer>(), new ContainerControlledLifetimeManager());
 
             // register views.
             regionManager.RegisterViewWithRegion(RegionNames.Sketch, typeof(SketchView));
