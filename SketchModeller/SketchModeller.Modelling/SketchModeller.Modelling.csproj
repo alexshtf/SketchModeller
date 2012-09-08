@@ -101,9 +101,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HelixToolkit.2011.6.0\lib\HelixToolkit.dll</HintPath>
     </Reference>
-    <Reference Include="Meta.Numerics, Version=2.0.0.0, Culture=neutral, PublicKeyToken=67d25c65a6631347, processorArchitecture=MSIL">
+    <Reference Include="Meta.Numerics, Version=2.1.0.0, Culture=neutral, PublicKeyToken=67d25c65a6631347, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Meta.Numerics.2.0.0\lib\Meta.Numerics.dll</HintPath>
+      <HintPath>..\packages\Meta.Numerics.2.1.0\lib\Meta.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism">
       <HintPath>..\packages\Prism.4.0.0.0\lib\NET40\Microsoft.Practices.Prism.dll</HintPath>

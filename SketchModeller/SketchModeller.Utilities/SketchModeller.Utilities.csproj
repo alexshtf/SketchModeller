@@ -90,8 +90,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AutoDiff.1.0\lib\net40\AutoDiff.dll</HintPath>
     </Reference>
-    <Reference Include="Meta.Numerics">
-      <HintPath>..\packages\Meta.Numerics.2.0.0\lib\Meta.Numerics.dll</HintPath>
+    <Reference Include="Meta.Numerics, Version=2.1.0.0, Culture=neutral, PublicKeyToken=67d25c65a6631347, processorArchitecture=MSIL">
+      <HintPath>..\packages\Meta.Numerics.2.1.0\lib\Meta.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
