@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SketchModeller.Infrastructure.Data.EditConstraints
 {
+    [Serializable]
     public class ValueParameter : EditParameter<double>
     {
         public override int Dimension

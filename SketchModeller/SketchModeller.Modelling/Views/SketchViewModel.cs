@@ -33,7 +33,8 @@ namespace SketchModeller.Modelling.Views
         private readonly SessionData sessionData;
         private readonly ISnapper snapper;
         protected ICurveAssigner curveAssigner;
-        private IClassificationInference classificationInference;
+        private readonly IClassificationInference classificationInference;
+        private readonly IUndoHistory undoHistory;
 
         [InjectionConstructor]
         public SketchViewModel(
@@ -42,13 +43,15 @@ namespace SketchModeller.Modelling.Views
             UiState uiState, 
             SessionData sessionData,
             ISnapper snapper,
-            IClassificationInference classificationInference)
+            IClassificationInference classificationInference,
+            IUndoHistory undoHistory)
         {
             this.uiState = uiState;
             this.sessionData = sessionData;
             this.eventAggregator = eventAggregator;
             this.snapper = snapper;
             this.classificationInference = classificationInference;
+            this.undoHistory = undoHistory;
 
             uiState.AddListener(this, () => uiState.SketchPlane);
             sessionData.AddListener(this, () => sessionData.SketchName);
@@ -111,6 +114,7 @@ namespace SketchModeller.Modelling.Views
             var pos3d = uiState.SketchPlane.PointFromRay(lineRange);
             if (pos3d != null)
             {
+                undoHistory.Push();
                 switch (primitiveKind)
                 {
                     case PrimitiveKinds.Cylinder:
@@ -206,11 +210,13 @@ namespace SketchModeller.Modelling.Views
 
         private void MarkFeatureHandler(object dummy)
         {
+            undoHistory.Push();
             MarkAs(CurveCategories.Feature);
         }
 
         private void MarkSilhouetteHandler(object dummy)
         {
+            undoHistory.Push();
             MarkAs(CurveCategories.Silhouette);
         }
 
