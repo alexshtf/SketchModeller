@@ -20,6 +20,7 @@ namespace SketchModeller.Modelling.Services.UndoHistory
         {
             this.sessionData = sessionData;
             this.classificationInference = classificationInference;
+            this.undoStack = new SerializingMemoryUndoStack();
         }
 
         public void Push()

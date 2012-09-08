@@ -22,6 +22,7 @@ namespace SketchModeller.Modelling
         private IEventAggregator eventAggregator;
         private ISketchCatalog sketchCatalog;
         private IClassificationInference classificationInference;
+        private readonly IUndoHistory undoHistory;
         private SessionData sessionData;
         private UiState uiState;
 
@@ -29,12 +30,14 @@ namespace SketchModeller.Modelling
         public SketchLoader(IEventAggregator eventAggregator,
                             ISketchCatalog sketchCatalog, 
                             IClassificationInference classificationInference,
+                            IUndoHistory undoHistory,
                             SessionData sessionData, 
                             UiState uiState)
         {
             this.eventAggregator = eventAggregator;
             this.sketchCatalog = sketchCatalog;
             this.classificationInference = classificationInference;
+            this.undoHistory = undoHistory;
             this.sessionData = sessionData;
             this.uiState = uiState;
 
@@ -52,6 +55,8 @@ namespace SketchModeller.Modelling
 
         private void OnSketchLoaded(Tuple<SketchData, string> tuple)
         {
+            undoHistory.Clear();
+
             var sketchData = tuple.Item1;
             var sketchName = tuple.Item2;
 
