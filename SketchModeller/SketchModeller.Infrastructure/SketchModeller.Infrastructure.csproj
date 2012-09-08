@@ -203,6 +203,7 @@
     <Compile Include="Services\ICurveAssigner.cs" />
     <Compile Include="Services\IPrimitivesConverter.cs" />
     <Compile Include="Services\ISnapper.cs" />
+    <Compile Include="Services\IUndoHistory.cs" />
     <Compile Include="ShapeHelper.cs" />
     <Compile Include="Data\SnappedBendedGenCylinder.cs" />
     <Compile Include="Shared\InferenceOptions.cs" />
