@@ -30,8 +30,8 @@ namespace SketchModeller.Modelling.Views
     public partial class SketchImageView
     {
         private static readonly Brush SKETCH_STROKE_UNCATEGORIZED = Brushes.Red;
-        private static readonly Brush SKETCH_STROKE_FEATURE = Brushes.Black;
-        private static readonly Brush SKETCH_STROKE_SILHOUETTE = Brushes.DarkGray;
+        private static readonly Brush SKETCH_STROKE_FEATURE = Brushes.Blue;
+        private static readonly Brush SKETCH_STROKE_SILHOUETTE = Brushes.Black;
 
         private readonly SketchImageViewModel viewModel;
 
@@ -132,9 +132,10 @@ namespace SketchModeller.Modelling.Views
             path.Bind(Path.StrokeThicknessProperty,
                 () => polylineData.IsSelected,
                 () => polylineData.IsEmphasized,
-                (isSelected, isEmphasized) =>
+                () => polylineData.CurveCategory,
+                (isSelected, isEmphasized, curveCategory) =>
                 {
-                    if (isSelected || isEmphasized)
+                    if (isSelected || isEmphasized || curveCategory == CurveCategories.Feature)
                         return 3.0;
                     else
                         return 1.0;
