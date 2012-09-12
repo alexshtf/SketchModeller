@@ -75,8 +75,6 @@ namespace SketchModeller.Modelling.Services.UndoHistory
             sessionData.SketchObjects = curves.ToArray();
             foreach (var item in sessionData.SketchObjects)
                 item.ColorCodingIndex = PointsSequence.INVALID_COLOR_CODING;
-
-            classificationInference.PreAnalyze();
         }
 
         public void Clear()

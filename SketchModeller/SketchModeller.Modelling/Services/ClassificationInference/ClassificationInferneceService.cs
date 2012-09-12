@@ -10,10 +10,11 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
 {
     class ClassificationInferneceService : IClassificationInference
     {
-        private SessionData sessionData;
-        private GraphConstructor graphConstructor;
-        private InferenceEngine inferenceEngine;
-        private Graph graph;
+        private static readonly string PreprocessingDataKey = typeof (ClassificationInferneceService).FullName;
+
+        private readonly SessionData sessionData;
+        private readonly GraphConstructor graphConstructor;
+        private readonly InferenceEngine inferenceEngine;
 
         public ClassificationInferneceService(SessionData sessionData)
         {
@@ -28,11 +29,16 @@ namespace SketchModeller.Modelling.Services.ClassificationInference
 
         public void PreAnalyze()
         {
-            graph = graphConstructor.Construct(sessionData.SketchObjects);
+            if (sessionData.PreprocessingData.ContainsKey(PreprocessingDataKey))
+                return;
+
+            var graph = graphConstructor.Construct(sessionData.SketchObjects);
+            sessionData.PreprocessingData[PreprocessingDataKey] = graph;
         }
 
         public void Infer()
         {
+            var graph = (Graph)sessionData.PreprocessingData[PreprocessingDataKey];
             inferenceEngine.InferClassification(graph);
         }
     }

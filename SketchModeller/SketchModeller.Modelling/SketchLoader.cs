@@ -84,6 +84,8 @@ namespace SketchModeller.Modelling
                 item.ColorCodingIndex = PointsSequence.INVALID_COLOR_CODING;
 
             sessionData.DistanceTransforms = sketchData.DistanceTransforms.ToArray();
+            sessionData.PreprocessingData = new Dictionary<string, object>();
+
             classificationInference.PreAnalyze();
             //if (sketchData.ConnectivityGraph == null)
             //    sessionData.ConnectivityGraph = ComputeConnectivityGraph(sessionData.SketchObjects);

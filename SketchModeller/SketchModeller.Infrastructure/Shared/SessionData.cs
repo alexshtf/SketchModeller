@@ -44,6 +44,8 @@ namespace SketchModeller.Infrastructure.Shared
             SelectedSketchObjects = sketchObjectsSelectionListener.SelectedItems;
             SelectedFeatureCurves = featureCurvesSelectionListener.SelectedItems;
             SelectedPrimitives = allPrimitivesSelectionListener.SelectedItems;
+
+            PreprocessingData = new Dictionary<string, object>();
         }
 
         #region SketchData property
@@ -83,6 +85,8 @@ namespace SketchModeller.Infrastructure.Shared
         }
 
         #endregion
+
+        public Dictionary<string, object> PreprocessingData { get; set; }
 
         public ObservableCollection<NewPrimitive> NewPrimitives { get; private set; }
 
