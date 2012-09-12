@@ -18,9 +18,11 @@ namespace SketchModeller.Modelling.Services.UndoHistory
 
         public void Push(SketchData sketchData)
         {
+            var sketchDataWithoutDistanceTransforms = GetSketchDataWithoutDistanceTransforms(sketchData);
+
             using (var stream = new MemoryStream())
             {
-                formatter.Serialize(stream, sketchData);
+                formatter.Serialize(stream, sketchDataWithoutDistanceTransforms);
                 stream.Flush();
                 stack.Push(stream.ToArray());
             }
@@ -41,6 +43,18 @@ namespace SketchModeller.Modelling.Services.UndoHistory
         public void Clear()
         {
             stack.Clear();
+        }
+
+        private static SketchData GetSketchDataWithoutDistanceTransforms(SketchData sketchData)
+        {
+            var result = new SketchData()
+            {
+                Annotations = sketchData.Annotations,
+                Curves = sketchData.Curves,
+                NewPrimitives = sketchData.NewPrimitives,
+                SnappedPrimitives = sketchData.SnappedPrimitives,
+            };
+            return result;
         }
     }
 }
