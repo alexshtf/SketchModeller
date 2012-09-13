@@ -83,7 +83,7 @@
     <Reference Include="AForge.Math, Version=2.1.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
       <HintPath>..\libs\AForge.Math.dll</HintPath>
     </Reference>
-    <Reference Include="AlgLib, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="AlgLib">
       <HintPath>..\libs\AlgLib.dll</HintPath>
     </Reference>
     <Reference Include="AutoDiff, Version=1.0.4478.4273, Culture=neutral, processorArchitecture=MSIL">
