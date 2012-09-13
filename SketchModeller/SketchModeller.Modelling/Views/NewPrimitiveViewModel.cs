@@ -176,7 +176,7 @@ namespace SketchModeller.Modelling.Views
                             cornerList.Add(Tuple.Create(i, CP, CPprimitive));
                         }
                     }
-                    curveAssigner.refresh(Model);
+                    curveAssigner.Refresh(Model);
                     cuboid.ArrayOfCorners[i][0].AssignedTo = null;
                     cuboid.ArrayOfCorners[i][1].AssignedTo = null;
                     cuboid.ArrayOfCorners[i][2].AssignedTo = null;
@@ -198,8 +198,8 @@ namespace SketchModeller.Modelling.Views
                     cuboid.CheckCubicCorner(cuboid.ActiveCubicCorner);
                 }
             }
-            //refresh all curves so that they can be selected again
-            curveAssigner.refresh(Model);
+            //Refresh all curves so that they can be selected again
+            curveAssigner.Refresh(Model);
             Model.CanSnap = CheckIfPrimitiveCanSnap();
 
             if (Model.IsSelected)

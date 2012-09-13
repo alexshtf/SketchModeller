@@ -18,7 +18,7 @@ namespace SketchModeller.Modelling.Services.Assign
         {
             this.sessionData = sessionData;
         }
-        public void refresh(NewPrimitive primitive)
+        public void Refresh(NewPrimitive primitive)
         {
             for (int idx = 0; idx < sessionData.SketchObjects.Length; idx++)
                 sessionData.SketchObjects[idx].isdeselected = false;
@@ -44,10 +44,10 @@ namespace SketchModeller.Modelling.Services.Assign
             else return true;
         }
 
-        public bool ComputeFeatureAssignments(PrimitiveCurve[] Features)
+        public bool ComputeFeatureAssignments(PrimitiveCurve[] features)
         {
-            ComputeAssignments(Features, CurveCategories.Feature);
-            int toDoFeatureCurves = Features.Where(curve => !curve.isDeselected).ToArray().Length;
+            ComputeAssignments(features, CurveCategories.Feature);
+            int toDoFeatureCurves = features.Where(curve => !curve.isDeselected).ToArray().Length;
             if (toDoFeatureCurves == 0) return false;
             int toDoFeaturesOnSketch =
                 (from idx in Enumerable.Range(0, sessionData.SketchObjects.Length)
