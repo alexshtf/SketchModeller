@@ -26,11 +26,12 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public EditMenuViewModel(InferenceOptions inferenceOptions, IEventAggregator eventAggregator)
+        public EditMenuViewModel(InferenceOptions inferenceOptions, SnapOptions snapOptions, IEventAggregator eventAggregator)
             : this()
         {
             this.eventAggregator = eventAggregator;
-            this.InferenceOptions = inferenceOptions;
+            InferenceOptions = inferenceOptions;
+            SnapOptions = snapOptions;
         }
 
         public ICommand Undo { get; private set; }
@@ -39,6 +40,8 @@ namespace SketchModeller.Modelling.Views
         public ICommand EnableInference { get; private set; }
         public ICommand DisableInference { get; private set; }
         public InferenceOptions InferenceOptions { get; private set; }
+        public SnapOptions SnapOptions { get; private set; }
+
 
         private  void UndoExecute()
         {

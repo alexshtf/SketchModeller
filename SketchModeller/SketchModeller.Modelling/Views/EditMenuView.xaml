@@ -9,6 +9,7 @@
     <MenuItem Header="Undo" Command="{Binding Undo}" InputGestureText="Ctrl+Z" />
     <MenuItem Header="Mark as feature" Command="{Binding MarkFeature}" />
     <MenuItem Header="Mark as silhouette" Command="{Binding MarkSilhouette}" />
+    <MenuItem Header="Enable snap" IsCheckable="True" IsChecked="{Binding SnapOptions.IsSnapEnabled}" />
     <MenuItem Header="Constraints inference">
         <MenuItem Header="Disable all" Command="{Binding DisableInference}" />
         <MenuItem Header="Enable all" Command="{Binding EnableInference}" />

@@ -32,6 +32,7 @@ namespace SketchModeller
             Container.RegisterType<SessionData, SessionData>(new ContainerControlledLifetimeManager());
             Container.RegisterType<UiState, UiState>(new ContainerControlledLifetimeManager());
             Container.RegisterType<InferenceOptions, InferenceOptions>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<SnapOptions, SnapOptions>(new ContainerControlledLifetimeManager());
 
         }
 
