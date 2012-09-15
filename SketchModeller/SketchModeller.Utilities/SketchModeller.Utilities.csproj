@@ -188,7 +188,6 @@
     <Compile Include="Optimization\VariableSubstitution.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PointsSequenceExtensions.cs" />
-    <Compile Include="PointsToPolylineConverter.cs" />
     <Compile Include="PolarPointsGenerator.cs" />
     <Compile Include="PolygonRasterizer.cs" />
     <Compile Include="PolylineIntersector.cs" />
