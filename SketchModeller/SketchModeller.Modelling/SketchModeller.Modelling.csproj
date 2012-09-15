@@ -81,9 +81,6 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="3DTools">
-      <HintPath>..\..\..\..\3DTools-1.01-bin\3DTools.dll</HintPath>
-    </Reference>
     <Reference Include="AForge">
       <HintPath>..\libs\AForge.dll</HintPath>
     </Reference>

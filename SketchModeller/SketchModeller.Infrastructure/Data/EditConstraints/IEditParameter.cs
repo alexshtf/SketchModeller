@@ -17,7 +17,7 @@ namespace SketchModeller.Infrastructure.Data.EditConstraints
     }
 
     [ContractClassFor(typeof(IEditParameter))]
-    public class EditParameterContracts : IEditParameter
+    abstract class EditParameterContracts : IEditParameter
     {
 
         public int Dimension

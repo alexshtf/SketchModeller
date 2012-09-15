@@ -33,6 +33,7 @@ namespace SketchModeller.Utilities
         /// </summary>
         /// <param name="x">The element's index</param>
         /// <returns>An index of <paramref name="x"/>'s set representative element.</returns>
+        [Pure]
         public int Find(int x)
         {
             Contract.Requires(0 <= x && x < Count);
