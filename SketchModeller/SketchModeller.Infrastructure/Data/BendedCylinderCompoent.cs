@@ -5,7 +5,6 @@ using System.Text;
 using System.Diagnostics.Contracts;
 using System.Windows.Media.Media3D;
 using System.Windows;
-using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Infrastructure.Data
 {

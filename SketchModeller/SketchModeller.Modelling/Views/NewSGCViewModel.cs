@@ -34,8 +34,6 @@ namespace SketchModeller.Modelling.Views
         private NewStraightGenCylinder model;
         private bool isUpdating;
 
-        // the idex of the component that will be edited by the drag operation.
-        private int dragStartComponent; 
 
         [InjectionConstructor]
         public NewSGCViewModel(

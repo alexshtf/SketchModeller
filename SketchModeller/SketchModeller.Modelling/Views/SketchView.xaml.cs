@@ -32,29 +32,7 @@ namespace SketchModeller.Modelling.Views
     /// </summary>
     public partial class SketchView : UserControl
     {
-        private static readonly Cursor ADD_CURSOR;
-        private static readonly Cursor REMOVE_CURSOR;
-        private static bool AddedOnce;
-        private static bool DragStarted;
-        private static Point prevpos2d;
-        static SketchView()
-        {
-            AddedOnce = false;
-            var assembly = Assembly.GetCallingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowadd.cur"))
-            {
-                if (stream != null)
-                    ADD_CURSOR = new Cursor(stream);
-            }
-            using (var stream = assembly.GetManifestResourceStream("SketchModeller.Modelling.arrowdel.cur"))
-            {
-                if (stream != null)
-                    REMOVE_CURSOR = new Cursor(stream);
-            }
-        }
-
         private readonly ILoggerFacade logger;
-        private readonly IEventAggregator eventAggregator;
         private readonly SketchViewModel viewModel;
         private readonly DuplicateEditorFactory duplicateEditorFactory;
         private readonly IDragStrategy newPrimitiveDragStrategy;
