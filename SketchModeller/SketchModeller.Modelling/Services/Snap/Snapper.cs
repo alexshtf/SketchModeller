@@ -1,39 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
+using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.Logging;
+using Microsoft.Practices.Unity;
+using SketchModeller.Infrastructure.Data;
+using SketchModeller.Infrastructure.Events;
 using SketchModeller.Infrastructure.Services;
 using SketchModeller.Infrastructure.Shared;
-using Microsoft.Practices.Prism.Logging;
-using SketchModeller.Infrastructure.Data;
-using System.Diagnostics.Contracts;
-using Microsoft.Practices.Unity;
-using AutoDiff;
-using SketchModeller.Utilities;
-using Utils;
-using System.Windows.Media.Media3D;
-using Microsoft.Practices.Prism.Events;
-using SketchModeller.Infrastructure.Events;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Windows;
-using TermUtils = SketchModeller.Utilities.TermUtils;
-using Enumerable = System.Linq.Enumerable;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Reactive.Concurrency;
-using System.Windows.Threading;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Windows.Input;
+using System.Windows.Threading;
+using Utils;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
     public partial class Snapper : ISnapper
     {
         private readonly SessionData sessionData;
-        private readonly UiState uiState;
-        private readonly ILoggerFacade logger;
-        private readonly IUnityContainer container;
         private readonly IEventAggregator eventAggregator;
         private readonly IAnnotationInference annotationInference;
         private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
@@ -48,20 +36,16 @@ namespace SketchModeller.Modelling.Services.Snap
             SessionData sessionData,
             UiState uiState,
             ILoggerFacade logger,
-            IUnityContainer container,
             IEventAggregator eventAggregator,
             IAnnotationInference annotationInference,
             IConstrainedOptimizer constrainedOptimizer)
         {
             this.sessionData = sessionData;
-            this.uiState = uiState;
-            this.logger = logger;
-            this.container = container;
             this.eventAggregator = eventAggregator;
             this.annotationInference = annotationInference;
             this.constrainedOptimizer = constrainedOptimizer;
 
-            this.primitivesReaderWriterFactory = new PrimitivesReaderWriterFactory();
+            primitivesReaderWriterFactory = new PrimitivesReaderWriterFactory();
             var annotationConstraintsExtractor = new AnnotationConstraintsExtractor();
 
             snappersManager = new SnappersManager(uiState, sessionData);
@@ -72,7 +56,7 @@ namespace SketchModeller.Modelling.Services.Snap
             snappersManager.RegisterSnapper(new BgcSnapper());
             snappersManager.RegisterSnapper(new CuboidSnapper());
             
-            this.wholeShapeOptimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
+            wholeShapeOptimizationModel = new WholeShapeOptimizationModel(sessionData, snappersManager, annotationConstraintsExtractor, primitivesReaderWriterFactory);
 
             eventAggregator.GetEvent<GlobalShortcutEvent>().Subscribe(OnGlobalShortcut);
 
@@ -89,6 +73,7 @@ namespace SketchModeller.Modelling.Services.Snap
             if (sessionData.SelectedNewPrimitives.Count == 1)
             {
                 var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
+                Debug.Assert(dispatcher != null, "dispatcher != null");
                 var scheduler = new DispatcherScheduler(dispatcher);
 
                 return from tuple in Observable.Start<Tuple<NewPrimitive, SnappedPrimitive>>(ConvertToSnapped, scheduler)
