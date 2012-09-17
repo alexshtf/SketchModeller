@@ -28,6 +28,7 @@ namespace SketchModeller.Modelling.Services.Snap
         private readonly IConstrainedOptimizer constrainedOptimizer;
         private readonly SnappersManager snappersManager;
         private readonly IOptimizationModel wholeShapeOptimizationModel;
+        private readonly SnapOptions snapOptions;
 
         private int stopOptimization;
 
@@ -38,12 +39,14 @@ namespace SketchModeller.Modelling.Services.Snap
             ILoggerFacade logger,
             IEventAggregator eventAggregator,
             IAnnotationInference annotationInference,
-            IConstrainedOptimizer constrainedOptimizer)
+            IConstrainedOptimizer constrainedOptimizer,
+            SnapOptions snapOptions)
         {
             this.sessionData = sessionData;
             this.eventAggregator = eventAggregator;
             this.annotationInference = annotationInference;
             this.constrainedOptimizer = constrainedOptimizer;
+            this.snapOptions = snapOptions;
 
             primitivesReaderWriterFactory = new PrimitivesReaderWriterFactory();
             var annotationConstraintsExtractor = new AnnotationConstraintsExtractor();
@@ -65,7 +68,10 @@ namespace SketchModeller.Modelling.Services.Snap
 
         public ITemporarySnap TemporarySnap(NewPrimitive newPrimitive)
         {
-            return new TemporarySnap(sessionData, snappersManager, primitivesReaderWriterFactory, eventAggregator, newPrimitive, constrainedOptimizer);
+            if (snapOptions.IsSnapEnabled)
+                return new TemporarySnap(sessionData, snappersManager, primitivesReaderWriterFactory, eventAggregator, newPrimitive, constrainedOptimizer);
+            else
+                return new DoNothingTemporarySnap();
         }
 
         public IObservable<Unit> SnapAsync()
@@ -79,16 +85,24 @@ namespace SketchModeller.Modelling.Services.Snap
                 return from tuple in Observable.Start<Tuple<NewPrimitive, SnappedPrimitive>>(ConvertToSnapped, scheduler)
                        let newPrimitive = tuple.Item1
                        let snappedPrimitive = tuple.Item2
-                       let initialSnapOptimizationModel = new InitialSnapOptimizationModel(sessionData, snappedPrimitive, snappersManager, primitivesReaderWriterFactory)
+                       let initialSnapOptimizationModel = CreateOptimizationModel(new InitialSnapOptimizationModel(sessionData, snappedPrimitive, snappersManager, primitivesReaderWriterFactory))
                        from unit1 in OptimizeAsync(scheduler, initialSnapOptimizationModel)
                        let annotations = annotationInference.InferAnnotations(newPrimitive, snappedPrimitive)
-                       let optimizationModel = wholeShapeOptimizationModel
+                       let optimizationModel = CreateOptimizationModel(wholeShapeOptimizationModel)
                        from unit2 in annotations.Any() ? OptimizeWithAnnotationsAsync(scheduler, annotations, optimizationModel)
                                                        : Observable.Empty<Unit>()
                        select unit2;
             }
             else
                 return RecalculateAsync();
+        }
+
+        private  IOptimizationModel CreateOptimizationModel(IOptimizationModel basicOptimizationModel)
+        {
+            if (snapOptions.IsSnapEnabled)
+                return basicOptimizationModel;
+            else
+                return new NoSnappingOptimizationModel(basicOptimizationModel);
         }
 
         private void OnGlobalShortcut(KeyEventArgs e)
