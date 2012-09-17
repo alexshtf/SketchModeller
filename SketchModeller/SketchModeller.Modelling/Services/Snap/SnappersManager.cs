@@ -13,7 +13,7 @@ namespace SketchModeller.Modelling.Services.Snap
     /// Managers a registry of snappers, and can perform snapping operations on new/snapped primitives base on their type
     /// using the appropriate snapper.
     /// </summary>
-    class SnappersManager
+    class SnappersManager : IPrimitiveReconstructor
     {
         private readonly List<IPrimitiveSnapper> snappers;
         private readonly UiState uiState;

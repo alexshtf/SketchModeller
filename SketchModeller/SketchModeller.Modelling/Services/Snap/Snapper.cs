@@ -19,7 +19,7 @@ using Utils;
 
 namespace SketchModeller.Modelling.Services.Snap
 {
-    public partial class Snapper : ISnapper
+    public class Snapper : ISnapper
     {
         private readonly SessionData sessionData;
         private readonly IEventAggregator eventAggregator;

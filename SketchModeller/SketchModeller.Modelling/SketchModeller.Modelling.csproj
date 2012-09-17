@@ -261,6 +261,7 @@
     <Compile Include="Services\Snap\IAnnotationConstraintsExtractor.cs" />
     <Compile Include="Services\Snap\InitialSnapOptimizationModel.cs" />
     <Compile Include="Services\Snap\IOptimizationModel.cs" />
+    <Compile Include="Services\Snap\IPrimitiveReconstructor.cs" />
     <Compile Include="Services\Snap\IPrimitiveSnapper.cs" />
     <Compile Include="Services\Snap\IPrimitivesReader.cs" />
     <Compile Include="Services\Snap\IPrimitivesWriter.cs" />

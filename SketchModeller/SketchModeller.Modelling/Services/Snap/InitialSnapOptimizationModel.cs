@@ -11,14 +11,14 @@ namespace SketchModeller.Modelling.Services.Snap
     {
         private readonly SessionData sessionData;
         private readonly SnappedPrimitive snappedPrimitive;
-        private readonly SnappersManager snappersManager;
+        private readonly IPrimitiveReconstructor primitiveReconstructor;
         private readonly PrimitivesReaderWriterFactory primitivesReaderWriterFactory;
 
-        public InitialSnapOptimizationModel(SessionData sessionData, SnappedPrimitive snappedPrimitive, SnappersManager snappersManager, PrimitivesReaderWriterFactory primitivesReaderWriterFactory)
+        public InitialSnapOptimizationModel(SessionData sessionData, SnappedPrimitive snappedPrimitive, IPrimitiveReconstructor primitiveReconstructor, PrimitivesReaderWriterFactory primitivesReaderWriterFactory)
         {
             this.sessionData = sessionData;
             this.snappedPrimitive = snappedPrimitive;
-            this.snappersManager = snappersManager;
+            this.primitiveReconstructor = primitiveReconstructor;
             this.primitivesReaderWriterFactory = primitivesReaderWriterFactory;
         }
 
@@ -36,7 +36,7 @@ namespace SketchModeller.Modelling.Services.Snap
             // now we construct all we need for the optimization problem
             var variables = primitiveWriter.GetVariables();
             var initialValues = primitiveWriter.GetValues();
-            var objectiveWithConstraints = snappersManager.Reconstruct(snappedPrimitive, curvesToAnnotations);
+            var objectiveWithConstraints = primitiveReconstructor.Reconstruct(snappedPrimitive, curvesToAnnotations);
 
             return new OptimizationProblem
             {
