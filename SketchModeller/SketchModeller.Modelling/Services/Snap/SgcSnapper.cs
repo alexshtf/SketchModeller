@@ -265,58 +265,51 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private static Tuple<Term, Term[]> CreateSGCTerms(SnappedStraightGenCylinder snappedPrimitive, double[] radii, Point spineStart, Point spineEnd)
         {
-            var terms =
-               from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
-               where item != null
-               where item.SnappedTo != null
-               from term in ProjectionFit.Compute(item)
-               select term;
-
-            var featureCurvesTerm = 0.1 * TermUtils.SafeAvg(terms);
-
-            // the difference between the primitive's radii and the computed radii is minimized
-            var radiiApproxTerm = TermUtils.SafeAvg(
-                from i in Enumerable.Range(0, snappedPrimitive.Components.Length)
-                let component = snappedPrimitive.Components[i]
-                let radius = radii[i]
-                select TermBuilder.Power(component.Radius - radius, 2));
-
-            // the smoothness of the primitive's radii (laplacian norm) is minimized
-            var radiiSmoothTerm = TermUtils.SafeAvg(
-                from pair in snappedPrimitive.Components.SeqTripples()
-                let r1 = pair.Item1.Radius
-                let r2 = pair.Item2.Radius
-                let r3 = pair.Item3.Radius
-                select TermBuilder.Power(r2 - 0.5 * (r1 + r3), 2)); // how far is r2 from the avg of r1 and r3
-
-            // start/end points should be as close as possible to the bottom/top centers
-            var startTerm = 0.5 * (
-                TermBuilder.Power(snappedPrimitive.BottomCenter.X - spineStart.X, 2) +
-                TermBuilder.Power(snappedPrimitive.BottomCenter.Y + spineStart.Y, 2));
-
-            var topCenter = snappedPrimitive.GetTopCenter();
-            var endTerm = 0.5 * (
-                TermBuilder.Power(topCenter.X - spineEnd.X, 2) +
-                TermBuilder.Power(topCenter.Y + spineEnd.Y, 2));
-
-            // we specifically wish to give higher weight to first and last radii, so we have
-            // an additional first/last radii term.
-            var endpointsRadiiTerm =
-                TermBuilder.Power(radii[0] - snappedPrimitive.Components.First().Radius, 2) +
-                TermBuilder.Power(radii.Last() - snappedPrimitive.Components.Last().Radius, 2);
-
-            // objective - weighed average of all terms
-            var objective =
-                radiiApproxTerm +
-                radiiSmoothTerm +
-                //startTerm +
-                //endTerm +
-                //orientationTerm +
-                featureCurvesTerm +
-                endpointsRadiiTerm;
-
             var constraints = new Term[] { snappedPrimitive.Axis.NormSquared - 1 };
-            return Tuple.Create(objective, constraints);
+
+            if (radii.Length > 0)
+            {
+                var featureCurveTerms =
+                    from item in snappedPrimitive.FeatureCurves.Cast<CircleFeatureCurve>()
+                    where item != null
+                    where item.SnappedTo != null
+                    from term in ProjectionFit.Compute(item)
+                    select term;
+
+                var featureCurvesTerm = 0.1 * TermUtils.SafeAvg(featureCurveTerms);
+
+                // the difference between the primitive's radii and the computed radii is minimized
+                var radiiApproxTerm = TermUtils.SafeAvg(
+                        from i in Enumerable.Range(0, snappedPrimitive.Components.Length)
+                        let component = snappedPrimitive.Components[i]
+                        let radius = radii[i]
+                        select TermBuilder.Power(component.Radius - radius, 2));
+
+                // the smoothness of the primitive's radii (laplacian norm) is minimized
+                var radiiSmoothTerm = TermUtils.SafeAvg(
+                    from pair in snappedPrimitive.Components.SeqTripples()
+                    let r1 = pair.Item1.Radius
+                    let r2 = pair.Item2.Radius
+                    let r3 = pair.Item3.Radius
+                    select TermBuilder.Power(r2 - 0.5 * (r1 + r3), 2)); // how far is r2 from the avg of r1 and r3
+
+                // we specifically wish to give higher weight to first and last radii, so we have
+                // an additional first/last radii term.
+                var endpointsRadiiTerm =
+                    TermBuilder.Power(radii[0] - snappedPrimitive.Components.First().Radius, 2) +
+                    TermBuilder.Power(radii.Last() - snappedPrimitive.Components.Last().Radius, 2);
+
+                // objective - weighed average of all terms
+                var objective =
+                    radiiApproxTerm +
+                    radiiSmoothTerm +
+                    featureCurvesTerm +
+                    endpointsRadiiTerm;
+
+                return Tuple.Create(objective, constraints);
+            }
+            else
+                return Tuple.Create((Term)0, constraints); // if we can't extract radii approximation, we don't do any snapping
         }
 
         private Vector3D GetOrientation(

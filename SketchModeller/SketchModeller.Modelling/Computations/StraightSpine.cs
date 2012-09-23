@@ -117,7 +117,8 @@ namespace SketchModeller.Modelling.Computations
 
             Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>() != null);
             Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1 != null);
-            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1.Length == progress.Length);
+            Contract.Ensures(Contract.Result<Tuple<double[], Point, Point>>().Item1.Length == 0 ||
+                             Contract.Result<Tuple<double[], Point, Point>>().Item1.Length == progress.Length);
 
             var pca2d = PointsPCA2D.Compute(l1pts.Concat(l2pts));
             var lineVec = Math.Abs(pca2d.First * prior) > Math.Abs(pca2d.Second * prior) ? pca2d.First : pca2d.Second;
@@ -154,10 +155,14 @@ namespace SketchModeller.Modelling.Computations
                     where Enumerable.Range(0, allArrays.Length).All(j => !double.IsInfinity(allArrays[j][k]))
                     select k;
 
+                if (!finiteIndices.Any())
+                    return Tuple.Create(new double[0], default(Point), default(Point));
+
                 var dpx = finiteIndices.Select(k => (l[k] - r[k]) * (lGrad.Item1[k] - rGrad.Item1[k])).Average();
                 var dpy = finiteIndices.Select(k => (l[k] - r[k]) * (lGrad.Item2[k] - rGrad.Item2[k])).Average();
                 var dvx = finiteIndices.Select(k => (l[k] - r[k]) * (lGrad.Item3[k] - rGrad.Item3[k])).Average();
                 var dvy = finiteIndices.Select(k => (l[k] - r[k]) * (lGrad.Item4[k] - rGrad.Item4[k])).Average();
+
 
                 linePoint.X -= ALPHA * dpx;
                 linePoint.Y -= ALPHA * dpy;

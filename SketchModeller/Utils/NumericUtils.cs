@@ -25,5 +25,27 @@ namespace Utils
 
             return Math.Abs(value - reference) / Math.Abs(reference) <= epsilonScale * DBL_MACHINE_EPSILON;
         }
+
+        /// <summary>
+        /// Measures relative equality using maximum fracton (percentage) difference.
+        /// </summary>
+        /// <param name="value">The value to compare to the reference</param>
+        /// <param name="reference">The reference value</param>
+        /// <param name="maxFraction">The maximum fractional difference within which the values are considered equal</param>
+        /// <returns><c>true</c> if and only if <paramref name="value"/> divided by <paramref name="reference"/> is within the range
+        /// <c>[1 - maxFraction, 1 + maxFraction]</c>.</returns>
+        [Pure]
+        public static bool AreRelativeClose(double value, double reference, double maxFraction)
+        {
+            Contract.Requires(maxFraction > 0);
+
+            var ratio = Math.Abs(value) / Math.Abs(reference);
+            if (ratio > 1 + maxFraction)
+                return false;
+            if (ratio < 1 - maxFraction)
+                return false;
+
+            return true;
+        }
     }
 }

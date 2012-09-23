@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using SketchModeller.Infrastructure.Data;
 using System.Diagnostics.Contracts;
+using Utils;
+using Enumerable = System.Linq.Enumerable;
 
 namespace SketchModeller.Modelling.Computations
 {
@@ -21,7 +23,7 @@ namespace SketchModeller.Modelling.Computations
             Contract.Ensures(Contract.Result<CylinderComponent[]>() != null);
             Contract.Ensures(Contract.Result<CylinderComponent[]>().Length == count);
             Contract.Ensures(Contract.Result<CylinderComponent[]>()[0].Radius == r1);
-            Contract.Ensures(Contract.Result<CylinderComponent[]>().Last().Radius == r3);
+            Contract.Ensures(NumericUtils.AreRelativeClose(Contract.Result<CylinderComponent[]>().Last().Radius,  r3, maxFraction: 1E-5));
 
             // coefficients of a quadratic function r(t) = a + bt + ct² such that
             // r(0) = r1, r(0.5) = r2, r(1) = r3.
