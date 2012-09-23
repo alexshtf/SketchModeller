@@ -135,10 +135,12 @@ namespace SketchModeller.Modelling.Views
                 () => polylineData.CurveCategory,
                 (isSelected, isEmphasized, curveCategory) =>
                 {
-                    if (isSelected || isEmphasized || curveCategory == CurveCategories.Feature)
-                        return 3.0;
-                    else
-                        return 1.0;
+                    if (isSelected || isEmphasized)
+                        return 4.0;
+                    if (curveCategory == CurveCategories.Feature)
+                        return 2.0;
+                    
+                    return 1.0;
                 });
 
 
