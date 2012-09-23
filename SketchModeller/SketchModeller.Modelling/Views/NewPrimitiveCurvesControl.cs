@@ -118,9 +118,6 @@ namespace SketchModeller.Modelling.Views
             var allCurveInfos = featureInfos.Concat(silhouetteInfos);
             foreach (var curveInfo in allCurveInfos)
             {
-                var strokeConverter = 
-                    new DelegateConverter<int>(index => Constants.PRIMITIVE_CURVES_COLOR_CODING[index]);
-
                 // create curve stroke
                 var path = CreatePolyline(curveInfo.Curve.Points);
                 path.Bind(Path.StrokeThicknessProperty, new PropertyPath(IsEmphasizedProperty), path, new DelegateConverter<bool>(
