@@ -45,8 +45,12 @@ namespace SketchModeller
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
-            eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
+            base.OnPreviewKeyDown(e);
+
+            bool isComputationBreakShortcut = e.Key == Key.C && e.KeyboardDevice.Modifiers == ModifierKeys.Control;
+
+            if (isComputationBreakShortcut || !viewModel.IsWorking)
+                eventAggregator.GetEvent<GlobalShortcutEvent>().Publish(e);
         }
 
         private void OnDebugClick(object sender, RoutedEventArgs e)
