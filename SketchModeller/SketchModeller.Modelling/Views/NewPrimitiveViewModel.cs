@@ -131,7 +131,9 @@ namespace SketchModeller.Modelling.Views
                 curveAssigner.ComputeSilhouetteAssignments(Model);
                 //Pick the first available silhouette Curve
                 Model.SilhouetteCurves[0].isDeselected = true;
-                Model.SilhouetteCurves[0].AssignedTo.isdeselected = true;
+                if (Model.SilhouetteCurves[0].AssignedTo != null)
+                    Model.SilhouetteCurves[0].AssignedTo.isdeselected = true;
+
                 //Unassing the second silhouette curve if it exists
                 if (Model.SilhouetteCurves.Length > 1 && Model.SilhouetteCurves[1].AssignedTo != null)
                     Model.SilhouetteCurves[1].AssignedTo = null;
