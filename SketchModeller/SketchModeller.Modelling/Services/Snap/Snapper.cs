@@ -183,13 +183,20 @@ namespace SketchModeller.Modelling.Services.Snap
 
         private IEnumerable<double[]> Minimize(OptimizationProblem problem)
         {
+            var lastOptimum = problem.InitialValue;
             foreach (var optimum in constrainedOptimizer.Minimize(problem.Objective, problem.Constraints, problem.Variables, problem.InitialValue))
             {
-                yield return optimum;
-             
                 var shouldStop = Interlocked.CompareExchange(ref stopOptimization, 0, 1);
                 if (shouldStop == 1)
-                    yield break;
+                {
+                    yield return lastOptimum;
+                    yield break;                    
+                }
+                else
+                {
+                    lastOptimum = optimum;
+                    yield return optimum;                    
+                }
             }
         }
     }
