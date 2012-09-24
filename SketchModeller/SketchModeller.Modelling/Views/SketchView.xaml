@@ -54,6 +54,8 @@
         <Border x:Name="vpRoot"
                 Margin="10,0,10,10"
                 Background="WhiteSmoke" 
+                BorderBrush="Black"
+                BorderThickness="1"
                 Grid.Row="2"
                 Focusable="True"
                 MouseLeftButtonDown="vpRoot_MouseLeftButtonDown"
