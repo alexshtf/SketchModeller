@@ -25,7 +25,7 @@ namespace SketchModeller.Utilities.Optimization
         {
             var constraintsVec = new TVec(constraints);
             var multipliersVec = new TVec(multipliers);
-            var augmentedLagrangian = objective + TVec.InnerProduct(multipliersVec, constraintsVec) + mu * constraintsVec.NormSquared;
+            var augmentedLagrangian = objective + TVec.InnerProduct(multipliersVec, constraintsVec) + 0.5 * mu * constraintsVec.NormSquared;
             return augmentedLagrangian;
         }
 

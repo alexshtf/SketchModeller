@@ -54,7 +54,7 @@ namespace SketchModeller.Utilities.Optimization
             {
                 // we compute a new optimal point estimate
                 currentPoint = unconstrainedOptimizer.Solve(
-                    objectiveWithGradient: x => compiledLagrangian.LagrangianWithGradient(x, multipliers, constraintsPenalty),
+                    objectiveWithGradient: x => compiledLagrangian.LagrangianWithGradient(x, multipliers, constraintsPenalty), // f(x) + 0.5 * mu * ||c(x)||² + lambda * c(x)
                     initialValue: currentPoint,
                     gradientNormThreshold: maxLagrangianGradientNorm);
 
@@ -76,7 +76,7 @@ namespace SketchModeller.Utilities.Optimization
                     };
 
                     // update the current lagrange multipliers estimate according to the algorithm's update formula
-                    // lambda <-- lambda + c / mu
+                    // lambda <-- lambda + mu * c 
                     for (int i = 0; i < multipliers.Length; ++i)
                         multipliers[i] = multipliers[i] + constraintValues[i] * constraintsPenalty;
 

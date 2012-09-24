@@ -14,14 +14,13 @@ namespace SketchModeller.Modelling.Services.ConstrainedOptimizer
     {
         public IEnumerable<double[]> Minimize(Term objective, IEnumerable<Term> constraints, Variable[] vars, double[] startPoint)
         {
-            //DebugSave(objective, constraints, vars, startPoint);
             var solver = CreateSolver();
             return solver.Solve(objective, constraints, vars, startPoint);
         }
 
         private IConstrainedSolver CreateSolver()
         {
-            var penaltySolver = new PenaltySolverFactory().Create(10, 1E-8);
+            //var penaltySolver = new PenaltySolverFactory().Create(10, 1E-8);
             var augmentedLagrangianSolver = new AugmentedLagrangianSolverFactory().Create();
             return augmentedLagrangianSolver;
             //var multistageSolver = new MultistageConstrainedOptimizer(penaltySolver, augmentedLagrangianSolver);
