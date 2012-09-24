@@ -2,21 +2,13 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:cal="http://www.codeplex.com/CompositeWPF"
-             xmlns:local="clr-namespace:SketchModeller.Modelling.Views"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:skm="http://SketchModeller"
-             mc:Ignorable="d" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SketchModeller.Modelling.Views" mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="481">
     <UserControl.Resources>
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Padding" Value="5" />
         </Style>
-        <LinearGradientBrush x:Key="PrimitiveGradientBrush" EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="Gray" Offset="0"/>
-            <GradientStop Color="White" Offset="1"/>
-        </LinearGradientBrush>
     </UserControl.Resources>
     
     <Grid x:Name="root" UseLayoutRounding="True">
