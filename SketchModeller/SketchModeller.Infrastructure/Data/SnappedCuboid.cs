@@ -7,6 +7,7 @@ using System.Windows.Media.Media3D;
 
 namespace SketchModeller.Infrastructure.Data
 {
+    [Serializable]
     public class SnappedCuboid : SnappedPrimitive
     {
         public SnappedCuboid()
