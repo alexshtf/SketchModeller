@@ -258,7 +258,6 @@ namespace SketchModeller.Modelling.Views
                     /*if (CuboidModel.ActiveCubicCorner >= 0)
                         ModelCanSnap = true;*/
                 }
-                Debug.WriteLine("Can Snap:{0}", ModelCanSnap);
             }
 
             return ModelCanSnap;

@@ -237,32 +237,45 @@ namespace SketchModeller.Modelling.Views
 
         private void primitivesPalette_MouseMove(object sender, MouseEventArgs e)
         {
+            Debug.WriteLine("Primitives pallette mouse move");
             if (paletteElement == null) // this means that the user has not started dragging an element from the palette
                 return;
 
-            var isMouseOverViewportRoot = IsMouseOverViewportRoot(e);
+            if (currentDragStrategy != null) // we are currently doing something else (for example, dragging a primitive over the sketch)
+                return; // we don't want to do anything while doing something else with the mouse.. surely not to add a new primitive.
 
+            Debug.WriteLine("Current drag strategy is null");
+
+            var isMouseOverViewportRoot = IsMouseOverViewportRoot(e);
             // we will add a primitive and transfer the "responsibility" to the primitive drag strategy
             // so that from now on it handles mouse events
             if (isMouseOverViewportRoot) 
             {
+                Debug.WriteLine("Mouse is over viewport root");
+
                 var pos3d = GetPosition3D(e);
                 if (pos3d.Ray3D == null)
                     return;
 
-                // we add a new primitive and pick its visual so that we can later give it to the drag strategy
-                viewModel.AddNewPrimitive(palettePrimitiveKind, pos3d.Ray3D.Value);
-                var primitiveVisual = PrimitivesPickService.PickPrimitiveVisual(viewport3d, pos3d.Pos2D);
-                if (primitiveVisual == null)
-                    return;
+                Debug.WriteLine("Successfully got a ray");
 
-                var primitiveData = PrimitivesPickService.GetPrimitiveData(primitiveVisual);
-                viewModel.SelectPrimitive(primitiveData);
+                // we add a new primitive and pick its visual so that we can later give it to the drag strategy
+                var newPrimitive = viewModel.AddNewPrimitive(palettePrimitiveKind, pos3d.Ray3D.Value);
+
+                Debug.WriteLine("Successfully locked on the primitive visual");
+
+                viewModel.SelectPrimitive(newPrimitive);
+
+                var primitiveVisual =
+                    (from view in sketchModellingView.GetNewPrimitiveViews()
+                     let primitiveData = PrimitivesPickService.GetPrimitiveData(view)
+                     where object.ReferenceEquals(primitiveData, newPrimitive)
+                     select view).First();
 
                 // we make the current mouse drag strategy to be the strategy for "new primitive" objects. This strategy
                 // will be used from now on until the primitive is snapped.
                 currentDragStrategy = newPrimitiveDragStrategy;
-                currentDragStrategy.OnMouseDown(GetPosition3D(e), Tuple.Create(primitiveVisual, primitiveData));
+                currentDragStrategy.OnMouseDown(GetPosition3D(e), Tuple.Create(primitiveVisual, newPrimitive));
 
                 // we transfer the responsibility of capturing subsequent mouse events to the vpRoot
                 paletteElement.ReleaseMouseCapture();

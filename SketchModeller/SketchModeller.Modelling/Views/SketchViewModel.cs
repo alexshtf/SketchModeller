@@ -109,7 +109,7 @@ namespace SketchModeller.Modelling.Views
 
         #region Primitive add/delete
 
-        public void AddNewPrimitive(PrimitiveKinds primitiveKind, LineRange lineRange)
+        public NewPrimitive AddNewPrimitive(PrimitiveKinds primitiveKind, LineRange lineRange)
         {
             var pos3d = uiState.SketchPlane.PointFromRay(lineRange);
             if (pos3d != null)
@@ -174,10 +174,11 @@ namespace SketchModeller.Modelling.Views
                         Trace.Fail("Invalid primitive kind");
                         break;
                 }
-
-                if (sessionData.NewPrimitives.Any())
-                    sessionData.NewPrimitives.Last().UpdateCurvesGeometry();
+                sessionData.NewPrimitives.Last().UpdateCurvesGeometry();
+                return sessionData.NewPrimitives.Last();
             }
+            else
+                return null;
         }
 
         public void DeleteNewPrimitives()

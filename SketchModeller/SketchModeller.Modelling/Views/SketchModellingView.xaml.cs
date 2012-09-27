@@ -52,8 +52,13 @@ namespace SketchModeller.Modelling.Views
             cloningVisual3D.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsTemporaryPrimitivesShown);
 
             snappedCloningVisual3d.ItemsSource = viewModel.SnappedPrimitives;
-            snappedCloningVisual3d.Visual3DFactory = SketchModeller.Modelling.ModelViews.ModelViewerSnappedFactory.Instance;
+            snappedCloningVisual3d.Visual3DFactory = ModelViewerSnappedFactory.Instance;
             snappedCloningVisual3d.Bind(CloningVisual3D.IsVisibleProperty, () => displayOptions.IsSnappedPrimitivesShown);
+        }
+
+        public Visual3D[] GetNewPrimitiveViews()
+        {
+            return cloningVisual3D.GetAllVisuals();
         }
 
         #region Visual3DFactory class

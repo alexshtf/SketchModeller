@@ -243,12 +243,6 @@ namespace SketchModeller.Modelling.ModelViews
                 for (int i = 0; i < 6; i++)
                     G[j][i] /= pivot;
             }
-            for (int j = 0; j < 3; j++)
-            {
-                for (int i = 0; i < 6; i++)
-                    Debug.Write(G[j][i] + " ");
-                Debug.WriteLine("");
-            }
             double[][] P = new double[3][];
             for (int i = 0; i < 3; i++) P[i] = new double[3];
             for (int i = 0; i < 3; i++)

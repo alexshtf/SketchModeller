@@ -64,7 +64,18 @@ namespace Utils
 
         public ICollection<TValue> Values
         {
-            get { throw new NotSupportedException(); }
+            get
+            {
+                var result = new List<TValue>();
+                foreach (var safeWeakRef in dictionary.Values)
+                {
+                    var target = safeWeakRef.Target;
+                    if (target != null)
+                        result.Add(target);
+                }
+
+                return result;
+            }
         }
 
         public TValue this[TKey key]

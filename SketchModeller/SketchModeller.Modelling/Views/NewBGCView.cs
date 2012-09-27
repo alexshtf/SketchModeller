@@ -59,15 +59,11 @@ namespace SketchModeller.Modelling.Views
             var diameters = (from component in components
                             select 2 * component.Radius).ToArray();
             //Construct the 3D Points
-            Debug.WriteLine("Vector V:"+viewModel.V);
-            Debug.WriteLine("Axis:" + viewModel.Axis);
             Point3D[] path = new Point3D[Ts.Length];
             for (int i = 0; i < Ts.Length; i++)
             {
                 path[i] = startPoint + Ts[i] * viewModel.V;
-                Debug.WriteLine("Path:" + path[i]);
             }
-            Debug.WriteLine("End");
             var builder = new MeshBuilder();
             builder.AddTube(
                 path,

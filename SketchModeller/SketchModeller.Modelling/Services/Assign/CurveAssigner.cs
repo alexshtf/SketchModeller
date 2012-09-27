@@ -118,8 +118,6 @@ namespace SketchModeller.Modelling.Services.Assign
                 // compute minimum-cost assignments of primitive curves to sketch curves
                 int[] assignments = new int[curves.Length];
 
-                System.Diagnostics.Debug.WriteLine("Number:" + distanceTransforms.Length);
-
                 if (distanceTransforms.Length > 1)
                     assignments = HungarianAlgorithm.FindMaxWeightAssignments(matchingMatrix);
                 else

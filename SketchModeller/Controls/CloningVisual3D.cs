@@ -52,6 +52,11 @@ namespace Controls
             Contract.Invariant(itemsView != null || (dataToVisual.Count == 0 && childrenRoot.Children.Count == 0));
         }
 
+        public Visual3D[] GetAllVisuals()
+        {
+            return dataToVisual.Values.ToArray();
+        }
+
         #region IsVisibile property
 
         public static readonly DependencyProperty IsVisibleProperty =

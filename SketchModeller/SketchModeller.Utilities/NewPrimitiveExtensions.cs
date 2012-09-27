@@ -75,7 +75,6 @@ namespace SketchModeller.Infrastructure.Data
                     {
                         if (PointCompare(EndPoints[pivot], EndPoints[count]))
                         {
-                            Debug.WriteLine("Indexes : " + pivot + " " + count);
                             foreach (int c in ConnectedComponents[count])
                                 if (!(ConnectedComponents[pivot].Contains(c)))
                                     ConnectedComponents[pivot].Add(c);
@@ -93,7 +92,6 @@ namespace SketchModeller.Infrastructure.Data
                     idx = counter;
                 }
             }
-            Debug.WriteLine("1 Feature:Max=" + Max);
             if (Max < 2)
             {
                 primitive.SilhouetteCurves[1].AssignedTo.isdeselected = true;
@@ -139,7 +137,6 @@ namespace SketchModeller.Infrastructure.Data
                     {
                         if (PointCompare(EndPoints[pivot], EndPoints[count]))
                         {
-                            Debug.WriteLine("Indexes : " + pivot + " " + count);
                             foreach (int c in ConnectedComponents[count])
                                 if (!(ConnectedComponents[pivot].Contains(c)))
                                     ConnectedComponents[pivot].Add(c);
@@ -160,7 +157,6 @@ namespace SketchModeller.Infrastructure.Data
             /*bool[] bitRaised = new bool[N];
             foreach (int c in ConnectedComponents[idx]) bitRaised[c] = true;
             Max = bitRaised.Select(c => c == true).ToArray().Length;*/
-            Debug.WriteLine("2 Features:Max=" + Max);
             if (Max < 3)
             {
                 primitive.SilhouetteCurves[1].AssignedTo.isdeselected = true;
@@ -437,7 +433,6 @@ namespace SketchModeller.Infrastructure.Data
                     i++;
                 }
             }
-            Debug.WriteLine("Number of Silhouettes:" + SilhouettesCount);
             if (primitive.FeatureCurves.Length > 1 && primitive.FeatureCurves[1].AssignedTo != null)
             {
                 var FeatureCurve2 = primitive.FeatureCurves[1].AssignedTo;
@@ -560,7 +555,6 @@ namespace SketchModeller.Infrastructure.Data
             distances[2] = v3.Length;
             distances[3] = v4.Length;
             double min = distances.Min();
-            Debug.WriteLine("Distance:" + min);
             if (min < 0.05) return true;
             else return false;
         }
