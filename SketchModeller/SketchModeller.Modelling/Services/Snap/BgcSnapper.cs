@@ -92,7 +92,7 @@ namespace SketchModeller.Modelling.Services.Snap
             annotated.Intersect(snappedPrimitive.FeatureCurves);
             Tuple<Term, Term[]> result = null;
 
-            if (silhouettesCount == 2 && featuresCount == 2)
+            if (silhouettesCount == 2/* && featuresCount == 2 */)
             {
                 //MessageBox.Show("Inside Full Feature Optimization");
                 result = FullInfo(ref snappedPrimitive);
@@ -119,27 +119,11 @@ namespace SketchModeller.Modelling.Services.Snap
 
             // compute the term we get from the feature curves. used mainly to optimize
             // for the axis orientation
-            var botEllipse = EllipseFitter.Fit(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points);
-            var topEllipse = EllipseFitter.Fit(snappedPrimitive.TopFeatureCurve.SnappedTo.Points);
+            //var botEllipse = EllipseFitter.Fit(snappedPrimitive.BottomFeatureCurve.SnappedTo.Points);
+            //var topEllipse = EllipseFitter.Fit(snappedPrimitive.TopFeatureCurve.SnappedTo.Points);
             var spine = BendedSpine.Compute(leftPts, rightPts, pointsProgress);
             var radii = spine.Item2;
             var medialAxis = spine.Item1;
-            bool reverse = false;
-            Vector vnormal = new Vector(botEllipse.Center.X - medialAxis[0].X, -botEllipse.Center.Y + medialAxis[0].Y);
-            Vector vreverse = new Vector(botEllipse.Center.X - medialAxis[medialAxis.Length - 1].X, -botEllipse.Center.Y + medialAxis[medialAxis.Length - 1].Y);
-            if (vnormal.Length > vreverse.Length) reverse = true;
-            if (reverse)
-            {
-                int left = 0;
-                int right = medialAxis.Length - 1;
-                while (left < right)
-                {
-                    swap(ref radii[left], ref radii[right]);
-                    swap(ref medialAxis[left], ref medialAxis[right]);
-                    left++;
-                    right--;
-                }
-            }
             return CreateBGCTerms(snappedPrimitive, radii, medialAxis);
         }
 

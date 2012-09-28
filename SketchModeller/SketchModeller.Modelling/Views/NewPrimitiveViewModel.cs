@@ -238,7 +238,7 @@ namespace SketchModeller.Modelling.Views
             {
                 if (Model.SilhouetteCurves.Length > 1 && Model.FeatureCurves.Length > 1)
                     if (Model.SilhouetteCurves[0].AssignedTo != null && Model.SilhouetteCurves[1].AssignedTo != null
-                        && Model.FeatureCurves[0].AssignedTo != null && Model.FeatureCurves[1].AssignedTo != null)
+                        /*&& Model.FeatureCurves[0].AssignedTo != null && Model.FeatureCurves[1].AssignedTo != null */)
                     {
                         ModelCanSnap = true;
                     }
