@@ -24,6 +24,7 @@ namespace SketchModeller.Modelling.Views
         private readonly SessionData sessionData;
         private readonly ILoggerFacade logger;
         private readonly ISnapper snapper;
+        private readonly IUndoHistory undoHistory;
 
         public AnnotationsViewModel()
         {
@@ -42,13 +43,14 @@ namespace SketchModeller.Modelling.Views
         }
 
         [InjectionConstructor]
-        public AnnotationsViewModel(IEventAggregator eventAggregator, SessionData sessionData, ILoggerFacade logger, ISnapper snapper)
+        public AnnotationsViewModel(IEventAggregator eventAggregator, SessionData sessionData, ILoggerFacade logger, ISnapper snapper, IUndoHistory undoHistory)
             : this()
         {
             this.eventAggregator = eventAggregator;
             this.sessionData = sessionData;
             this.logger = logger;
             this.snapper = snapper;
+            this.undoHistory = undoHistory;
             Annotations = sessionData.Annotations;
         }
 
@@ -197,6 +199,7 @@ namespace SketchModeller.Modelling.Views
                 var annotation = factory(selectedElements);
                 if (annotation != null) // null means that a valid annotation could not be created
                 {
+                    undoHistory.Push();
                     Annotations.Add(annotation);
                     SelectedAnnotationIndex = Annotations.Count - 1;
                     Work.Execute(eventAggregator, () => snapper.RecalculateAsync());
