@@ -252,6 +252,8 @@ namespace SketchModeller.Modelling.Views
             get { return Axis; }
         }
 
+        public int DragStartComponent { get => dragStartComponent; set => dragStartComponent = value; }
+
         #region Editor class
 
         class Editor : BaseEditor
@@ -289,7 +291,7 @@ namespace SketchModeller.Modelling.Views
                         viewModel.Components = viewModel.RecomputeComponents(
                             viewModel.Components,
                             radiusDelta,
-                            viewModel.dragStartComponent);
+                            viewModel.DragStartComponent);
                     }
                 }
                 else if (Keyboard.Modifiers == LENGTH_MODIFIER)
